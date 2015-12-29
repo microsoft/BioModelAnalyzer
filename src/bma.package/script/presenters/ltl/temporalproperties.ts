@@ -781,7 +781,8 @@ module BMA {
                                     driver.Expand();
                                     operation.AnalysisStatus = "success";
                                     operation.Tag = {
-                                        data: res.Ticks
+                                        data: res.Ticks,
+                                        steps: driver.GetSteps()
                                     }
                                 } else if (res.Status === "PartiallyTrue") {
 
@@ -796,7 +797,8 @@ module BMA {
                                     operation.AnalysisStatus = "partialsuccess";
                                     operation.Tag = {
                                         data: res.Ticks,
-                                        negdata: res.NegTicks
+                                        negdata: res.NegTicks,
+                                        steps: driver.GetSteps()
                                     }
 
                                 } else {
@@ -810,7 +812,8 @@ module BMA {
                                     driver.Expand();
                                     operation.AnalysisStatus = "fail";
                                     operation.Tag = {
-                                        data: res.NegTicks
+                                        data: res.NegTicks,
+                                        steps: driver.GetSteps()
                                     };
                                 }
 
@@ -918,6 +921,7 @@ module BMA {
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
                     driver.SetStatus(op.AnalysisStatus);
+                    if (op.Tag) driver.SetSteps(op.Tag.steps);
 
                     //TODO: set steps 
                     that.SubscribeToLTLRequest(driver, dom, op);

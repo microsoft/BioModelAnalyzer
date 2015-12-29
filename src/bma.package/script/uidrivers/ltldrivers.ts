@@ -531,6 +531,7 @@ module BMA {
                 this.compactltlresult.compactltlresult({
                     status: "nottested",
                     isexpanded: false,
+                    steps: that.steps,
                     ontestrequested: function () {
                         if (that.ltlrequested !== undefined)
                             that.ltlrequested();
@@ -568,6 +569,13 @@ module BMA {
                 }
 
                 this.compactltlresult.compactltlresult(options);
+            }
+
+            public SetSteps(steps: number) {
+                if (steps && steps > 0)
+                    this.compactltlresult.compactltlresult({
+                        steps: steps
+                    });
             }
 
             public GetSteps(): number {

@@ -4788,6 +4788,7 @@ var BMA;
                 this.compactltlresult.compactltlresult({
                     status: "nottested",
                     isexpanded: false,
+                    steps: that.steps,
                     ontestrequested: function () {
                         if (that.ltlrequested !== undefined)
                             that.ltlrequested();
@@ -4821,6 +4822,12 @@ var BMA;
                     options.isexpanded = false;
                 }
                 this.compactltlresult.compactltlresult(options);
+            };
+            LTLResultsCompactViewer.prototype.SetSteps = function (steps) {
+                if (steps && steps > 0)
+                    this.compactltlresult.compactltlresult({
+                        steps: steps
+                    });
             };
             LTLResultsCompactViewer.prototype.GetSteps = function () {
                 return this.steps;
@@ -12206,6 +12213,9 @@ jQuery.fn.extend({
                 case "isexpanded":
                     needRefreshStates = true;
                     break;
+                case "steps":
+                    needRefreshStates = true;
+                    break;
                 default:
                     break;
             }
@@ -13616,7 +13626,8 @@ var BMA;
                                 driver.Expand();
                                 operation.AnalysisStatus = "success";
                                 operation.Tag = {
-                                    data: res.Ticks
+                                    data: res.Ticks,
+                                    steps: driver.GetSteps()
                                 };
                             }
                             else if (res.Status === "PartiallyTrue") {
@@ -13630,7 +13641,8 @@ var BMA;
                                 operation.AnalysisStatus = "partialsuccess";
                                 operation.Tag = {
                                     data: res.Ticks,
-                                    negdata: res.NegTicks
+                                    negdata: res.NegTicks,
+                                    steps: driver.GetSteps()
                                 };
                             }
                             else {
@@ -13643,7 +13655,8 @@ var BMA;
                                 driver.Expand();
                                 operation.AnalysisStatus = "fail";
                                 operation.Tag = {
-                                    data: res.NegTicks
+                                    data: res.NegTicks,
+                                    steps: driver.GetSteps()
                                 };
                             }
                             domplot.updateLayout();
@@ -13724,6 +13737,8 @@ var BMA;
                     };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
                     driver.SetStatus(op.AnalysisStatus);
+                    if (op.Tag)
+                        driver.SetSteps(op.Tag.steps);
                     //TODO: set steps 
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);

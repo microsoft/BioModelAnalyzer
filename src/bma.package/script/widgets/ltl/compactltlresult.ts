@@ -438,6 +438,9 @@
                 case "isexpanded":
                     needRefreshStates = true;
                     break;
+                case "steps":
+                    needRefreshStates = true;
+                    break;
                 default:
                     break;
             }
