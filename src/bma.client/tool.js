@@ -781,7 +781,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=commands.js.map
+//# sourceMappingURL=Commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5387,7 +5387,7 @@ var BMA;
                             var relationships = model.Relationships.slice(0);
                             var newContainerId = that.variableIndex++;
                             var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
-                            containerLayouts.push(new BMA.Model.ContainerLayout(newContainerId, clipboardContainer.Name, clipboardContainer.Size, gridCell.x, gridCell.y));
+                            containerLayouts.push(new BMA.Model.ContainerLayout(newContainerId, BMA.Model.GenerateNewContainerName(containerLayouts), clipboardContainer.Size, gridCell.x, gridCell.y));
                             var oldContainerOffset = {
                                 x: clipboardContainer.PositionX * that.Grid.xStep + that.Grid.x0,
                                 y: clipboardContainer.PositionY * that.Grid.yStep + that.Grid.y0,

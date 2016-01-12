@@ -263,7 +263,7 @@ module BMA {
 
                             var newContainerId = that.variableIndex++;
                             var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
-                            containerLayouts.push(new BMA.Model.ContainerLayout(newContainerId, clipboardContainer.Name, clipboardContainer.Size, gridCell.x, gridCell.y));
+                            containerLayouts.push(new BMA.Model.ContainerLayout(newContainerId, BMA.Model.GenerateNewContainerName(containerLayouts), clipboardContainer.Size, gridCell.x, gridCell.y));
 
                             var oldContainerOffset = {
                                 x: clipboardContainer.PositionX * that.Grid.xStep + that.Grid.x0,
