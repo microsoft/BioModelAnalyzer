@@ -32,6 +32,9 @@
                     this.statesEditor.SetStates(appModel.States);
                     this.statesViewer.SetStates(appModel.States);
                 });
+
+                window.Commands.On("AppModelChanged", (args) => {
+                });
             }
 
             public GetStateByName(name: string): BMA.LTLOperations.Keyframe | BMA.LTLOperations.TrueKeyframe | BMA.LTLOperations.OscillationKeyframe | BMA.LTLOperations.SelfLoopKeyframe {

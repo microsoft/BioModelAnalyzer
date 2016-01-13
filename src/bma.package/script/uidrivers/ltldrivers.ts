@@ -297,6 +297,7 @@ module BMA {
             }
 
             public Convert(states: any) {
+                var that = this;
                 var wstates: BMA.LTLOperations.Keyframe[] = [];
                 for (var i = 0; i < states.length; i++) {
                     var ops = [];
@@ -310,7 +311,15 @@ module BMA {
                         if (f[0] && f[0].type == "variable" && f[0].value && f[0].value.variable && f[1] && f[1].value && f[2]) {
                             var operator = f[1].value;
                             var constant = parseFloat(f[2].value);
-                            op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable),
+                            var id;
+                            for (var k = 0; k < that.model.Variables.length; k++)
+                                if (that.model.Variables[k].Name == f[0].value.variable) {
+                                    if ((f[0].value.container == undefined) || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
+                                        id = that.model.Variables[k].Id;
+                                        break;
+                                    } 
+                                }
+                            op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable, id),
                                 operator, new BMA.LTLOperations.ConstOperand(constant));
                             ops.push(op);
                         }

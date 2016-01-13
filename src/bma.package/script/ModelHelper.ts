@@ -201,5 +201,63 @@
                 };
             }
         }
+
+        export function StatesValidation(model: BMA.Model.BioModel, layout: BMA.Model.Layout, states: BMA.LTLOperations.Keyframe[]):
+            { states: BMA.LTLOperations.Keyframe[], isChanged: boolean } {
+            
+            var isChanged = false;
+            var newStates = [];
+            for (var i = 0; i < states.length; i++) {
+                var state = states[i];
+                var operands = [];
+                var isActual = true;
+                for (var j = 0; j < state.Operands.length; j++) {
+                    var operand = state.Operands[j];
+                    var variable;
+                    var check = false;
+                    if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
+                        variable = operand.LeftOperand;
+                    } else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                        variable = operand.MiddleOperand;
+                    }
+                    if (variable instanceof BMA.LTLOperations.NameOperand) {
+                        var variableId = variable.Id;
+                        if (variableId === undefined) {
+                            var id = model.GetIdByName(variable.Name);
+                            if (id.length == 0) continue;
+                            variableId = parseFloat(id[0]);
+                        }
+
+                        var variableInModel = model.GetVariableById(variableId);
+                        if (variableInModel !== undefined) {
+                            if (variable.Name != variableInModel.Name)
+                                isChanged = true;
+                            variable = new BMA.LTLOperations.NameOperand(variableInModel.Name, variableInModel.Id);
+                            check = true;
+                        }
+                    }
+                    if (check) {
+                        var newOperand;
+                        if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
+                            newOperand = new BMA.LTLOperations.KeyframeEquation(variable, operand.Operator, operand.RightOperand);
+                        } else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                            newOperand = new BMA.LTLOperations.DoubleKeyframeEquation(operand.LeftOperand, operand.LeftOperator, variable, operand.RightOperator, operand.RightOperand);
+                        }
+                        operands.push(newOperand);
+                    } else {
+                        isActual = false;
+                        isChanged = true;
+                        break;
+                    }
+                }
+                if (isActual && operands.length != 0)
+                    newStates.push(new BMA.LTLOperations.Keyframe(state.Name, state.Description, operands));
+            }
+
+            return {
+                states: newStates,
+                isChanged: isChanged
+            };
+        }
     }
 } 

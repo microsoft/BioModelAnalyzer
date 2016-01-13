@@ -33,6 +33,7 @@
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 window.Commands.On("AppModelChanged",(args) => {
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
+                    //statesEditorDriver.SetStates(appModel.States);
                 });
 
                 window.Commands.On("Expand",(param) => {

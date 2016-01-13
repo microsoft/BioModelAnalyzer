@@ -184,4 +184,52 @@
         expect(appModel.Serialize()).toEqual(str);
     });
     */
+
+    //States validation
+
+    var kfm1 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("name1", 34), "<", new BMA.LTLOperations.ConstOperand(2));
+    var kfm2 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("name2", 38), "=", new BMA.LTLOperations.ConstOperand(0));
+    var kfm3 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("name34", 34), "<", new BMA.LTLOperations.ConstOperand(2));
+
+    var s1 = new BMA.LTLOperations.Keyframe("A", "", [kfm1]);
+    var s2 = new BMA.LTLOperations.Keyframe("B", undefined, [kfm2]);
+    var s3 = new BMA.LTLOperations.Keyframe("A", "", [kfm3]);
+
+    var states = [s1, s2];
+
+    var v3 = new BMA.Model.Variable(34, 15, BMA.Model.VariableTypes.Default, "name34", 3, 7, "formula1"); 
+
+    it("States validation: model is not changed", () => {
+        expect(BMA.ModelHelper.StatesValidation(biomodel, layout, states)).toEqual({
+            states: states, isChanged: false
+        });
+    });
+
+    it("States validation: variable 'name1' removed", () => {
+        biomodel = new BMA.Model.BioModel(name, [v2], []);
+        expect(BMA.ModelHelper.StatesValidation(biomodel, layout, states)).toEqual({
+            states: [s2], isChanged: true
+        });
+    });
+
+    it("States validation: variable 'name2' removed", () => {
+        biomodel = new BMA.Model.BioModel(name, [v1], [r3]);
+        expect(BMA.ModelHelper.StatesValidation(biomodel, layout, states)).toEqual({
+            states: [s1], isChanged: true
+        });
+    });
+
+    it("States validation: variable 'name1' renamed", () => {
+        biomodel = new BMA.Model.BioModel(name, [v3, v2], [r1, r2, r3]);
+        expect(BMA.ModelHelper.StatesValidation(biomodel, layout, states)).toEqual({
+            states: [s3, s2], isChanged: true
+        });
+    });
+
+    it("States validation: variable 'name34' added", () => {
+        biomodel = new BMA.Model.BioModel(name, [v1, v2, v3], [r1, r2, r3]);
+        expect(BMA.ModelHelper.StatesValidation(biomodel, layout, states)).toEqual({
+            states: [s1, s2], isChanged: false
+        });
+    });
 }); 

@@ -12,13 +12,19 @@
 
         export class NameOperand implements IOperand {
             private name: string;
+            private id: any;
 
-            constructor(name: string) {
+            constructor(name: string, id: any = undefined) {
                 this.name = name;
+                this.id = id;
             }
 
             public get Name(): string {
                 return this.name;
+            }
+
+            public get Id(): any {
+                return this.id;
             }
 
             public GetFormula() {

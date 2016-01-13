@@ -781,7 +781,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=Commands.js.map
+//# sourceMappingURL=commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -2091,6 +2091,8 @@ var BMA;
                 },
                 set: function (value) {
                     this.model = value;
+                    if (this.states.length != 0)
+                        this.UpdateStates();
                     window.Commands.Execute("AppModelChanged", {});
                     //TODO: update inner components (analytics)
                 },
@@ -2226,6 +2228,52 @@ var BMA;
                 var ltl = BMA.Model.ExportLTLContents(this.states, this.operations);
                 exported.ltl = ltl;
                 return JSON.stringify(exported);
+            };
+            AppModel.prototype.UpdateStates = function () {
+                var that = this;
+                var newStates = [];
+                for (var i = 0; i < this.states.length; i++) {
+                    var state = this.states[i];
+                    var operands = [];
+                    for (var j = 0; j < state.Operands.length; j++) {
+                        var operand = state.Operands[j];
+                        var variable;
+                        var check = false;
+                        if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
+                            variable = operand.LeftOperand;
+                        }
+                        else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                            variable = operand.MiddleOperand;
+                        }
+                        if (variable instanceof BMA.LTLOperations.NameOperand) {
+                            var variableId = variable.Id;
+                            if (variableId === undefined) {
+                                var id = that.model.GetIdByName(variable.Name);
+                                if (id.length == 0)
+                                    continue;
+                                variableId = parseFloat(id[0]);
+                            }
+                            var variableInModel = that.model.GetVariableById(variableId);
+                            if (variableInModel !== undefined) {
+                                variable = new BMA.LTLOperations.NameOperand(variableInModel.Name, variableInModel.Id);
+                                check = true;
+                            }
+                        }
+                        if (check) {
+                            var newOperand;
+                            if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
+                                newOperand = new BMA.LTLOperations.KeyframeEquation(variable, operand.Operator, operand.RightOperand);
+                            }
+                            else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                                newOperand = new BMA.LTLOperations.DoubleKeyframeEquation(operand.LeftOperand, operand.LeftOperator, variable, operand.RightOperator, operand.RightOperand);
+                            }
+                            operands.push(newOperand);
+                        }
+                    }
+                    if (operands.length != 0)
+                        newStates.push(new BMA.LTLOperations.Keyframe(state.Name, state.Description, operands));
+                }
+                this.states = newStates;
             };
             return AppModel;
         })();
@@ -2728,12 +2776,21 @@ var BMA;
     var LTLOperations;
     (function (LTLOperations) {
         var NameOperand = (function () {
-            function NameOperand(name) {
+            function NameOperand(name, id) {
+                if (id === void 0) { id = undefined; }
                 this.name = name;
+                this.id = id;
             }
             Object.defineProperty(NameOperand.prototype, "Name", {
                 get: function () {
                     return this.name;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(NameOperand.prototype, "Id", {
+                get: function () {
+                    return this.id;
                 },
                 enumerable: true,
                 configurable: true
@@ -4590,6 +4647,7 @@ var BMA;
                 this.commands = commands;
             }
             StatesEditorDriver.prototype.Convert = function (states) {
+                var that = this;
                 var wstates = [];
                 for (var i = 0; i < states.length; i++) {
                     var ops = [];
@@ -4602,7 +4660,15 @@ var BMA;
                         if (f[0] && f[0].type == "variable" && f[0].value && f[0].value.variable && f[1] && f[1].value && f[2]) {
                             var operator = f[1].value;
                             var constant = parseFloat(f[2].value);
-                            op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable), operator, new BMA.LTLOperations.ConstOperand(constant));
+                            var id;
+                            for (var k = 0; k < that.model.Variables.length; k++)
+                                if (that.model.Variables[k].Name == f[0].value.variable) {
+                                    if ((f[0].value.container == undefined) || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
+                                        id = that.model.Variables[k].Id;
+                                        break;
+                                    }
+                                }
+                            op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable, id), operator, new BMA.LTLOperations.ConstOperand(constant));
                             ops.push(op);
                         }
                         if (op === undefined)
@@ -12730,6 +12796,7 @@ var BMA;
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 window.Commands.On("AppModelChanged", function (args) {
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
+                    statesEditorDriver.SetStates(appModel.States);
                 });
                 window.Commands.On("Expand", function (param) {
                     switch (param) {
@@ -12953,6 +13020,8 @@ var BMA;
                 window.Commands.On("ModelReset", function (args) {
                     _this.statesEditor.SetStates(appModel.States);
                     _this.statesViewer.SetStates(appModel.States);
+                });
+                window.Commands.On("AppModelChanged", function (args) {
                 });
             }
             StatesPresenter.prototype.GetStateByName = function (name) {
