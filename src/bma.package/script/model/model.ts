@@ -18,6 +18,8 @@ module BMA {
                 this.model = value;
 
                 //if (this.states.length != 0) this.UpdateStates();
+                var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
+                if (statesChanged.isChanged) this.states = statesChanged.states;
                 window.Commands.Execute("AppModelChanged", {});
                 //TODO: update inner components (analytics)
             }

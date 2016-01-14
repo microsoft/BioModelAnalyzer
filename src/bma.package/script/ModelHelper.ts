@@ -202,7 +202,7 @@
             }
         }
 
-        export function StatesValidation(model: BMA.Model.BioModel, layout: BMA.Model.Layout, states: BMA.LTLOperations.Keyframe[]):
+        export function UpdateStatesWithModel(model: BMA.Model.BioModel, layout: BMA.Model.Layout, states: BMA.LTLOperations.Keyframe[]):
             { states: BMA.LTLOperations.Keyframe[], isChanged: boolean } {
             
             var isChanged = false;
@@ -223,12 +223,16 @@
                         var variableId = variable.Id;
                         if (variableId === undefined) {
                             var id = model.GetIdByName(variable.Name);
-                            if (id.length == 0) continue;
+                            if (id.length == 0) {
+                                isActual = false;
+                                isChanged = true;
+                                break;
+                            }
                             variableId = parseFloat(id[0]);
                         }
 
                         var variableInModel = model.GetVariableById(variableId);
-                        if (variableInModel === undefined) {
+                        if (variableInModel === undefined || !variableInModel.Name) {
                             isActual = false;
                             isChanged = true;
                             break;

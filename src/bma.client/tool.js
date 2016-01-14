@@ -712,6 +712,61 @@ var BMA;
             }
         }
         ModelHelper.GetModelBoundingBox = GetModelBoundingBox;
+        function UpdateStatesWithModel(model, layout, states) {
+            var isChanged = false;
+            var newStates = [];
+            for (var i = 0; i < states.length; i++) {
+                var state = states[i];
+                var operands = [];
+                var isActual = true;
+                for (var j = 0; j < state.Operands.length; j++) {
+                    var operand = state.Operands[j];
+                    var variable;
+                    if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
+                        variable = operand.LeftOperand;
+                    }
+                    else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                        variable = operand.MiddleOperand;
+                    }
+                    if (variable instanceof BMA.LTLOperations.NameOperand) {
+                        var variableId = variable.Id;
+                        if (variableId === undefined) {
+                            var id = model.GetIdByName(variable.Name);
+                            if (id.length == 0) {
+                                isActual = false;
+                                isChanged = true;
+                                break;
+                            }
+                            variableId = parseFloat(id[0]);
+                        }
+                        var variableInModel = model.GetVariableById(variableId);
+                        if (variableInModel === undefined || !variableInModel.Name) {
+                            isActual = false;
+                            isChanged = true;
+                            break;
+                        }
+                        if (variable.Name != variableInModel.Name)
+                            isChanged = true;
+                        variable = new BMA.LTLOperations.NameOperand(variableInModel.Name, variableInModel.Id);
+                        var newOperand;
+                        if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
+                            newOperand = new BMA.LTLOperations.KeyframeEquation(variable, operand.Operator, operand.RightOperand);
+                        }
+                        else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                            newOperand = new BMA.LTLOperations.DoubleKeyframeEquation(operand.LeftOperand, operand.LeftOperator, variable, operand.RightOperator, operand.RightOperand);
+                        }
+                        operands.push(newOperand);
+                    }
+                }
+                if (isActual && operands.length != 0)
+                    newStates.push(new BMA.LTLOperations.Keyframe(state.Name, state.Description, operands));
+            }
+            return {
+                states: newStates,
+                isChanged: isChanged
+            };
+        }
+        ModelHelper.UpdateStatesWithModel = UpdateStatesWithModel;
     })(ModelHelper = BMA.ModelHelper || (BMA.ModelHelper = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=ModelHelper.js.map
@@ -2091,8 +2146,10 @@ var BMA;
                 },
                 set: function (value) {
                     this.model = value;
-                    if (this.states.length != 0)
-                        this.UpdateStates();
+                    //if (this.states.length != 0) this.UpdateStates();
+                    var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
+                    if (statesChanged.isChanged)
+                        this.states = statesChanged.states;
                     window.Commands.Execute("AppModelChanged", {});
                     //TODO: update inner components (analytics)
                 },
@@ -2228,52 +2285,6 @@ var BMA;
                 var ltl = BMA.Model.ExportLTLContents(this.states, this.operations);
                 exported.ltl = ltl;
                 return JSON.stringify(exported);
-            };
-            AppModel.prototype.UpdateStates = function () {
-                var that = this;
-                var newStates = [];
-                for (var i = 0; i < this.states.length; i++) {
-                    var state = this.states[i];
-                    var operands = [];
-                    for (var j = 0; j < state.Operands.length; j++) {
-                        var operand = state.Operands[j];
-                        var variable;
-                        var check = false;
-                        if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
-                            variable = operand.LeftOperand;
-                        }
-                        else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
-                            variable = operand.MiddleOperand;
-                        }
-                        if (variable instanceof BMA.LTLOperations.NameOperand) {
-                            var variableId = variable.Id;
-                            if (variableId === undefined) {
-                                var id = that.model.GetIdByName(variable.Name);
-                                if (id.length == 0)
-                                    continue;
-                                variableId = parseFloat(id[0]);
-                            }
-                            var variableInModel = that.model.GetVariableById(variableId);
-                            if (variableInModel !== undefined) {
-                                variable = new BMA.LTLOperations.NameOperand(variableInModel.Name, variableInModel.Id);
-                                check = true;
-                            }
-                        }
-                        if (check) {
-                            var newOperand;
-                            if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
-                                newOperand = new BMA.LTLOperations.KeyframeEquation(variable, operand.Operator, operand.RightOperand);
-                            }
-                            else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
-                                newOperand = new BMA.LTLOperations.DoubleKeyframeEquation(operand.LeftOperand, operand.LeftOperator, variable, operand.RightOperator, operand.RightOperand);
-                            }
-                            operands.push(newOperand);
-                        }
-                    }
-                    if (operands.length != 0)
-                        newStates.push(new BMA.LTLOperations.Keyframe(state.Name, state.Description, operands));
-                }
-                this.states = newStates;
             };
             return AppModel;
         })();
@@ -3962,6 +3973,9 @@ var BMA;
             VariableEditorDriver.prototype.Hide = function () {
                 this.variableEditor.hide();
             };
+            VariableEditorDriver.prototype.SetOnClosingCallback = function (callback) {
+                this.variableEditor.bmaeditor({ oneditorclosing: callback });
+            };
             return VariableEditorDriver;
         })();
         UIDrivers.VariableEditorDriver = VariableEditorDriver;
@@ -5281,6 +5295,7 @@ var BMA;
                 this.containerEditor = containerEditorDriver;
                 this.contextMenu = contextMenu;
                 this.exportservice = exportservice;
+                this.isVariableEdited = false;
                 svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
                 window.Commands.On('SaveSVG', function () {
                     that.exportservice.Export(that.driver.GetSVG(), appModel.BioModel.Name, 'svg');
@@ -5343,8 +5358,8 @@ var BMA;
                 window.Commands.On("VariableEdited", function () {
                     var that = _this;
                     if (that.editingId !== undefined) {
-                        var model = _this.undoRedoPresenter.Current.model;
-                        var variables = model.Variables;
+                        that.editingModel = _this.undoRedoPresenter.Current.model.Clone(); //add editingmodel
+                        var variables = that.editingModel.Variables;
                         var editingVariableIndex = -1;
                         for (var i = 0; i < variables.length; i++) {
                             if (variables[i].Id === that.editingId) {
@@ -5354,8 +5369,9 @@ var BMA;
                         }
                         if (editingVariableIndex !== -1) {
                             var params = that.variableEditor.GetVariableProperties();
-                            model.SetVariableProperties(variables[i].Id, params.name, params.rangeFrom, params.rangeTo, params.formula);
-                            that.RefreshOutput();
+                            that.editingModel.SetVariableProperties(variables[i].Id, params.name, params.rangeFrom, params.rangeTo, params.formula); //to editingmodel
+                            that.isVariableEdited = true;
+                            that.RefreshOutput(that.editingModel);
                         }
                     }
                 });
@@ -5562,6 +5578,11 @@ var BMA;
                 });
                 window.Commands.On("DrawingSurfaceVariableEditorOpened", function (args) {
                     _this.containerEditor.Hide();
+                    if (that.isVariableEdited) {
+                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.editingModel = undefined;
+                        that.isVariableEdited = false;
+                    }
                 });
                 window.Commands.On("DrawingSurfaceContainerEditorOpened", function (args) {
                     _this.variableEditor.Hide();
@@ -5591,6 +5612,13 @@ var BMA;
                     }
                     var zoom = (param - window.PlotSettings.MinWidth) / 24;
                     window.Commands.Execute("ZoomSliderBind", zoom);
+                });
+                variableEditorDriver.SetOnClosingCallback(function () {
+                    if (that.isVariableEdited) {
+                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.editingModel = undefined;
+                        that.isVariableEdited = false;
+                    }
                 });
                 dragSubject.dragStart.subscribe(function (gesture) {
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
@@ -5677,9 +5705,10 @@ var BMA;
                     }
                 });
             }
-            DesignSurfacePresenter.prototype.RefreshOutput = function () {
+            DesignSurfacePresenter.prototype.RefreshOutput = function (model) {
+                if (model === void 0) { model = undefined; }
                 if (this.svg !== undefined && this.undoRedoPresenter.Current !== undefined) {
-                    var drawingSvg = this.CreateSvg(undefined);
+                    var drawingSvg = this.CreateSvg(undefined, model);
                     this.driver.Draw(drawingSvg);
                 }
             };
@@ -6227,9 +6256,12 @@ var BMA;
                 }
                 return undefined;
             };
-            DesignSurfacePresenter.prototype.CreateSvg = function (args) {
+            DesignSurfacePresenter.prototype.CreateSvg = function (args, model) {
+                if (model === void 0) { model = undefined; }
                 if (this.svg === undefined)
                     return undefined;
+                if (model === undefined)
+                    model = this.undoRedoPresenter.Current.model;
                 //Generating svg elements from model and layout
                 var svgElements = [];
                 var containerLayouts = this.undoRedoPresenter.Current.layout.Containers;
@@ -6242,7 +6274,7 @@ var BMA;
                         background: args === undefined || args.containersStability === undefined ? undefined : this.GetContainerColorByStatus(args.containersStability[containerLayout.Id])
                     }));
                 }
-                var variables = this.undoRedoPresenter.Current.model.Variables;
+                var variables = model.Variables; //this.undoRedoPresenter.Current.model.Variables;
                 var variableLayouts = this.undoRedoPresenter.Current.layout.Variables;
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
@@ -6266,12 +6298,12 @@ var BMA;
                         labelColor: additionalInfo === undefined ? undefined : this.GetVariableColorByStatus(additionalInfo.state)
                     }));
                 }
-                var relationships = this.undoRedoPresenter.Current.model.Relationships;
+                var relationships = model.Relationships; //this.undoRedoPresenter.Current.model.Relationships;
                 for (var i = 0; i < relationships.length; i++) {
                     var relationship = relationships[i];
                     var element = window.ElementRegistry.GetElementByType(relationship.Type);
-                    var start = this.GetVariableById(this.undoRedoPresenter.Current.layout, this.undoRedoPresenter.Current.model, relationship.FromVariableId).layout;
-                    var end = this.GetVariableById(this.undoRedoPresenter.Current.layout, this.undoRedoPresenter.Current.model, relationship.ToVariableId).layout;
+                    var start = this.GetVariableById(this.undoRedoPresenter.Current.layout, model /*this.undoRedoPresenter.Current.model*/, relationship.FromVariableId).layout;
+                    var end = this.GetVariableById(this.undoRedoPresenter.Current.layout, model /*this.undoRedoPresenter.Current.model*/, relationship.ToVariableId).layout;
                     svgElements.push(element.RenderToSvg({
                         layout: { start: start, end: end },
                         grid: this.Grid
@@ -10277,7 +10309,8 @@ var BMA;
             operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
             inputs: [],
             formula: "",
-            approved: undefined
+            approved: undefined,
+            oneditorclosing: undefined
         },
         resetElement: function () {
             var that = this;
@@ -10350,6 +10383,9 @@ var BMA;
             var closing = $('<img src="../../images/close.png">').appendTo(div);
             closing.bind("click", function () {
                 that.element.hide();
+                if (that.options.oneditorclosing !== undefined) {
+                    that.options.oneditorclosing();
+                }
             });
             var namerangeDiv = $('<div></div>')
                 .addClass('editor-namerange-container')
@@ -10591,14 +10627,14 @@ jQuery.fn.extend({
     insertAtCaret: function (myValue) {
         return this.each(function (i) {
             if (document.selection) {
-                // Для браузеров типа Internet Explorer
+                // For Internet Explorer
                 this.focus();
                 var sel = document.selection.createRange();
                 sel.text = myValue;
                 this.focus();
             }
             else if (this.selectionStart || this.selectionStart == '0') {
-                // Для браузеров типа Firefox и других Webkit-ов
+                // For Webkit
                 var startPos = this.selectionStart;
                 var endPos = this.selectionEnd;
                 var scrollTop = this.scrollTop;
@@ -12791,12 +12827,18 @@ var BMA;
                 var _this = this;
                 var that = this;
                 this.appModel = appModel;
+                this.ltlviewer = ltlviewer;
                 this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer());
                 temporlapropertieseditor.SetStates(appModel.States);
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 window.Commands.On("AppModelChanged", function (args) {
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                     statesEditorDriver.SetStates(appModel.States);
+                    ltlviewer.GetStatesViewer().SetStates(appModel.States);
+                    //TP presenter should normally handle this but in case it was not shown and user tryies to modify states for imported states and formulas
+                    if (_this.tppresenter === undefined) {
+                        _this.UpdateOperations(appModel.States);
+                    }
                 });
                 window.Commands.On("Expand", function (param) {
                     switch (param) {
@@ -12880,22 +12922,25 @@ var BMA;
                 commands.On("KeyframesChanged", function (args) {
                     //TP presenter should normally handle this but in case it was not shown and user tryies to modify states for imported states and formulas
                     if (_this.tppresenter === undefined) {
-                        var operations = _this.appModel.Operations.slice(0);
-                        var opsWithStatus = [];
-                        if (operations !== undefined && operations.length > 0) {
-                            for (var i = 0; i < operations.length; i++) {
-                                BMA.LTLOperations.RefreshStatesInOperation(operations[i], args.states);
-                                opsWithStatus.push({
-                                    operation: operations[i],
-                                    status: "nottested"
-                                });
-                            }
-                        }
-                        _this.appModel.Operations = operations;
-                        ltlviewer.GetTemporalPropertiesViewer().SetOperations(opsWithStatus);
+                        _this.UpdateOperations(args.states);
                     }
                 });
             }
+            LTLPresenter.prototype.UpdateOperations = function (states) {
+                var operations = this.appModel.Operations.slice(0);
+                var opsWithStatus = [];
+                if (operations !== undefined && operations.length > 0) {
+                    for (var i = 0; i < operations.length; i++) {
+                        BMA.LTLOperations.RefreshStatesInOperation(operations[i], states);
+                        opsWithStatus.push({
+                            operation: operations[i],
+                            status: "nottested"
+                        });
+                    }
+                }
+                this.appModel.Operations = operations;
+                this.ltlviewer.GetTemporalPropertiesViewer().SetOperations(opsWithStatus);
+            };
             LTLPresenter.prototype.UpdateOperationStates = function (operation, map) {
                 var that = this;
                 for (var i = 0; i < operation.Operands.length; i++) {
@@ -13309,6 +13354,20 @@ var BMA;
                     }
                     _this.operations = [];
                     _this.LoadFromAppModel();
+                });
+                window.Commands.On("AppModelChanged", function (args) {
+                    if (_this.CompareStatesToLocal(appModel.States)) {
+                        //this.ClearResults();
+                        _this.states = appModel.States;
+                        tpEditorDriver.SetStates(appModel.States);
+                        for (var i = 0; i < _this.operations.length; i++) {
+                            var op = _this.operations[i];
+                            op.RefreshStates(appModel.States);
+                        }
+                        _this.FitToView();
+                        _this.OnOperationsChanged(true, false);
+                        that.isUpdateControlRequested = true;
+                    }
                 });
                 tpEditorDriver.SetFitToViewCallback(function () {
                     that.FitToView();

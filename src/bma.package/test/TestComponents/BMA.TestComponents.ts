@@ -173,6 +173,8 @@ module BMA {
             Show(x: number, y: number) { }
 
             Hide() { }
+
+            SetOnClosingCallback(callback: Function) { };
         }
 
     }

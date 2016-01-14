@@ -7,6 +7,7 @@
             currentdraggableelem: any;
             expandedResults: JQuery;
 
+            ltlviewer: BMA.UIDrivers.ILTLViewer;
             tppresenter: BMA.LTL.TemporalPropertiesPresenter;
             statespresenter: BMA.LTL.StatesPresenter;
 
@@ -25,7 +26,7 @@
 
                 var that = this;
                 this.appModel = appModel;
-
+                this.ltlviewer = ltlviewer;
                 this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer());
 
                 temporlapropertieseditor.SetStates(appModel.States);
@@ -33,7 +34,12 @@
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 window.Commands.On("AppModelChanged",(args) => {
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
-                    //statesEditorDriver.SetStates(appModel.States);
+                    statesEditorDriver.SetStates(appModel.States);
+                    ltlviewer.GetStatesViewer().SetStates(appModel.States);
+                    //TP presenter should normally handle this but in case it was not shown and user tryies to modify states for imported states and formulas
+                    if (this.tppresenter === undefined) {
+                        this.UpdateOperations(appModel.States);
+                    }
                 });
 
                 window.Commands.On("Expand",(param) => {
@@ -140,24 +146,26 @@
                 commands.On("KeyframesChanged", (args: { states: BMA.LTLOperations.Keyframe[] }) => {
                     //TP presenter should normally handle this but in case it was not shown and user tryies to modify states for imported states and formulas
                     if (this.tppresenter === undefined) {
-                        var operations = this.appModel.Operations.slice(0);
-                        var opsWithStatus = [];
-                        if (operations !== undefined && operations.length > 0) {
-                            for (var i = 0; i < operations.length; i++) {
-                                BMA.LTLOperations.RefreshStatesInOperation(operations[i], args.states);
-                                opsWithStatus.push({
-                                    operation: operations[i],
-                                    status: "nottested"
-                                });
-                            }
-                        }
-                        this.appModel.Operations = operations;
-                        ltlviewer.GetTemporalPropertiesViewer().SetOperations(opsWithStatus);
+                        this.UpdateOperations(args.states);
                     }
-                })
+                });
             }
 
-
+            private UpdateOperations(states) {
+                var operations = this.appModel.Operations.slice(0);
+                var opsWithStatus = [];
+                if (operations !== undefined && operations.length > 0) {
+                    for (var i = 0; i < operations.length; i++) {
+                        BMA.LTLOperations.RefreshStatesInOperation(operations[i], states);
+                        opsWithStatus.push({
+                            operation: operations[i],
+                            status: "nottested"
+                        });
+                    }
+                }
+                this.appModel.Operations = operations;
+                this.ltlviewer.GetTemporalPropertiesViewer().SetOperations(opsWithStatus);
+            }
 
             private UpdateOperationStates(operation: BMA.LTLOperations.Operation, map: any) {
                 var that = this;

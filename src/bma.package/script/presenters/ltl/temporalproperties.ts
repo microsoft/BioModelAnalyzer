@@ -330,6 +330,21 @@ module BMA {
                     this.LoadFromAppModel();
                 });
 
+                window.Commands.On("AppModelChanged", (args) => {
+                    if (this.CompareStatesToLocal(appModel.States)) {
+                        //this.ClearResults();
+                        this.states = appModel.States;
+                        tpEditorDriver.SetStates(appModel.States);
+                        for (var i = 0; i < this.operations.length; i++) {
+                            var op = this.operations[i];
+                            op.RefreshStates(appModel.States);
+                        }
+
+                        this.FitToView();
+                        this.OnOperationsChanged(true, false);
+                        that.isUpdateControlRequested = true;
+                    }
+                });
 
                 tpEditorDriver.SetFitToViewCallback(() => {
                     that.FitToView();

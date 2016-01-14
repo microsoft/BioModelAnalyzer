@@ -15,6 +15,8 @@ module BMA {
         export class DesignSurfacePresenter {
             private appModel: BMA.Model.AppModel;
             private undoRedoPresenter: BMA.Presenters.UndoRedoPresenter;
+            private editingModel: BMA.Model.BioModel;
+            private editingLayout: BMA.Model.Layout;
 
             private selectedType: string;
             private driver: BMA.UIDrivers.ISVGPlot;
@@ -127,10 +129,11 @@ module BMA {
                             that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                             that.variableEditor.Show(args.screenX, args.screenY);
                             window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
-                            if (that.isVariableEdited) {
-                                //TODO: update appModel threw undoredopresenter
-                                that.isVariableEdited = false;
-                            }
+                            //if (that.isVariableEdited) {
+                            //    that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                            //    that.editingModel = undefined;
+                            //    that.isVariableEdited = false;
+                            //}
                             //that.RefreshOutput();
                         } else {
                             var cid = that.GetContainerAtPosition(args.x, args.y);
@@ -139,10 +142,12 @@ module BMA {
                                 that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(cid));
                                 that.containerEditor.Show(args.screenX, args.screenY);
                                 window.Commands.Execute("DrawingSurfaceContainerEditorOpened", undefined);
-                                if (that.isVariableEdited) {
-                                    //TODO: update appModel threw undoredopresenter
-                                    that.isVariableEdited = false;
-                                }
+                                //if (that.isVariableEdited) {
+                                //    //TODO: update appModel threw undoredopresenter
+                                //    that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                                //    that.editingModel = undefined;
+                                //    that.isVariableEdited = false;
+                                //}
                                 //that.RefreshOutput();
                             }
                         }
@@ -152,8 +157,8 @@ module BMA {
                 window.Commands.On("VariableEdited",() => {
                     var that = this;
                     if (that.editingId !== undefined) {
-                        var model = this.undoRedoPresenter.Current.model;
-                        var variables = model.Variables;
+                        that.editingModel = this.undoRedoPresenter.Current.model.Clone();//add editingmodel
+                        var variables = that.editingModel.Variables;
                         var editingVariableIndex = -1;
                         for (var i = 0; i < variables.length; i++) {
                             if (variables[i].Id === that.editingId) {
@@ -163,9 +168,9 @@ module BMA {
                         }
                         if (editingVariableIndex !== -1) {
                             var params = that.variableEditor.GetVariableProperties();
-                            model.SetVariableProperties(variables[i].Id, params.name, params.rangeFrom, params.rangeTo, params.formula);
+                            that.editingModel.SetVariableProperties(variables[i].Id, params.name, params.rangeFrom, params.rangeTo, params.formula);//to editingmodel
                             that.isVariableEdited = true;
-                            that.RefreshOutput();
+                            that.RefreshOutput(that.editingModel);
                         }
                     }
                 });
@@ -403,6 +408,11 @@ module BMA {
 
                 window.Commands.On("DrawingSurfaceVariableEditorOpened",(args) => {
                     this.containerEditor.Hide();
+                    if (that.isVariableEdited) {
+                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.editingModel = undefined;
+                        that.isVariableEdited = false;
+                    }
                 });
 
                 window.Commands.On("DrawingSurfaceContainerEditorOpened",(args) => {
@@ -441,7 +451,11 @@ module BMA {
                 });
 
                 variableEditorDriver.SetOnClosingCallback(() => {
-
+                    if (that.isVariableEdited) {
+                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.editingModel = undefined;
+                        that.isVariableEdited = false;
+                    }
                 });
 
                 dragSubject.dragStart.subscribe(
@@ -543,9 +557,9 @@ module BMA {
                     });
             }
 
-            private RefreshOutput() {
+            private RefreshOutput(model: BMA.Model.BioModel = undefined) {
                 if (this.svg !== undefined && this.undoRedoPresenter.Current !== undefined) {
-                    var drawingSvg = <SVGElement>this.CreateSvg(undefined);
+                    var drawingSvg = <SVGElement>this.CreateSvg(undefined, model);
                     this.driver.Draw(drawingSvg);
                 }
             }
@@ -1220,10 +1234,11 @@ module BMA {
                 return undefined;
             }
 
-            private CreateSvg(args: any): any {
+            private CreateSvg(args: any, model: BMA.Model.BioModel = undefined): any {
                 if (this.svg === undefined)
                     return undefined;
-
+                if (model === undefined)
+                    model = this.undoRedoPresenter.Current.model;
                 //Generating svg elements from model and layout
                 var svgElements = [];
 
@@ -1238,7 +1253,7 @@ module BMA {
                     }));
                 }
 
-                var variables = this.undoRedoPresenter.Current.model.Variables;
+                var variables = model.Variables;//this.undoRedoPresenter.Current.model.Variables;
                 var variableLayouts = this.undoRedoPresenter.Current.layout.Variables;
 
                 for (var i = 0; i < variables.length; i++) {
@@ -1265,13 +1280,13 @@ module BMA {
                     }));
                 }
 
-                var relationships = this.undoRedoPresenter.Current.model.Relationships;
+                var relationships = model.Relationships;//this.undoRedoPresenter.Current.model.Relationships;
                 for (var i = 0; i < relationships.length; i++) {
                     var relationship = relationships[i];
                     var element = window.ElementRegistry.GetElementByType(relationship.Type);
 
-                    var start = this.GetVariableById(this.undoRedoPresenter.Current.layout, this.undoRedoPresenter.Current.model, relationship.FromVariableId).layout;
-                    var end = this.GetVariableById(this.undoRedoPresenter.Current.layout, this.undoRedoPresenter.Current.model, relationship.ToVariableId).layout;
+                    var start = this.GetVariableById(this.undoRedoPresenter.Current.layout, model/*this.undoRedoPresenter.Current.model*/, relationship.FromVariableId).layout;
+                    var end = this.GetVariableById(this.undoRedoPresenter.Current.layout, model/*this.undoRedoPresenter.Current.model*/, relationship.ToVariableId).layout;
 
                     svgElements.push(element.RenderToSvg({
                         layout: { start: start, end: end },

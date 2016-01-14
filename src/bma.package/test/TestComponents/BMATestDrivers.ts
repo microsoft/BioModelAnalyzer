@@ -102,6 +102,8 @@ module BMA {
             public Hide() { }
 
             public SetValidation(val: boolean, message: string) { }
+
+            public SetOnClosingCallback(callback: Function) {};
         }
 
 
