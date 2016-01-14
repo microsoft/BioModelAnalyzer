@@ -46,6 +46,7 @@ module BMA {
             Show(x: number, y: number);
             Hide();
             SetValidation(val: boolean, message: string);
+            SetOnClosingCallback(callback: Function);
         }
 
         export interface IContainerEditor {

@@ -14,7 +14,8 @@
             operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
             inputs: [],
             formula: "",
-            approved: undefined
+            approved: undefined,
+            oneditorclosing: undefined
         },
 
         resetElement: function () {
@@ -101,6 +102,9 @@
             var closing = $('<img src="../../images/close.png">').appendTo(div);
             closing.bind("click", function () {
                 that.element.hide();
+                if (that.options.oneditorclosing !== undefined) {
+                    that.options.oneditorclosing();
+                }
             });
 
             var namerangeDiv = $('<div></div>')
@@ -391,14 +395,14 @@ jQuery.fn.extend({
     insertAtCaret: function (myValue) {
         return this.each(function (i) {
             if ((<any>document).selection) {
-                // Для браузеров типа Internet Explorer
+                // For Internet Explorer
                 this.focus();
                 var sel = (<any>document).selection.createRange();
                 sel.text = myValue;
                 this.focus();
             }
             else if (this.selectionStart || this.selectionStart == '0') {
-                // Для браузеров типа Firefox и других Webkit-ов
+                // For Webkit
                 var startPos = this.selectionStart;
                 var endPos = this.selectionEnd;
                 var scrollTop = this.scrollTop;

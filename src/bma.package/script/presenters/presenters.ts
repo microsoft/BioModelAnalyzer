@@ -41,6 +41,8 @@ module BMA {
             private contextMenu: BMA.UIDrivers.IContextMenu;
             private contextElement;
 
+            private isVariableEdited: boolean;
+
             private clipboard: {
                 Container: BMA.Model.ContainerLayout;
                 Variables: {
@@ -72,6 +74,8 @@ module BMA {
                 this.containerEditor = containerEditorDriver;
                 this.contextMenu = contextMenu;
                 this.exportservice = exportservice;
+
+                this.isVariableEdited = false;
 
                 svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
 
@@ -123,6 +127,10 @@ module BMA {
                             that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
                             that.variableEditor.Show(args.screenX, args.screenY);
                             window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
+                            if (that.isVariableEdited) {
+                                //TODO: update appModel threw undoredopresenter
+                                that.isVariableEdited = false;
+                            }
                             //that.RefreshOutput();
                         } else {
                             var cid = that.GetContainerAtPosition(args.x, args.y);
@@ -131,6 +139,10 @@ module BMA {
                                 that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(cid));
                                 that.containerEditor.Show(args.screenX, args.screenY);
                                 window.Commands.Execute("DrawingSurfaceContainerEditorOpened", undefined);
+                                if (that.isVariableEdited) {
+                                    //TODO: update appModel threw undoredopresenter
+                                    that.isVariableEdited = false;
+                                }
                                 //that.RefreshOutput();
                             }
                         }
@@ -152,6 +164,7 @@ module BMA {
                         if (editingVariableIndex !== -1) {
                             var params = that.variableEditor.GetVariableProperties();
                             model.SetVariableProperties(variables[i].Id, params.name, params.rangeFrom, params.rangeTo, params.formula);
+                            that.isVariableEdited = true;
                             that.RefreshOutput();
                         }
                     }
@@ -425,6 +438,10 @@ module BMA {
                     }
                     var zoom = (param - window.PlotSettings.MinWidth) / 24;
                     window.Commands.Execute("ZoomSliderBind", zoom);
+                });
+
+                variableEditorDriver.SetOnClosingCallback(() => {
+
                 });
 
                 dragSubject.dragStart.subscribe(

@@ -160,6 +160,10 @@ module BMA {
             public Hide() {
                 this.variableEditor.hide();
             }
+
+            public SetOnClosingCallback(callback: Function) {
+                this.variableEditor.bmaeditor({ oneditorclosing: callback });
+            }
         }
 
         export class ContainerEditorDriver implements IContainerEditor {
