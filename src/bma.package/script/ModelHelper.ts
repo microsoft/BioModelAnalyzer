@@ -214,7 +214,6 @@
                 for (var j = 0; j < state.Operands.length; j++) {
                     var operand = state.Operands[j];
                     var variable;
-                    var check = false;
                     if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
                         variable = operand.LeftOperand;
                     } else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
@@ -229,14 +228,15 @@
                         }
 
                         var variableInModel = model.GetVariableById(variableId);
-                        if (variableInModel !== undefined) {
-                            if (variable.Name != variableInModel.Name)
-                                isChanged = true;
-                            variable = new BMA.LTLOperations.NameOperand(variableInModel.Name, variableInModel.Id);
-                            check = true;
+                        if (variableInModel === undefined) {
+                            isActual = false;
+                            isChanged = true;
+                            break;
                         }
-                    }
-                    if (check) {
+                        if (variable.Name != variableInModel.Name)
+                            isChanged = true;
+                        variable = new BMA.LTLOperations.NameOperand(variableInModel.Name, variableInModel.Id);
+                        
                         var newOperand;
                         if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
                             newOperand = new BMA.LTLOperations.KeyframeEquation(variable, operand.Operator, operand.RightOperand);
@@ -244,10 +244,6 @@
                             newOperand = new BMA.LTLOperations.DoubleKeyframeEquation(operand.LeftOperand, operand.LeftOperator, variable, operand.RightOperator, operand.RightOperand);
                         }
                         operands.push(newOperand);
-                    } else {
-                        isActual = false;
-                        isChanged = true;
-                        break;
                     }
                 }
                 if (isActual && operands.length != 0)
