@@ -30,6 +30,7 @@ module BMA {
 
             public set Layout(value: BMA.Model.Layout) {
                 this.layout = value;
+                window.Commands.Execute("AppModelChanged", {});
                 //TODO: update inner components (analytics)
             }
 
@@ -172,6 +173,8 @@ module BMA {
             public Reset(model: BMA.Model.BioModel, layout: BMA.Model.Layout) {
                 this.model = model;
                 this.layout = layout;
+                var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
+                if (statesChanged.isChanged) this.states = statesChanged.states;
                 window.Commands.Execute("ModelReset", undefined);
             }
 

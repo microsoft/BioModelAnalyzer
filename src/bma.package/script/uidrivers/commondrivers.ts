@@ -193,6 +193,10 @@ module BMA {
             public Hide() {
                 this.containerEditor.hide();
             }
+
+            public SetOnClosingCallback(callback: Function) {
+                this.containerEditor.containernameeditor({ oneditorclosing: callback });
+            }
         }
 
         export class ProofViewer implements IProofResultViewer {

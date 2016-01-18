@@ -3785,6 +3785,9 @@ ui-icon-arrowthickstop-1-n {
   margin-top: 5px;
   margin-bottom: 15px;
 }
+.state-compact .state-buttons:hover {
+  cursor: pointer;
+}
 .state-compact .state-button-empty {
   margin-left: auto;
   margin-right: auto;
