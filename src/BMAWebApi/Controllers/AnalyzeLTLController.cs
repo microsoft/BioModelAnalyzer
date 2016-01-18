@@ -80,7 +80,8 @@ namespace bma.client.Controllers
                 }
 
                 var model = (Model)input;
-                var result = analyzer.checkLTL((Model)input, formula, num_of_steps); //Utilities.RunWithTimeLimit(() => analyzer.checkLTL((Model)input, formula, num_of_steps);//, Utilities.GetTimeLimitFromConfig());
+                //var result = analyzer.checkLTL((Model)input, formula, num_of_steps); 
+                var result = Utilities.RunWithTimeLimit(() => analyzer.checkLTL((Model)input, formula, num_of_steps), TimeSpan.FromMinutes(1));//, Utilities.GetTimeLimitFromConfig());
 
                 // Log the output XML each time it's run
                 // DEBUG: Sam - to check why the output is returning is null

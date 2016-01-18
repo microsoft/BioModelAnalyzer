@@ -902,6 +902,8 @@ module BMA {
                     for (var i = 0; i < this.drivers.length; i++) {
                         if (this.drivers[i] !== driver) {
                             this.drivers[i].Collapse();
+                        } else {
+                            this.drivers[i].MoveToTop();
                         }
                     }
 
@@ -944,7 +946,7 @@ module BMA {
                     that.SubscribeToShowLTLRequest(driver, op);
                     that.SubscribeToExpandLTLResult(driver, dom);
 
-                    (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, opDiv.width(), opDiv.height(), 0, 0.5);
+                    (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);
                     this.controlPanels.push(cp);
                     this.drivers.push(driver);
                 }

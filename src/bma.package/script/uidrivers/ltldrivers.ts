@@ -563,10 +563,16 @@ module BMA {
 
             public Collapse() {
                 this.compactltlresult.compactltlresult({ isexpanded: false });
+                this.compactltlresult.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers);
             }
 
             public Expand() {
                 this.compactltlresult.compactltlresult({ isexpanded: true });
+                this.compactltlresult.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1);
+            }
+
+            public MoveToTop() {
+                this.compactltlresult.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1);
             }
 
             public SetStatus(status: string) {

@@ -4890,9 +4890,14 @@ var BMA;
             }
             LTLResultsCompactViewer.prototype.Collapse = function () {
                 this.compactltlresult.compactltlresult({ isexpanded: false });
+                this.compactltlresult.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers);
             };
             LTLResultsCompactViewer.prototype.Expand = function () {
                 this.compactltlresult.compactltlresult({ isexpanded: true });
+                this.compactltlresult.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1);
+            };
+            LTLResultsCompactViewer.prototype.MoveToTop = function () {
+                this.compactltlresult.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1);
             };
             LTLResultsCompactViewer.prototype.SetStatus = function (status) {
                 var options = {
@@ -13840,6 +13845,9 @@ var BMA;
                         if (_this.drivers[i] !== driver) {
                             _this.drivers[i].Collapse();
                         }
+                        else {
+                            _this.drivers[i].MoveToTop();
+                        }
                     }
                     domplot.updateLayout();
                 });
@@ -13872,7 +13880,7 @@ var BMA;
                     that.SubscribeToLTLCompactExpand(driver, dom);
                     that.SubscribeToShowLTLRequest(driver, op);
                     that.SubscribeToExpandLTLResult(driver, dom);
-                    dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, opDiv.width(), opDiv.height(), 0, 0.5);
+                    dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);
                     this.controlPanels.push(cp);
                     this.drivers.push(driver);
                 }
