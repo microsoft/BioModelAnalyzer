@@ -135,8 +135,11 @@
 
             var containers = json.Layout.Containers.map(c => new ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY));
             for (var i = 0; i < containers.length; i++) {
-                if (containers[i].Name === undefined || containers[i].Name === "")
-                    containers[i].Name = BMA.Model.GenerateNewContainerName(containers);
+                if (containers[i].Name === undefined || containers[i].Name === "") {
+                    var newContainer = new BMA.Model.ContainerLayout(containers[i].Id, BMA.Model.GenerateNewContainerName(containers),
+                        containers[i].Size, containers[i].PositionX, containers[i].PositionY);
+                    containers[i] = newContainer;
+                }
             }
 
             var layout = new Layout(containers,

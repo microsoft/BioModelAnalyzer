@@ -767,6 +767,34 @@ var BMA;
             };
         }
         ModelHelper.UpdateStatesWithModel = UpdateStatesWithModel;
+        function GenerateStateName(states, newState) {
+            var k = states.length;
+            var lastStateName = "";
+            for (var i = 0; i < k; i++) {
+                var lastStateIdx = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
+                var stateIdx = states[i].Name.length > 1 ? parseFloat(states[i].Name.slice(1)) : 0;
+                if (stateIdx >= lastStateIdx) {
+                    lastStateName = (lastStateName && stateIdx == lastStateIdx
+                        && lastStateName.charAt(0) > states[i].Name.charAt(0)) ?
+                        lastStateName : states[i].Name;
+                }
+            }
+            var newStateName = newState.Name;
+            var newStateIdx = (newStateName && newStateName.length > 1) ? parseFloat(newStateName.slice(1)) : 0;
+            if (lastStateName && lastStateIdx == newStateIdx && lastStateName.charAt(0) > newStateName.charAt(0)) {
+                var charCode = lastStateName ? lastStateName.charCodeAt(0) : 65;
+                var n = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
+                if (charCode >= 90) {
+                    n++;
+                    charCode = 65;
+                }
+                else if (lastStateName)
+                    charCode++;
+                newStateName = n ? String.fromCharCode(charCode) + n : String.fromCharCode(charCode);
+            }
+            return newStateName;
+        }
+        ModelHelper.GenerateStateName = GenerateStateName;
     })(ModelHelper = BMA.ModelHelper || (BMA.ModelHelper = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=ModelHelper.js.map
@@ -2583,8 +2611,10 @@ var BMA;
             var model = new Model.BioModel(json.Model.Name, json.Model.Variables.map(function (v) { return new Model.Variable(v.Id, id[v.Id].ContainerId, id[v.Id].Type, id[v.Id].Name, v.RangeFrom, v.RangeTo, MapVariableNames(v.Formula, function (s) { return id[parseInt(s)].Name; })); }), json.Model.Relationships.map(function (r) { return new Model.Relationship(r.Id, r.FromVariable, r.ToVariable, r.Type); }));
             var containers = json.Layout.Containers.map(function (c) { return new Model.ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY); });
             for (var i = 0; i < containers.length; i++) {
-                if (containers[i].Name === undefined || containers[i].Name === "")
-                    containers[i].Name = BMA.Model.GenerateNewContainerName(containers);
+                if (containers[i].Name === undefined || containers[i].Name === "") {
+                    var newContainer = new BMA.Model.ContainerLayout(containers[i].Id, BMA.Model.GenerateNewContainerName(containers), containers[i].Size, containers[i].PositionX, containers[i].PositionY);
+                    containers[i] = newContainer;
+                }
             }
             var layout = new Model.Layout(containers, json.Layout.Variables.map(function (v) { return new Model.VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle); }));
             return {
@@ -5343,7 +5373,8 @@ var BMA;
                 this.containerEditor = containerEditorDriver;
                 this.contextMenu = contextMenu;
                 this.exportservice = exportservice;
-                this.isVariableEdited = false;
+                that.isVariableEdited = false;
+                that.isContainerEdited = false;
                 svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
                 window.Commands.On('SaveSVG', function () {
                     that.exportservice.Export(that.driver.GetSVG(), appModel.BioModel.Name, 'svg');
@@ -5431,8 +5462,13 @@ var BMA;
                             for (var j = 0; j < model.Relationships.length; j++) {
                                 newRelations.push(new BMA.Model.Relationship(model.Relationships[j].Id, model.Relationships[j].FromVariableId, model.Relationships[j].ToVariableId, model.Relationships[j].Type));
                             }
-                            that.editingModel = new BMA.Model.BioModel(model.Name, newVariables, newRelations);
-                            that.isVariableEdited = true;
+                            if (!(model.Variables[editingVariableIndex].Name === newVariables[editingVariableIndex].Name
+                                && model.Variables[editingVariableIndex].RangeFrom === newVariables[editingVariableIndex].RangeFrom
+                                && model.Variables[editingVariableIndex].RangeTo === newVariables[editingVariableIndex].RangeTo
+                                && model.Variables[editingVariableIndex].Formula === newVariables[editingVariableIndex].Formula)) {
+                                that.editingModel = new BMA.Model.BioModel(model.Name, newVariables, newRelations);
+                                that.isVariableEdited = true;
+                            }
                             that.RefreshOutput(that.editingModel);
                         }
                     }
@@ -5651,6 +5687,7 @@ var BMA;
                 window.Commands.On("DrawingSurfaceVariableEditorOpened", function (args) {
                     _this.containerEditor.Hide();
                     if (that.isVariableEdited) {
+                        that.UpdateFormulasAfterVariableChanged();
                         that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
                         that.editingModel = undefined;
                         that.isVariableEdited = false;
@@ -5664,6 +5701,7 @@ var BMA;
                 window.Commands.On("DrawingSurfaceContainerEditorOpened", function (args) {
                     _this.variableEditor.Hide();
                     if (that.isVariableEdited) {
+                        that.UpdateFormulasAfterVariableChanged();
                         that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
                         that.editingModel = undefined;
                         that.isVariableEdited = false;
@@ -5702,6 +5740,7 @@ var BMA;
                 });
                 variableEditorDriver.SetOnClosingCallback(function () {
                     if (that.isVariableEdited) {
+                        that.UpdateFormulasAfterVariableChanged();
                         that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
                         that.editingModel = undefined;
                         that.isVariableEdited = false;
@@ -5862,6 +5901,53 @@ var BMA;
             };
             DesignSurfacePresenter.prototype.GetCurrentSVG = function (svg) {
                 return $(svg.toSVG()).children();
+            };
+            DesignSurfacePresenter.prototype.UpdateFormulasAfterVariableChanged = function () {
+                var that = this;
+                if (that.editingId !== undefined) {
+                    var model = this.undoRedoPresenter.Current.model;
+                    var variables = model.Variables;
+                    var editingVariableIndex = -1;
+                    for (var i = 0; i < variables.length; i++) {
+                        if (variables[i].Id === that.editingId) {
+                            editingVariableIndex = i;
+                            break;
+                        }
+                    }
+                }
+                if (editingVariableIndex != -1 && that.editingModel) {
+                    if (variables[editingVariableIndex].Name != that.editingModel.Variables[editingVariableIndex].Name) {
+                        var ids = that.FindAllRelationships(that.editingId, that.editingModel.Relationships);
+                        var newVariables = [];
+                        for (var j = 0; j < that.editingModel.Variables.length; j++) {
+                            var oldFormula = that.editingModel.Variables[j].Formula;
+                            var newFormula = undefined;
+                            for (var k = 0; k < ids.length; k++) {
+                                if (that.editingModel.Variables[j].Id == ids[k]) {
+                                    newFormula = oldFormula.replace("var(" + variables[editingVariableIndex].Name + ")", "var(" + that.editingModel.Variables[editingVariableIndex].Name + ")");
+                                    break;
+                                }
+                            }
+                            newVariables.push(new BMA.Model.Variable(that.editingModel.Variables[j].Id, that.editingModel.Variables[j].ContainerId, that.editingModel.Variables[j].Type, that.editingModel.Variables[j].Name, that.editingModel.Variables[j].RangeFrom, that.editingModel.Variables[j].RangeTo, newFormula === undefined ? oldFormula : newFormula));
+                        }
+                        var newRelations = [];
+                        for (var j = 0; j < that.editingModel.Relationships.length; j++) {
+                            newRelations.push(new BMA.Model.Relationship(that.editingModel.Relationships[j].Id, that.editingModel.Relationships[j].FromVariableId, that.editingModel.Relationships[j].ToVariableId, that.editingModel.Relationships[j].Type));
+                        }
+                        that.editingModel = new BMA.Model.BioModel(that.editingModel.Name, newVariables, newRelations);
+                    }
+                }
+            };
+            DesignSurfacePresenter.prototype.FindAllRelationships = function (id, relationships) {
+                var variableIds = [];
+                for (var i = 0; i < relationships.length; i++) {
+                    if (relationships[i].FromVariableId === id)
+                        variableIds.push(relationships[i].ToVariableId);
+                }
+                return variableIds.sort(function (x, y) {
+                    return x < y ? -1 : 1;
+                });
+                ;
             };
             DesignSurfacePresenter.prototype.RemoveVariable = function (id) {
                 if (this.editingId === id) {
@@ -13093,7 +13179,7 @@ var BMA;
                     }
                     if (!exist) {
                         var addedState = newState.Clone();
-                        addedState.Name = String.fromCharCode(65 + result.states.length);
+                        addedState.Name = BMA.ModelHelper.GenerateStateName(currentStates, newState); //String.fromCharCode(65 + result.states.length);
                         result.states.push(addedState);
                         result.map[newState.Name] = addedState.Name;
                     }

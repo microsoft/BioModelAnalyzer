@@ -259,5 +259,37 @@
                 isChanged: isChanged
             };
         }
+
+        export function GenerateStateName(states: BMA.LTLOperations.Keyframe[], newState: BMA.LTLOperations.Keyframe): string {
+            var k = states.length;
+            var lastStateName = "";
+            for (var i = 0; i < k; i++) {
+                var lastStateIdx = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
+                var stateIdx = states[i].Name.length > 1 ? parseFloat(states[i].Name.slice(1)) : 0;
+
+                if (stateIdx >= lastStateIdx) {
+                    lastStateName = (lastStateName && stateIdx == lastStateIdx
+                        && lastStateName.charAt(0) > states[i].Name.charAt(0)) ?
+                        lastStateName : states[i].Name;
+                }
+            }
+
+            var newStateName = newState.Name;
+            var newStateIdx = (newStateName && newStateName.length > 1) ? parseFloat(newStateName.slice(1)) : 0;
+            
+            if (lastStateName && lastStateIdx == newStateIdx && lastStateName.charAt(0) > newStateName.charAt(0)) {
+                
+                var charCode = lastStateName ? lastStateName.charCodeAt(0) : 65;
+                var n = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
+
+                if (charCode >= 90) {
+                    n++;
+                    charCode = 65;
+                } else if (lastStateName) charCode++;
+
+                newStateName = n ? String.fromCharCode(charCode) + n : String.fromCharCode(charCode);
+            }
+            return newStateName;
+        }
     }
 } 
