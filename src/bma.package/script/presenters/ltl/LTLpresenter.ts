@@ -134,6 +134,7 @@
                                 that.appModel.States = merged.states;
                                 that.UpdateOperationStates(op, merged.map);
                                 that.statespresenter.UpdateStatesFromModel();
+                                that.tppresenter.UpdateStatesFromModel();
                                 that.tppresenter.AddOperation(op, args.position);
                             }
 

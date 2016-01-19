@@ -12918,6 +12918,7 @@ var BMA;
                                 that.appModel.States = merged.states;
                                 that.UpdateOperationStates(op, merged.map);
                                 that.statespresenter.UpdateStatesFromModel();
+                                that.tppresenter.UpdateStatesFromModel();
                                 that.tppresenter.AddOperation(op, args.position);
                             }
                         };
@@ -13908,6 +13909,10 @@ var BMA;
                 newOp.RefreshStates(this.appModel.States);
                 this.operations.push(newOp);
                 this.OnOperationsChanged(true);
+            };
+            TemporalPropertiesPresenter.prototype.UpdateStatesFromModel = function () {
+                this.states = this.appModel.States;
+                this.tpEditorDriver.SetStates(this.appModel.States);
             };
             return TemporalPropertiesPresenter;
         })();

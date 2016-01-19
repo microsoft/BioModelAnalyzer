@@ -979,6 +979,11 @@ module BMA {
                 this.operations.push(newOp);
                 this.OnOperationsChanged(true);
             }
+
+            public UpdateStatesFromModel() {
+                this.states = this.appModel.States;
+                this.tpEditorDriver.SetStates(this.appModel.States);
+            }
         }
     }
 } 
