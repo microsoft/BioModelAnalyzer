@@ -9,6 +9,7 @@ module BMA {
             private proofResult: BMA.Model.ProofResult = undefined;
             private states: BMA.LTLOperations.Keyframe[] = [];
             private operations: BMA.LTLOperations.Operation[] = [];
+            private operationAppearances: any[] = [];
 
             public get BioModel(): BMA.Model.BioModel {
                 return this.model;
@@ -52,6 +53,14 @@ module BMA {
                 //TODO: update inner components (ltl)
             }
 
+            public get OperationAppearances(): any[] {
+                return this.operationAppearances;
+            }
+
+            public set OperationAppearances(value: any[]) {
+                this.operationAppearances = value;
+                //TODO: update inner components (ltl)
+            }
 
             public get ProofResult() {
                 return this.proofResult;
@@ -159,11 +168,20 @@ module BMA {
                         this.states = [];
                         this.operations = [];
                     }
+
+                    if (parsed.ltllayout !== undefined) {
+                        if (parsed.ltllayout.operationAppearances !== undefined) {
+                            this.operationAppearances = parsed.ltllayout.operationAppearances;
+                        }
+                    } else {
+                        this.operationAppearances = [];
+                    }
                 } else {
                     this.model = new BMA.Model.BioModel("model 1", [], []);
                     this.layout = new BMA.Model.Layout([], []);
                     this.states = [];
                     this.operations = [];
+                    this.operationAppearances = [];
                 }
 
                 this.proofResult = undefined;
@@ -182,15 +200,23 @@ module BMA {
                 var exported = BMA.Model.ExportModelAndLayout(this.model, this.layout);
                 var ltl = BMA.Model.ExportLTLContents(this.states, this.operations);
                 (<any>exported).ltl = ltl;
+
+                if (this.operationAppearances !== undefined && this.operationAppearances.length > 0 && this.operationAppearances.length === this.operations.length) {
+                    var ltllayout = {
+                        operationAppearances: this.operationAppearances
+                    };
+                    (<any>exported).ltllayout = ltllayout;
+                }
+
                 return JSON.stringify(exported);
             }
 
             constructor() {
                 this.model = new BMA.Model.BioModel("model 1", [], []);
                 this.layout = new BMA.Model.Layout([], []);
-                this.states = [
-                    //new BMA.LTLOperations.Keyframe("Init", [])
-                ];
+                this.states = [];
+                this.operations = [];
+                this.operationAppearances = [];
             }
         }
     }
