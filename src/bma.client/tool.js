@@ -13425,10 +13425,10 @@ var BMA;
                         else {
                             var staginOp = _this.GetOperationAtPoint(gesture.x, gesture.y);
                             if (staginOp !== undefined) {
-                                if (staginOp.AnalysisStatus !== "processing") {
-                                    staginOp.AnalysisStatus = "nottested";
-                                    staginOp.Tag = undefined;
-                                }
+                                //if (staginOp.AnalysisStatus !== "processing") {
+                                //staginOp.AnalysisStatus = "nottested";
+                                //staginOp.Tag = undefined;
+                                //}
                                 that.navigationDriver.TurnNavigation(false);
                                 //Can't drag parts of processing operations
                                 var picked = staginOp.PickOperation(gesture.x, gesture.y);
@@ -13436,6 +13436,10 @@ var BMA;
                                     _this.stagingOperation = undefined;
                                 }
                                 else {
+                                    if (!picked.isRoot) {
+                                        staginOp.AnalysisStatus = "nottested";
+                                        staginOp.Tag = undefined;
+                                    }
                                     tpEditorDriver.SetCopyZoneVisibility(true);
                                     tpEditorDriver.SetDeleteZoneVisibility(true);
                                     var unpinned = staginOp.UnpinOperation(gesture.x, gesture.y);

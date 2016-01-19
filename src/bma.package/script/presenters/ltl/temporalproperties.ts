@@ -404,10 +404,10 @@ module BMA {
                             } else {
                                 var staginOp = this.GetOperationAtPoint(gesture.x, gesture.y);
                                 if (staginOp !== undefined) {
-                                    if (staginOp.AnalysisStatus !== "processing") {
-                                        staginOp.AnalysisStatus = "nottested";
-                                        staginOp.Tag = undefined;
-                                    }
+                                    //if (staginOp.AnalysisStatus !== "processing") {
+                                        //staginOp.AnalysisStatus = "nottested";
+                                        //staginOp.Tag = undefined;
+                                    //}
 
                                     that.navigationDriver.TurnNavigation(false);
 
@@ -417,6 +417,11 @@ module BMA {
                                     if (staginOp.AnalysisStatus === "processing" && picked !== undefined && !picked.isRoot) {
                                         this.stagingOperation = undefined;
                                     } else {
+                                        if (!picked.isRoot) {
+                                            staginOp.AnalysisStatus = "nottested";
+                                            staginOp.Tag = undefined;
+                                        }
+
                                         tpEditorDriver.SetCopyZoneVisibility(true);
                                         tpEditorDriver.SetDeleteZoneVisibility(true);
 
