@@ -697,12 +697,30 @@ module BMA {
                 var appModel = this.appModel;
                 var height = 0;
                 var padding = 5;
+
+                var checkAppearance = appModel.OperationAppearances !== undefined && appModel.OperationAppearances.length > 0 && appModel.OperationAppearances.length === appModel.Operations.length;
+
                 if (appModel.Operations !== undefined && appModel.Operations.length > 0) {
                     for (var i = 0; i < appModel.Operations.length; i++) {
-                        var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVGRef(), appModel.Operations[i], { x: 0, y: 0 });
-                        height += newOp.BoundingBox.height / 2 + padding;
-                        newOp.Position = { x: 0, y: height };
-                        height += newOp.BoundingBox.height / 2 + padding;
+                        var position = { x: 0, y: 0 };
+                        if (checkAppearance) {
+                            var opAppearance = appModel.OperationAppearances[i];
+                            if (opAppearance.x !== undefined) {
+                                position.x = opAppearance.x;
+                            }
+                            if (opAppearance.y !== undefined) {
+                                position.y = opAppearance.y;
+                            }
+                        }
+
+                        var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVGRef(), appModel.Operations[i], position);
+
+                        if (!checkAppearance) {
+                            height += newOp.BoundingBox.height / 2 + padding;
+                            newOp.Position = { x: 0, y: height };
+                            height += newOp.BoundingBox.height / 2 + padding;
+                        }
+
                         this.operations.push(newOp);
                     }
                 }
@@ -962,17 +980,24 @@ module BMA {
 
                 var ops = [];
                 var operations = [];
+                var appearances = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     operations.push(this.operations[i].Operation.Clone());
                     ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus });
+                    appearances.push({
+                        x: this.operations[i].Position.x,
+                        y: this.operations[i].Position.y
+                    });
                 }
 
                 if (updateControls) {
                     this.UpdateControlPanels();
                 }
 
-                if (updateAppModel)
+                if (updateAppModel) {
                     this.appModel.Operations = operations;
+                    this.appModel.OperationAppearances = appearances;
+                }
 
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             }

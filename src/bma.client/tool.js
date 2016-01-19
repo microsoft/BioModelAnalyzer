@@ -2136,9 +2136,12 @@ var BMA;
                 this.proofResult = undefined;
                 this.states = [];
                 this.operations = [];
+                this.operationAppearances = [];
                 this.model = new BMA.Model.BioModel("model 1", [], []);
                 this.layout = new BMA.Model.Layout([], []);
                 this.states = [];
+                this.operations = [];
+                this.operationAppearances = [];
             }
             Object.defineProperty(AppModel.prototype, "BioModel", {
                 get: function () {
@@ -2184,6 +2187,17 @@ var BMA;
                 },
                 set: function (value) {
                     this.operations = value;
+                    //TODO: update inner components (ltl)
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AppModel.prototype, "OperationAppearances", {
+                get: function () {
+                    return this.operationAppearances;
+                },
+                set: function (value) {
+                    this.operationAppearances = value;
                     //TODO: update inner components (ltl)
                 },
                 enumerable: true,
@@ -2265,12 +2279,21 @@ var BMA;
                         this.states = [];
                         this.operations = [];
                     }
+                    if (parsed.ltllayout !== undefined) {
+                        if (parsed.ltllayout.operationAppearances !== undefined) {
+                            this.operationAppearances = parsed.ltllayout.operationAppearances;
+                        }
+                    }
+                    else {
+                        this.operationAppearances = [];
+                    }
                 }
                 else {
                     this.model = new BMA.Model.BioModel("model 1", [], []);
                     this.layout = new BMA.Model.Layout([], []);
                     this.states = [];
                     this.operations = [];
+                    this.operationAppearances = [];
                 }
                 this.proofResult = undefined;
                 window.Commands.Execute("ModelReset", undefined);
@@ -2284,6 +2307,12 @@ var BMA;
                 var exported = BMA.Model.ExportModelAndLayout(this.model, this.layout);
                 var ltl = BMA.Model.ExportLTLContents(this.states, this.operations);
                 exported.ltl = ltl;
+                if (this.operationAppearances !== undefined && this.operationAppearances.length > 0 && this.operationAppearances.length === this.operations.length) {
+                    var ltllayout = {
+                        operationAppearances: this.operationAppearances
+                    };
+                    exported.ltllayout = ltllayout;
+                }
                 return JSON.stringify(exported);
             };
             return AppModel;
@@ -13679,12 +13708,25 @@ var BMA;
                 var appModel = this.appModel;
                 var height = 0;
                 var padding = 5;
+                var checkAppearance = appModel.OperationAppearances !== undefined && appModel.OperationAppearances.length > 0 && appModel.OperationAppearances.length === appModel.Operations.length;
                 if (appModel.Operations !== undefined && appModel.Operations.length > 0) {
                     for (var i = 0; i < appModel.Operations.length; i++) {
-                        var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVGRef(), appModel.Operations[i], { x: 0, y: 0 });
-                        height += newOp.BoundingBox.height / 2 + padding;
-                        newOp.Position = { x: 0, y: height };
-                        height += newOp.BoundingBox.height / 2 + padding;
+                        var position = { x: 0, y: 0 };
+                        if (checkAppearance) {
+                            var opAppearance = appModel.OperationAppearances[i];
+                            if (opAppearance.x !== undefined) {
+                                position.x = opAppearance.x;
+                            }
+                            if (opAppearance.y !== undefined) {
+                                position.y = opAppearance.y;
+                            }
+                        }
+                        var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVGRef(), appModel.Operations[i], position);
+                        if (!checkAppearance) {
+                            height += newOp.BoundingBox.height / 2 + padding;
+                            newOp.Position = { x: 0, y: height };
+                            height += newOp.BoundingBox.height / 2 + padding;
+                        }
                         this.operations.push(newOp);
                     }
                 }
@@ -13896,15 +13938,22 @@ var BMA;
                 var that = this;
                 var ops = [];
                 var operations = [];
+                var appearances = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     operations.push(this.operations[i].Operation.Clone());
                     ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus });
+                    appearances.push({
+                        x: this.operations[i].Position.x,
+                        y: this.operations[i].Position.y
+                    });
                 }
                 if (updateControls) {
                     this.UpdateControlPanels();
                 }
-                if (updateAppModel)
+                if (updateAppModel) {
                     this.appModel.Operations = operations;
+                    this.appModel.OperationAppearances = appearances;
+                }
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             };
             TemporalPropertiesPresenter.prototype.AddOperation = function (operation, position) {
