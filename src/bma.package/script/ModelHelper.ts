@@ -260,6 +260,75 @@
             };
         }
 
+        export function UpdateFormulasAfterVariableChanged(variableId: number, oldModel: BMA.Model.BioModel, newModel: BMA.Model.BioModel) {
+
+            if (variableId !== undefined) {
+                var variables = oldModel.Variables;
+                var editingVariableIndex = -1;
+                for (var i = 0; i < variables.length; i++) {
+                    if (variables[i].Id === variableId) {
+                        editingVariableIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            if (editingVariableIndex != -1 && newModel) {
+                var oldName = variables[editingVariableIndex].Name;
+                var newName = newModel.Variables[editingVariableIndex].Name
+                if (oldName != newName) {
+                    var ids = BMA.ModelHelper.FindAllRelationships(variableId, newModel.Relationships);
+
+                    var newVariables = [];
+                    for (var j = 0; j < newModel.Variables.length; j++) {
+                        var variable = newModel.Variables[j];
+                        var oldFormula = variable.Formula;
+                        var newFormula = undefined;
+                        for (var k = 0; k < ids.length; k++) {
+                            if (variable.Id == ids[k]) {
+                                newFormula = oldFormula.replace("var(" + oldName + ")",
+                                    "var(" + newName + ")");
+                                break;
+                            }
+                        }
+                        newVariables.push(new BMA.Model.Variable(
+                            variable.Id,
+                            variable.ContainerId,
+                            variable.Type,
+                            variable.Name,
+                            variable.RangeFrom,
+                            variable.RangeTo,
+                            newFormula === undefined ? oldFormula : newFormula)
+                        );
+                    }
+
+                    var newRelations = [];
+                    for (var j = 0; j < newModel.Relationships.length; j++) {
+                        newRelations.push(new BMA.Model.Relationship(
+                            newModel.Relationships[j].Id,
+                            newModel.Relationships[j].FromVariableId,
+                            newModel.Relationships[j].ToVariableId,
+                            newModel.Relationships[j].Type)
+                        );
+                    }
+                    newModel = new BMA.Model.BioModel(newModel.Name, newVariables, newRelations);
+                }
+            }
+
+            return newModel;
+        }
+
+        export function FindAllRelationships(id: number, relationships: BMA.Model.Relationship[]) {
+            var variableIds = [];
+            for (var i = 0; i < relationships.length; i++) {
+                if (relationships[i].FromVariableId === id)
+                    variableIds.push(relationships[i].ToVariableId)
+            }
+            return variableIds.sort((x, y) => {
+                return x < y ? -1 : 1;
+            });;
+        }
+
         export function GenerateStateName(states: BMA.LTLOperations.Keyframe[], newState: BMA.LTLOperations.Keyframe): string {
             var k = states.length;
             var lastStateName = "";
