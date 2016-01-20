@@ -262,7 +262,7 @@
 
         export function UpdateFormulasAfterVariableChanged(variableId: number, oldModel: BMA.Model.BioModel, newModel: BMA.Model.BioModel) {
 
-            if (variableId !== undefined) {
+            if (variableId !== undefined && newModel) {
                 var variables = oldModel.Variables;
                 var editingVariableIndex = -1;
                 for (var i = 0; i < variables.length; i++) {
@@ -271,14 +271,57 @@
                         break;
                     }
                 }
-            }
+                
+                var editedVariableIndex = -1;
+                for (var j = 0; j < newModel.Variables.length; j++) {
+                    if (newModel.Variables[j].Id === variableId) {
+                        editedVariableIndex = j;
+                        break;
+                    }
+                }
+                
+                if (editingVariableIndex != -1 && editedVariableIndex != -1) {
+                    var oldName = variables[editingVariableIndex].Name;
+                    var newName = newModel.Variables[editedVariableIndex].Name
+                    if (oldName != newName) {
+                        var ids = BMA.ModelHelper.FindAllRelationships(variableId, newModel.Relationships);
+                        var newVariables = [];
+                        for (var j = 0; j < newModel.Variables.length; j++) {
+                            var variable = newModel.Variables[j];
+                            var oldFormula = variable.Formula;
+                            var newFormula = undefined;
+                            for (var k = 0; k < ids.length; k++) {
+                                if (variable.Id == ids[k]) {
+                                    newFormula = oldFormula.replace(new RegExp("var\\(" + oldName + "\\)", 'g'),
+                                        "var(" + newName + ")");
+                                    break;
+                                }
+                            }
+                            newVariables.push(new BMA.Model.Variable(
+                                variable.Id,
+                                variable.ContainerId,
+                                variable.Type,
+                                variable.Name,
+                                variable.RangeFrom,
+                                variable.RangeTo,
+                                newFormula === undefined ? oldFormula : newFormula)
+                            );
+                        }
 
-            if (editingVariableIndex != -1 && newModel) {
-                var oldName = variables[editingVariableIndex].Name;
-                var newName = newModel.Variables[editingVariableIndex].Name
-                if (oldName != newName) {
-                    var ids = BMA.ModelHelper.FindAllRelationships(variableId, newModel.Relationships);
-
+                        var newRelations = [];
+                        for (var j = 0; j < newModel.Relationships.length; j++) {
+                            newRelations.push(new BMA.Model.Relationship(
+                                newModel.Relationships[j].Id,
+                                newModel.Relationships[j].FromVariableId,
+                                newModel.Relationships[j].ToVariableId,
+                                newModel.Relationships[j].Type)
+                            );
+                        }
+                        newModel = new BMA.Model.BioModel(newModel.Name, newVariables, newRelations);
+                    }
+                } else if (editingVariableIndex != -1) {
+                    var oldName = variables[editingVariableIndex].Name;
+                    var ids = BMA.ModelHelper.FindAllRelationships(variableId, oldModel.Relationships);
                     var newVariables = [];
                     for (var j = 0; j < newModel.Variables.length; j++) {
                         var variable = newModel.Variables[j];
@@ -286,8 +329,7 @@
                         var newFormula = undefined;
                         for (var k = 0; k < ids.length; k++) {
                             if (variable.Id == ids[k]) {
-                                newFormula = oldFormula.replace("var(" + oldName + ")",
-                                    "var(" + newName + ")");
+                                newFormula = oldFormula.replace(new RegExp("var\\(" + oldName + "\\)", 'g'), "");
                                 break;
                             }
                         }
@@ -301,7 +343,6 @@
                             newFormula === undefined ? oldFormula : newFormula)
                         );
                     }
-
                     var newRelations = [];
                     for (var j = 0; j < newModel.Relationships.length; j++) {
                         newRelations.push(new BMA.Model.Relationship(

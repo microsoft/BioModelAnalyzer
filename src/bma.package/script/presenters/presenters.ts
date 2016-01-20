@@ -777,6 +777,7 @@ module BMA {
 
                 if (wasRemoved === true) {
                     var newmodel = new BMA.Model.BioModel(model.Name, newVars, newRels);
+                    newmodel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(id, model, newmodel);
                     var newlayout = new BMA.Model.Layout(layout.Containers, newVarLs);
                     this.undoRedoPresenter.Dup(newmodel, newlayout);
                 }
