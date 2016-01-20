@@ -8859,9 +8859,9 @@ var BMA;
             //Subject that converts input mouse events into Pan gestures 
             var createPanSubject = function (vc) {
                 var _doc = $(document);
-                var mouseDown = vc.onAsObservable("mousedown");
-                var mouseMove = vc.onAsObservable("mousemove");
-                var mouseUp = _doc.onAsObservable("mouseup");
+                var mouseDown = Rx.Observable.fromEvent(vc, "mousedown");
+                var mouseMove = Rx.Observable.fromEvent(vc, "mousemove");
+                var mouseUp = Rx.Observable.fromEvent(_doc, "mouseup");
                 var stopPanning = mouseUp;
                 var mouseDrags = mouseDown.selectMany(function (md) {
                     var cs = svgPlot.getScreenToDataTransform();
@@ -8874,10 +8874,10 @@ var BMA;
                         return { x0: x0, y0: y0, x1: x1, y1: y1 };
                     }).takeUntil(stopPanning);
                 });
-                var touchStart = vc.onAsObservable("touchstart");
-                var touchMove = vc.onAsObservable("touchmove");
-                var touchEnd = _doc.onAsObservable("touchend");
-                var touchCancel = _doc.onAsObservable("touchcancel");
+                var touchStart = Rx.Observable.fromEvent(vc, "touchstart");
+                var touchMove = Rx.Observable.fromEvent(vc, "touchmove");
+                var touchEnd = Rx.Observable.fromEvent(_doc, "touchend");
+                var touchCancel = Rx.Observable.fromEvent(_doc, "touchcancel");
                 var gestures = touchStart.selectMany(function (md) {
                     var cs = svgPlot.getScreenToDataTransform();
                     var x0 = cs.screenToDataX(md.originalEvent.pageX - plotDiv.offset().left);
@@ -8892,11 +8892,11 @@ var BMA;
             };
             var createDragStartSubject = function (vc) {
                 var _doc = $(document);
-                var mousedown = vc.onAsObservable("mousedown").where(function (md) {
+                var mousedown = Rx.Observable.fromEvent(vc, "mousedown").where(function (md) {
                     return md.button === 0;
                 });
-                var mouseMove = vc.onAsObservable("mousemove");
-                var mouseUp = _doc.onAsObservable("mouseup");
+                var mouseMove = Rx.Observable.fromEvent(vc, "mousemove");
+                var mouseUp = Rx.Observable.fromEvent(_doc, "mouseup");
                 var stopPanning = mouseUp;
                 var dragStarts = mousedown.selectMany(function (md) {
                     var cs = svgPlot.getScreenToDataTransform();
@@ -8904,10 +8904,10 @@ var BMA;
                     var y0 = -cs.screenToDataY(md.pageY - plotDiv.offset().top);
                     return mouseMove.select(function (mm) { return { x: x0, y: y0 }; }).first().takeUntil(mouseUp);
                 });
-                var touchStart = vc.onAsObservable("touchstart");
-                var touchMove = vc.onAsObservable("touchmove");
-                var touchEnd = _doc.onAsObservable("touchend");
-                var touchCancel = _doc.onAsObservable("touchcancel");
+                var touchStart = Rx.Observable.fromEvent(vc, "touchstart");
+                var touchMove = Rx.Observable.fromEvent(vc, "touchmove");
+                var touchEnd = Rx.Observable.fromEvent(_doc, "touchend");
+                var touchCancel = Rx.Observable.fromEvent(_doc, "touchcancel");
                 var touchDragStarts = touchStart.selectMany(function (md) {
                     var cs = svgPlot.getScreenToDataTransform();
                     var x0 = cs.screenToDataX(md.originalEvent.pageX - plotDiv.offset().left);
@@ -8918,11 +8918,11 @@ var BMA;
             };
             var createDragEndSubject = function (vc) {
                 var _doc = $(document);
-                var mousedown = that._plot.centralPart.onAsObservable("mousedown");
-                var mouseMove = vc.onAsObservable("mousemove");
-                var mouseUp = _doc.onAsObservable("mouseup");
-                var touchEnd = _doc.onAsObservable("touchend");
-                var touchCancel = _doc.onAsObservable("touchcancel");
+                var mousedown = Rx.Observable.fromEvent(that._plot.centralPart, "mousedown");
+                var mouseMove = Rx.Observable.fromEvent(vc, "mousemove");
+                var mouseUp = Rx.Observable.fromEvent(_doc, "mouseup");
+                var touchEnd = Rx.Observable.fromEvent(_doc, "touchend");
+                var touchCancel = Rx.Observable.fromEvent(_doc, "touchcancel");
                 var stopPanning = mouseUp.merge(touchEnd).merge(touchCancel);
                 var dragEndings = stopPanning; //.takeWhile(mouseMove);
                 return dragEndings;
@@ -8938,7 +8938,7 @@ var BMA;
             this._dragService.dragEnd.subscribe(function () {
                 svgPlotDiv2.css("z-index", '');
             });
-            this._mouseMoves = that._plot.centralPart.onAsObservable("mousemove").select(function (mm) {
+            this._mouseMoves = Rx.Observable.fromEvent(that._plot.centralPart, "mousemove").select(function (mm) {
                 var cs = svgPlot.getScreenToDataTransform();
                 var x0 = cs.screenToDataX(mm.originalEvent.pageX - plotDiv.offset().left);
                 var y0 = -cs.screenToDataY(mm.originalEvent.pageY - plotDiv.offset().top);

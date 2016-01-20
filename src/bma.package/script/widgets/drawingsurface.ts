@@ -2,7 +2,6 @@
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 declare var BMAExt: any;
 declare var InteractiveDataDisplay: any;
-declare var Rx: any;
 
 (function ($) {
     $.widget("BMA.drawingsurface", {
@@ -178,9 +177,9 @@ declare var Rx: any;
 
                 var _doc = $(document);
 
-                var mouseDown = vc.onAsObservable("mousedown");
-                var mouseMove = vc.onAsObservable("mousemove");
-                var mouseUp = _doc.onAsObservable("mouseup");
+                var mouseDown = Rx.Observable.fromEvent<any>(vc, "mousedown");
+                var mouseMove = Rx.Observable.fromEvent<any>(vc, "mousemove");
+                var mouseUp = Rx.Observable.fromEvent<any>(_doc, "mouseup");
 
                 var stopPanning = mouseUp;
 
@@ -200,10 +199,10 @@ declare var Rx: any;
                 });
 
 
-                var touchStart = vc.onAsObservable("touchstart");
-                var touchMove = vc.onAsObservable("touchmove");
-                var touchEnd = _doc.onAsObservable("touchend");
-                var touchCancel = _doc.onAsObservable("touchcancel");
+                var touchStart = Rx.Observable.fromEvent<any>(vc, "touchstart");
+                var touchMove = Rx.Observable.fromEvent<any>(vc, "touchmove");
+                var touchEnd = Rx.Observable.fromEvent<any>(_doc, "touchend");
+                var touchCancel = Rx.Observable.fromEvent<any>(_doc, "touchcancel");
 
                 var gestures = touchStart.selectMany(function (md) {
                     var cs = svgPlot.getScreenToDataTransform();
@@ -223,11 +222,11 @@ declare var Rx: any;
 
             var createDragStartSubject = function (vc) {
                 var _doc = $(document);
-                var mousedown = vc.onAsObservable("mousedown").where(function (md) {
+                var mousedown = Rx.Observable.fromEvent<any>(vc, "mousedown").where(function (md) {
                     return md.button === 0;
                 });
-                var mouseMove = vc.onAsObservable("mousemove");
-                var mouseUp = _doc.onAsObservable("mouseup");
+                var mouseMove = Rx.Observable.fromEvent<any>(vc, "mousemove");
+                var mouseUp = Rx.Observable.fromEvent<any>(_doc, "mouseup");
 
                 var stopPanning = mouseUp;
 
@@ -240,10 +239,10 @@ declare var Rx: any;
                 });
 
 
-                var touchStart = vc.onAsObservable("touchstart");
-                var touchMove = vc.onAsObservable("touchmove");
-                var touchEnd = _doc.onAsObservable("touchend");
-                var touchCancel = _doc.onAsObservable("touchcancel");
+                var touchStart = Rx.Observable.fromEvent<any>(vc, "touchstart");
+                var touchMove = Rx.Observable.fromEvent<any>(vc, "touchmove");
+                var touchEnd = Rx.Observable.fromEvent<any>(_doc, "touchend");
+                var touchCancel = Rx.Observable.fromEvent<any>(_doc, "touchcancel");
 
                 var touchDragStarts = touchStart.selectMany(function (md) {
                     var cs = svgPlot.getScreenToDataTransform();
@@ -258,12 +257,12 @@ declare var Rx: any;
 
             var createDragEndSubject = function (vc) {
                 var _doc = $(document);
-                var mousedown = that._plot.centralPart.onAsObservable("mousedown");
-                var mouseMove = vc.onAsObservable("mousemove");
-                var mouseUp = _doc.onAsObservable("mouseup");
+                var mousedown = Rx.Observable.fromEvent<any>(that._plot.centralPart, "mousedown");
+                var mouseMove = Rx.Observable.fromEvent<any>(vc, "mousemove");
+                var mouseUp = Rx.Observable.fromEvent<any>(_doc, "mouseup");
 
-                var touchEnd = _doc.onAsObservable("touchend");
-                var touchCancel = _doc.onAsObservable("touchcancel");
+                var touchEnd = Rx.Observable.fromEvent<any>(_doc, "touchend");
+                var touchCancel = Rx.Observable.fromEvent<any>(_doc, "touchcancel");
 
                 var stopPanning = mouseUp.merge(touchEnd).merge(touchCancel);
 
@@ -287,7 +286,7 @@ declare var Rx: any;
             });
 
 
-            this._mouseMoves = that._plot.centralPart.onAsObservable("mousemove").select(function (mm) {
+            this._mouseMoves = Rx.Observable.fromEvent<any>(that._plot.centralPart, "mousemove").select(function (mm) {
 
                 var cs = svgPlot.getScreenToDataTransform();
                 var x0 = cs.screenToDataX(mm.originalEvent.pageX - plotDiv.offset().left);
