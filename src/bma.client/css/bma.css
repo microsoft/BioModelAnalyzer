@@ -4085,7 +4085,7 @@ ui-icon-arrowthickstop-1-n {
 }
 .LTL-state table tr td.variable .state-container-image {
   display: inline-block;
-  background: url("../images/state-container.svg") no-repeat;
+  background: url("../images/container.svg") no-repeat;
   background-size: 20px 20px;
   width: 20px;
   height: 20px;
