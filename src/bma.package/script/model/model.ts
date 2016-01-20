@@ -154,7 +154,8 @@ module BMA {
                     if (parsed.ltl !== undefined) {
                         var ltl = BMA.Model.ImportLTLContents(parsed.ltl);
                         if (ltl.states !== undefined) {
-                            this.states = ltl.states;
+                            var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, ltl.states);
+                            this.states = statesChanged.states;
                         } else {
                             this.states = [];
                         }
@@ -210,6 +211,7 @@ module BMA {
 
                 return JSON.stringify(exported);
             }
+   
 
             constructor() {
                 this.model = new BMA.Model.BioModel("model 1", [], []);

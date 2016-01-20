@@ -730,7 +730,7 @@ var BMA;
                     }
                     if (variable instanceof BMA.LTLOperations.NameOperand) {
                         var variableId = variable.Id;
-                        if (variableId === undefined) {
+                        if (variableId === undefined || !model.GetVariableById(variableId)) {
                             var id = model.GetIdByName(variable.Name);
                             if (id.length == 0) {
                                 isActual = false;
@@ -2350,7 +2350,8 @@ var BMA;
                     if (parsed.ltl !== undefined) {
                         var ltl = BMA.Model.ImportLTLContents(parsed.ltl);
                         if (ltl.states !== undefined) {
-                            this.states = ltl.states;
+                            var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, ltl.states);
+                            this.states = statesChanged.states;
                         }
                         else {
                             this.states = [];
@@ -2681,6 +2682,8 @@ var BMA;
                     _type: "NameOperand",
                     name: nameOp.Name
                 };
+                if (nameOp.Id !== undefined)
+                    result.id = nameOp.Id;
                 return result;
             }
             else if (state instanceof BMA.LTLOperations.ConstOperand) {
@@ -2828,7 +2831,7 @@ var BMA;
                 throw "Invalid LTL Operand";
             switch (obj._type) {
                 case "NameOperand":
-                    return new BMA.LTLOperations.NameOperand(obj.name);
+                    return new BMA.LTLOperations.NameOperand(obj.name, obj.id);
                     break;
                 case "ConstOperand":
                     return new BMA.LTLOperations.ConstOperand(obj.const);
@@ -2854,7 +2857,7 @@ var BMA;
                             if (state && state.Name === obj.name)
                                 return state.Clone();
                         }
-                        throw "No suitable states found";
+                        throw "No suitable states found"; //TODO: replace this by editing empty operation
                     }
                     else {
                         var operands = [];

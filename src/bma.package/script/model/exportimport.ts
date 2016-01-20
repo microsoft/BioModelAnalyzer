@@ -160,6 +160,7 @@
                     _type: "NameOperand",
                     name: nameOp.Name
                 };
+                if (nameOp.Id !== undefined) result.id = nameOp.Id;
                 return result;
             } else if (state instanceof BMA.LTLOperations.ConstOperand) {
                 var constOp = <BMA.LTLOperations.ConstOperand>state;
@@ -315,7 +316,7 @@
 
             switch (obj._type) {
                 case "NameOperand":
-                    return new BMA.LTLOperations.NameOperand(obj.name);
+                    return new BMA.LTLOperations.NameOperand(obj.name, obj.id);
                     break;
                 case "ConstOperand":
                     return new BMA.LTLOperations.ConstOperand(obj.const);
@@ -342,7 +343,7 @@
                                 return state.Clone();
                         }
 
-                        throw "No suitable states found";
+                        throw "No suitable states found";//TODO: replace this by editing empty operation
                     } else {
 
                         var operands = [];

@@ -221,7 +221,7 @@
                     }
                     if (variable instanceof BMA.LTLOperations.NameOperand) {
                         var variableId = variable.Id;
-                        if (variableId === undefined) {
+                        if (variableId === undefined || !model.GetVariableById(variableId)) {
                             var id = model.GetIdByName(variable.Name);
                             if (id.length == 0) {
                                 isActual = false;
