@@ -3949,6 +3949,9 @@ var BMA;
             SVGPlotDriver.prototype.GetNavigationSurface = function () {
                 return this.svgPlotDiv.drawingsurface("getCentralPart");
             };
+            SVGPlotDriver.prototype.SetConstraintFunc = function (f) {
+                this.svgPlotDiv.drawingsurface("setConstraint", f);
+            };
             return SVGPlotDriver;
         })();
         UIDrivers.SVGPlotDriver = SVGPlotDriver;
@@ -8963,6 +8966,9 @@ var BMA;
         updateLayout: function () {
             this._plot.updateLayout();
             this._domPlot.updateLayout();
+        },
+        setConstraint: function (constraint) {
+            this._plot.visibleRectConstraint = constraint;
         }
     });
 }(jQuery));
@@ -13165,6 +13171,12 @@ var BMA;
                 };
                 this.states = [];
                 this.isInitialized = false;
+                this.plotConstraints = {
+                    minWidth: 400,
+                    minHeight: 200,
+                    maxWidth: Number.POSITIVE_INFINITY,
+                    maxHeight: Number.POSITIVE_INFINITY
+                };
                 this.drivers = [];
                 var that = this;
                 this.appModel = appModel;
@@ -13181,6 +13193,38 @@ var BMA;
                 var contextMenu = tpEditorDriver.GetContextMenuDriver();
                 tpEditorDriver.SetCopyZoneVisibility(false);
                 tpEditorDriver.SetDeleteZoneVisibility(false);
+                tpEditorDriver.GetSVGDriver().SetConstraintFunc(function (plotRect) {
+                    var resultPR = { x: 0, y: 0, width: 0, height: 0 };
+                    var center = {
+                        x: plotRect.x + plotRect.width / 2,
+                        y: plotRect.y + plotRect.height / 2
+                    };
+                    if (plotRect.width < that.plotConstraints.minWidth) {
+                        resultPR.x = center.x - that.plotConstraints.minWidth / 2;
+                        resultPR.width = that.plotConstraints.minWidth;
+                    }
+                    else if (plotRect.width > that.plotConstraints.maxWidth) {
+                        resultPR.x = center.x - that.plotConstraints.maxWidth / 2;
+                        resultPR.width = that.plotConstraints.maxWidth;
+                    }
+                    else {
+                        resultPR.x = plotRect.x;
+                        resultPR.width = plotRect.width;
+                    }
+                    if (plotRect.height < that.plotConstraints.minHeight) {
+                        resultPR.y = center.y - that.plotConstraints.minHeight / 2;
+                        resultPR.height = that.plotConstraints.minHeight;
+                    }
+                    else if (plotRect.height > that.plotConstraints.maxHeight) {
+                        resultPR.y = center.y - that.plotConstraints.maxHeight / 2;
+                        resultPR.height = that.plotConstraints.maxHeight;
+                    }
+                    else {
+                        resultPR.y = plotRect.y;
+                        resultPR.height = plotRect.height;
+                    }
+                    return resultPR;
+                });
                 commands.On("AddOperatorSelect", function (operatorName) {
                     that.elementToAdd = { type: "operator", name: operatorName };
                 });

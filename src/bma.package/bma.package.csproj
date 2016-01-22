@@ -69,8 +69,6 @@
     <Content Include="js\jquery.svgdom.min.js" />
     <Content Include="js\jquery.ui-contextmenu.js" />
     <Content Include="js\jquery.ui-contextmenu.min.js" />
-    <Content Include="js\rx.jQuery.js" />
-    <Content Include="js\rx.js" />
     <Content Include="js\wl.js" />
     <Content Include="package.json" />
     <Content Include="Chutzpah.json" />

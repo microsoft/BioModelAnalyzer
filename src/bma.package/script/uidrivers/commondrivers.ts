@@ -95,6 +95,10 @@ module BMA {
             public GetNavigationSurface() {
                 return this.svgPlotDiv.drawingsurface("getCentralPart");
             }
+
+            public SetConstraintFunc(f: Function) {
+                this.svgPlotDiv.drawingsurface("setConstraint", f);
+            }
         }
 
         export class TurnableButtonDriver implements ITurnableButton {

@@ -57,6 +57,13 @@ module BMA {
 
             private isInitialized = false;
 
+            private plotConstraints = {
+                minWidth: 400,
+                minHeight: 200,
+                maxWidth: Number.POSITIVE_INFINITY,
+                maxHeight: Number.POSITIVE_INFINITY
+            };
+
             constructor(
                 commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
@@ -82,6 +89,40 @@ module BMA {
 
                 tpEditorDriver.SetCopyZoneVisibility(false);
                 tpEditorDriver.SetDeleteZoneVisibility(false);
+
+                
+                tpEditorDriver.GetSVGDriver().SetConstraintFunc((plotRect) => {
+                    var resultPR = { x: 0, y: 0, width: 0, height: 0 };
+                    var center = {
+                        x: plotRect.x + plotRect.width / 2,
+                        y: plotRect.y + plotRect.height / 2
+                    }
+
+                    if (plotRect.width < that.plotConstraints.minWidth) {
+                        resultPR.x = center.x - that.plotConstraints.minWidth / 2;
+                        resultPR.width = that.plotConstraints.minWidth;
+                    } else if (plotRect.width > that.plotConstraints.maxWidth) {
+                        resultPR.x = center.x - that.plotConstraints.maxWidth / 2;
+                        resultPR.width = that.plotConstraints.maxWidth;
+                    } else {
+                        resultPR.x = plotRect.x;
+                        resultPR.width = plotRect.width;
+                    }
+
+                    if (plotRect.height < that.plotConstraints.minHeight) {
+                        resultPR.y = center.y - that.plotConstraints.minHeight / 2;
+                        resultPR.height = that.plotConstraints.minHeight;
+                    } else if (plotRect.height > that.plotConstraints.maxHeight) {
+                        resultPR.y = center.y - that.plotConstraints.maxHeight / 2;
+                        resultPR.height = that.plotConstraints.maxHeight;
+                    } else {
+                        resultPR.y = plotRect.y;
+                        resultPR.height = plotRect.height;
+                    }
+
+                    return resultPR;
+                });
+                
 
                 commands.On("AddOperatorSelect", (operatorName: string) => {
                     that.elementToAdd = { type: "operator", name: operatorName };

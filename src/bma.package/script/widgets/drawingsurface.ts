@@ -548,6 +548,10 @@ declare var InteractiveDataDisplay: any;
         updateLayout: function () {
             this._plot.updateLayout();
             this._domPlot.updateLayout();
+        },
+
+        setConstraint: function (constraint) {
+            this._plot.visibleRectConstraint = constraint;
         }
 
     });

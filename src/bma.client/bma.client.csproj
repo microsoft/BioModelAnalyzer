@@ -346,8 +346,6 @@
     <Content Include="js\jquery.svg.js" />
     <Content Include="js\jquery.svg.min.js" />
     <Content Include="js\jquery.svgdom.min.js" />
-    <Content Include="js\rx.jQuery.js" />
-    <Content Include="js\rx.js" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\rx.aggregates.d.ts" />

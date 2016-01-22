@@ -93,6 +93,11 @@ module BMA {
                 return undefined;
             }
             
+
+            public SetConstraintFunc(f: Function) {
+                //nothing to do here
+            }
+
             //private svg: SVGElement[];
 
             //public get SVGs() {

@@ -17,6 +17,7 @@ module BMA {
             GetSVG(): string;
             GetSVGRef(): any;
             GetLightSVGRef(): any;
+            SetConstraintFunc(constraint: Function);
         }
 
         export interface IHider {
