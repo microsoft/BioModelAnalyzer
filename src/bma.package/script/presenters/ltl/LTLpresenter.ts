@@ -221,7 +221,7 @@
                     }
                     if (!exist) {
                         var addedState = newState.Clone();
-                        addedState.Name = String.fromCharCode(65 + result.states.length);
+                        addedState.Name = BMA.ModelHelper.GenerateStateName(currentStates, newState);//String.fromCharCode(65 + result.states.length);
                         result.states.push(addedState); 
                         result.map[newState.Name] = addedState.Name;
                     }

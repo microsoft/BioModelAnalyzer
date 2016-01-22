@@ -135,8 +135,11 @@
 
             var containers = json.Layout.Containers.map(c => new ContainerLayout(c.Id, c.Name, c.Size, c.PositionX, c.PositionY));
             for (var i = 0; i < containers.length; i++) {
-                if (containers[i].Name === undefined || containers[i].Name === "")
-                    containers[i].Name = BMA.Model.GenerateNewContainerName(containers);
+                if (containers[i].Name === undefined || containers[i].Name === "") {
+                    var newContainer = new BMA.Model.ContainerLayout(containers[i].Id, BMA.Model.GenerateNewContainerName(containers),
+                        containers[i].Size, containers[i].PositionX, containers[i].PositionY);
+                    containers[i] = newContainer;
+                }
             }
 
             var layout = new Layout(containers,
@@ -157,6 +160,7 @@
                     _type: "NameOperand",
                     name: nameOp.Name
                 };
+                if (nameOp.Id !== undefined) result.id = nameOp.Id;
                 return result;
             } else if (state instanceof BMA.LTLOperations.ConstOperand) {
                 var constOp = <BMA.LTLOperations.ConstOperand>state;
@@ -312,7 +316,7 @@
 
             switch (obj._type) {
                 case "NameOperand":
-                    return new BMA.LTLOperations.NameOperand(obj.name);
+                    return new BMA.LTLOperations.NameOperand(obj.name, obj.id);
                     break;
                 case "ConstOperand":
                     return new BMA.LTLOperations.ConstOperand(obj.const);
@@ -338,8 +342,8 @@
                             if (state && state.Name === obj.name)
                                 return state.Clone();
                         }
-
-                        throw "No suitable states found";
+                        alert(state.Name);
+                        throw "No suitable states found";//TODO: replace this by editing empty operation
                     } else {
 
                         var operands = [];

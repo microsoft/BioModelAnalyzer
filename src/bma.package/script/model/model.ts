@@ -31,6 +31,7 @@ module BMA {
 
             public set Layout(value: BMA.Model.Layout) {
                 this.layout = value;
+                window.Commands.Execute("AppModelChanged", {});
                 //TODO: update inner components (analytics)
             }
 
@@ -153,7 +154,8 @@ module BMA {
                     if (parsed.ltl !== undefined) {
                         var ltl = BMA.Model.ImportLTLContents(parsed.ltl);
                         if (ltl.states !== undefined) {
-                            this.states = ltl.states;
+                            var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, ltl.states);
+                            this.states = statesChanged.states;
                         } else {
                             this.states = [];
                         }
@@ -190,6 +192,8 @@ module BMA {
             public Reset(model: BMA.Model.BioModel, layout: BMA.Model.Layout) {
                 this.model = model;
                 this.layout = layout;
+                var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
+                if (statesChanged.isChanged) this.states = statesChanged.states;
                 window.Commands.Execute("ModelReset", undefined);
             }
 
@@ -207,6 +211,7 @@ module BMA {
 
                 return JSON.stringify(exported);
             }
+   
 
             constructor() {
                 this.model = new BMA.Model.BioModel("model 1", [], []);

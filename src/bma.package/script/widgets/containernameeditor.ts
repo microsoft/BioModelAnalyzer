@@ -5,7 +5,8 @@
 (function ($) {
     $.widget("BMA.containernameeditor", {
         options: {
-            name: "name"
+            name: "name",
+            oneditorclosing: undefined
         },
         
         _create: function () {
@@ -14,6 +15,9 @@
             var closing = $('<img src="../../images/close.png">').appendTo(closediv);
             closing.bind("click", function () {
                 that.element.hide();
+                if (that.options.oneditorclosing !== undefined) {
+                    that.options.oneditorclosing();
+                }
             });
             this.element
                 .addClass("container-name")

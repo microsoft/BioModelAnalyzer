@@ -221,7 +221,7 @@
                     }
                     if (variable instanceof BMA.LTLOperations.NameOperand) {
                         var variableId = variable.Id;
-                        if (variableId === undefined) {
+                        if (variableId === undefined || !model.GetVariableById(variableId)) {
                             var id = model.GetIdByName(variable.Name);
                             if (id.length == 0) {
                                 isActual = false;
@@ -258,6 +258,148 @@
                 states: newStates,
                 isChanged: isChanged
             };
+        }
+
+        export function UpdateFormulasAfterVariableChanged(variableId: number, oldModel: BMA.Model.BioModel, newModel: BMA.Model.BioModel) {
+
+            if (variableId !== undefined && newModel) {
+                var variables = oldModel.Variables;
+                var editingVariableIndex = -1;
+                for (var i = 0; i < variables.length; i++) {
+                    if (variables[i].Id === variableId) {
+                        editingVariableIndex = i;
+                        break;
+                    }
+                }
+                
+                var editedVariableIndex = -1;
+                for (var j = 0; j < newModel.Variables.length; j++) {
+                    if (newModel.Variables[j].Id === variableId) {
+                        editedVariableIndex = j;
+                        break;
+                    }
+                }
+                
+                if (editingVariableIndex != -1 && editedVariableIndex != -1) {
+                    var oldName = variables[editingVariableIndex].Name;
+                    var newName = newModel.Variables[editedVariableIndex].Name
+                    if (oldName != newName) {
+                        var ids = BMA.ModelHelper.FindAllRelationships(variableId, newModel.Relationships);
+                        var newVariables = [];
+                        for (var j = 0; j < newModel.Variables.length; j++) {
+                            var variable = newModel.Variables[j];
+                            var oldFormula = variable.Formula;
+                            var newFormula = undefined;
+                            for (var k = 0; k < ids.length; k++) {
+                                if (variable.Id == ids[k]) {
+                                    newFormula = oldFormula.replace(new RegExp("var\\(" + oldName + "\\)", 'g'),
+                                        "var(" + newName + ")");
+                                    break;
+                                }
+                            }
+                            newVariables.push(new BMA.Model.Variable(
+                                variable.Id,
+                                variable.ContainerId,
+                                variable.Type,
+                                variable.Name,
+                                variable.RangeFrom,
+                                variable.RangeTo,
+                                newFormula === undefined ? oldFormula : newFormula)
+                            );
+                        }
+
+                        var newRelations = [];
+                        for (var j = 0; j < newModel.Relationships.length; j++) {
+                            newRelations.push(new BMA.Model.Relationship(
+                                newModel.Relationships[j].Id,
+                                newModel.Relationships[j].FromVariableId,
+                                newModel.Relationships[j].ToVariableId,
+                                newModel.Relationships[j].Type)
+                            );
+                        }
+                        newModel = new BMA.Model.BioModel(newModel.Name, newVariables, newRelations);
+                    }
+                } else if (editingVariableIndex != -1) {
+                    var oldName = variables[editingVariableIndex].Name;
+                    var ids = BMA.ModelHelper.FindAllRelationships(variableId, oldModel.Relationships);
+                    var newVariables = [];
+                    for (var j = 0; j < newModel.Variables.length; j++) {
+                        var variable = newModel.Variables[j];
+                        var oldFormula = variable.Formula;
+                        var newFormula = undefined;
+                        for (var k = 0; k < ids.length; k++) {
+                            if (variable.Id == ids[k]) {
+                                newFormula = oldFormula.replace(new RegExp("var\\(" + oldName + "\\)", 'g'), "");
+                                break;
+                            }
+                        }
+                        newVariables.push(new BMA.Model.Variable(
+                            variable.Id,
+                            variable.ContainerId,
+                            variable.Type,
+                            variable.Name,
+                            variable.RangeFrom,
+                            variable.RangeTo,
+                            newFormula === undefined ? oldFormula : newFormula)
+                        );
+                    }
+                    var newRelations = [];
+                    for (var j = 0; j < newModel.Relationships.length; j++) {
+                        newRelations.push(new BMA.Model.Relationship(
+                            newModel.Relationships[j].Id,
+                            newModel.Relationships[j].FromVariableId,
+                            newModel.Relationships[j].ToVariableId,
+                            newModel.Relationships[j].Type)
+                        );
+                    }
+                    newModel = new BMA.Model.BioModel(newModel.Name, newVariables, newRelations);
+                }
+            }
+
+            return newModel;
+        }
+
+        export function FindAllRelationships(id: number, relationships: BMA.Model.Relationship[]) {
+            var variableIds = [];
+            for (var i = 0; i < relationships.length; i++) {
+                if (relationships[i].FromVariableId === id)
+                    variableIds.push(relationships[i].ToVariableId)
+            }
+            return variableIds.sort((x, y) => {
+                return x < y ? -1 : 1;
+            });;
+        }
+
+        export function GenerateStateName(states: BMA.LTLOperations.Keyframe[], newState: BMA.LTLOperations.Keyframe): string {
+            var k = states.length;
+            var lastStateName = "";
+            for (var i = 0; i < k; i++) {
+                var lastStateIdx = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
+                var stateIdx = states[i].Name.length > 1 ? parseFloat(states[i].Name.slice(1)) : 0;
+
+                if (stateIdx >= lastStateIdx) {
+                    lastStateName = (lastStateName && stateIdx == lastStateIdx
+                        && lastStateName.charAt(0) > states[i].Name.charAt(0)) ?
+                        lastStateName : states[i].Name;
+                }
+            }
+
+            var newStateName = newState.Name;
+            var newStateIdx = (newStateName && newStateName.length > 1) ? parseFloat(newStateName.slice(1)) : 0;
+            
+            if (lastStateName && lastStateIdx == newStateIdx && lastStateName.charAt(0) > newStateName.charAt(0)) {
+                
+                var charCode = lastStateName ? lastStateName.charCodeAt(0) : 65;
+                var n = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
+
+                if (charCode >= 90) {
+                    n++;
+                    charCode = 65;
+                } else if (lastStateName) charCode++;
+
+                newStateName = n ? String.fromCharCode(charCode) + n : String.fromCharCode(charCode);
+            }
+            return newStateName;
         }
     }
 } 
