@@ -6276,7 +6276,6 @@ function IDD($, Rx) {;/**
             var constrainedRect = constraint(resultRect);
             var screenSize = { left: 0, top: 0, width: plotRect.width * scale.x, height: plotRect.height * scale.y };
             var newCS = new InteractiveDataDisplay.CoordinateTransform(constrainedRect, screenSize, aspectRatio);
-            scale = coordinateTransform.getScale();
             constrainedRect = newCS.getPlotRect({ x: 0, y: 0, width: screenSize.width, height: screenSize.height });
             var deltaWidth = constrainedRect.width / plotRect.width;
             var deltaHeight = constrainedRect.height / plotRect.height;
