@@ -160,6 +160,12 @@ src/bma.client/script/**/*.map
 src/bma.client/test/*.js
 src/bma.client/test/*.map
 src/bma.client/test/*.html
+src/bma.package/script/**/*.js
+src/bma.package/script/**/*.map
+src/bma.package/test/*.js
+src/bma.package/test/*.map
+src/bma.package/test/*.html
+
 
 
 

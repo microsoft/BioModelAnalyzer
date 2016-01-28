@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>LTL Results Viewer Sample</title>
+    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
+    <link rel="stylesheet" href="../Content/themes/base/jquery.ui.all.css" type="text/css" />
+    <link rel="stylesheet" href="../Content/themes/base/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
+    <link rel="stylesheet" href="../css/bma.css" />
+    <script src="../Scripts/jquery-2.1.4.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.11.4.min.js"></script>
+    <script src="js/jquery.svg.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../Scripts/rx.aggregates.min.js"></script>
+    <script src="../js/rx.jQuery.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../tool.js"></script>
+    <script src="../js/jquery.ui-contextmenu.js"></script>
+    <style>
+        table {
+            border: 1px solid #aaa;
+            border-collapse:collapse;
+        }
+
+        table tr td {
+            border: 1px solid #aaa;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $("input:radio[name='result']").change(function () {
+                switch ($(this).val()) {
+                    case "true nottested":
+                        $("#compactresultsviewer").compactltlresult({ status: "nottested", isexpanded: true });
+                        break;
+                    case "true success":
+                        $("#compactresultsviewer").compactltlresult({ status: "success", isexpanded: true });
+                        break;
+                    case "true fail":
+                        $("#compactresultsviewer").compactltlresult({ status: "fail", isexpanded: true });
+                        break;
+                    case "true partial":
+                        $("#compactresultsviewer").compactltlresult({ status: "partial success", isexpanded: true });
+                        break;
+                    case "false nottested":
+                        $("#compactresultsviewer").compactltlresult({ status: "nottested", isexpanded: false });
+                        break;
+                    case "false success":
+                        $("#compactresultsviewer").compactltlresult({ status: "success", isexpanded: false });
+                        break;
+                    case "false fail":
+                        $("#compactresultsviewer").compactltlresult({ status: "fail", isexpanded: false });
+                        break;
+                    case "false partial":
+                        $("#compactresultsviewer").compactltlresult({ status: "partial success", isexpanded: false });
+                        break;
+                    default: break;
+                }
+            });
+        });
+
+    </script>
+</head>
+<body style="background-color: white;">
+    <div id="menu">
+        <table>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td>nottested</td>
+                    <td>succes</td>
+                    <td>fail</td>
+                    <td>partial success</td>
+                </tr>
+                <tr>
+                    <td>true</td>
+                    <td>
+                        <input type="radio" name="result" value="true nottested" />
+                    </td>
+                    <td>
+                        <input type="radio" name="result" value="true success" />
+                    </td>
+                    <td>
+                        <input type="radio" name="result" value="true fail" />
+                    </td>
+                    <td>
+                        <input type="radio" name="result" value="true partial" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>false</td>
+                    <td>
+                        <input type="radio" name="result" value="false nottested" />
+                    </td>
+                    <td>
+                        <input type="radio" name="result" value="false success" />
+                    </td>
+                    <td>
+                        <input type="radio" name="result" value="false fail" />
+                    </td>
+                    <td>
+                        <input type="radio" name="result" value="false partial" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <ul class="button-list LTL-test" style="margin-top: 5px;">
+        <li class="action-button-small grey spin">
+            <div class="spinner">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+            </div>
+        </li>
+    </ul>
+    <div style="width: 300px; height: 300px;">
+        <div id="compactresultsviewer">
+        </div>
+    </div>
+    
+</body>
+</html>

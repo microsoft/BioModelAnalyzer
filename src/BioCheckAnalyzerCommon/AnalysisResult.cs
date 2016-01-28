@@ -50,6 +50,14 @@ namespace BioModelAnalyzer
         public int Loop { get; set; }
 
     }
+    public class LTLAnalysisResultDTO : AnalysisResultDTO
+    {
+        [XmlElement("Tick", Type = typeof(Tick))]
+        public Tick[] NegTicks { get; set; }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public StatusType NegStatus { get; set; }
+    }
 
     public enum StatusType
     {
@@ -63,6 +71,7 @@ namespace BioModelAnalyzer
         Unknown,
         Error,
         True,
-        False
+        False,
+        PartiallyTrue
     }
 }

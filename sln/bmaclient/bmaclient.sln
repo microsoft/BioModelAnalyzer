@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bma.client", "..\..\src\bma.client\bma.client.csproj", "{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F7B5A3D7-B82D-4906-940C-DED019A886BC}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{491D2994-4833-439D-8426-B0AA75EE0F08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bma.client", "..\..\src\bma.client\bma.client.csproj", "{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{68A7F32F-0860-4688-8C82-C55196461E48} = {68A7F32F-0860-4688-8C82-C55196461E48}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioCheckAnalyzerCommon", "..\..\src\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj", "{61E37D4E-172B-45DD-9289-5C874A8320F0}"
@@ -20,22 +25,17 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FParsec", "..\..\ext\FParse
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "UIExpr", "..\..\src\UIExpr\UIExpr.fsproj", "{C6745675-EA9F-41F3-BFFC-2C3810585B36}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{491D2994-4833-439D-8426-B0AA75EE0F08}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BackEndTests", "..\..\src\BackEndTests\BackEndTests.fsproj", "{5BB237C7-EDA2-4558-883E-A50CE6C096E6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegacyModelsImporter", "..\..\src\LegacyModelsImporter\LegacyModelsImporter.csproj", "{68041FBC-F127-4770-93D3-DCA3AE200A64}"
 EndProject
-Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "BMACloudService", "..\..\src\BMACloudService\BMACloudService.ccproj", "{61C59A01-322F-4B27-8C30-9507181CA2FC}"
+Project("{144C61F1-A867-3419-B8C6-78D127253265}") = "BMACloudService", "..\..\src\BMACloudService\BMACloudService.ccproj", "{61C59A01-322F-4B27-8C30-9507181CA2FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BMAWebApi", "..\..\src\BMAWebApi\BMAWebApi.csproj", "{6652FDAB-C878-4661-BAAD-664CF8327467}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheckAnalyzer32", "..\..\src\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj", "{27FCEE47-CED8-4629-9989-7E9A490B090E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CED04AA0-B3AB-43E6-9746-30437D437F08}"
-	ProjectSection(SolutionItems) = preProject
-		WebEssentials-Settings.json = WebEssentials-Settings.json
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bma.package", "..\..\src\bma.package\bma.package.csproj", "{68A7F32F-0860-4688-8C82-C55196461E48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -174,6 +174,18 @@ Global
 		{27FCEE47-CED8-4629-9989-7E9A490B090E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{27FCEE47-CED8-4629-9989-7E9A490B090E}.Release|x64.ActiveCfg = Release|x64
 		{27FCEE47-CED8-4629-9989-7E9A490B090E}.Release|x64.Build.0 = Release|x64
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Debug|x64.Build.0 = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.nuget|Any CPU.ActiveCfg = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.nuget|Any CPU.Build.0 = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.nuget|x64.ActiveCfg = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.nuget|x64.Build.0 = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Release|x64.ActiveCfg = Release|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

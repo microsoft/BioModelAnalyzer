@@ -2,10 +2,15 @@
 (* Copyright (c) Microsoft Corporation. All rights reserved. *)
 module LTL
 
+// New operators: UpTo 
+// New state formulas: cycle, fixpoint
+
 type LTLFormulaType = 
     // Each operator has a list of booleans memorizing its location
     // in the parse tree
     | Until of int list * LTLFormulaType * LTLFormulaType 
+    | Wuntil of int list * LTLFormulaType * LTLFormulaType
+    | Upto of int list * LTLFormulaType * LTLFormulaType
     | Release of int list * LTLFormulaType * LTLFormulaType
     | And of int list * LTLFormulaType * LTLFormulaType
     | Or of int list * LTLFormulaType * LTLFormulaType
@@ -14,10 +19,15 @@ type LTLFormulaType =
     | Next of int list * LTLFormulaType
     | Always of int list * LTLFormulaType
     | Eventually of int list * LTLFormulaType
+    | PropEq of int list * QN.node * int
+    | PropNeq of int list * QN.node * int
     | PropGt of int list * QN.node * int 
     | PropGtEq of int list * QN.node * int
     | PropLt of int list * QN.node * int
     | PropLtEq of int list * QN.node * int
+    | SelfLoop
+    | Loop
+    | Oscillation
     | False 
     | True
     | Error 
@@ -25,7 +35,9 @@ type LTLFormulaType =
 let left_formula phi =
     match phi with 
     | Until(_,phi0,_)
+    | Wuntil (_,phi0,_)
     | Release(_,phi0,_)
+    | Upto(_,phi0,_)
     | And(_,phi0,_) 
     | Or(_,phi0,_) 
     | Implies(_,phi0,_) 
@@ -33,37 +45,25 @@ let left_formula phi =
     | Next(_,phi0)
     | Always(_,phi0)
     | Eventually(_,phi0) -> Some phi0
-    | PropGt(_) 
-    | PropGtEq(_) 
-    | PropLt(_) 
-    | PropLtEq(_) 
-    | False 
-    | True
-    | Error -> None
+    | _ -> None
 
 let right_formula phi = 
     match phi with 
     | Until (_,_,phi1)
+    | Wuntil (_,_,phi1)
     | Release (_,_,phi1)
+    | Upto (_,_,phi1)
     | And (_,_,phi1) 
     | Or (_,_,phi1) 
     | Implies (_,_,phi1) -> Some phi1
-    | Not(_)
-    | Next(_)
-    | Always(_)
-    | Eventually(_) 
-    | PropGt(_) 
-    | PropGtEq(_) 
-    | PropLt(_) 
-    | PropLtEq(_) 
-    | False 
-    | True
-    | Error -> None
+    | _ -> None
 
 let formula_location phi = 
     match phi with
     | Until (loc, _, _)
+    | Wuntil (loc, _,_)
     | Release (loc, _, _)
+    | Upto (loc, _, _)
     | Next (loc, _) 
     | Always (loc, _) 
     | Eventually (loc, _) 
@@ -71,14 +71,18 @@ let formula_location phi =
     | Or (loc, _, _) 
     | Implies (loc, _, _) 
     | Not (loc, _) 
+    | PropEq (loc, _, _)
+    | PropNeq (loc, _, _)
     | PropGt (loc, _, _) 
     | PropGtEq (loc, _, _) 
     | PropLt (loc , _, _) 
     | PropLtEq (loc , _, _) -> Some loc
-    | False | True | Error -> None
+    | _ -> None 
 
 let prop_var_range phi = 
     match phi with
+    | PropEq (_, var, _)
+    | PropNeq (_, var, _)
     | PropGt (_, var , _)
     | PropGtEq (_, var, _)
     | PropLt (_, var, _)
@@ -91,7 +95,9 @@ let print_in_order(formula : LTLFormulaType) =
         let name =
             match formula with 
             | Until (_, _, _) -> "Until"
+            | Wuntil (_,_,_) -> "Weak Until"
             | Release (_, _, _) -> "Release"
+            | Upto (_, _, _) -> "Upto"
             | And (_, _, _) -> "And"
             | Or (_, _, _) -> "Or"
             | Implies (_, _, _) -> "Implies"
@@ -99,6 +105,9 @@ let print_in_order(formula : LTLFormulaType) =
             | Next (_, _) -> "Next"
             | Always (_, _) -> "Always"
             | Eventually (_, _) -> "Eventually"
+            | Loop -> "Loop"
+            | SelfLoop -> "SelfLoop"
+            | Oscillation -> "Oscillation"
             | False -> "FF"
             | True -> "TT"
             | _ -> "Err"
@@ -106,7 +115,9 @@ let print_in_order(formula : LTLFormulaType) =
         let left = 
             match formula with
             | Until (_, l, _) 
+            | Wuntil (_, l, _)
             | Release (_, l, _)
+            | Upto (_, l, _)
             | And (_, l, _) 
             | Or (_, l, _) 
             | Implies (_, l, _) 
@@ -119,7 +130,9 @@ let print_in_order(formula : LTLFormulaType) =
         let right = 
             match formula with
             | Until (_, _, r) 
+            | Wuntil (_, _, r)
             | Release (_, _, r)
+            | Upto (_, _, r)
             | And (_, _, r) 
             | Or (_, _, r) 
             | Implies (_, _, r) ->
@@ -127,6 +140,8 @@ let print_in_order(formula : LTLFormulaType) =
             | _ -> ""
         let prop = 
             match formula with
+            | PropEq (_, var, value) -> sprintf "%s=%d" var.name value
+            | PropNeq (_, var, value) -> sprintf "%s!=%d" var.name value
             | PropGt (_, var, value) -> sprintf "%s>%d" var.name value
             | PropGtEq (_, var, value) -> sprintf "%s>=%d" var.name value
             | PropLt (_, var, value) -> sprintf "%s<%d" var.name value
@@ -136,7 +151,9 @@ let print_in_order(formula : LTLFormulaType) =
         let result =
             match formula with
             | Until (_, _, _)
+            | Wuntil (_, _, _)
             | Release (_, _, _)
+            | Upto (_, _, _)
             | And (_, _, _) 
             | Or (_, _, _) 
             | Implies (_, _, _) ->
@@ -146,6 +163,8 @@ let print_in_order(formula : LTLFormulaType) =
             | Always (_, _) 
             | Eventually (_, _) ->
                 sprintf "(%s %s)" name left
+            | PropEq (_, _, _)
+            | PropNeq (_, _, _)
             | PropGt (_, _, _) 
             | PropGtEq (_, _, _)
             | PropLt (_, _, _)
@@ -160,7 +179,9 @@ let print_in_order(formula : LTLFormulaType) =
 // parsers
 let string_to_LTL_formula (s:string) (network) = 
     let until = "Until"
+    let wuntil = "Weakuntil"
     let release = "Release"
+    let upto = "Upto"
     let always = "Always"
     let eventually = "Eventually"
     let conjunction = "And"
@@ -168,8 +189,13 @@ let string_to_LTL_formula (s:string) (network) =
     let implication = "Implies"
     let negation = "Not"
     let next = "Next"
+    let loop_string = "Loop"
+    let self_loop_string = "SelfLoop"
+    let oscillation_string = "Oscillation"
     let true_string = "True"
     let false_string = "False"
+    let eq = "="
+    let neq = "!="
     let gt = ">"
     let gt_eq = ">="
     let lt = "<"
@@ -177,7 +203,9 @@ let string_to_LTL_formula (s:string) (network) =
     let space = " "
 
     let length_of_until = until.Length
+    let length_of_wuntil = wuntil.Length
     let length_of_release = release.Length
+    let length_of_upto = upto.Length
     let length_of_and = conjunction.Length
     let length_of_or = disjunction.Length
     let length_of_implies = implication.Length
@@ -185,8 +213,13 @@ let string_to_LTL_formula (s:string) (network) =
     let length_of_next = next.Length
     let length_of_always = always.Length
     let length_of_eventually = eventually.Length
+    let length_of_Loop = loop_string.Length
+    let length_of_self_loop = self_loop_string.Length
+    let length_of_oscillation = oscillation_string.Length
     let length_of_true = true_string.Length
     let length_of_false = false_string.Length
+    let length_of_prop_eq = eq.Length
+    let length_of_prop_neq = neq.Length
     let length_of_prop_gt = gt.Length
     let length_of_prop_gt_eq = gt_eq.Length
     let length_of_prop_lt = lt.Length
@@ -194,7 +227,9 @@ let string_to_LTL_formula (s:string) (network) =
 
 
     let IsUntil (s : string) = s.StartsWith(until + space)
+    let IsWuntil (s : string) = s.StartsWith(wuntil + space)
     let IsRelease (s : string) = s.StartsWith(release + space)
+    let IsUpto (s : string) = s.StartsWith(upto + space)
     let IsAnd (s : string) = s.StartsWith(conjunction + space)
     let IsOr (s : string) = s.StartsWith(disjunction + space)
     let IsImplies (s : string) = s.StartsWith(implication + space)
@@ -202,10 +237,15 @@ let string_to_LTL_formula (s:string) (network) =
     let IsNext (s : string) = s.StartsWith(next + space)
     let IsEventually (s : string) = s.StartsWith(eventually + space)
     let IsAlways (s: string) = s.StartsWith(always + space)
+    let IsPropEq (s : string) = s.StartsWith(eq + space)
+    let IsPropNeq (s : string) = s.StartsWith(neq + space)
     let IsPropGt (s : string) = s.StartsWith(gt + space)
     let IsPropGtEq (s : string) = s.StartsWith(gt_eq + space)
     let IsPropLt (s : string) = s.StartsWith(lt + space)
     let IsPropLtEq (s : string) = s.StartsWith(lt_eq + space)
+    let IsLoop (s : string) = s.Equals(loop_string)
+    let IsSelfLoop (s : string) = s.Equals(self_loop_string)
+    let IsOscillation (s : string) = s.Equals(oscillation_string)
     let IsTrue (s : string) = s.Equals(true_string)
     let IsFalse(s : string) = s.Equals(false_string)
 
@@ -278,7 +318,13 @@ let string_to_LTL_formula (s:string) (network) =
             sub_formula
 
         if (not(s.StartsWith("(")) || not(s.EndsWith(")"))) then
-            if (IsTrue(s)) then
+            if (IsLoop(s)) then
+                Loop
+            elif (IsSelfLoop(s)) then
+                SelfLoop
+            elif (IsOscillation(s)) then
+                Oscillation
+            elif (IsTrue(s)) then
                 True
             elif (IsFalse(s)) then
                 False
@@ -292,12 +338,24 @@ let string_to_LTL_formula (s:string) (network) =
                     Error
                 else
                     (Until (location,sub_formula1,sub_formula2))
+            elif (IsWuntil(without_paren)) then
+                let (sub_formula1, sub_formula2) = analyze_two_operands length_of_wuntil without_paren location
+                if (sub_formula1 = Error || sub_formula2 = Error) then
+                    Error
+                else
+                    (Wuntil (location, sub_formula1, sub_formula2))
             elif (IsRelease(without_paren)) then
                 let (sub_formula1, sub_formula2) = analyze_two_operands length_of_release without_paren location
                 if (sub_formula1 = Error || sub_formula2 = Error) then
                     Error
                 else
                     (Release (location, sub_formula1, sub_formula2))
+            elif (IsUpto(without_paren)) then
+                let (sub_formula1, sub_formula2) = analyze_two_operands length_of_upto without_paren location
+                if (sub_formula1 = Error || sub_formula2 = Error) then
+                    Error
+                else
+                    (Upto (location, sub_formula1, sub_formula2))
             elif (IsAnd(without_paren)) then
                 let (sub_formula1, sub_formula2) = analyze_two_operands length_of_and without_paren location
                 if (sub_formula1 = Error || sub_formula2 = Error) then
@@ -340,6 +398,18 @@ let string_to_LTL_formula (s:string) (network) =
                     Error
                 else
                     (Eventually (location, sub_formula))
+            elif (IsPropEq(without_paren)) then
+                let (var, value) = analyze_proposition length_of_prop_eq without_paren location
+                if (value < 0) then
+                    Error
+                else
+                    (PropEq (location, var, value))
+            elif (IsPropNeq(without_paren)) then
+                let (var, value) = analyze_proposition length_of_prop_neq without_paren location
+                if (value < 0) then
+                    Error
+                else
+                    (PropNeq (location, var, value))
             elif (IsPropGt(without_paren)) then
                 let (var, value) = analyze_proposition length_of_prop_gt without_paren location
                 if (value < 0) then
@@ -364,6 +434,12 @@ let string_to_LTL_formula (s:string) (network) =
                     Error
                 else
                     (PropLtEq (location, var, value))
+            elif (IsSelfLoop(without_paren)) then
+                SelfLoop
+            elif (IsLoop(without_paren)) then
+                Loop
+            elif (IsOscillation(without_paren)) then
+                Oscillation
             elif (IsTrue(without_paren)) then
                 True
             elif (IsFalse(without_paren)) then
@@ -380,17 +456,27 @@ let unable_to_parse_formula =
 // v1 v2 and v3 as variables
 // Otherwise, all formulas are errors)
 let test_LTL_parser (network) =
-    let formula_one_string = "(Until (Not (> v1 5)) (> v2 6))"
+    let formula_one_string = "(Until (Not (> a 5)) (> b 6))"
     let formula_one = string_to_LTL_formula formula_one_string  network
-    let formula_two_string = "(Until (Release (Not (> v1 5)) (Next (>= v2 17))) (And (> v3 6) (<= v2 564)))"
+    let formula_two_string = "(Until (Release (Not (> a 5)) (Next (>= b 17))) (And (> c 6) (<= b 564)))"
     let formula_two = string_to_LTL_formula formula_two_string  network
-    let formula_three_string = "(Always (Or (Not (Next (>= v2 6344))) (Eventually (Next (<= v3 343245)))))"
+    let formula_three_string = "(Always (Or (Not (Next (>= b 6344))) (Eventually (Next (<= c 343245)))))"
     let formula_three = string_to_LTL_formula formula_three_string network
     // This is formula three without some close parenthesis
-    let formula_four_string = "(Always (Or (Not (Next (>= v1 6344))) (Eventually (Next (<= v3 343245))))"
+    let formula_four_string = "(Always (Or (Not (Next (>= a 6344))) (Eventually (Next (<= c 343245))))"
     let formula_four = string_to_LTL_formula formula_four_string network
     // This is formula three without some open parenthesis
-    let formula_five_string = "(Always (Or (Not (Next >= v1 6344))) (Eventually (Next (<= v1 343245)))))"
+    let formula_five_string = "(Always (Or (Not (Next >= a 6344))) (Eventually (Next (<= a 343245)))))"
     let formula_five = string_to_LTL_formula formula_five_string network
+    // This is formula three with = and != instead of >= and <=
+    let formula_six_string = "(Always (Or (Not (Next (= b 6344))) (Eventually (Next (!= c 343245)))))"
+    let formula_six = string_to_LTL_formula formula_six_string network
+    // This is formula one with weakuntil replacing until 
+    let formula_seven_string = "(Weakuntil (Not (> a 5)) (> b 6))"
+    let formula_seven = string_to_LTL_formula formula_seven_string  network
+    let formula_eight_string = "(Upto (Not (> a 5)) (> b 6))"
+    let formula_eight = string_to_LTL_formula formula_eight_string  network
+    let formula_nine_string = "(Always (Or (And (Not SelfLoop) Oscillation)) (Eventually (Or (Next (<= v1 343245) Loop)))))"
+    let formula_nine = string_to_LTL_formula formula_nine_string network
 
     ignore(formula_three)

@@ -1,9 +1,20 @@
 @import "BMA-Styles.less";
 
-	// LTL windows
-		// LTL States Editor
+// LTL windows
+
+.arrow-down {
+	width: 0; 
+	height: 0; 
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 10px solid @darkgrey;
+	display: inline-block;
+	margin-left: 5px;
+}
+
+	// LTL States Editor
 		.window.LTL-states{
-			width:340px;
+			width:380px;
 			padding:0px 0px 10px 0px;
 			.window-title{
 				padding: 10px 0px 0px 10px;
@@ -12,14 +23,14 @@
 
 		.state-description{
 			margin: 10px 0px 0px 10px;
-			width:80%;
+			width:90%;
 		}
 
 		.state-buttons{
 			margin-left: 5px;
 			.state-button{
 				display:inline-block;
-				margin:5px 0px 10px 5px;
+				margin:5px 0px 10px 0px;
 				font-family: 'Segoe-UI-Light';
 				font-size: 20px;
 				line-height:25px;
@@ -31,42 +42,38 @@
 				color: @darkgrey;
 				border: 1px solid @darkgrey;
 				&.new{
-					color: @lightgrey;
-					border: 1px solid @lightgrey;
+					color: white;
+					border: 1px solid white;
+					background-color: @midgrey;
+					margin-left: 5px;
 					&:hover{
-						color: @midgrey;
-						border: 1px solid @midgrey;
+						color: @lightgrey;
+						border: 1px solid @lightgrey;
 						cursor: pointer;
 					}
 				}
 			}
+
 		}
 		
 		.state-toolbar{
 			background-color: @midgrey;
 			padding: 5px 5px 0px 10px;
-
-			.state-tool{
-				display: inline-block;
-				width:30px;
-				height: 30px;
-				background-color: white;
-				margin: 0px 5px 0px 0px;
-				img{
-					padding:0px;
-					margin:0px;
-				}
-			}
 		}
 
-		.LTL-states{
-			padding:0px;
-			margin:0px;
-			background-color:white;
+		.LTL-state{
+
+			.default-cell(){
+				width: 45px;
+				height: 45px;
+				vertical-align: middle;
+				line-height: 30px;
+				font-size: 30px;
+			}
+
 			table{
 				border-collapse: collapse;
 				font-family: 'Segoe-UI-Light';
-				font-size: 40px;
 				margin:10px;
 
 				tr{
@@ -75,24 +82,19 @@
 						border: 1px solid @midgrey;
 						text-align: center;
 						margin:0px;
-						padding:0px 5px;
-						.default-cell(){
-							width: 55px;
-							height: 55px;
-							padding: 0px;
-
-							}
+						padding:0px;
+						.default-cell();
 						
 						&.variable{
 							.default-text();
-							max-width:70px;
+							width:230px;
 							padding: 0px 5px;
 							text-align: left;
 							white-space: nowrap;
 							overflow: hidden;
 							text-overflow: ellipsis;
 							img{
-								height: 35px;
+								height: 20px;
 							}
 						}
 						
@@ -100,6 +102,7 @@
 							.default-cell();
 							padding:0px;
 						}
+
 						&.LTL-line-del{
 							.default-cell();
 							border: none;
@@ -110,10 +113,12 @@
 								cursor: pointer;
 							}
 						}
+
 						&.LTL-line-new{
 							.default-cell();
-							line-height: 47px;
-							padding-bottom: 8px;
+							font-size: 40px;
+							line-height: 5px;
+							//padding-bottom: 8px;
 							border: 1px solid @lightgrey;
 							color: @lightgrey;
 							&:hover{
@@ -127,9 +132,9 @@
 			}
 		}
 
-		// Variable Picker
+	// Variable Picker
 		.variable-picker{
-			width: 115px;
+			width: 230px;
 			border: 1px solid @midgrey;
 			
 			table{
@@ -144,6 +149,12 @@
 				}
 
 				td{
+					&.container{
+						width:80px;
+					}
+					&.variable{
+						width:140px;
+					}
 					min-width: 50px;
 					&.list{
 						height:85px;
@@ -189,8 +200,8 @@
 				}
 			}
 		}
-		
-		// State Tooltip
+	
+	// State Tooltip
 
 		.state-tooltip {
 			position: relative;
@@ -229,103 +240,104 @@
 			margin-left: -15px;
 		}
 
+	// Temporal Properties
 
-
-// Temporal Properties
-
-.window.temporal-properties{
-	width: 650px;
-	height: 500px;
-	padding:0px 0px 10px 0px;
-	.window-title{
-		padding: 10px 0px 0px 10px;
-	}
-}
-
-.temporal-dropzones{
-	position: absolute;
-	bottom:0px;
-	width:630px;
-	height: 60px;
-	padding:15px 10px;
-	.dropzone{
-		display: inline-block;
-		height:100%;
-		width:308px;
-		text-align: center;
-		img{
-			margin-top: 10px;
-		}
-		&.delete{
-			border: 1px solid @darkred;
-		}
-		&.copy{
-			border: 1px solid @darkgrey;
-			margin-right: 5px;
-		}
-		&:hover{
-				background-color: @lightgrey;
+		.window.temporal-properties{
+			width: 650px;
+			height: 500px;
+			padding:0px 0px 10px 0px;
+			.window-title{
+				padding: 10px 0px 0px 10px;
 			}
-	}
-}
 
-.temporal-toolbar{
-	padding:10px;
-	margin-top: 5px;
-	//display: table;
-	background-color: @midgrey;
-	.default-text();
-	color: white;
-	
-	.state-buttons{
-		display: table-cell;
-		width: 250px;
-		.state-button{
-			&.new{
-				color: white;
-				background-color: @midgrey;
-				border: 1px solid white;
+			.fit-screen{
+				width:25px;
+				padding:10px;
+				float: right;
+				right:0px;
+			}
+
+			.resize-grabber{
+				position: absolute;
+				bottom:1px;
+				left: 627px;
+			}
+		}
+
+		.temporal-dropzones{
+			position: absolute;
+			bottom:15px;
+			width:630px;
+			height: 60px;
+			padding:15px 10px;
+			.dropzone{
+				display: inline-block;
+				height:100%;
+				width:308px;
+				text-align: center;
+				img{
+					margin-top: 10px;
+				}
+				&.delete{
+					border: 1px solid @darkred;
+				}
+				&.copy{
+					border: 1px solid @darkgrey;
+					margin-right: 5px;
+				}
 				&:hover{
-					color: @lightgrey;
-					border: 1px solid @lightgrey;
-					cursor: pointer;
+						background-color: @lightgrey;
+					}
+			}
+		}
+
+		.temporal-toolbar{
+			padding:10px;
+			margin-top: 5px;
+			display: table;
+			background-color: @midgrey;
+			.default-text();
+			color: white;
+
+			
+			.state-buttons{
+				display: table-cell;
+				width: 120px;
+				
+			}
+			
+
+			.temporal-operators{
+				display:table-cell;
+				vertical-align: top;
+				width:390px;
+				
+				.operator{
+					display:inline-block;
+					color:@darkgrey;
+					background-color: white;
+					border: 1px solid @darkgrey;
+					border-radius: 25px;
+					height:21px;
+					padding: 2px;
+					margin-top: 5px;
+					.label{
+						display: inline-block;
+						vertical-align: top;
+						margin-top: 2px;
+						//padding:0px 2px 0px 2px;
+					}
+					.hole{
+						display: inline-block;
+						margin: 3px 2px 0px 2px;
+						background-color: @darkgrey;
+						border-radius: 25px;
+						width:15px;
+						height: 15px;
+					}
 				}
 			}
 		}
-	}
-	
-
-	.temporal-operators{
-		display:table-cell;
-		vertical-align: top;
-		width:450px;
-		
-		.operator{
-			display:inline-block;
-			color:@darkgrey;
-			background-color: white;
-			border: 1px solid @darkgrey;
-			border-radius: 25px;
-			height:21px;
-			padding: 2px;
-			margin-top: 5px;
-			.label{
-				display: inline-block;
-				vertical-align: top;
-				margin-top: 2px;
-				//padding:0px 2px 0px 2px;
-			}
-			.hole{
-				display: inline-block;
-				margin: 3px 2px 0px 2px;
-				background-color: @darkgrey;
-				border-radius: 25px;
-				width:15px;
-				height: 15px;
-			}
-		}
-	}
-}
 
 
 // Bubbles
@@ -345,23 +357,27 @@
 		padding: 7px 7px;
 		vertical-align: middle;
 		
-		&.active{
-		border: 3px solid @darkgrey;
-		}
 
 		&.true{
 		background-color: @lightgreen;
-		border: 2px solid @green;
+		//border: 2px solid @green;
 		& div{
 			background-color: @lightgreen;
 		}
 		}
 
-			&.false{
-			border: 2px solid @darkred;
+		&.false{
+		//border: 2px solid @darkred;
+		background-color: @red;
+		& div{
 			background-color: @red;
-			& div{
-				background-color: @red;
+		}
+		}
+
+		&.some{
+			background-image: url("../images/stripe-pattern.png");
+			&>div{
+				background-color: transparent;
 			}
 		}
 	
@@ -383,7 +399,8 @@
 			&:after{
 				content:"\00a0";
 			}
-			background-color: @darkgrey;
+			background-color: @red;
+			border-color: @darkred;
 		}
 	}
 
@@ -393,6 +410,24 @@
 		display: inline-block;
 	}
 
+	.closed-results{
+		display: inline-block;
+		vertical-align: middle;
+
+		.action-button-small{
+			margin: 0px;
+		}
+
+		&.true{
+			color: @green;
+		}
+
+		&.false{
+			color: @darkred;
+		}
+
+	}
+
 	.LTL-test-results{
 		display:inline-block;
 		vertical-align: middle;
@@ -400,6 +435,12 @@
 		padding: 5px 5px 0px 5px;
 		margin-left: 10px;
 		.border-radius(5px);
+
+		&.default{
+			border: 1px solid @darkgrey;
+			color:@darkgrey;
+		}
+
 		&.true{
 			border: 1px solid @green;
 			color:@green;
@@ -407,13 +448,46 @@
 		&.false{
 			border: 1px solid @darkred;
 			color:@darkred;
-			.pill-button-box{
-				.pill-button{
-					margin-top: 5px;
-					margin-bottom: 0px;
-				}
-			}	
 		}
+
+		&.some{
+			border: 1px solid @darkgrey;
+			color:@darkgrey;
+		}
+		
+		.pill-button-box{
+			.pill-button{
+				margin-top: 5px;
+				margin-bottom: 0px;
+			}
+		}
+
+		
+		
+		.button-list{
+			margin-top: 5px;
+			button{
+				.default-text();
+				vertical-align: middle;
+				line-height: 15px;
+				margin-top: -2px;
+				img{
+					margin-top: 2px;
+					max-height: 13px;
+				}
+			}
+			.LTL-sim-true{
+				color:@green;
+			}
+
+			.LTL-sim-false{
+				color:@darkred;
+			}
+		}
+		.action-button-small{
+			margin: 5px 0px 5px 0px;
+		}
+
 	}
 
 

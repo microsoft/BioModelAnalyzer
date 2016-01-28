@@ -40,6 +40,7 @@
 /// <reference path="script\widgets\ltl\ltlstatesviewer.ts"/>
 /// <reference path="script\widgets\ltl\ltlviewer.ts"/>
 /// <reference path="script\widgets\ltl\ltlresultsviewer.ts"/>
+/// <reference path="script\widgets\ltl\statetooltip.ts"/>
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
@@ -121,15 +122,13 @@ $(document).ready(function () {
         var dfd = $.Deferred();
         loadVersion().done(function (version) {
             loadScript(version);
-            window.setInterval(function () {
-                versionCheck(version);
-            }, 3600000);
+            window.setInterval(function () { versionCheck(version); }, 3600000 /* 1 hour */);
             dfd.resolve();
         });
         return dfd.promise();
     };
     deferredLoad().done(function () {
-        $('.page-loading').detach();
+        $('.page-loading').hide();
     }).fail(function (err) {
         alert("Page loading failed: " + err);
     });
@@ -150,9 +149,7 @@ function versionCheck(version) {
                 actions: [
                     {
                         button: 'Ok',
-                        callback: function () {
-                            userDialog.detach();
-                        }
+                        callback: function () { userDialog.detach(); }
                     }
                 ]
             });
@@ -236,16 +233,14 @@ function loadScript(version) {
         autoFocus: true,
         preventContextMenuForPopup: true,
         preventSelect: true,
-        taphold: true,
+        //taphold: true,
         menu: [
             { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
             { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
             { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
             { title: "Edit", cmd: "Edit", uiIcon: "ui-icon-pencil" },
             {
-                title: "Size",
-                cmd: "Size",
-                children: [
+                title: "Size", cmd: "Size", children: [
                     { title: "1x1", cmd: "ResizeCellTo1x1" },
                     { title: "2x2", cmd: "ResizeCellTo2x2" },
                     { title: "3x3", cmd: "ResizeCellTo3x3" },
@@ -333,7 +328,12 @@ function loadScript(version) {
     var elements = window.ElementRegistry.Elements;
     for (var i = 0; i < elements.length; i++) {
         var elem = elements[i];
-        $("<input></input>").attr("type", "radio").attr("id", "btn-" + elem.Type).attr("name", "drawing-button").attr("data-type", elem.Type).appendTo(elementPanel);
+        $("<input></input>")
+            .attr("type", "radio")
+            .attr("id", "btn-" + elem.Type)
+            .attr("name", "drawing-button")
+            .attr("data-type", elem.Type)
+            .appendTo(elementPanel);
         var label = $("<label></label>").addClass("drawingsurface-droppable").attr("for", "btn-" + elem.Type).appendTo(elementPanel);
         var img = $("<div></div>").addClass(elem.IconClass).attr("title", elem.Description).appendTo(label);
     }
@@ -360,12 +360,8 @@ function loadScript(version) {
         window.Commands.Execute("AddElementSelect", undefined);
     });
     $("#undoredotoolbar").buttonset();
-    $("#button-undo").click(function () {
-        window.Commands.Execute("Undo", undefined);
-    });
-    $("#button-redo").click(function () {
-        window.Commands.Execute("Redo", undefined);
-    });
+    $("#button-undo").click(function () { window.Commands.Execute("Undo", undefined); });
+    $("#button-redo").click(function () { window.Commands.Execute("Redo", undefined); });
     $("#btn-local-save").click(function (args) {
         window.Commands.Execute("LocalStorageSaveModel", undefined);
     });
@@ -381,13 +377,20 @@ function loadScript(version) {
     $("#btn-export-model").click(function (args) {
         window.Commands.Execute("ExportModel", undefined);
     });
-    var localStorageWidget = $('<div></div>').addClass('window').appendTo('#drawingSurceContainer').localstoragewidget();
+    var localStorageWidget = $('<div></div>')
+        .addClass('window')
+        .appendTo('#drawingSurceContainer')
+        .localstoragewidget();
     $("#editor").bmaeditor();
     $("#Proof-Analysis").proofresultviewer();
     $("#Further-Testing").furthertesting();
     $("#tabs-2").simulationviewer();
     $('#tabs-3').ltlviewer();
-    var popup = $('<div></div>').addClass('popup-window window').appendTo('body').hide().resultswindowviewer({ icon: "min" });
+    var popup = $('<div></div>')
+        .addClass('popup-window window')
+        .appendTo('body')
+        .hide()
+        .resultswindowviewer({ icon: "min" });
     popup.draggable({ scroll: false });
     var expandedSimulation = $('<div></div>').simulationexpanded();
     //Visual Settings Presenter
@@ -461,7 +464,7 @@ function loadScript(version) {
     //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
     //var keyframecompactDriver = new BMA.UIDrivers.KeyframesList($('#tabs-3').find('.keyframe-compact'));
-    var ltlDriver = new BMA.UIDrivers.LTLViewer($('#tabs-3'));
+    var ltlDriver = new BMA.UIDrivers.LTLViewer($("#analytics"), $('#tabs-3'));
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);
@@ -477,17 +480,19 @@ function loadScript(version) {
     var simulationService = new BMA.UIDrivers.SimulationService();
     var logService = new BMA.SessionLog();
     var ltlService = new BMA.UIDrivers.LTLAnalyzeService();
+    var waitScreen = new BMA.UIDrivers.LoadingWaitScreen($('.page-loading'));
+    var dragndropextender = new BMA.UIDrivers.DrawingSurfaceDragnDropExtender(drawingSurface, popup);
     //Loading presenters
     var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
-    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver, exportService);
+    var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver, exportService, dragndropextender);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver, proofAnalyzeService, messagebox, logService);
     var furtherTestingPresenter = new BMA.Presenters.FurtherTestingPresenter(appModel, furtherTestingDriver, popupDriver, furtherTestingServiсe, messagebox, logService);
     var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, $("#analytics"), fullSimulationViewer, simulationViewer, popupDriver, simulationService, logService, exportService, messagebox);
-    var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService);
+    var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService, waitScreen);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
-    var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService);
+    var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
     //LTL Presenters
-    var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlService, popupDriver, exportService);
+    var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlService, popupDriver, exportService, fileLoaderDriver);
     //Loading model from URL
     var reserved_key = "InitialModel";
     var params = getSearchParameters();
@@ -525,9 +530,7 @@ function loadScript(version) {
             actions: [
                 {
                     button: 'Ok',
-                    callback: function () {
-                        userDialog.detach();
-                    }
+                    callback: function () { userDialog.detach(); }
                 }
             ]
         });

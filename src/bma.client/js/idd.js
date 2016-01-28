@@ -1,12 +1,4 @@
-﻿///#source 1 1 /script/wrapper_header.txt
-function IDD($, Rx) {
-///#source 1 1 /script/modernizr.custom.js
-/* Modernizr 2.6.2 (Custom Build) | MIT & BSD
- * Build: http://modernizr.com/download/#-borderradius-boxshadow-hsla-rgba-cssanimations-csstransforms-csstransitions-canvas-postmessage-webworkers-shiv-cssclasses-teststyles-testprop-testallprops-prefixes-domprefixes-load
- */
-; window.Modernizr = function (a, b, c) { function z(a) { j.cssText = a } function A(a, b) { return z(m.join(a + ";") + (b || "")) } function B(a, b) { return typeof a === b } function C(a, b) { return !!~("" + a).indexOf(b) } function D(a, b) { for (var d in a) { var e = a[d]; if (!C(e, "-") && j[e] !== c) return b == "pfx" ? e : !0 } return !1 } function E(a, b, d) { for (var e in a) { var f = b[a[e]]; if (f !== c) return d === !1 ? a[e] : B(f, "function") ? f.bind(d || b) : f } return !1 } function F(a, b, c) { var d = a.charAt(0).toUpperCase() + a.slice(1), e = (a + " " + o.join(d + " ") + d).split(" "); return B(b, "string") || B(b, "undefined") ? D(e, b) : (e = (a + " " + p.join(d + " ") + d).split(" "), E(e, b, c)) } var d = "2.6.2", e = {}, f = !0, g = b.documentElement, h = "modernizr", i = b.createElement(h), j = i.style, k, l = {}.toString, m = " -webkit- -moz- -o- -ms- ".split(" "), n = "Webkit Moz O ms", o = n.split(" "), p = n.toLowerCase().split(" "), q = {}, r = {}, s = {}, t = [], u = t.slice, v, w = function (a, c, d, e) { var f, i, j, k, l = b.createElement("div"), m = b.body, n = m || b.createElement("body"); if (parseInt(d, 10)) while (d--) j = b.createElement("div"), j.id = e ? e[d] : h + (d + 1), l.appendChild(j); return f = ["&#173;", '<style id="s', h, '">', a, "</style>"].join(""), l.id = h, (m ? l : n).innerHTML += f, n.appendChild(l), m || (n.style.background = "", n.style.overflow = "hidden", k = g.style.overflow, g.style.overflow = "hidden", g.appendChild(n)), i = c(l, a), m ? l.parentNode.removeChild(l) : (n.parentNode.removeChild(n), g.style.overflow = k), !!i }, x = {}.hasOwnProperty, y; !B(x, "undefined") && !B(x.call, "undefined") ? y = function (a, b) { return x.call(a, b) } : y = function (a, b) { return b in a && B(a.constructor.prototype[b], "undefined") }, Function.prototype.bind || (Function.prototype.bind = function (b) { var c = this; if (typeof c != "function") throw new TypeError; var d = u.call(arguments, 1), e = function () { if (this instanceof e) { var a = function () { }; a.prototype = c.prototype; var f = new a, g = c.apply(f, d.concat(u.call(arguments))); return Object(g) === g ? g : f } return c.apply(b, d.concat(u.call(arguments))) }; return e }), q.canvas = function () { var a = b.createElement("canvas"); return !!a.getContext && !!a.getContext("2d") }, q.postmessage = function () { return !!a.postMessage }, q.rgba = function () { return z("background-color:rgba(150,255,150,.5)"), C(j.backgroundColor, "rgba") }, q.hsla = function () { return z("background-color:hsla(120,40%,100%,.5)"), C(j.backgroundColor, "rgba") || C(j.backgroundColor, "hsla") }, q.borderradius = function () { return F("borderRadius") }, q.boxshadow = function () { return F("boxShadow") }, q.cssanimations = function () { return F("animationName") }, q.csstransforms = function () { return !!F("transform") }, q.csstransitions = function () { return F("transition") }, q.webworkers = function () { return !!a.Worker }; for (var G in q) y(q, G) && (v = G.toLowerCase(), e[v] = q[G](), t.push((e[v] ? "" : "no-") + v)); return e.addTest = function (a, b) { if (typeof a == "object") for (var d in a) y(a, d) && e.addTest(d, a[d]); else { a = a.toLowerCase(); if (e[a] !== c) return e; b = typeof b == "function" ? b() : b, typeof f != "undefined" && f && (g.className += " " + (b ? "" : "no-") + a), e[a] = b } return e }, z(""), i = k = null, function (a, b) { function k(a, b) { var c = a.createElement("p"), d = a.getElementsByTagName("head")[0] || a.documentElement; return c.innerHTML = "x<style>" + b + "</style>", d.insertBefore(c.lastChild, d.firstChild) } function l() { var a = r.elements; return typeof a == "string" ? a.split(" ") : a } function m(a) { var b = i[a[g]]; return b || (b = {}, h++, a[g] = h, i[h] = b), b } function n(a, c, f) { c || (c = b); if (j) return c.createElement(a); f || (f = m(c)); var g; return f.cache[a] ? g = f.cache[a].cloneNode() : e.test(a) ? g = (f.cache[a] = f.createElem(a)).cloneNode() : g = f.createElem(a), g.canHaveChildren && !d.test(a) ? f.frag.appendChild(g) : g } function o(a, c) { a || (a = b); if (j) return a.createDocumentFragment(); c = c || m(a); var d = c.frag.cloneNode(), e = 0, f = l(), g = f.length; for (; e < g; e++) d.createElement(f[e]); return d } function p(a, b) { b.cache || (b.cache = {}, b.createElem = a.createElement, b.createFrag = a.createDocumentFragment, b.frag = b.createFrag()), a.createElement = function (c) { return r.shivMethods ? n(c, a, b) : b.createElem(c) }, a.createDocumentFragment = Function("h,f", "return function(){var n=f.cloneNode(),c=n.createElement;h.shivMethods&&(" + l().join().replace(/\w+/g, function (a) { return b.createElem(a), b.frag.createElement(a), 'c("' + a + '")' }) + ");return n}")(r, b.frag) } function q(a) { a || (a = b); var c = m(a); return r.shivCSS && !f && !c.hasCSS && (c.hasCSS = !!k(a, "article,aside,figcaption,figure,footer,header,hgroup,nav,section{display:block}mark{background:#FF0;color:#000}")), j || p(a, c), a } var c = a.html5 || {}, d = /^<|^(?:button|map|select|textarea|object|iframe|option|optgroup)$/i, e = /^(?:a|b|code|div|fieldset|h1|h2|h3|h4|h5|h6|i|label|li|ol|p|q|span|strong|style|table|tbody|td|th|tr|ul)$/i, f, g = "_html5shiv", h = 0, i = {}, j; (function () { try { var a = b.createElement("a"); a.innerHTML = "<xyz></xyz>", f = "hidden" in a, j = a.childNodes.length == 1 || function () { b.createElement("a"); var a = b.createDocumentFragment(); return typeof a.cloneNode == "undefined" || typeof a.createDocumentFragment == "undefined" || typeof a.createElement == "undefined" }() } catch (c) { f = !0, j = !0 } })(); var r = { elements: c.elements || "abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup mark meter nav output progress section summary time video", shivCSS: c.shivCSS !== !1, supportsUnknownElements: j, shivMethods: c.shivMethods !== !1, type: "default", shivDocument: q, createElement: n, createDocumentFragment: o }; a.html5 = r, q(b) }(this, b), e._version = d, e._prefixes = m, e._domPrefixes = p, e._cssomPrefixes = o, e.testProp = function (a) { return D([a]) }, e.testAllProps = F, e.testStyles = w, g.className = g.className.replace(/(^|\s)no-js(\s|$)/, "$1$2") + (f ? " js " + t.join(" ") : ""), e }(this, this.document), function (a, b, c) { function d(a) { return "[object Function]" == o.call(a) } function e(a) { return "string" == typeof a } function f() { } function g(a) { return !a || "loaded" == a || "complete" == a || "uninitialized" == a } function h() { var a = p.shift(); q = 1, a ? a.t ? m(function () { ("c" == a.t ? B.injectCss : B.injectJs)(a.s, 0, a.a, a.x, a.e, 1) }, 0) : (a(), h()) : q = 0 } function i(a, c, d, e, f, i, j) { function k(b) { if (!o && g(l.readyState) && (u.r = o = 1, !q && h(), l.onload = l.onreadystatechange = null, b)) { "img" != a && m(function () { t.removeChild(l) }, 50); for (var d in y[c]) y[c].hasOwnProperty(d) && y[c][d].onload() } } var j = j || B.errorTimeout, l = b.createElement(a), o = 0, r = 0, u = { t: d, s: c, e: f, a: i, x: j }; 1 === y[c] && (r = 1, y[c] = []), "object" == a ? l.data = c : (l.src = c, l.type = a), l.width = l.height = "0", l.onerror = l.onload = l.onreadystatechange = function () { k.call(this, r) }, p.splice(e, 0, u), "img" != a && (r || 2 === y[c] ? (t.insertBefore(l, s ? null : n), m(k, j)) : y[c].push(l)) } function j(a, b, c, d, f) { return q = 0, b = b || "j", e(a) ? i("c" == b ? v : u, a, b, this.i++, c, d, f) : (p.splice(this.i++, 0, a), 1 == p.length && h()), this } function k() { var a = B; return a.loader = { load: j, i: 0 }, a } var l = b.documentElement, m = a.setTimeout, n = b.getElementsByTagName("script")[0], o = {}.toString, p = [], q = 0, r = "MozAppearance" in l.style, s = r && !!b.createRange().compareNode, t = s ? l : n.parentNode, l = a.opera && "[object Opera]" == o.call(a.opera), l = !!b.attachEvent && !l, u = r ? "object" : l ? "script" : "img", v = l ? "script" : u, w = Array.isArray || function (a) { return "[object Array]" == o.call(a) }, x = [], y = {}, z = { timeout: function (a, b) { return b.length && (a.timeout = b[0]), a } }, A, B; B = function (a) { function b(a) { var a = a.split("!"), b = x.length, c = a.pop(), d = a.length, c = { url: c, origUrl: c, prefixes: a }, e, f, g; for (f = 0; f < d; f++) g = a[f].split("="), (e = z[g.shift()]) && (c = e(c, g)); for (f = 0; f < b; f++) c = x[f](c); return c } function g(a, e, f, g, h) { var i = b(a), j = i.autoCallback; i.url.split(".").pop().split("?").shift(), i.bypass || (e && (e = d(e) ? e : e[a] || e[g] || e[a.split("/").pop().split("?")[0]]), i.instead ? i.instead(a, e, f, g, h) : (y[i.url] ? i.noexec = !0 : y[i.url] = 1, f.load(i.url, i.forceCSS || !i.forceJS && "css" == i.url.split(".").pop().split("?").shift() ? "c" : c, i.noexec, i.attrs, i.timeout), (d(e) || d(j)) && f.load(function () { k(), e && e(i.origUrl, h, g), j && j(i.origUrl, h, g), y[i.url] = 2 }))) } function h(a, b) { function c(a, c) { if (a) { if (e(a)) c || (j = function () { var a = [].slice.call(arguments); k.apply(this, a), l() }), g(a, j, b, 0, h); else if (Object(a) === a) for (n in m = function () { var b = 0, c; for (c in a) a.hasOwnProperty(c) && b++; return b }(), a) a.hasOwnProperty(n) && (!c && !--m && (d(j) ? j = function () { var a = [].slice.call(arguments); k.apply(this, a), l() } : j[n] = function (a) { return function () { var b = [].slice.call(arguments); a && a.apply(this, b), l() } }(k[n])), g(a[n], j, b, n, h)) } else !c && l() } var h = !!a.test, i = a.load || a.both, j = a.callback || f, k = j, l = a.complete || f, m, n; c(h ? a.yep : a.nope, !!i), i && c(i) } var i, j, l = this.yepnope.loader; if (e(a)) g(a, 0, l, 0); else if (w(a)) for (i = 0; i < a.length; i++) j = a[i], e(j) ? g(j, 0, l, 0) : w(j) ? B(j) : Object(j) === j && h(j, l); else Object(a) === a && h(a, l) }, B.addPrefix = function (a, b) { z[a] = b }, B.addFilter = function (a) { x.push(a) }, B.errorTimeout = 1e4, null == b.readyState && b.addEventListener && (b.readyState = "loading", b.addEventListener("DOMContentLoaded", A = function () { b.removeEventListener("DOMContentLoaded", A, 0), b.readyState = "complete" }, 0)), a.yepnope = k(), a.yepnope.executeStack = h, a.yepnope.injectJs = function (a, c, d, e, i, j) { var k = b.createElement("script"), l, o, e = e || B.errorTimeout; k.src = a; for (o in d) k.setAttribute(o, d[o]); c = j ? h : c || f, k.onreadystatechange = k.onload = function () { !l && g(k.readyState) && (l = 1, c(), k.onload = k.onreadystatechange = null) }, m(function () { l || (l = 1, c(1)) }, e), i ? k.onload() : n.parentNode.insertBefore(k, n) }, a.yepnope.injectCss = function (a, c, d, e, g, i) { var e = b.createElement("link"), j, c = i ? h : c || f; e.href = a, e.rel = "stylesheet", e.type = "text/css"; for (j in d) e.setAttribute(j, d[j]); g || (n.parentNode.insertBefore(e, n), m(c, 0)) } }(this, document), Modernizr.load = function () { yepnope.apply(window, [].slice.call(arguments, 0)) };
-///#source 1 1 /script/mouseWheelPlugin.js
-/**
+function IDD($, Rx) {;/**
 * @param {Object} up
 * @param {Object} down
 * @param {Object} preventDefault
@@ -82,9 +74,7 @@ $.event.mousewheel = {
         window.onmousewheel = document.onmousewheel = null;
         el._handleMousewheel = null;
     }
-};
-///#source 1 1 /script/idd.settings.js
-InteractiveDataDisplay = {
+};;InteractiveDataDisplay = {
     MinSizeToShow: 1, // minimum size in pixels of the element to be rendered
     Padding: 20, // extra padding in pixels which is added to padding computed by the plots
     maxTickArrangeIterations: 5, // max number of iterations in loop of ticks creating
@@ -101,9 +91,7 @@ InteractiveDataDisplay = {
     ZIndexTooltipLayer: 2000,
     factory: {} // table of values (key: string, plot-factory: jqDiv x master plot -> plot)
 };
-
-///#source 1 1 /script/idd.utils.js
-InteractiveDataDisplay = InteractiveDataDisplay || {};
+;InteractiveDataDisplay = InteractiveDataDisplay || {};
 
 // Utilities functions 
 InteractiveDataDisplay.Utils =
@@ -303,9 +291,7 @@ InteractiveDataDisplay.Utils =
             return _bbox;
         }
     };
-
-///#source 1 1 /script/idd.boundplots.js
-InteractiveDataDisplay = InteractiveDataDisplay || {};
+;InteractiveDataDisplay = InteractiveDataDisplay || {};
 InteractiveDataDisplay.Binding = InteractiveDataDisplay.Binding || {};
 
 (function () {
@@ -442,9 +428,7 @@ InteractiveDataDisplay.Binding = InteractiveDataDisplay.Binding || {};
         }
         return reach;
     };
-})();
-///#source 1 1 /script/idd.base.js
-// Registers new plot type
+})();;// Registers new plot type
 // key: string, plot-factory: jqDiv x master plot -> plot
 InteractiveDataDisplay.register = function (key, factory) {
     if (!key) throw 'key is undefined';
@@ -537,6 +521,8 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
                 return new InteractiveDataDisplay.GridlinesPlot(jqDiv, master);
             case "markers":
                 return new InteractiveDataDisplay.Markers(jqDiv, master);
+            case "area":
+                return new InteractiveDataDisplay.Area(jqDiv, master);
             case "bingMaps":
                 return new InteractiveDataDisplay.BingMapsPlot(jqDiv, master);
         }
@@ -614,6 +600,8 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
         var _isFlatRenderingOn = false;
         var _width, _height;
         var _name = "";
+        // Contains user-readable titles for data series of a plot. They should be used in tooltips and legends.
+        var _titles = {};
         // The flag is set in setVisibleRegion when it is called at me as a bound plot to notify that another plot is changed his visible.
         // I set this flag to suppress echo, i.e. I will not notify bound plots about my new visible rectangle.
         // The flag is reset when any other update request is received.
@@ -649,7 +637,6 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
         }
 
         var _constraint = undefined;
-
         var that = this;
 
         // Plot properties
@@ -807,6 +794,38 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
             }
         );
 
+        Object.defineProperty(this, "titles",
+            {
+                get: function () { return $.extend({}, _titles); },
+
+                // Allows to set titles for the plot's properties.
+                // E.g. "{ color:'age' }" sets the 'age' title for the color data series.
+                // Given titles are displayed in legends and tooltips.
+                set: function (titles) {
+                    this.setTitles(titles, false);
+                }
+            }
+        );
+
+        var _visibleRectConstraint = undefined;
+        Object.defineProperty(this, "visibleRectConstraint", {
+            get: function () { return _isMaster ? _visibleRectConstraint : _master.visibleRectConstraint; },
+            set: function (value) {
+                if (_isMaster) {
+                    if (_visibleRectConstraint !== value) {
+                        _visibleRectConstraint = value;
+                        if (_visibleRectConstraint !== undefined) {
+                            //_plot.updateLayout();
+                        }
+                    }
+                } else {
+                    _master.visibleRectConstraint = value;
+                }
+
+            },
+            configurable: false
+        });
+
         this.selfMapRefresh = function () {
             if (!_isMaster) {
                 return;
@@ -827,6 +846,21 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
                     }
                 }
             }
+        }
+
+        // Returns a user-readable title for a property of a plot.
+        // E.g. can return "age" for property "color".
+        // If there is no user-defined title, returns the given property name as it is.
+        this.getTitle = function (property) {
+            if (typeof _titles !== "undefined" && typeof _titles[property] !== "undefined")
+                return _titles[property];
+            return property;
+        }
+
+        this.setTitles = function (titles, suppressFireAppearanceChanged) {
+            _titles = titles;
+            if (!suppressFireAppearanceChanged)
+                this.fireAppearanceChanged();
         }
 
         // Uninitialize the plot (clears its input)
@@ -1236,6 +1270,12 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
                 if (bounds.x != bounds.x || bounds.y != bounds.y || bounds.width != bounds.width || bounds.height != bounds.height)
                     bounds = { x: 0, width: 1, y: 0, height: 1 }; // todo: this is an exceptional situation which should be properly handled
                 _plotRect = bounds;
+
+
+                if (_visibleRectConstraint !== undefined) {
+                    _plotRect = _visibleRectConstraint(_plotRect);
+                }
+
                 var padding = aggregated.isDefault ? { left: 0, top: 0, bottom: 0, right: 0 } : _master.aggregatePadding();
                 _coordinateTransform = InteractiveDataDisplay.Utils.calcCSWithPadding(_plotRect, screenSize, padding, _master.aspectRatio);
 
@@ -1278,6 +1318,11 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
                         bottom: paddingY !== undefined ? paddingY.bottom : 0,
                         right: paddingX !== undefined ? paddingX.right : 0
                     }
+                }
+
+
+                if (_visibleRectConstraint !== undefined) {
+                    _plotRect = _visibleRectConstraint(_plotRect);
                 }
 
                 if (padding !== undefined) {
@@ -1411,7 +1456,6 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
             if (that.isAutoFitEnabled) {
                 that.isAutoFitEnabled = false;
             }
-
 
             _plotRect = plotRect;
 
@@ -1713,13 +1757,30 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
             return plot;
         };
 
-        this.markers = function (name, data) {
+        this.markers = function (name, data, titles) {
             var plot = this.get(name);
             if (!plot) {
                 var div = $("<div></div>")
                            .attr("data-idd-name", name)
                            .appendTo(this.host);
                 plot = new InteractiveDataDisplay.Markers(div);
+                this.addChild(plot);
+            }
+            if (data !== undefined) {
+                plot.draw(data, titles);
+            }
+
+            return plot;
+        };
+
+        this.area = function (name, data) {
+            var plot = this.get(name);
+            if (!plot) {
+                var div = $("<div></div>")
+                           .attr("data-idd-name", name)
+                           .attr("data-idd-plot", "area")
+                           .appendTo(this.host);
+                plot = new InteractiveDataDisplay.Area(div);
                 this.addChild(plot);
             }
             if (data !== undefined) {
@@ -2411,10 +2472,18 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
             ctx.lineTo(20, 20);
             ctx.stroke();
 
-            var name = $("<span>" + this.name + "</span>").appendTo(div);
+            var that = this;
+            var nameDiv = $("<span class='idd-legend-item-title'></span>").appendTo(div);
+            var setName = function () {
+                nameDiv.text(that.name);
+            }
+            setName();
 
             this.host.bind("appearanceChanged",
-                function () {
+                function (event, propertyName) {
+                    if (!propertyName || propertyName == "name")
+                        setName();
+
                     ctx.clearRect(0, 0, canvas[0].width, canvas[0].height);
                     ctx.strokeStyle = _stroke;
                     ctx.lineWidth = _thickness;
@@ -2863,9 +2932,7 @@ var _initializeInteractiveDataDisplay = function () { // determines settings dep
         };
     }
     InteractiveDataDisplay.GridlinesPlot.prototype = new InteractiveDataDisplay.CanvasPlot;
-}();
-///#source 1 1 /script/idd.readers.js
-
+}();;
 InteractiveDataDisplay.readTable = function (jqPlotDiv) {
     var data = {};
     InteractiveDataDisplay.Utils.readStyle(jqPlotDiv, data);
@@ -2906,6 +2973,7 @@ InteractiveDataDisplay.readTable = function (jqPlotDiv) {
 
 InteractiveDataDisplay.Utils.getAndClearTextContent = function(jqElement)
 {
+    jqElement[0].normalize(); // In a normalized sub-tree, no text nodes in the sub-tree are empty and there are no adjacent text nodes
     // we take here first text node
     var content = jqElement.contents().filter(
         function () {
@@ -2992,9 +3060,7 @@ InteractiveDataDisplay.readCsv2d = function (jqDiv) {
     }
     return data;
 };
-
-///#source 1 1 /script/idd.axis.js
-InteractiveDataDisplay.InitializeAxis = function (div, params) {
+;InteractiveDataDisplay.InitializeAxis = function (div, params) {
     
     if (div.hasClass("idd-axis"))
         throw "The div element already is initialized as an axis";
@@ -4113,9 +4179,7 @@ InteractiveDataDisplay.TicksRenderer.getAxisType = function (dataTransform) {
     else
         return 'numeric';
 }
-
-///#source 1 1 /script/idd.palette.js
-InteractiveDataDisplay = InteractiveDataDisplay || {};
+;InteractiveDataDisplay = InteractiveDataDisplay || {};
 
 
 // Represents a mapping from a number to a value (e.g. a color)
@@ -4964,9 +5028,7 @@ InteractiveDataDisplay.palettes = {
                                                               { x: 1.0, rightColor: { h: 0, s: 0, l: 1, a: 1 }, leftColor: { h: 0, s: 0, l: 1, a: 1 } }])
 };
 
-
-///#source 1 1 /script/idd.gestures.js
-InteractiveDataDisplay.Gestures = {};
+;InteractiveDataDisplay.Gestures = {};
 InteractiveDataDisplay.Gestures.FullEventList = [
     "mousedown",
     "mousemove",
@@ -5053,9 +5115,9 @@ InteractiveDataDisplay.Gestures.createPanSubject = function (vc) {
 
     var _doc = $(document);
 
-    var mouseDown = vc.onAsObservable("mousedown");
-    var mouseMove = vc.onAsObservable("mousemove");
-    var mouseUp = _doc.onAsObservable("mouseup");
+    var mouseDown = Rx.Observable.fromEvent(vc, "mousedown");
+    var mouseMove = Rx.Observable.fromEvent(vc, "mousemove");
+    var mouseUp = Rx.Observable.fromEvent(_doc, "mouseup");
 
     var mouseMoves = mouseMove.skip(1).zip(mouseMove, function (left, right) {
         return new InteractiveDataDisplay.Gestures.PanGesture(left.clientX - right.clientX, left.clientY - right.clientY, "Mouse");
@@ -5072,7 +5134,7 @@ InteractiveDataDisplay.Gestures.createPanSubject = function (vc) {
 
 //Subject that converts input mouse events into Pin gestures
 InteractiveDataDisplay.Gestures.createPinSubject = function (vc) {
-    var mouseDown = vc.onAsObservable("mousedown");
+    var mouseDown = Rx.Observable.fromEvent(vc, "mousedown");
 
     return mouseDown.select(function (md) {
         return new InteractiveDataDisplay.Gestures.PinGesture("Mouse");
@@ -5090,13 +5152,13 @@ InteractiveDataDisplay.Gestures.createZoomSubject = function (vc) {
         vc.trigger(event);
     });
 
-    var mouseWheel = vc.onAsObservable("xbrowserwheel");
+    var mouseWheel = Rx.Observable.fromEvent(vc, "xbrowserwheel");
 
     var mouseWheels = mouseWheel.zip(mouseWheel, function (arg) {
         return new InteractiveDataDisplay.Gestures.ZoomGesture(arg.origin.x, arg.origin.y, arg.delta > 0 ? 1 / InteractiveDataDisplay.Gestures.zoomLevelFactor : 1 * InteractiveDataDisplay.Gestures.zoomLevelFactor, "Mouse");
     });
 
-    var mousedblclick = vc.onAsObservable("dblclick");
+    var mousedblclick = Rx.Observable.fromEvent(vc, "dblclick");
 
     var mousedblclicks = mousedblclick.zip(mousedblclick, function (event) {
         var origin = InteractiveDataDisplay.Gestures.getXBrowserMouseOrigin(vc, event);
@@ -5119,10 +5181,10 @@ InteractiveDataDisplay.Gestures.createZoomSubject = function (vc) {
 InteractiveDataDisplay.Gestures.createTouchPanSubject = function (vc) {
     var _doc = $(document);
 
-    var touchStart = vc.onAsObservable("touchstart");
-    var touchMove = vc.onAsObservable("touchmove");
-    var touchEnd = _doc.onAsObservable("touchend");
-    var touchCancel = _doc.onAsObservable("touchcancel");
+    var touchStart = Rx.Observable.fromEvent(vc, "touchstart");
+    var touchMove = Rx.Observable.fromEvent(vc, "touchmove");
+    var touchEnd = Rx.Observable.fromEvent(_doc, "touchend");
+    var touchCancel = Rx.Observable.fromEvent(_doc, "touchcancel");
 
     var gestures = touchStart.selectMany(function (o) {
         return touchMove.takeUntil(touchEnd.merge(touchCancel)).skip(1).zip(touchMove, function (left, right) {
@@ -5139,7 +5201,7 @@ InteractiveDataDisplay.Gestures.createTouchPanSubject = function (vc) {
 
 //Subject that converts input touch events into Pin gestures
 InteractiveDataDisplay.Gestures.createTouchPinSubject = function (vc) {
-    var touchStart = vc.onAsObservable("touchstart");
+    var touchStart = Rx.Observable.fromEvent(vc, "touchstart");
 
     return touchStart.select(function (ts) {
         return new InteractiveDataDisplay.Gestures.PinGesture("Touch");
@@ -5150,10 +5212,10 @@ InteractiveDataDisplay.Gestures.createTouchPinSubject = function (vc) {
 InteractiveDataDisplay.Gestures.createTouchZoomSubject = function (vc) {
     var _doc = $(document);
 
-    var gestureStart = vc.onAsObservable("gesturestart");
-    var gestureChange = vc.onAsObservable("gesturechange");
-    var gestureEnd = _doc.onAsObservable("gestureend");
-    var touchCancel = _doc.onAsObservable("touchcancel");
+    var gestureStart = Rx.Observable.fromEvent(vc, "gesturestart");
+    var gestureChange = Rx.Observable.fromEvent(vc, "gesturechange");
+    var gestureEnd = Rx.Observable.fromEvent(_doc, "gestureend");
+    var touchCancel = Rx.Observable.fromEvent(_doc, "touchcancel");
 
     var gestures = gestureStart.selectMany(function (o) {
         return gestureChange.takeUntil(gestureEnd.merge(touchCancel)).skip(1).zip(gestureChange, function (left, right) {
@@ -5178,9 +5240,9 @@ InteractiveDataDisplay.Gestures.createTouchZoomSubject = function (vc) {
 
 //Subject that converts input touch events (on win8+) into Pan gestures
 InteractiveDataDisplay.Gestures.createTouchPanSubjectWin8 = function (vc) {
-    var gestureStart = vc.onAsObservable("MSGestureStart");
-    var gestureChange = vc.onAsObservable("MSGestureChange");
-    var gestureEnd = $(document).onAsObservable("MSGestureEnd");
+    var gestureStart = Rx.Observable.fromEvent(vc, "MSGestureStart");
+    var gestureChange = Rx.Observable.fromEvent(vc, "MSGestureChange");
+    var gestureEnd = Rx.Observable.fromEvent($(document), "MSGestureEnd");
 
     var gestures = gestureStart.selectMany(function (o) {
         var changes = gestureChange.startWith({ originalEvent: { offsetX: o.originalEvent.offsetX, offsetY: o.originalEvent.offsetY } });
@@ -5199,7 +5261,7 @@ InteractiveDataDisplay.Gestures.createTouchPanSubjectWin8 = function (vc) {
 
 //Subject that converts input touch events (on win8+) into Pin gestures
 InteractiveDataDisplay.Gestures.createTouchPinSubjectWin8 = function (vc) {
-    var pointerDown = vc.onAsObservable("MSPointerDown");
+    var pointerDown = Rx.Observable.fromEvent(vc, "MSPointerDown");
 
     return pointerDown.select(function (gt) {
         return new InteractiveDataDisplay.Gestures.PinGesture("Touch");
@@ -5208,9 +5270,9 @@ InteractiveDataDisplay.Gestures.createTouchPinSubjectWin8 = function (vc) {
 
 //Subject that converts input touch events (on win8+) into Zoom gestures
 InteractiveDataDisplay.Gestures.createTouchZoomSubjectWin8 = function (vc) {
-    var gestureStart = vc.onAsObservable("MSGestureStart");
-    var gestureChange = vc.onAsObservable("MSGestureChange");
-    var gestureEnd = vc.onAsObservable("MSGestureEnd");
+    var gestureStart = Rx.Observable.fromEvent(vc, "MSGestureStart");
+    var gestureChange = Rx.Observable.fromEvent(vc, "MSGestureChange");
+    var gestureEnd = Rx.Observable.fromEvent(vc, "MSGestureEnd");
 
     var gestures = gestureStart.selectMany(function (o) {
 
@@ -5318,9 +5380,7 @@ InteractiveDataDisplay.Gestures.applyVerticalBehavior = function (gestureSequenc
             el.preventHorizontal = true;
         return el;
     });
-}
-///#source 1 1 /script/idd.transforms.js
-InteractiveDataDisplay = typeof InteractiveDataDisplay == 'undefined' ? {} : InteractiveDataDisplay;
+};InteractiveDataDisplay = typeof InteractiveDataDisplay == 'undefined' ? {} : InteractiveDataDisplay;
  
 InteractiveDataDisplay.DataTransform = function (dataToPlot, plotToData, domain, type) {
     this.dataToPlot = dataToPlot;
@@ -5365,9 +5425,7 @@ InteractiveDataDisplay.logTransform = new InteractiveDataDisplay.DataTransform(
     },
     { isInDomain: function (x) { return x > 0; } },
     "log10"
-);
-///#source 1 1 /script/idd.animation.js
-InteractiveDataDisplay.AnimationBase = function () {
+);;InteractiveDataDisplay.AnimationBase = function () {
     var _obs = undefined;
     var that = this;
 
@@ -5579,9 +5637,7 @@ InteractiveDataDisplay.PanZoomAnimation = function () {
 
 }
 
-InteractiveDataDisplay.PanZoomAnimation.prototype = new InteractiveDataDisplay.AnimationBase;
-///#source 1 1 /script/idd.bingMapsAnimation.js
-InteractiveDataDisplay.Utils.getPlotRectForMap = function (map, screenSize) {
+InteractiveDataDisplay.PanZoomAnimation.prototype = new InteractiveDataDisplay.AnimationBase;;InteractiveDataDisplay.Utils.getPlotRectForMap = function (map, screenSize) {
     var maxLat = 85.05112878;
 
     var _screenSize = screenSize === undefined ? { width: map.getWidth(), height: map.getHeight() } : screenSize;
@@ -5963,9 +6019,7 @@ InteractiveDataDisplay.BingMapsAnimation = function (map) {
 }
 
 InteractiveDataDisplay.BingMapsAnimation.prototype = new InteractiveDataDisplay.AnimationBase;
-
-///#source 1 1 /script/idd.navigation.js
-InteractiveDataDisplay.Navigation = function (_plot, _setVisibleRegion) {
+;InteractiveDataDisplay.Navigation = function (_plot, _setVisibleRegion) {
     var plot = _plot;
     var that = this;
 
@@ -6178,14 +6232,18 @@ InteractiveDataDisplay.NavigationUtils.calcZoomedRect = function (plotRect, coor
     return { x: newX - zoomGesture.scaleFactor * panOffsetX / scale.x, y: newY + zoomGesture.scaleFactor * panOffsetY / scale.y, width: newWidth, height: newHeight, zoomOrigin: { x: coordinateTransform.screenToPlotX(zoomGesture.xOrigin), y: coordinateTransform.screenToPlotY(zoomGesture.yOrigin) } };
 }
 
-
-///#source 1 1 /script/idd.multithreading.js
-//
+;//
 // (optional) onTaskCompleted: source x task -> unit 
 InteractiveDataDisplay.SharedRenderWorker = function (scriptUri, onTaskCompleted) {
     var isWorkerAvailable = !!window.Worker;
     if (!isWorkerAvailable && window.console) console.log("Web workers are not available");
-    var worker = isWorkerAvailable ? new Worker(scriptUri) : null;
+    var worker = null;
+    try {
+        worker = isWorkerAvailable ? new Worker(scriptUri) : null;
+    }
+    catch (e) {
+        console.error("Error creating Web worker from " + scriptUri + ": " + e.message);
+    }
     var isWorking = false;
     // Array of task source descriptors: { source, pendingTask, index /* in this array */ }
     var sources = [];
@@ -6226,7 +6284,7 @@ InteractiveDataDisplay.SharedRenderWorker = function (scriptUri, onTaskCompleted
         return undefined;
     };
 
-    if (isWorkerAvailable) {
+    if (worker) {
         worker.onmessage = function (event) {
             var task = event.data;
             var completedDescr = sources[task.sourceIndex];
@@ -6290,9 +6348,7 @@ InteractiveDataDisplay.SharedRenderWorker = function (scriptUri, onTaskCompleted
         };
     }
 }
-
-///#source 1 1 /script/idd.figure.js
-//Class for plots and axes arrangement. Takes into account "placement" property of an element use it for element arrangement
+;InteractiveDataDisplay.heatmapBackgroundRendererCodeBase64 = "SW50ZXJhY3RpdmVEYXRhRGlzcGxheSA9IHR5cGVvZiBJbnRlcmFjdGl2ZURhdGFEaXNwbGF5ID09ICd1bmRlZmluZWQnID8ge30gOiBJbnRlcmFjdGl2ZURhdGFEaXNwbGF5Ow0KIA0KSW50ZXJhY3RpdmVEYXRhRGlzcGxheS5EYXRhVHJhbnNmb3JtID0gZnVuY3Rpb24gKGRhdGFUb1Bsb3QsIHBsb3RUb0RhdGEsIGRvbWFpbiwgdHlwZSkgew0KICAgIHRoaXMuZGF0YVRvUGxvdCA9IGRhdGFUb1Bsb3Q7DQogICAgdGhpcy5wbG90VG9EYXRhID0gcGxvdFRvRGF0YTsNCg0KICAgIHRoaXMuZG9tYWluID0gZG9tYWluIHx8IHsNCiAgICAgICAgaXNJbkRvbWFpbjogZnVuY3Rpb24gKHZhbHVlKSB7DQogICAgICAgICAgICByZXR1cm4gdHJ1ZTsNCiAgICAgICAgfQ0KICAgIH07DQoNCiAgICB0aGlzLnR5cGUgPSB0eXBlOw0KfTsNCg0KdmFyIG1lcmNhdG9yX21heFBoaSA9IDg1LjA1MTEyODc4OyAvLzg3LjExNDc1NzYzNjMzODQ7IC8vIGRlZw0KdmFyIG1lcmNhdG9yX1IgPSBtZXJjYXRvcl9tYXhQaGkgLyBNYXRoLmxvZyhNYXRoLnRhbihtZXJjYXRvcl9tYXhQaGkgKiBNYXRoLlBJIC8gMzYwLjAgKyBNYXRoLlBJIC8gNCkpOw0KSW50ZXJhY3RpdmVEYXRhRGlzcGxheS5tZXJjYXRvclRyYW5zZm9ybSA9IG5ldyBJbnRlcmFjdGl2ZURhdGFEaXNwbGF5LkRhdGFUcmFuc2Zvcm0oDQogICAgZnVuY3Rpb24gKHBoaV9kZWcpIHsNCiAgICAgICAgaWYgKHBoaV9kZWcgPj0gLW1lcmNhdG9yX21heFBoaSAmJiBwaGlfZGVnIDw9IG1lcmNhdG9yX21heFBoaSkNCiAgICAgICAgICAgIHJldHVybiBtZXJjYXRvcl9SICogTWF0aC5sb2coTWF0aC50YW4oTWF0aC5QSSAqIChwaGlfZGVnICsgOTApIC8gMzYwKSk7DQogICAgICAgIGVsc2UgcmV0dXJuIHBoaV9kZWc7DQogICAgfSwNCiAgICBmdW5jdGlvbiAoeSkgew0KICAgICAgICBpZiAoLW1lcmNhdG9yX21heFBoaSA8PSB5ICYmIHkgPD0gbWVyY2F0b3JfbWF4UGhpKSB7DQogICAgICAgICAgICByZXR1cm4gMzYwICogTWF0aC5hdGFuKE1hdGguZXhwKHkgLyBtZXJjYXRvcl9SKSkgLyBNYXRoLlBJIC0gOTA7DQogICAgICAgIH0NCiAgICAgICAgcmV0dXJuIHk7DQogICAgfSwNCiAgICB1bmRlZmluZWQsDQogICAgIm1lcmNhdG9yIg0KKTsNCg0KDQpNYXRoLkxPR0UxMCA9IE1hdGgubG9nKDEwKTsNCg0KSW50ZXJhY3RpdmVEYXRhRGlzcGxheS5sb2dUcmFuc2Zvcm0gPSBuZXcgSW50ZXJhY3RpdmVEYXRhRGlzcGxheS5EYXRhVHJhbnNmb3JtKA0KICAgIGZ1bmN0aW9uICh4X2QpIHsNCiAgICAgICAgcmV0dXJuIE1hdGgubG9nKHhfZCkgLyBNYXRoLkxPR0UxMDsNCiAgICB9LA0KICAgIGZ1bmN0aW9uICh4X3ApIHsNCiAgICAgICAgcmV0dXJuIE1hdGgucG93KDEwLCB4X3ApOw0KICAgIH0sDQogICAgeyBpc0luRG9tYWluOiBmdW5jdGlvbiAoeCkgeyByZXR1cm4geCA+IDA7IH0gfSwNCiAgICAibG9nMTAiDQopOzsNCnNlbGYub25tZXNzYWdlID0gZnVuY3Rpb24gKGV2ZW50KSB7DQogICAgdmFyIHhzY2FsZSA9IGV2ZW50LmRhdGEuc2NhbGVYLCB4b2Zmc2V0ID0gZXZlbnQuZGF0YS5vZmZzZXRYLCB5c2NhbGUgPSBldmVudC5kYXRhLnNjYWxlWSwgeW9mZnNldCA9IGV2ZW50LmRhdGEub2Zmc2V0WTsNCiAgICB2YXIgZGF0YVRvU2NyZWVuWCwgZGF0YVRvU2NyZWVuWTsNCiAgICB2YXIgaGFzZHRYLCBoYXNkdFk7DQoNCiAgICBpZiAodHlwZW9mIGV2ZW50LmRhdGEueERhdGFUcmFuc2Zvcm0gPT0gJ3N0cmluZycpIHsNCiAgICAgICAgdmFyIGR0ID0gZ2V0RGF0YVRyYW5zZm9ybShldmVudC5kYXRhLnhEYXRhVHJhbnNmb3JtKTsNCiAgICAgICAgdmFyIGYgPSBkdC5kYXRhVG9QbG90Ow0KICAgICAgICBoYXNkdFggPSB0cnVlOw0KICAgICAgICBkYXRhVG9TY3JlZW5YID0gZnVuY3Rpb24gKHgpIHsNCiAgICAgICAgICAgIHJldHVybiBmKHgpICogeHNjYWxlICsgeG9mZnNldDsNCiAgICAgICAgfTsNCiAgICB9IGVsc2Ugew0KICAgICAgICBoYXNkdFggPSBmYWxzZTsNCiAgICAgICAgZGF0YVRvU2NyZWVuWCA9IGZ1bmN0aW9uICh4KSB7DQogICAgICAgICAgICByZXR1cm4geHNjYWxlICogeCArIHhvZmZzZXQ7DQogICAgICAgIH07DQogICAgfQ0KICAgIGlmICh0eXBlb2YgZXZlbnQuZGF0YS55RGF0YVRyYW5zZm9ybSA9PSAnc3RyaW5nJykgew0KICAgICAgICB2YXIgZHQgPSBnZXREYXRhVHJhbnNmb3JtKGV2ZW50LmRhdGEueURhdGFUcmFuc2Zvcm0pOw0KICAgICAgICB2YXIgZiA9IGR0LmRhdGFUb1Bsb3Q7DQogICAgICAgIGhhc2R0WSA9IHRydWU7DQogICAgICAgIGRhdGFUb1NjcmVlblkgPSBmdW5jdGlvbiAoeSkgew0KICAgICAgICAgICAgcmV0dXJuIHlvZmZzZXQgLSBmKHkpICogeXNjYWxlOw0KICAgICAgICB9Ow0KICAgIH0gZWxzZSB7DQogICAgICAgIGhhc2R0WSA9IGZhbHNlOw0KICAgICAgICBkYXRhVG9TY3JlZW5ZID0gZnVuY3Rpb24gKHkpIHsNCiAgICAgICAgICAgIHJldHVybiB5b2Zmc2V0IC0geSAqIHlzY2FsZTsNCiAgICAgICAgfTsNCiAgICB9DQoNCiAgICB2YXIgd2lkdGggPSBldmVudC5kYXRhLndpZHRoOw0KICAgIHZhciBoZWlnaHQgPSBldmVudC5kYXRhLmhlaWdodDsNCg0KICAgIGlmIChldmVudC5kYXRhLngubGVuZ3RoICE9IGV2ZW50LmRhdGEuZi5sZW5ndGgpIHsNCiAgICAgICAgcmVuZGVyTWF0cml4KGV2ZW50LmRhdGEuaW1hZ2UsIHdpZHRoLCBoZWlnaHQsIGV2ZW50LmRhdGEueCwgZXZlbnQuZGF0YS55LCBldmVudC5kYXRhLmYsIGV2ZW50LmRhdGEuZm1pbiwgZXZlbnQuZGF0YS5mbWF4LCBldmVudC5kYXRhLnBhbGV0dGUsIGV2ZW50LmRhdGEucGxvdFJlY3QsIGRhdGFUb1NjcmVlblgsIGRhdGFUb1NjcmVlblksIGhhc2R0WCwgaGFzZHRZKTsNCiAgICB9IGVsc2Ugew0KICAgICAgICB2YXIgc2NyZWVuVG9EYXRhWCwgc2NyZWVuVG9EYXRhWTsNCiAgICAgICAgeHNjYWxlX3IgPSAxIC8geHNjYWxlOw0KICAgICAgICB5c2NhbGVfciA9IDEgLyB5c2NhbGU7DQogICAgICAgIGlmIChoYXNkdFgpIHsNCiAgICAgICAgICAgIHZhciBwbG90VG9EYXRhID0gZHQucGxvdFRvRGF0YTsNCiAgICAgICAgICAgIHNjcmVlblRvRGF0YVggPSBmdW5jdGlvbiAoeHMpIHsNCiAgICAgICAgICAgICAgICByZXR1cm4gcGxvdFRvRGF0YSgoeHMgLSB4b2Zmc2V0KSAqIHhzY2FsZV9yKTsNCiAgICAgICAgICAgIH07DQogICAgICAgIH0gZWxzZSB7DQogICAgICAgICAgICBzY3JlZW5Ub0RhdGFYID0gZnVuY3Rpb24gKHhzKSB7DQogICAgICAgICAgICAgICAgcmV0dXJuICh4cyAtIHhvZmZzZXQpICogeHNjYWxlX3I7DQogICAgICAgICAgICB9Ow0KICAgICAgICB9DQogICAgICAgIGlmIChoYXNkdFkpIHsNCiAgICAgICAgICAgIHZhciBwbG90VG9EYXRhID0gZHQucGxvdFRvRGF0YTsNCiAgICAgICAgICAgIHNjcmVlblRvRGF0YVkgPSBmdW5jdGlvbiAoeXMpIHsNCiAgICAgICAgICAgICAgICByZXR1cm4gcGxvdFRvRGF0YSgoeW9mZnNldCAtIHlzKSAqIHlzY2FsZV9yKTsNCiAgICAgICAgICAgIH07DQogICAgICAgIH0gZWxzZSB7DQogICAgICAgICAgICBzY3JlZW5Ub0RhdGFZID0gZnVuY3Rpb24gKHlzKSB7DQogICAgICAgICAgICAgICAgcmV0dXJuICh5b2Zmc2V0IC0geXMpICogeXNjYWxlX3I7DQogICAgICAgICAgICB9Ow0KICAgICAgICB9DQogICAgICAgIHJlbmRlckdyYWRpZW50KGV2ZW50LmRhdGEuaW1hZ2UsIHdpZHRoLCBoZWlnaHQsIGV2ZW50LmRhdGEueCwgZXZlbnQuZGF0YS55LCBldmVudC5kYXRhLmYsIGV2ZW50LmRhdGEuZm1pbiwgZXZlbnQuZGF0YS5mbWF4LCBldmVudC5kYXRhLnBhbGV0dGUsIGV2ZW50LmRhdGEucGxvdFJlY3QsIGRhdGFUb1NjcmVlblgsIHNjcmVlblRvRGF0YVgsIGRhdGFUb1NjcmVlblksIHNjcmVlblRvRGF0YVksIGhhc2R0WCwgaGFzZHRZKTsNCiAgICB9DQogICAgZXZlbnQuZGF0YS54ID0gdW5kZWZpbmVkOw0KICAgIGV2ZW50LmRhdGEueSA9IHVuZGVmaW5lZDsNCiAgICBldmVudC5kYXRhLmYgPSB1bmRlZmluZWQ7DQogICAgZXZlbnQuZGF0YS5wYWxldHRlID0gdW5kZWZpbmVkOw0KICAgIHNlbGYucG9zdE1lc3NhZ2UoZXZlbnQuZGF0YSk7DQp9Ow0KDQp2YXIgZ2V0RGF0YVRyYW5zZm9ybSA9IGZ1bmN0aW9uICh0eXBlKSB7DQogICAgaWYgKHR5cGUgPT0gJ21lcmNhdG9yJykNCiAgICAgICAgcmV0dXJuIEludGVyYWN0aXZlRGF0YURpc3BsYXkubWVyY2F0b3JUcmFuc2Zvcm07DQogICAgdGhyb3cgJ1Vua25vd24gZGF0YSB0cmFuc2Zvcm0nOw0KfTsNCg0KDQp2YXIgcmVuZGVyTWF0cml4ID0gZnVuY3Rpb24gKGltYWdlLCB3aWR0aCwgaGVpZ2h0LCB4LCB5LCBmLCBmbWluLCBmbWF4LCBwYWxldHRlLCBwbG90UmVjdCwgZGF0YVRvU2NyZWVuWCwgZGF0YVRvU2NyZWVuWSwgaGFzRGF0YVRyYW5zZm9ybVgsIGhhc0RhdGFUcmFuc2Zvcm1ZKSB7DQogICAgdmFyIG4gPSB4Lmxlbmd0aDsNCiAgICB2YXIgbSA9IHkubGVuZ3RoOw0KICAgIHZhciBpbWFnZURhdGEgPSBpbWFnZS5kYXRhOw0KICAgIHZhciB3ID0gd2lkdGg7DQogICAgdmFyIGggPSBoZWlnaHQ7DQoNCiAgICB2YXIgaTAsIGowOw0KICAgIHZhciB4MCwgeTA7IC8vIGluIGRhdGEgc3BhY2UNCg0KDQogICAgLy8gcHJlY29tcHV0aW5nIHkgaW4gc2NyZWVuIGNvb3JkaW5hdGVzOg0KICAgIHZhciB5c2NyID0gbmV3IEZsb2F0MzJBcnJheShtKTsNCiAgICBmb3IgKHZhciBpID0gMDsgaSA8IG07IGkrKykNCiAgICAgICAgeXNjcltpXSA9IGRhdGFUb1NjcmVlblkoeVtpXSkgfCAwOyAvLyBmbG9vcjsNCg0KICAgIC8vIHN0YXJ0IGNlbGwNCiAgICB2YXIgbGVmdHAgPSBwbG90UmVjdC54Ow0KICAgIHZhciByaWdodHAgPSBsZWZ0cCArIHBsb3RSZWN0LndpZHRoOw0KICAgIGlmIChoYXNEYXRhVHJhbnNmb3JtWCkgew0KICAgICAgICBmb3IgKGkwID0gMDsgaTAgPCBuOyBpMCsrKSB7DQogICAgICAgICAgICBpZiAoZGF0YVRvU2NyZWVuWCh4W2kwXSkgPj0gMCkgew0KICAgICAgICAgICAgICAgIGlmIChpMCA9PSAwKSBpMCsrOw0KICAgICAgICAgICAgICAgIGJyZWFrOw0KICAgICAgICAgICAgfQ0KICAgICAgICB9DQogICAgfSBlbHNlIHsNCiAgICAgICAgZm9yIChpMCA9IDA7IGkwIDwgbjsgaTArKykgew0KICAgICAgICAgICAgaWYgKHhbaTBdID49IGxlZnRwKSB7DQogICAgICAgICAgICAgICAgaWYgKGkwID09IDApIGkwKys7DQogICAgICAgICAgICAgICAgYnJlYWs7DQogICAgICAgICAgICB9DQogICAgICAgIH0NCiAgICB9DQogICAgaWYgKGkwID09IG4pIHJldHVybjsNCg0KICAgIHZhciBib3R0b21wID0gcGxvdFJlY3QueTsNCiAgICB2YXIgdG9wcCA9IGJvdHRvbXAgKyBwbG90UmVjdC5oZWlnaHQ7DQogICAgZm9yIChqMCA9IDA7IGowIDwgbTsgajArKykgew0KICAgICAgICBpZiAoeXNjcltqMF0gPCBoKSB7DQogICAgICAgICAgICBpZiAoajAgPT0gMCkgajArKzsNCiAgICAgICAgICAgIGJyZWFrOw0KICAgICAgICB9DQogICAgfQ0KICAgIGlmIChqMCA9PSBtKSByZXR1cm47DQoNCiAgICAvLyByZW5kZXJpbmcgZnJvbSBsZWZ0IHRvIHJpZ2h0LCBib3R0b20gdG8gdG9wDQogICAgdmFyIGNlbGxMZWZ0X3MgPSAwLCBjZWxsUmlnaHRfcyA9IDA7DQoNCiAgICB2YXIgaXNOb3JtYWxpemVkID0gcGFsZXR0ZS5pc05vcm1hbGl6ZWQ7DQogICAgdmFyIGNvbG9ycyA9IHBhbGV0dGUuY29sb3JzOw0KICAgIHZhciBjb2xOID0gKGNvbG9ycy5sZW5ndGggPj4gMikgLSAxOw0KICAgIGlmICghaXNOb3JtYWxpemVkKSB7DQogICAgICAgIGZtYXggPSBwYWxldHRlLnJhbmdlLm1heDsNCiAgICAgICAgZm1pbiA9IHBhbGV0dGUucmFuZ2UubWluOw0KICAgIH0NCiAgICB2YXIgcGFsZXR0ZUsgPSBmbWF4ICE9PSBmbWluID8gMS4wIC8gKGZtYXggLSBmbWluKSA6IDA7DQoNCiAgICBmb3IgKHZhciBpID0gaTA7IGkgPCBuICYmIGNlbGxSaWdodF9zIDwgdzsgaSsrKSB7DQogICAgICAgIC8vIGkwIGlzIHRoZSByaWdodCB2aXNpYmxlIGVkZ2Ugb2YgdGhlIGNlbGwNCiAgICAgICAgeDAgPSB4W2kgLSAxXTsNCiAgICAgICAgdmFyIHgxID0geFtpXTsNCg0KICAgICAgICBpZiAoeDAgIT0geDAgfHwgeDEgIT0geDEpIHsNCiAgICAgICAgICAgIGNlbGxSaWdodF9zID0gdW5kZWZpbmVkOw0KICAgICAgICAgICAgY29udGludWU7DQogICAgICAgIH0NCg0KICAgICAgICBpZiAoY2VsbFJpZ2h0X3MpDQogICAgICAgICAgICBjZWxsTGVmdF9zID0gY2VsbFJpZ2h0X3M7DQogICAgICAgIGVsc2UNCiAgICAgICAgICAgIGNlbGxMZWZ0X3MgPSBNYXRoLmNlaWwoZGF0YVRvU2NyZWVuWCh4MCkpOw0KDQogICAgICAgIGNlbGxSaWdodF9zID0gTWF0aC5jZWlsKGRhdGFUb1NjcmVlblgoeDEpKTsNCiAgICAgICAgaWYgKGNlbGxMZWZ0X3MgPCAwKSBjZWxsTGVmdF9zID0gMDsNCiAgICAgICAgaWYgKGNlbGxSaWdodF9zID49IHcpIGNlbGxSaWdodF9zID0gdzsNCg0KICAgICAgICAvL2lmIChpID09IG4gLSAxKSBjZWxsUmlnaHRfcysrOw0KICAgICAgICBpZiAoY2VsbFJpZ2h0X3MgLSBjZWxsTGVmdF9zID09IDApIGNvbnRpbnVlOw0KDQogICAgICAgIHkwID0geVtqMCAtIDFdOw0KICAgICAgICB2YXIgY2VsbEJvdHRvbV9zID0gMCwNCiAgICAgICAgICAgIGNlbGxUb3BfcyA9IHlzY3JbajAgLSAxXTsNCiAgICAgICAgZm9yICh2YXIgaiA9IGowOyBqIDwgbSAmJiBjZWxsQm90dG9tX3MgPj0gMDsgaisrKSB7DQogICAgICAgICAgICB5MCA9IHlbaiAtIDFdOw0KICAgICAgICAgICAgdmFyIHkxID0geVtqXTsNCg0KICAgICAgICAgICAgaWYgKHkwICE9IHkwIHx8IHkxICE9IHkxKSB7DQogICAgICAgICAgICAgICAgY2VsbFRvcF9zID0gdW5kZWZpbmVkOw0KICAgICAgICAgICAgICAgIGNvbnRpbnVlOw0KICAgICAgICAgICAgfQ0KDQogICAgICAgICAgICBpZiAoY2VsbFRvcF9zKQ0KICAgICAgICAgICAgICAgIGNlbGxCb3R0b21fcyA9IGNlbGxUb3BfczsNCiAgICAgICAgICAgIGVsc2UNCiAgICAgICAgICAgICAgICBjZWxsQm90dG9tX3MgPSB5c2NyW2ogLSAxXTsNCiAgICAgICAgICAgIGNlbGxUb3BfcyA9IHlzY3Jbal07DQogICAgICAgICAgICBpZiAoY2VsbFRvcF9zIDwgMCkgY2VsbFRvcF9zID0gLTE7DQogICAgICAgICAgICBpZiAoY2VsbEJvdHRvbV9zID49IGgpIGNlbGxCb3R0b21fcyA9IGggLSAxOw0KDQogICAgICAgICAgICBpZiAoY2VsbFRvcF9zIC0gY2VsbEJvdHRvbV9zID09IDApIGNvbnRpbnVlOw0KDQogICAgICAgICAgICB2YXIgX2YgPSBmW2kgLSAxXVtqIC0gMV07DQogICAgICAgICAgICBpZiAoX2YgIT0gX2YpIGNvbnRpbnVlOw0KICAgICAgICAgICAgdmFyIHBhbGV0dGVWYWwgPSBwYWxldHRlSyAqIChfZiAtIGZtaW4pOw0KICAgICAgICAgICAgdmFyIGsgPSAocGFsZXR0ZVZhbCAqIGNvbE4pIHwgMDsNCiAgICAgICAgICAgIGlmIChrIDwgMCkgayA9IDA7DQogICAgICAgICAgICBlbHNlIGlmIChrID4gY29sTikgayA9IGNvbE47DQogICAgICAgICAgICBrID0gayA8PCAyOw0KDQogICAgICAgICAgICAvLyBmaWxscyB0aGUgY2VsbCB3aXRoIHNhbWUgY29sb3INCiAgICAgICAgICAgIGZvciAodmFyIHlzID0gY2VsbFRvcF9zICsgMTsgeXMgPD0gY2VsbEJvdHRvbV9zOyB5cysrKSB7DQogICAgICAgICAgICAgICAgdmFyIGluZGV4ID0gKHcgKiB5cyArIGNlbGxMZWZ0X3MpIDw8IDI7DQogICAgICAgICAgICAgICAgZm9yICh2YXIgeHMgPSBjZWxsTGVmdF9zOyB4cyA8IGNlbGxSaWdodF9zOyB4cysrKSB7DQogICAgICAgICAgICAgICAgICAgIGltYWdlRGF0YVtpbmRleCsrXSA9IGNvbG9yc1trXTsNCiAgICAgICAgICAgICAgICAgICAgaW1hZ2VEYXRhW2luZGV4KytdID0gY29sb3JzW2sgKyAxXTsNCiAgICAgICAgICAgICAgICAgICAgaW1hZ2VEYXRhW2luZGV4KytdID0gY29sb3JzW2sgKyAyXTsNCiAgICAgICAgICAgICAgICAgICAgaW1hZ2VEYXRhW2luZGV4KytdID0gY29sb3JzW2sgKyAzXTsNCiAgICAgICAgICAgICAgICB9DQogICAgICAgICAgICB9DQogICAgICAgICAgICBpZiAoY2VsbFRvcF9zIDw9IDApIGJyZWFrOw0KICAgICAgICB9DQogICAgICAgIGlmIChjZWxsUmlnaHRfcyA+PSB3KSBicmVhazsNCiAgICB9DQp9Ow0KDQoNCnZhciByZW5kZXJHcmFkaWVudCA9IGZ1bmN0aW9uIChpbWFnZSwgd2lkdGgsIGhlaWdodCwgeCwgeSwgZiwgZm1pbiwgZm1heCwgcGFsZXR0ZSwgcGxvdFJlY3QsIGRhdGFUb1NjcmVlblgsIHNjcmVlblRvRGF0YVgsIGRhdGFUb1NjcmVlblksIHNjcmVlblRvRGF0YVksIGhhc0RhdGFUcmFuc2Zvcm1YLCBoYXNEYXRhVHJhbnNmb3JtWSkgew0KICAgIHZhciBuID0geC5sZW5ndGg7DQogICAgdmFyIG0gPSB5Lmxlbmd0aDsNCiAgICB2YXIgaW1hZ2VEYXRhID0gaW1hZ2UuZGF0YTsNCiAgICB2YXIgdyA9IHdpZHRoOw0KICAgIHZhciBoID0gaGVpZ2h0Ow0KDQogICAgLy8gcHJlY29tcHV0aW5nIHkgaW4gc2NyZWVuIGNvb3JkaW5hdGVzOg0KICAgIHZhciB5c2NyID0gbmV3IEZsb2F0MzJBcnJheShtKTsNCiAgICBmb3IgKHZhciBpID0gMDsgaSA8IG07IGkrKykNCiAgICAgICAgeXNjcltpXSA9IGRhdGFUb1NjcmVlblkoeVtpXSkgfCAwOyAvLyBmbG9vcjsNCg0KICAgIC8vIHByZXBhcmluZyBzY3JlZW4gdG8gZGF0YSBtYXBwaW5nDQogICAgdmFyIG1hcFNjcmVlblRvRGF0YVggPSBuZXcgRmxvYXQzMkFycmF5KHcpOw0KICAgIGZvciAodmFyIHhzID0gMDsgeHMgPCB3OyB4cysrKSB7DQogICAgICAgIG1hcFNjcmVlblRvRGF0YVhbeHNdID0gc2NyZWVuVG9EYXRhWCh4cyArIDAuNSk7IC8vIHRvZG86IG1ha2UgaW5saW5lIHRyYW5zZm9ybSBmb3IgbGluZWFyIGNhc2UNCiAgICB9DQogICAgdmFyIG1hcFNjcmVlblRvRGF0YVkgPSBuZXcgRmxvYXQzMkFycmF5KGgpOw0KICAgIGZvciAodmFyIHlzID0gMDsgeXMgPCBoOyB5cysrKSB7DQogICAgICAgIG1hcFNjcmVlblRvRGF0YVlbeXNdID0gc2NyZWVuVG9EYXRhWSh5cyArIDAuNSk7IC8vIHRvZG86IG1ha2UgaW5saW5lIHRyYW5zZm9ybSBmb3IgbGluZWFyIGNhc2UNCiAgICB9DQoNCiAgICB2YXIgaTAsIGowOw0KICAgIHZhciB4MCwgeTA7IC8vIGluIGRhdGEgc3BhY2UNCg0KICAgIC8vIHN0YXJ0IGNlbGwNCiAgICB2YXIgbGVmdHAgPSBwbG90UmVjdC54Ow0KICAgIHZhciByaWdodHAgPSBsZWZ0cCArIHBsb3RSZWN0LndpZHRoOw0KICAgIGlmIChoYXNEYXRhVHJhbnNmb3JtWCkgew0KICAgICAgICBmb3IgKGkwID0gMDsgaTAgPCBuOyBpMCsrKSB7DQogICAgICAgICAgICBpZiAoZGF0YVRvU2NyZWVuWCh4W2kwXSkgPj0gMCkgew0KICAgICAgICAgICAgICAgIGlmIChpMCA9PSAwKSBpMCsrOw0KICAgICAgICAgICAgICAgIGJyZWFrOw0KICAgICAgICAgICAgfQ0KICAgICAgICB9DQogICAgfSBlbHNlIHsNCiAgICAgICAgZm9yIChpMCA9IDA7IGkwIDwgbjsgaTArKykgew0KICAgICAgICAgICAgaWYgKHhbaTBdID49IGxlZnRwKSB7DQogICAgICAgICAgICAgICAgaWYgKGkwID09IDApIGkwKys7DQogICAgICAgICAgICAgICAgYnJlYWs7DQogICAgICAgICAgICB9DQogICAgICAgIH0NCiAgICB9DQogICAgaWYgKGkwID09IG4pIHJldHVybjsNCg0KICAgIHZhciBib3R0b21wID0gcGxvdFJlY3QueTsNCiAgICB2YXIgdG9wcCA9IGJvdHRvbXAgKyBwbG90UmVjdC5oZWlnaHQ7DQogICAgZm9yIChqMCA9IDA7IGowIDwgbTsgajArKykgew0KICAgICAgICBpZiAoeXNjcltqMF0gPCBoKSB7DQogICAgICAgICAgICBpZiAoajAgPT0gMCkgajArKzsNCiAgICAgICAgICAgIGJyZWFrOw0KICAgICAgICB9DQogICAgfQ0KICAgIGlmIChqMCA9PSBtKSByZXR1cm47DQoNCiAgICAvLyByZW5kZXJpbmcgZnJvbSBsZWZ0IHRvIHJpZ2h0LCBib3R0b20gdG8gdG9wDQogICAgdmFyIGNlbGxMZWZ0X3MgPSAwLCBjZWxsUmlnaHRfcyA9IDA7DQoNCiAgICB2YXIgaXNOb3JtYWxpemVkID0gcGFsZXR0ZS5pc05vcm1hbGl6ZWQ7DQogICAgdmFyIGNvbG9ycyA9IHBhbGV0dGUuY29sb3JzOw0KICAgIHZhciBjb2xOID0gKGNvbG9ycy5sZW5ndGggPj4gMikgLSAxOw0KICAgIGlmICghaXNOb3JtYWxpemVkKSB7DQogICAgICAgIGZtYXggPSBwYWxldHRlLnJhbmdlLm1heDsNCiAgICAgICAgZm1pbiA9IHBhbGV0dGUucmFuZ2UubWluOw0KICAgIH0NCiAgICB2YXIgcGFsZXR0ZUsgPSBmbWF4ICE9PSBmbWluID8gMS4wIC8gKGZtYXggLSBmbWluKSA6IDA7DQoNCiAgICB2YXIgZmxiLCBmbHQsIGZydCwgZnJiOw0KICAgIHZhciBmaSwgZmkxOw0KDQogICAgLy8gcmVuZGVyaW5nIHRoZSBpbWFnZQ0KICAgIGZvciAodmFyIGkgPSBpMDsgaSA8IG4gJiYgY2VsbFJpZ2h0X3MgPCB3OyBpKyspIHsNCiAgICAgICAgLy8gaTAgaXMgdGhlIHJpZ2h0IHZpc2libGUgZWRnZSBvZiB0aGUgY2VsbA0KICAgICAgICB4MCA9IHhbaSAtIDFdOw0KICAgICAgICB2YXIgeDEgPSB4W2ldOw0KICAgICAgICBpZiAoeDAgIT0geDAgfHwgeDEgIT0geDEpIHsgLy8gYSAhPSBhICBlcXVpdi4gaXNOYU4oYSkNCiAgICAgICAgICAgIGNlbGxSaWdodF9zID0gdW5kZWZpbmVkOw0KICAgICAgICAgICAgY29udGludWU7DQogICAgICAgIH0NCg0KICAgICAgICBpZiAoY2VsbFJpZ2h0X3MpDQogICAgICAgICAgICBjZWxsTGVmdF9zID0gY2VsbFJpZ2h0X3M7DQogICAgICAgIGVsc2UNCiAgICAgICAgICAgIGNlbGxMZWZ0X3MgPSBNYXRoLmNlaWwoZGF0YVRvU2NyZWVuWCh4MCkpOw0KICAgICAgICBjZWxsUmlnaHRfcyA9IE1hdGguY2VpbChkYXRhVG9TY3JlZW5YKHgxKSk7DQogICAgICAgIGlmIChjZWxsTGVmdF9zIDwgMCkgY2VsbExlZnRfcyA9IDA7DQogICAgICAgIGlmIChjZWxsUmlnaHRfcyA+PSB3KSBjZWxsUmlnaHRfcyA9IHc7DQogICAgICAgIGlmIChjZWxsUmlnaHRfcyAtIGNlbGxMZWZ0X3MgPT0gMCkgY29udGludWU7DQoNCiAgICAgICAgdmFyIGNlbGxCb3R0b21fcyA9IDAsIGNlbGxUb3BfcyA9IDA7DQogICAgICAgIGZpID0gZltpXTsNCiAgICAgICAgZmkxID0gZltpIC0gMV07DQogICAgICAgIGZvciAodmFyIGogPSBqMDsgaiA8IG0gJiYgY2VsbEJvdHRvbV9zID49IDA7IGorKykgew0KICAgICAgICAgICAgeTAgPSB5W2ogLSAxXTsNCiAgICAgICAgICAgIHZhciB5MSA9IHlbal07DQogICAgICAgICAgICBpZiAoeTAgIT0geTAgfHwgeTEgIT0geTEpIHsNCiAgICAgICAgICAgICAgICBjZWxsVG9wX3MgPSB1bmRlZmluZWQ7DQogICAgICAgICAgICAgICAgY29udGludWU7DQogICAgICAgICAgICB9DQoNCiAgICAgICAgICAgIGlmIChjZWxsVG9wX3MpDQogICAgICAgICAgICAgICAgY2VsbEJvdHRvbV9zID0gY2VsbFRvcF9zOw0KICAgICAgICAgICAgZWxzZQ0KICAgICAgICAgICAgICAgIGNlbGxCb3R0b21fcyA9IHlzY3JbaiAtIDFdOw0KICAgICAgICAgICAgY2VsbFRvcF9zID0geXNjcltqXTsNCiAgICAgICAgICAgIGlmIChjZWxsVG9wX3MgPCAwKSBjZWxsVG9wX3MgPSAtMTsNCiAgICAgICAgICAgIGlmIChjZWxsQm90dG9tX3MgPj0gaCkgY2VsbEJvdHRvbV9zID0gaCAtIDE7DQogICAgICAgICAgICBpZiAoY2VsbEJvdHRvbV9zIC0gY2VsbFRvcF9zID09IDApIGNvbnRpbnVlOw0KDQogICAgICAgICAgICAvLyBmaWxscyB0aGUgY2VsbA0KICAgICAgICAgICAgZmx0ID0gZmkxW2pdOw0KICAgICAgICAgICAgZmxiID0gZmkxW2ogLSAxXTsNCiAgICAgICAgICAgIGZydCA9IGZpW2pdOw0KICAgICAgICAgICAgZnJiID0gZmlbaiAtIDFdOw0KDQogICAgICAgICAgICBpZiAoZmx0ICE9IGZsdCB8fCBmbGIgIT0gZmxiIHx8IGZydCAhPSBmcnQgfHwgZnJiICE9IGZyYikNCiAgICAgICAgICAgICAgICBjb250aW51ZTsNCg0KICAgICAgICAgICAgdmFyIGt5TGVmdCA9IChmbHQgLSBmbGIpIC8gKHkxIC0geTApOw0KICAgICAgICAgICAgdmFyIGt5UmlnaHQgPSAoZnJ0IC0gZnJiKSAvICh5MSAtIHkwKTsNCiAgICAgICAgICAgIGZvciAodmFyIHlzID0gY2VsbFRvcF9zICsgMTsgeXMgPD0gY2VsbEJvdHRvbV9zOyB5cysrKSB7DQogICAgICAgICAgICAgICAgdmFyIGluZGV4ID0gKHcgKiB5cyArIGNlbGxMZWZ0X3MpIDw8IDI7DQogICAgICAgICAgICAgICAgdmFyIF95ID0gbWFwU2NyZWVuVG9EYXRhWVt5c107DQogICAgICAgICAgICAgICAgdmFyIGZsZWZ0ID0ga3lMZWZ0ICogKF95IC0geTApICsgZmxiOw0KICAgICAgICAgICAgICAgIHZhciBmcmlnaHQgPSBreVJpZ2h0ICogKF95IC0geTApICsgZnJiOw0KICAgICAgICAgICAgICAgIHZhciBreCA9IChmcmlnaHQgLSBmbGVmdCkgLyAoeDEgLSB4MCk7DQoNCiAgICAgICAgICAgICAgICBmb3IgKHZhciB4cyA9IGNlbGxMZWZ0X3M7IHhzIDwgY2VsbFJpZ2h0X3M7IHhzKyspIHsNCiAgICAgICAgICAgICAgICAgICAgdmFyIF94ID0gbWFwU2NyZWVuVG9EYXRhWFt4c107DQogICAgICAgICAgICAgICAgICAgIHZhciBfZiA9IGt4ICogKF94IC0geDApICsgZmxlZnQ7DQogICAgICAgICAgICAgICAgICAgIHZhciBwYWxldHRlVmFsID0gcGFsZXR0ZUsgKiAoX2YgLSBmbWluKTsNCiAgICAgICAgICAgICAgICAgICAgdmFyIGsgPSAocGFsZXR0ZVZhbCAqIGNvbE4pIHwgMDsNCiAgICAgICAgICAgICAgICAgICAgaWYgKGsgPCAwKSBrID0gMDsNCiAgICAgICAgICAgICAgICAgICAgZWxzZSBpZiAoayA+IGNvbE4pIGsgPSBjb2xOOw0KICAgICAgICAgICAgICAgICAgICBrID0gayA8PCAyOw0KDQogICAgICAgICAgICAgICAgICAgIC8vdmFyIGNvbG9yID0gZ2V0Q29sb3IocGFsZXR0ZVZhbCk7DQogICAgICAgICAgICAgICAgICAgIC8vaWYgKHhzID09IGNlbGxMZWZ0X3MgfHwgeHMgPT0gY2VsbFJpZ2h0X3MgLSAxIHx8ICAvKiB1bmNvbW1lbnQgdG8gZHJhdyB0aGUgYm9yZGVyIG9mIGNlbGxzICovDQogICAgICAgICAgICAgICAgICAgIC8vICAgIHlzID09IGNlbGxUb3BfcyArIDEgfHwgeXMgPT0gY2VsbEJvdHRvbV9zKQ0KICAgICAgICAgICAgICAgICAgICAvLyAgICBjb2xvciA9IHsgYTogMSwgcjogMCwgZzogMCwgYjogMjU1IH07DQoNCiAgICAgICAgICAgICAgICAgICAgaW1hZ2VEYXRhW2luZGV4KytdID0gY29sb3JzW2srK107DQogICAgICAgICAgICAgICAgICAgIGltYWdlRGF0YVtpbmRleCsrXSA9IGNvbG9yc1trKytdOw0KICAgICAgICAgICAgICAgICAgICBpbWFnZURhdGFbaW5kZXgrK10gPSBjb2xvcnNbaysrXTsNCiAgICAgICAgICAgICAgICAgICAgaW1hZ2VEYXRhW2luZGV4KytdID0gY29sb3JzW2tdOw0KICAgICAgICAgICAgICAgIH0NCiAgICAgICAgICAgIH0NCiAgICAgICAgICAgIGlmIChjZWxsVG9wX3MgPD0gMCkgYnJlYWs7DQogICAgICAgIH0NCiAgICAgICAgaWYgKGNlbGxSaWdodF9zID49IHcpIGJyZWFrOw0KICAgIH0NCn07DQoNCg==";;//Class for plots and axes arrangement. Takes into account "placement" property of an element use it for element arrangement
 InteractiveDataDisplay.Figure = function (div, master) {
     if (master !== undefined)
         throw "Figure cannot be a dependent plot";
@@ -6860,9 +6916,7 @@ InteractiveDataDisplay.Figure = function (div, master) {
     this.requestUpdateLayout();
 }
 
-InteractiveDataDisplay.Figure.prototype = new InteractiveDataDisplay.Plot;
-///#source 1 1 /script/idd.chart.js
-InteractiveDataDisplay.Chart = function (div, master) {
+InteractiveDataDisplay.Figure.prototype = new InteractiveDataDisplay.Plot;;InteractiveDataDisplay.Chart = function (div, master) {
     if (!div) return;
 
     if (master !== undefined)
@@ -6969,9 +7023,7 @@ InteractiveDataDisplay.Chart = function (div, master) {
 
 
 
-InteractiveDataDisplay.Chart.prototype = new InteractiveDataDisplay.Figure;
-///#source 1 1 /script/idd.markers.js
-// Represents a custom marker to be provided as a shape to a markers plot.
+InteractiveDataDisplay.Chart.prototype = new InteractiveDataDisplay.Figure;;// Represents a custom marker to be provided as a shape to a markers plot.
 // draw is a function (marker, plotRect, screenSize, transform, context) 
 //    it is called once for each marker to render it on a canvas
 //    marker is an object with properties representing a slice of data provided in MarkerPlot.draw() method
@@ -7046,7 +7098,7 @@ InteractiveDataDisplay.Markers = function (div, master) {
     // border (optional) is a color, value "none" means no border.
     // size is either a number, or an array of numbers (length(size) = length(y)) those are sizes in pixel or values for sizePalette.
     // sizePalette is InteractiveDataDisplay.SizePalette, if size is an array of numbers it is used to get the pixel size of a marker by size element.
-    this.draw = function (data) {
+    this.draw = function (data, titles) {
         var y2 = data.y;
         if (!y2) throw "Data series y is undefined";
         var n = y2.length;
@@ -7078,12 +7130,13 @@ InteractiveDataDisplay.Markers = function (div, master) {
             if (!isStandartShape(_shape))
                 _shape = eval(_shape);
         }
-
+        
         _dataUpdated = true;
 
         this.invalidateLocalBounds();
 
         this.requestNextFrameOrUpdate();
+        this.setTitles(titles, true);
         this.fireAppearanceChanged();
     };
 
@@ -7524,10 +7577,11 @@ InteractiveDataDisplay.Markers = function (div, master) {
             var content = undefined;
             for (var prop in markerInfo) {
                 if (markerInfo.hasOwnProperty(prop)) {
+                    var propTitle = that.getTitle(prop);
                     if (content)
-                        content += "<br/><b>" + prop + "</b>: " + markerInfo[prop];
+                        content += "<br/><b>" + propTitle + "</b>: " + markerInfo[prop];
                     else
-                        content = "<b>" + prop + "</b>: " + markerInfo[prop];
+                        content = "<b>" + propTitle + "</b>: " + markerInfo[prop];
                 }
             }
             return "<div>" + content + "</div>";
@@ -7638,6 +7692,7 @@ InteractiveDataDisplay.Markers = function (div, master) {
     });
 
     this.getLegend = function () {
+        var that = this;
         var div = $("<div class='idd-legend-item'></div>");
 
         var itemDiv = $("<div></div>").appendTo(div);
@@ -7657,7 +7712,11 @@ InteractiveDataDisplay.Markers = function (div, master) {
         var canvasStyle = canvas[0].style;
         var context = canvas.get(0).getContext("2d");
 
-        var name = $("<span style='vertical-align: top'>" + this.name + "</span>").appendTo(itemDiv);
+        var nameDiv = $("<span class='idd-legend-item-title'></span>").appendTo(itemDiv);
+        var setName = function () {
+            nameDiv.text(that.name);
+        }
+        setName();
 
         var item, itemDivStyle;
         var itemIsVisible = 0;
@@ -7670,16 +7729,22 @@ InteractiveDataDisplay.Markers = function (div, master) {
         var sizeDiv, sizeDivStyle, sizeControl;
         var sizeIsVisible = 0;
 
+        var sizeTitle;
         var refreshSize = function () {
             sizeIsArray = InteractiveDataDisplay.Utils.isArray(_data.size);
             if (sizeIsArray) {
                 size = maxSize;
                 if (_sizePalette) {
+                    var szTitleText = that.getTitle("size");
                     if (sizeIsVisible == 0) {
                         sizeDiv = $("<div style='width: 170px; margin-top: 5px; margin-bottom: 5px'></div>").appendTo(div);
+                        sizeTitle = $("<div class='idd-legend-item-property'></div>").text(szTitleText).appendTo(sizeDiv);
                         sizeDivStyle = sizeDiv[0].style;
-                        sizeControl = new InteractiveDataDisplay.SizePaletteViewer(sizeDiv);
+                        var paletteDiv = $("<div></div>").appendTo(sizeDiv);
+                        sizeControl = new InteractiveDataDisplay.SizePaletteViewer(paletteDiv);
                         sizeIsVisible = 2;
+                    } else {
+                        sizeTitle.text(szTitleText);
                     }
                     sizeControl.palette = _sizePalette;
                     if (_sizePalette.isNormalized) {
@@ -7701,15 +7766,21 @@ InteractiveDataDisplay.Markers = function (div, master) {
             halfSize = size / 2;
         };
 
+        var colorTitle;
         var refreshColor = function () {
             colorIsArray = InteractiveDataDisplay.Utils.isArray(_data.color);
             drawBorder = false;
             if (colorIsArray && _colorPalette) {
-                if (colorIsVisible == 0) {
+                var clrTitleText = that.getTitle("color");
+                if (colorIsVisible == 0) {                    
                     colorDiv = $("<div style='width: 170px; margin-top: 5px; margin-bottom: 5px'></div>").appendTo(div);
+                    colorTitle = $("<div class='idd-legend-item-property'></div>").text(clrTitleText).appendTo(colorDiv);
                     colorDivStyle = colorDiv[0].style;
-                    colorControl = new InteractiveDataDisplay.ColorPaletteViewer(colorDiv);
+                    var paletteDiv = $("<div></div>").appendTo(colorDiv);
+                    colorControl = new InteractiveDataDisplay.ColorPaletteViewer(paletteDiv);
                     colorIsVisible = 2;
+                } else {
+                    colorTitle.text(clrTitleText);
                 }
                 colorControl.palette = _colorPalette;
                 if (_colorPalette.isNormalized) {
@@ -7854,11 +7925,12 @@ InteractiveDataDisplay.Markers = function (div, master) {
 
         this.host.bind("appearanceChanged",
             function (event, propertyName) {
-                if (!propertyName || propertyName == "color" || propertyName == "colorPalette") {
+                if (!propertyName || propertyName == "name")
+                    setName();
+                if (!propertyName || propertyName == "color" || propertyName == "colorPalette") 
                     refreshColor();
-                }
                 if (!propertyName || propertyName == "size" || propertyName == "sizePalette")
-                    refreshSize();
+                    refreshSize();                
                 renderShape();
             });
 
@@ -7905,10 +7977,171 @@ InteractiveDataDisplay.AdaptMarkerSize = function (markers, plotRect, screenSize
 
 
 
+;// Area plot takes data with coordinates named 'x', 'y1', 'y2' and a fill colour named 'fill'. 
 
-///#source 1 1 /script/idd.heatmap.js
-// See http://jsperf.com/rendering-a-frame-in-image-data
-InteractiveDataDisplay.heatmapBackgroundRenderer = new InteractiveDataDisplay.SharedRenderWorker("script/idd.heatmapworker.js",
+InteractiveDataDisplay.Area = function (div, master) {
+    var that = this;
+    var defaultFill = "rgba(0,0,0,0.2)";
+
+    // Initialization (#1)
+    var initializer = InteractiveDataDisplay.Utils.getDataSourceFunction(div, InteractiveDataDisplay.readCsv);
+    var initialData = initializer(div);
+
+    this.base = InteractiveDataDisplay.CanvasPlot;
+    this.base(div, master);
+
+
+    var _x = []; // an array of horizontal axis coordinates
+    var _y1 = [];
+    var _y2 = []; // arrays of lower and upper limits of the band
+    var _fill = defaultFill;
+
+    // default styles:
+    if (initialData) {
+        _fill = typeof initialData.fill != "undefined" ? initialData.fill : defaultFill;
+
+    }
+
+    this.draw = function (data) {
+        var y1 = data.y1;
+        if (!y1) throw "Data series y1 is undefined";
+        var n = y1.length;
+
+        var y2 = data.y2;
+        if (!y2) throw "Data series y2 is undefined";
+        if (y2.length !== n)
+            throw "Data series y1 and y2 have different lengths";
+
+        var x = data.x;
+        if (!x) {
+            x = InteractiveDataDisplay.Utils.range(0, n - 1);
+        }
+        if (x.length !== n)
+            throw "Data series x and y1, y2 have different lengths";
+
+        _y1 = y1;
+        _y2 = y2;
+        _x = x;
+
+        // styles:
+        _fill = typeof data.fill != "undefined" ? data.fill : defaultFill;
+
+        this.invalidateLocalBounds();
+
+        this.requestNextFrameOrUpdate();
+        this.fireAppearanceChanged();
+    };
+
+    // Returns a rectangle in the plot plane.
+    this.computeLocalBounds = function () {
+        var dataToPlotX = this.xDataTransform && this.xDataTransform.dataToPlot;
+        var dataToPlotY = this.yDataTransform && this.yDataTransform.dataToPlot;
+
+        var y1 = InteractiveDataDisplay.Utils.getBoundingBoxForArrays(_x, _y1, dataToPlotX, dataToPlotY);
+        var y2 = InteractiveDataDisplay.Utils.getBoundingBoxForArrays(_x, _y2, dataToPlotX, dataToPlotY);
+
+        return InteractiveDataDisplay.Utils.unionRects(y1, y2);
+    };
+
+    // Returns 4 margins in the screen coordinate system
+    this.getLocalPadding = function () {
+        return { left: 0, right: 0, top: 0, bottom: 0 };
+    };
+
+    this.renderCore = function (plotRect, screenSize) {
+        InteractiveDataDisplay.Area.prototype.renderCore.call(this, plotRect, screenSize);
+        var context = that.getContext(true);
+
+        if (_x === undefined || _y1 == undefined || _y2 == undefined)
+            return;
+        var n = _y1.length;
+        if (n == 0) return;
+
+        var t = that.getTransform();
+        var dataToScreenX = t.dataToScreenX;
+        var dataToScreenY = t.dataToScreenY;
+
+        // size of the canvas
+        var w_s = screenSize.width;
+        var h_s = screenSize.height;
+        var xmin = 0, xmax = w_s;
+        var ymin = 0, ymax = h_s;
+
+        context.fillStyle = _fill;
+
+        //Drawing polygons
+        var polygons = [];
+        var curInd = undefined;
+        for (var i = 0; i < n; i++) {
+            if (isNaN(_x[i]) || isNaN(_y1[i]) || isNaN(_y2[i])) {
+                if (curInd === undefined) {
+                    curInd = i;
+                }
+                else {
+                    polygons.push([curInd, i]);
+                    curInd = undefined;
+                }
+            } else {
+                if (curInd === undefined) {
+                    curInd = i;
+                }
+                else {
+                    if (i === n - 1) {
+                        polygons.push([curInd, i]);
+                        curInd = undefined;
+                    }
+                }
+            }
+        }
+
+        var nPoly = polygons.length;
+        for (var i = 0; i < nPoly; i++) {
+            context.beginPath();
+            var curPoly = polygons[i];
+            context.moveTo(dataToScreenX(_x[curPoly[0]]), dataToScreenY(_y1[curPoly[0]]));
+            for (var j = curPoly[0] + 1; j <= curPoly[1]; j++) {
+                context.lineTo(dataToScreenX(_x[j]), dataToScreenY(_y1[j]));
+            }
+            for (var j = curPoly[1]; j >= curPoly[0]; j--) {
+                context.lineTo(dataToScreenX(_x[j]), dataToScreenY(_y2[j]));
+            }
+            context.fill();
+        }
+    };
+
+    // Clipping algorithms
+    var code = function (x, y, xmin, xmax, ymin, ymax) {
+        return (x < xmin) << 3 | (x > xmax) << 2 | (y < ymin) << 1 | (y > ymax);
+    };
+
+
+    // Others
+    this.onDataTransformChanged = function (arg) {
+        this.invalidateLocalBounds();
+        InteractiveDataDisplay.Area.prototype.onDataTransformChanged.call(this, arg);
+    };
+
+    // Initialization 
+    if (initialData && initialData.x && initialData.y1 && initialData.y2)
+        this.draw(initialData);
+}
+
+InteractiveDataDisplay.Area.prototype = new InteractiveDataDisplay.CanvasPlot;
+;// See http://jsperf.com/rendering-a-frame-in-image-data
+InteractiveDataDisplay.heatmapBackgroundRenderer = new InteractiveDataDisplay.SharedRenderWorker(
+    function() {
+        var workerCodeUri;
+        if(typeof InteractiveDataDisplay.heatmapBackgroundRendererCodeBase64 === 'undefined' || /PhantomJS/.test(window.navigator.userAgent)) {
+            // Build process usually initializes the heatmapBackgroundRendererCodeBase64 with base64 encoded 
+            // concatenation of idd.heatmapworker.js and idd.transforms.js.
+            workerCodeUri = "idd.heatmapworker.js";
+        }
+        else {
+           var workerBlob = new Blob([ window.atob(InteractiveDataDisplay.heatmapBackgroundRendererCodeBase64) ], { type: 'text/javascript' });
+           workerCodeUri = window.URL.createObjectURL(workerBlob);
+        }
+        return workerCodeUri
+    } (),
     function (heatmapPlot, completedTask) {
         heatmapPlot.onRenderTaskCompleted(completedTask);
     });
@@ -8409,7 +8642,13 @@ InteractiveDataDisplay.Heatmap = function (div, master) {
     });
 
     this.getLegend = function () {
-        var div = $("<div class='idd-legend-item'>" + this.name + "</div>");
+        var div = $("<div class='idd-legend-item'></div>");
+        var that = this;
+        var nameDiv = $("<span class='idd-legend-item-title'></span>").appendTo(div);
+        var setName = function () {
+            nameDiv.text(that.name);
+        }
+        setName();
 
         var paletteDiv = $("<div style='width: 170px; margin-top: 5px; margin-bottom: 5px'></div>").appendTo(div);
         var paletteControl = new InteractiveDataDisplay.ColorPaletteViewer(paletteDiv, _palette);
@@ -8417,10 +8656,10 @@ InteractiveDataDisplay.Heatmap = function (div, master) {
             paletteControl.dataRange = { min: _fmin, max: _fmax };
         }
 
-        var that = this; 
-
         this.host.bind("appearanceChanged",
             function (event, propertyName) {
+                if (!propertyName || propertyName == "name")
+                    setName();
                 if (!propertyName || propertyName == "palette") paletteControl.palette = _palette;
                 var oldRange = paletteControl.dataRange;
                 if (_palette && _palette.isNormalized && (oldRange == undefined || oldRange.min != _fmin || oldRange.max != _fmax)) {
@@ -8447,9 +8686,7 @@ InteractiveDataDisplay.Heatmap.prototype = new InteractiveDataDisplay.CanvasPlot
 InteractiveDataDisplay.register("heatmap", function (jqDiv, master) {
     return new InteractiveDataDisplay.Heatmap(jqDiv, master);
 });
-
-///#source 1 1 /script/idd.bingmapsplot.js
-InteractiveDataDisplay.BingMaps = InteractiveDataDisplay.BingMaps || {};
+;InteractiveDataDisplay.BingMaps = InteractiveDataDisplay.BingMaps || {};
 
 InteractiveDataDisplay.BingMaps.ESRI = InteractiveDataDisplay.BingMaps.ESRI || {};
 
@@ -8615,12 +8852,10 @@ InteractiveDataDisplay.BingMapsPlot = function (div, master) {
     }
 }
 
-InteractiveDataDisplay.BingMapsPlot.prototype = new InteractiveDataDisplay.Plot;
-///#source 1 1 /script/wrapper_footer.txt
-}
+InteractiveDataDisplay.BingMapsPlot.prototype = new InteractiveDataDisplay.Plot;;}
 (function () {
     if (window.define) {
-        define(['jquery', 'rx', 'rx.jquery'],
+        define(['jquery', 'rx'],
             function ($, Rx) {
                 IDD($, Rx);
                 return InteractiveDataDisplay;

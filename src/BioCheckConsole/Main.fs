@@ -112,6 +112,25 @@ let rec parse_args args =
     | "-loglevel" :: lvl :: rest -> logging_level := (int) lvl; parse_args rest
     | _ -> failwith "Bad command line args" 
 
+
+let addVariableNames (model : Model) (layout : Model) =
+    let findVariableName id (model : Model) =
+        let vars = model.Variables
+        let v = Array.find (fun (v : Model.Variable) -> v.Id = id) vars
+        v.Name
+
+    let addNameToVariable (var : Model.Variable) (name : string) =
+        let mutable copy = var
+        copy.Name <- name
+        copy
+
+    let addNameToVariables (vars : Model.Variable []) =
+        Array.map (fun (var : Model.Variable) -> addNameToVariable var (findVariableName var.Id layout)) vars
+
+    let mutable copy = model
+    copy.Variables <- addNameToVariables model.Variables
+    copy
+
 //
 // QN parsing and printing
 //
@@ -119,7 +138,10 @@ let read_ModelFile_as_QN model_fname =
     // Read file
     let jobj = JObject.Parse(System.IO.File.ReadAllText(model_fname))
     // Extract model from json
-    let model = (jobj.["Model"] :?> JObject).ToObject<Model>()           
+    let model = (jobj.["Model"] :?> JObject).ToObject<Model>()
+    let layout = (jobj.["Layout"] :?> JObject).ToObject<Model>()  
+             
+    let model = addVariableNames model layout
     // model to QN
     let qn = Marshal.QN_of_Model model
     qn
@@ -224,11 +246,13 @@ let runCAVEngine qn length_of_path formula model_check output_proof output_model
         let correct_length_paths = Paths.change_list_to_length paths length_of_path
     
         // given the # of steps and the path, do BMC   
-        let (res,model) =
-            BMC.BoundedMC ltl_formula qn nuRangel correct_length_paths
+        let (res1,model1,negative) =
+            BMC.BoundedMC ltl_formula qn nuRangel correct_length_paths false
 
-        BioCheckPlusZ3.check_model model res qn
-        BioCheckPlusZ3.print_model model res qn output_model
+        BioCheckPlusZ3.check_model model1 res1 qn
+
+        LTL.print_in_order ltl_formula
+        BioCheckPlusZ3.print_model model1 res1 qn output_model
 
 let runPATHEngine qnX modelsdir other_model_name start_state dest_state =
     Log.log_debug "Running path search"

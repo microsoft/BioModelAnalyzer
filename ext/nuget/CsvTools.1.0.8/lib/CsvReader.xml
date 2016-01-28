@@ -1,0 +1,590 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CsvReader</name>
+    </assembly>
+    <members>
+        <member name="T:DataAccess.Row">
+            <summary>
+            Represents a row within a <see cref="T:DataAccess.DataTable"/>
+            The Row may or may not be mutable, depending on whether the table is mutable.
+            </summary>
+        </member>
+        <member name="M:DataAccess.Row.GetValueOrEmpty(System.String)">
+            <summary>
+            Lookup value by column name. Returns emtpy string if column name is not valid.
+            </summary>
+            <param name="columnName">name of column</param>
+            <returns>value or empty string</returns>
+        </member>
+        <member name="M:DataAccess.Row.GetValuesOrEmpty(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Plural version of <see cref="M:DataAccess.Row.GetValueOrEmpty(System.String)"/>
+            </summary>
+            <param name="columnName">enumeration of column names</param>
+            <returns>enumeration of corresponding values</returns>
+        </member>
+        <member name="P:DataAccess.Row.Values">
+            <summary>
+            ordered collection of values for this row.
+            The ordering matches the column ordering. 
+            </summary>
+        </member>
+        <member name="P:DataAccess.Row.ColumnNames">
+            <summary>
+            Column names for the table containing this row. This is a parallel collection to <see cref="P:DataAccess.Row.Values"/>
+            </summary>
+        </member>
+        <member name="P:DataAccess.Row.DebugValues">
+            <summary>
+            Debug helper to show all values.
+            </summary>
+        </member>
+        <member name="P:DataAccess.Row.Item(System.String)">
+            <summary>
+            Lookup value by column name. Throws if column name is not valid.
+            </summary>
+            <param name="columnName">column name</param>
+            <returns>the value in the given column</returns>    
+        </member>
+        <member name="T:DataAccess.TextReaderDataTable">
+            <summary>
+             Stream rows from a file. This is ideal for large read-only files.
+            </summary>
+        </member>
+        <member name="T:DataAccess.DataTable">
+            <summary>
+            Represents a table of data. 
+            This is primary an IEnumerable{Row} collection. 
+            The table may be just read-only streaming over the rows, which is ideal for large files of millions of rows. 
+            Or it may have loaded the entire table into memory, which can be ideal for mutation. 
+            </summary>
+        </member>
+        <member name="M:DataAccess.DataTable.RowsAs``1">
+            <summary>
+            Enumeration of rows as strongly types. The default implementation here is 
+            to just to parse the results of <see cref="P:DataAccess.DataTable.Rows"/>.
+            </summary>
+            <typeparam name="T">Target object type to parse.</typeparam>
+            <returns>enumeration of rows as strongly typed object</returns>
+        </member>
+        <member name="M:DataAccess.DataTable.HasColumnName(System.String)">
+            <summary>
+            Return true if the table has the given column name. Comparison is case insensitive.
+            </summary>
+            <param name="name">name of column to look for.</param>
+            <returns>true iff the column is present. False if name is null.</returns>
+        </member>
+        <member name="M:DataAccess.DataTable.GetColumnIndex(System.String,System.Boolean)">
+            <summary>
+            Get the index for the column. This can be used for an optimized column lookup when streaming across rows. 
+            </summary>
+            <param name="columnName">name of column to look for</param>
+            <param name="throwOnMissing">If the column is nmissing, either throw an exception or return index of -1</param>
+            <returns></returns>
+        </member>
+        <member name="M:DataAccess.DataTable.SaveToStream(System.IO.TextWriter)">
+            <summary>
+            Save the table to the given stream, using a CSV format. The first line will be the headers, and then each subsequent line will be a row.
+            This will escape characters as needed.
+            </summary>
+            <param name="output">textwrite to write out to.</param>                
+        </member>
+        <member name="M:DataAccess.DataTable.SaveCSV(System.String)">
+            <summary>
+            Save the table as a CSV to the given filename
+            </summary>
+            <param name="outputFilename">filename on disk to save to.</param>
+        </member>
+        <member name="P:DataAccess.DataTable.Name">
+            <summary>
+            Name of this data table. The semantics of the name are determined by the function that 
+            creates the table. Name can also be empty.
+            It could be a filename, an excel sheet name, a URL, or even a human readable description 
+            of how the table was created. 
+            Name is primarily a debugging tool. You can't programaticaly rely on the name property unless you created the table.
+            </summary>
+        </member>
+        <member name="P:DataAccess.DataTable.ColumnNames">
+            <summary>
+            Name of columns in the table. Columns should be case-insensitive.
+            If this is a mutable table, columns may be added, removed, or reordered.
+            </summary>
+        </member>
+        <member name="P:DataAccess.DataTable.Rows">
+            <summary>
+            Enumeration of rows in the table.
+            Each row has a (possibly empty) value for each column.
+            </summary>
+        </member>
+        <member name="P:DataAccess.DataTable.New">
+            <summary>
+            Provides access to extension methods for creating a table. Tables can be created in many ways, such as reading CSV files,
+            building around .NET objects, filtering existing tables, etc. 
+            </summary>
+        </member>
+        <member name="T:DataAccess.EnumerableDataTable`1">
+            <summary>
+            Create a streaming data table around an Ienumerable 
+            </summary>
+        </member>
+        <member name="T:DataAccess.AssertException">
+            <summary>
+            Exception thrown on illegal user operation.
+            </summary>
+        </member>
+        <member name="T:DataAccess.Dictionary2d`3">
+            <summary>
+            2d Dictionary, useful for spare storage. 
+            Implementation is not intended for large sizes. Rather, we expect this to be used for summarizing information.
+            </summary>
+            <typeparam name="TKey1">type of first key</typeparam>
+            <typeparam name="TKey2">type of second key</typeparam>
+            <typeparam name="TValue">type of value</typeparam>
+        </member>
+        <member name="P:DataAccess.Dictionary2d`3.Count">
+            <summary>
+            Count of total entries in the collection
+            </summary>
+        </member>
+        <member name="P:DataAccess.Dictionary2d`3.Item(`0,`1)">
+            <summary>
+            lookup a value. Returns a default value if not found.
+            </summary>
+            <param name="k1">first key </param>
+            <param name="k2">second key</param>
+            <returns>value stored at the given key pair.</returns>
+        </member>
+        <member name="P:DataAccess.Dictionary2d`3.Key1">
+            <summary>
+            Sorted enumeration of the first keyset.
+            </summary>
+        </member>
+        <member name="P:DataAccess.Dictionary2d`3.Key2">
+            <summary>
+            Sorted enumeration of the second keyset.
+            </summary>
+        </member>
+        <member name="T:DataAccess.Analyze">
+            <summary>
+            Analysis operations on tables, like joins, histogram, dup search, filter, etc.
+            These handle large tables.
+            </summary>
+        </member>
+        <member name="M:DataAccess.Analyze.Shred(DataAccess.DataTable,System.String,System.Func{System.String,System.IO.TextWriter})">
+            <summary>
+            Given a potentially extremely large table, shred it into smaller CSV files based on the values in columnName.
+            This can be very useful for easily building an index for a large file. 
+            For each unique value in column, funcCreateStream is invoked with that value to get a TextWriter. The csv is written to that writer.
+            The ordering within each small file is preserved
+            This stream based overload is useful when you need to avoid writing to the local file system (such as with Azure storage)
+            </summary>
+            <param name="table">original table to shred</param>
+            <param name="funcCreateStream">callback function to create a stream for each new table.</param>
+            <param name="columnName">column name to use for shredding. You can use <see cref="M:DataAccess.Analyze.GetColumnValueCounts(DataAccess.DataTable,System.Int32)"/>
+            to see the variation in each column to determine a good column to use for shredding.
+            </param>    
+        </member>
+        <member name="M:DataAccess.Analyze.Shred(DataAccess.DataTable,System.String,System.String)">
+            <summary>
+            Given a potentially extremely large table, shred it into smaller CSV files based on the values in columnName.
+            This can be very useful for easily building an index for a large file. 
+            For each unique value in column, a CSV file is created and named string.Format(templateFilename, value).
+            The ordering within each small file is preserved
+            </summary>
+            <param name="table">original table to shred</param>
+            <param name="columnName">column name to use for shredding. You can use <see cref="M:DataAccess.Analyze.GetColumnValueCounts(DataAccess.DataTable,System.Int32)"/>
+            to see the variation in each column to determine a good column to use for shredding.
+            </param>
+            <param name="templateFilename">template specifying filename of shredded files.</param>
+        </member>
+        <member name="M:DataAccess.Analyze.Where(DataAccess.DataTable,System.Func{DataAccess.Row,System.Boolean})">
+            <summary>
+            Apply a Where filter to a table. This can stream over large data and filter it down. 
+            </summary>
+            <param name="table">source table</param>
+            <param name="fpSelector">predicate to execute on each row</param>
+            <returns>a new table that copies out rows from from the source table</returns>
+        </member>
+        <member name="M:DataAccess.Analyze.Join(System.Collections.Generic.IEnumerable{DataAccess.DataTable})">
+            <summary>
+            Merge 2 datatables together assuming no common join key. 
+            This will collapse common columns, but keep all rows. 
+            This needs to deal with columns being in different orders        
+            </summary>
+            <param name="tables">set of tables to merge together</param>
+            <returns>a merged table. The rows may be in a random order.</returns>
+        </member>
+        <member name="M:DataAccess.Analyze.Join(DataAccess.MutableDataTable,DataAccess.MutableDataTable,System.String)">
+            <summary>
+            Performs a full outer join on two in-memory tables and returns a new table.
+            The number of rows in the resulting table is the sum of rows from each source table.
+            The number of columns in teh new table is the sum of columns in the the source tables minus 1 
+            (since the join column is redundant)
+            </summary>
+            <param name="d1"></param>
+            <param name="d2"></param>
+            <param name="columnName">column name to join on. Both tables must have this column name.</param>
+            <returns>a new table</returns>
+        </member>
+        <member name="M:DataAccess.Analyze.SampleTopN(DataAccess.DataTable,System.Int32)">
+            <summary>
+            Return a sample that's the top N records from a table.
+            This is useful to sample a large table and then save the sample. 
+            </summary>
+            <param name="table">source table</param>
+            <param name="topN">positive value specifying number of rows to copy from from source table</param>
+            <returns>The topN rows from the source table.</returns>
+        </member>
+        <member name="M:DataAccess.Analyze.AsHistogram(DataAccess.DataTable,System.String)">
+            <summary>
+            Extract column as a histogram, sorted in descending order by frequency.        
+            </summary>
+            <param name="table">source table</param>
+            <param name="columnName">column within short table</param>
+            <returns>collection of tuples, where each tuple is a value and the count of that value within the column</returns>
+        </member>
+        <member name="M:DataAccess.Analyze.AsHistogram(DataAccess.DataTable,System.Int32)">
+            <returns></returns>
+            <summary>
+            Extract column as a histogram, sorted in descending order by frequency.        
+            </summary>
+            <param name="table">source table</param>
+            <param name="columnIdx">0-based index of column </param>
+            <returns>collection of tuples, where each tuple is a value and the count of that value within the column</returns>
+        </member>
+        <member name="M:DataAccess.Analyze.GetColumnValueCounts(DataAccess.DataTable,System.Int32)">
+            <summary>
+            Produces a table where each row is the number of unique values in a source column, followed by the top N occurences in that column.
+            </summary>
+            <param name="table">source table</param>
+            <param name="N">number of top N occurences to include in the summary table </param>
+            <returns>a summary table</returns>
+        </member>
+        <member name="M:DataAccess.Analyze.SelectDuplicates(DataAccess.DataTable,System.String[])">
+            <summary>
+            Find all rows that have dups for the given columns.
+            This uses a multi-pass algorithm to operate on a large data file.
+            </summary>
+            <param name="table">original table</param>
+            <param name="columnNames">set of columns to compare to look for duplicates</param>
+            <returns>a table that's a subset of the original table</returns>
+        </member>
+        <member name="F:DataAccess.Analyze.GetTempFileName">
+            <summary>
+            For azure usage, allow hooking the function used to create temporary files
+            </summary>
+        </member>
+        <member name="T:DataAccess.Column">
+            <summary>
+            Column from an in-memory data table. Columns know their length and directly expose their values as a mutable array.
+            </summary>
+        </member>
+        <member name="M:DataAccess.Column.#ctor(System.String,System.Int32)">
+            <summary>
+            Create a new column. Caller must still add this into a table.
+            </summary>
+            <param name="name">name of the column</param>
+            <param name="numRows">number of rows in the column. This will set the length of the Values array</param>
+        </member>
+        <member name="M:DataAccess.Column.ToString">
+            <summary>
+            Provide summary string representation for this column
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DataAccess.Column.CheckIsEmpty">
+            <summary>
+            Check if this column has any data in it. 
+            </summary>
+            <returns>True iff all of the values are empty</returns>
+        </member>
+        <member name="P:DataAccess.Column.Name">
+            <summary>
+            Name of the column. Operations on column names are case-insensitive.
+            </summary>
+        </member>
+        <member name="P:DataAccess.Column.Values">
+            <summary>
+            Values in this column. 
+            </summary>
+        </member>
+        <member name="T:DataAccess.RowExtension">
+            <summary>
+            Extension methods for Row object
+            </summary>
+        </member>
+        <member name="M:DataAccess.RowExtension.As``1(DataAccess.Row)">
+            <summary>
+            Makes a best effort to parse the row into a strongly typed object. 
+            It's much faster to call DataTable.RowsAs[T] instead, because that will reuse parsing logic across rows.
+            This does a case-insensitive match of the Target object's property names against the table's column names.
+            Parse errors are ignored and may produce invalid results for the corresponding cell.
+            </summary>
+            <typeparam name="T">Target object type to parse.</typeparam>
+            <param name="row">incoming row to be parsed</param>
+            <returns>an object representing the row</returns>
+        </member>
+        <member name="T:DataAccess.DataTableBuilder">
+            <summary>
+            Empty class. Just exists to hang extension methods off. 
+            </summary>
+        </member>
+        <member name="T:DataAccess.DataTableBuilderExtensions">
+            <summary>
+            Provide extension methods for creating tables.
+            Use extensions methods (instead of ctors) because they're discoverable and extendable. 
+            All extensions methods should follow the convention:
+             - returning a table.
+             - Use "Lazy" if the table is not in-memory.
+             
+            Example usage:
+              DataTable dt = DataTable.New.FromCsv()
+            </summary>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.ReadCsv(DataAccess.DataTableBuilder,System.String)">
+            <summary>
+            Read an entire CSV file into memory.  
+            </summary>
+            <param name="builder">ignored</param>
+            <param name="filename">filename of CSV file to load</param>
+            <returns>a mutable in-memory DataTable for the given CSV file</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.Read(DataAccess.DataTableBuilder,System.String)">
+            <summary>
+            Read a file into memory. 
+            Infer the schema from the header row. Biased to CSV, but may handle tab delimeters too. 
+            </summary>
+            <param name="builder">ignored</param>
+            <param name="filename">filename to load</param>
+            <returns>a new in-memory table</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.Read(DataAccess.DataTableBuilder,System.IO.TextReader)">
+            <summary>
+            Read a table from the stream into memory. 
+            Infer the schema from the header row. Biased to CSV, but may handle tab delimeters too. 
+            </summary>
+            <param name="builder">ignored</param>
+            <param name="stream">input stream to read from</param>
+            <returns>a new in-memory table</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.Read(DataAccess.DataTableBuilder,System.IO.TextReader,System.Char)">
+            <summary>
+            Read a table from the stream into memory. 
+            Infer the schema from the header row. Biased to CSV, but may handle tab delimeters too. 
+            </summary>
+            <param name="builder">ignored</param>
+            <param name="stream">input stream to read from</param>
+            <param name="delimiter">delimiter characeter to use for separatior</param>
+            <returns>a new in-memory table</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.GetMutableCopy(DataAccess.DataTableBuilder,DataAccess.DataTable)">
+            <summary>
+            Gets a mutable in-memory copy of the given data table.
+            </summary>
+            <param name="builder">ignored</param>
+            <param name="source">source table that will get copied</param>
+            <returns>a new table</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.ReadSampleTopN(DataAccess.DataTableBuilder,System.String)">
+            <summary>
+            Return an in-memory table that contains the topN rows from the table in the filename.
+            </summary>
+            <param name="builder">ignored</param>
+            <param name="filename">filename of table to load. Schema is inferred from header row.</param>
+            <returns>a in-memory table containing the topN rows from the supplied file.</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.ReadSampleTopN(DataAccess.DataTableBuilder,System.String,System.Int32)">
+            <summary>
+            Return an in-memory table that contains the topN rows from the table in the filename.
+            </summary>
+            <param name="builder">ignored</param>
+            <param name="filename">filename of table to load. Schema is inferred from header row.</param>
+            <param name="topN">reads the topN rows from the table.</param>
+            <returns>a in-memory table containing the topN rows from the supplied file.</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.ReadLazy(DataAccess.DataTableBuilder,System.String)">
+            <summary>
+            Return a streaming data table over a file. This just reads a row at a time and avoids reading the whole
+            table into memory. But it only provides sequential read-only access.
+            </summary>
+            <param name="builder"></param>
+            <param name="filename">filename of CSV to read</param>
+            <returns>a streaming data table for the given filename</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.ReadLazy(DataAccess.DataTableBuilder,System.IO.Stream)">
+            <summary>
+            Return a streaming data table over a stream. This just reads a row at a time and avoids reading the whole
+            table into memory. But it only provides sequential read-only access.
+            </summary>
+            <param name="builder"></param>
+            <param name="inputStream">input stream. Must be seekable and readable</param>
+            <returns>a streaming data table for the given filename</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.FromDictionary``2(DataAccess.DataTableBuilder,System.Collections.Generic.IDictionary{``0,``1},System.String,System.String)">
+            <summary>        
+            Create an in-memory table with 2 columns (key and value), where each row is a KeyValuePair from the dictionary.         
+            </summary>
+            <typeparam name="TKey">TKey of dictionary</typeparam>
+            <typeparam name="TValue">TValue of dictionary</typeparam>
+            <param name="builder">ignored</param>
+            <param name="dict">source of data</param>
+            <param name="keyName">name for column that holds the dictionary keys</param>
+            <param name="valName">name for column that holds the dictionary values</param>
+            <returns>an in-memory table</returns>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.From2dDictionary``3(DataAccess.DataTableBuilder,DataAccess.Dictionary2d{``0,``1,``2},System.String)">
+            <summary>
+            Copy the 2d-dictionary into a in-memory table. This is ideal for creating a sparse table from a dictionary.
+            Column names are inferred from key values.
+            This adds a new column (in position 0) to label TKeyRow. 
+            </summary>        
+            <param name="newColumnName">Name of the new column added which corresponds to TKeyRow.</param>
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.FromTuple``2(DataAccess.DataTableBuilder,System.Tuple{``0,``1}[],System.String,System.String)">
+            <summary>
+            Create an in-memory table from the tuple collection. 
+            Pass in column names since Tuple properties are just named Item1 and Item2.
+            </summary>        
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.FromEnumerable``1(DataAccess.DataTableBuilder,System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Create an in-memory table where each row is an item in the enumeration.
+            The columns are from the "flattened" properties of the T (not fields).
+            The column names are inferred from T's property names.
+            </summary>        
+        </member>
+        <member name="M:DataAccess.DataTableBuilderExtensions.FromEnumerableLazy``1(DataAccess.DataTableBuilder,System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Create a lazy table around the enumeration. 
+            </summary>        
+        </member>
+        <member name="T:DataAccess.MutableDataTable">
+            <summary>
+            Mutable tabular data. Entire table is loaded in memory, and exposes both column and row access.
+            Table is stored in column major format, so supports efficient column operations like add, remove, and reorder.
+            Also exposes row enumeration. Table can be mutated through either row or column views.
+            </summary>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.KeepColumns(System.String[])">
+            <summary>
+            Remove all columns except for the ones listed. 
+            Allows case insensitive matching.
+            Also reorders to match names.
+            </summary>
+            <param name="names">names of columns to match</param>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.GetColumn(System.String)">
+            <summary>
+            Case-insensitive name lookup of a column. 
+            </summary>
+            <param name="name">name of column to look for</param>
+            <returns>null if column is not found</returns>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.ReorderColumn(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Reorder a column.
+            </summary>
+            <param name="columnName">name of column</param>
+            <param name="position">new position for column</param>
+            /// <param name="throwOnMissing">True means throw an exception if the column is missing. Else, nop if the column is missing</param>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.GetColumns(System.String[])">
+            <summary>
+            Retrieve multiple columns matching the given names 
+            </summary>
+            <param name="names">column names to lookup</param>
+            <returns>columns correpsonding to provided names</returns>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.CreateColumn(System.String,System.Func{DataAccess.Row,System.String})">
+            <summary>
+            Create a new column at the end of the table, and initialize the values for each row using the supplied function.
+            </summary>
+            <param name="newColumnName">Name of the new column</param>
+            <param name="fpComputeNewValue">function to compute the value for this cell</param>
+            <returns>returns newly created column</returns>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.CreateColumnFromMerging(System.String,System.String[])">
+            <summary>
+            Merge each column into a new column. Use space as join character. 
+            This adds a new column. The existing columns are not removed.
+            </summary>
+            <param name="newName">name of the new column</param>
+            <param name="columnNamesToMerge">names of columns to merge. </param>
+            <returns>the newly created column </returns>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.RenameColumn(System.String,System.String,System.Boolean)">
+            <summary>
+            rename a column from an old name to the new name 
+            </summary>
+            <param name="oldName">existing column in the table</param>
+            <param name="newName">new name for the column. Must be a unique name</param>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.GetRow(System.Int32)">
+            <summary>
+            Get a specific row by row-index. 
+            </summary>
+            <param name="rowIndex">0-based index of row to lookup</param>
+            <returns>row at the given index</returns>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.KeepRows(System.Func{DataAccess.Row,System.Boolean})">
+            <summary>
+            Only keep rows where the predicate returns true
+            </summary>
+            <param name="predicate">predicate to execute on each row</param>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.DeleteColumn(System.Int32)">
+            <summary>
+            Remove column with the given index
+            </summary>
+            <param name="position">0-based index into column collection</param>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.DeleteColumnsAllowMissing(System.String[])">
+            <summary>
+            Delete columns, ignores any column names that are missing.
+            </summary>
+            <param name="names">names of rows to delete. Ignores if any of the names are missing. </param>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.DeleteColumns(System.String[])">
+            <summary>
+            Remove columns with given names. This is the opposite of <see cref="M:DataAccess.MutableDataTable.KeepColumns(System.String[])"/> 
+            Throws if any of the names are missing. 
+            </summary>
+            <param name="names">names of rows to delete. Throws if any of the names are missing. </param>
+        </member>
+        <member name="M:DataAccess.MutableDataTable.ApplyToColumn(System.String,System.Func{System.String,System.String})">
+            <summary>
+            Apply a given function to every entry in a column
+            This transforms the column in place.
+            </summary>
+            <param name="name">column name to apply to</param>
+            <param name="func">function called once for each column value, replaces each cell in the column</param>
+        </member>
+        <member name="P:DataAccess.MutableDataTable.Columns">
+            <summary>
+            Return the set of columnns in this mutable table. 
+            Column represent the direct storage and are mutable.
+            </summary>
+        </member>
+        <member name="P:DataAccess.MutableDataTable.ColumnNames">
+            <summary>
+            Get the names of the columns, in the order they appear.
+            </summary>
+        </member>
+        <member name="P:DataAccess.MutableDataTable.NumRows">
+            <summary>
+            Return total number of rows in the table. 
+            </summary>
+        </member>
+        <member name="P:DataAccess.MutableDataTable.Rows">
+            <summary>
+            Enumerate the rows in the table. The rows provide mutable access to the underlying storage
+            </summary>
+        </member>
+        <member name="P:DataAccess.MutableDataTable.RowInMemory.Values">
+            <summary>
+            Mutable implementation. Setting values can change original storage, just like columns.
+            </summary>
+        </member>
+    </members>
+</doc>

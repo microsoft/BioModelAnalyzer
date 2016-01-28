@@ -1,0 +1,505 @@
+@import "StyleSheet.less";
+
+// LTL windows
+
+.arrow-down {
+	width: 0; 
+	height: 0; 
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 10px solid @darkgrey;
+	display: inline-block;
+	margin-left: 5px;
+}
+
+// LTL States Editor
+.window.LTL-states {
+    width:380px;
+    padding: 0px 0px 10px 0px;
+
+    .window-title {
+        padding: 10px 0px 0px 10px;
+    }
+}
+
+.state-description {
+    margin: 10px 0px 0px 10px;
+    width: 90%;
+}
+
+.state-buttons {
+    margin-left: 0px;
+
+    .state-button {
+        display: inline-block;
+        margin: 5px 0px 10px 5px;
+        font-family: 'Segoe-UI-Light';
+        font-size: 20px;
+        line-height: 25px;
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        border-radius: 100px;
+        background-color: white;
+        color: @darkgrey;
+        border: 1px solid @darkgrey;
+
+        &.new {
+            color: white;
+			border: 1px solid white;
+			background-color: @midgrey;
+			margin-left: 5px;
+
+            &:hover {
+                color: @lightgrey;
+				border: 1px solid @lightgrey;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.state-toolbar {
+    background-color: @midgrey;
+    padding: 5px 5px 0px 10px;
+
+}
+
+.LTL-state{
+    width:380px;
+
+	.default-cell(){
+		width: 45px;
+		height: 45px;
+		vertical-align: middle;
+		line-height: 30px;
+		font-size: 30px;
+	}
+
+    table {
+        border-collapse: collapse;
+        font-family: 'Segoe-UI-Light';
+        margin: 10px;
+
+        tr {
+            margin: 0px;
+
+            td {
+                border: 1px solid @midgrey;
+                text-align: center;
+                margin: 0px;
+                padding:0px;
+				.default-cell();
+
+                &.variable {
+                    //.default-text();
+                    width:230px;
+                    padding: 0px 5px;
+                    text-align: left;
+                    white-space: nowrap;
+                    //overflow: hidden;
+                    //text-overflow: ellipsis;
+
+                    img {
+                        height: 20px;
+                    }
+
+                    p {
+                        .default-text();
+                    }
+                }
+
+                &:empty {
+                    .default-cell();
+                    padding: 0px;
+                }
+
+                &.LTL-line-del {
+                    .default-cell();
+                    border: none;
+
+                    img {
+                        max-width: 25px;
+                    }
+
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
+
+                &.LTL-line-new {
+                    .default-cell();
+					font-size: 40px;
+					line-height: 5px;
+					//padding-bottom: 8px;
+					border: 1px solid @lightgrey;
+					color: @lightgrey;
+					&:hover{
+						color: @midgrey;
+						border: 1px solid @midgrey;
+						cursor: pointer;
+					}
+				}
+            }
+        }
+    }
+}
+
+// Variable Picker
+.variable-picker {
+    width: 230px;
+    border: 1px solid @midgrey;
+
+    table {
+        font-size: 11px;
+
+        img {
+            width: 20px;
+        }
+
+        tr {
+            vertical-align: top;
+        }
+
+        td {
+            &.container{
+				width:80px;
+			}
+			&.variable{
+				width:140px;
+			}
+            min-width: 50px;
+            &.list {
+                //height: 85px;
+            }
+
+            .scrollable {
+                /*width: 100%;*/
+                height: 100%;
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding: 0px 2px 0px 0px;
+
+                a {
+                    display: block;
+                    text-decoration: none;
+
+                    &:hover {
+                        background-color: @lightgrey;
+                    }
+
+                    &.active {
+                        border: 0px;
+                        background-color: @midgrey;
+                        color: white;
+                    }
+                }
+
+                &::-webkit-scrollbar-track {
+                    width: 10px;
+                    background-color: white;
+                }
+
+                &::-webkit-scrollbar {
+                    width: 5px;
+                    height: 5px;
+                    background-color: @midgrey;
+                }
+
+                &::-webkit-scrollbar-thumb {
+                    padding: 5px;
+                    border-radius: 5px;
+                    background-color: @midgrey;
+                }
+            }
+        }
+    }
+}
+
+
+// Temporal Properties
+
+.window.temporal-properties {
+    width: 650px;
+    height: 500px;
+    padding: 0px 0px 10px 0px;
+
+    .window-title {
+        padding: 10px 0px 0px 10px;
+    }
+}
+
+.fit-screen {
+    width: 25px;
+    padding: 10px;
+    float: right;
+    right: 0;
+}
+
+.resize-grabber {
+    position: absolute;
+    bottom: 1px;
+    left: 627px;
+}
+
+.temporal-dropzones {
+    position: relative;
+    bottom: 0px;
+    /*width: 800px;*/
+    height: 60px;
+    /*padding: 15px 10px;*/
+
+    .dropzone {
+        position: absolute;
+        display: inline-block;
+        height: 60px;
+        width: 385px;
+        text-align: center;
+        background-color: white;
+        bottom: 15px;
+
+        img {
+            margin-top: 10px;
+        }
+
+        &.delete {
+            right: 10px;
+            border: 1px solid @darkred;
+        }
+
+        &.copy {
+            left: 10px;
+            border: 1px solid @darkgrey;
+            /*margin-right: 5px;*/
+        }
+
+        &:hover {
+            background-color: @lightgrey;
+        }
+
+        &.hovered {
+            background-color: @lightgrey;
+        }
+    }
+}
+
+.temporal-toolbar {
+    padding: 10px;
+    margin-top: 5px;
+    display: table;
+    background-color: @midgrey;
+    .default-text();
+    color: white;
+
+
+    .state-buttons {
+        display: table-cell;
+        width: 120px;
+
+    }
+
+
+    .temporal-operators {
+        display: table-cell;
+        vertical-align: top;
+        width: 450px;
+
+        .operators {
+            height: 64px;
+            overflow-y: auto;
+        }
+
+        .operator {
+            display: inline-block;
+            color: @darkgrey;
+            background-color: white;
+            border: 1px solid @darkgrey;
+            border-radius: 25px;
+            height: 21px;
+            padding: 2px;
+            margin-top: 5px;
+
+            .label {
+                display: inline-block;
+                vertical-align: top;
+                margin-top: 2px;
+                //padding:0px 2px 0px 2px;
+            }
+
+            .hole {
+                display: inline-block;
+                margin: 3px 2px 0px 2px;
+                background-color: @darkgrey;
+                border-radius: 25px;
+                width: 15px;
+                height: 15px;
+            }
+        }
+    }
+}
+
+
+ui-icon-arrowthickstop-1-s {
+    background-image: url('../images/open.svg') !important;
+}
+
+ui-icon-arrowthickstop-1-n {
+    background-image: url('../images/save.svg') !important;
+}
+
+
+// Bubbles
+.container() {
+    .default-text();
+    text-align: center;
+    display: inline-block;
+    background: #FFFFFF;
+    border: 1px solid @darkgrey;
+    border-radius: 100px;
+    line-height: 20px;
+}
+
+.pill {
+    display: inline-block;
+    .container;
+    padding: 7px 7px;
+	vertical-align: middle;
+		
+
+	&.true{
+	    background-color: @lightgreen;
+	    //border: 2px solid @green;
+	    & div{
+		    background-color: @lightgreen;
+	    }
+	}
+
+	&.false{
+	    //border: 2px solid @darkred;
+	    background-color: @red;
+	    & div{
+		    background-color: @red;
+	    }
+	}
+
+	&.some{
+		background-image: url("../images/stripe-pattern.png");
+		&>div{
+			background-color: transparent;
+		}
+	}
+	
+		
+}
+
+
+
+
+
+
+
+.state {
+    .container;
+    width: 20px;
+    height: 20px;
+    background-color: @lightgrey;
+
+    &:empty {
+        &:after {
+            content: "\00a0";
+        }
+
+        background-color: @red;
+		border-color: @darkred;
+    }
+}
+
+// Test Button
+
+.LTL-test {
+    display: inline-block;
+}
+
+.closed-results{
+	display: inline-block;
+	vertical-align: middle;
+
+	.action-button-small{
+		margin: 0px;
+	}
+
+	&.true{
+		color: @green;
+	}
+
+	&.false{
+		color: @darkred;
+	}
+
+}
+
+.LTL-test-results {
+    display: inline-block;
+    vertical-align: middle;
+    width: 130px;
+    padding: 5px 5px 0px 5px;
+    margin-left: 10px;
+    background-color: white;
+	.border-radius(5px);
+
+	&.default{
+		border: 1px solid @darkgrey;
+		color:@darkgrey;
+	}
+
+    &.true {
+        border: 1px solid @green;
+        color: @green;
+    }
+
+    &.false {
+        border: 1px solid @darkred;
+        color: @darkred;
+    }
+
+    &.some{
+		border: 1px solid @darkgrey;
+		color:@darkgrey;
+	}
+		
+	.pill-button-box{
+		.pill-button{
+			margin-top: 5px;
+			margin-bottom: 0px;
+		}
+	}
+
+    .button-list{
+		margin-top: 5px;
+		button{
+			.default-text();
+			vertical-align: middle;
+			line-height: 15px;
+			margin-top: -2px;
+			img{
+				margin-top: 2px;
+				max-height: 13px;
+			}
+		}
+		.LTL-sim-true{
+			color:@green;
+		}
+
+		.LTL-sim-false{
+			color:@darkred;
+		}
+	}
+	.action-button-small{
+		margin: 5px 0px 5px 0px;
+	}
+}
+
+.btns {
+    overflow-y: auto;
+    height: 64px;
+}
