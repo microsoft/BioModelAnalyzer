@@ -394,7 +394,9 @@ module BMA {
                             var layout = that.undoRedoPresenter.Current.layout;
                             var variables = model.Variables.slice(0);
                             var variableLayouts = layout.Variables.slice(0);
-                            variables.push(new BMA.Model.Variable(that.variableIndex, variable.ContainerId, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
+                            var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
+                            var container = that.GetContainerFromGridCell(gridCell);
+                            variables.push(new BMA.Model.Variable(that.variableIndex, container.Id, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
                             variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle));
                             var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
@@ -858,17 +860,42 @@ module BMA {
                 var relationships = this.undoRedoPresenter.Current.model.Relationships;
 
                 var newRels = [];
+                var fromId = undefined;
+                var toId = undefined;
 
                 for (var i = 0; i < relationships.length; i++) {
                     if (relationships[i].Id !== id) {
                         newRels.push(relationships[i]);
                     } else {
                         wasRemoved = true;
+                        //
+                        fromId = relationships[i].FromVariableId;
+                        toId = relationships[i].ToVariableId
                     }
                 }
 
                 if (wasRemoved === true) {
-                    var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, newRels);
+                    //updating formula
+                    var fromVariable = model.GetVariableById(fromId);
+                    var newVars = [];
+                    for (var i = 0; i < model.Variables.length; i++) {
+                        var oldFormula = model.Variables[i].Formula;
+                        var newFormula = undefined;
+                        if (model.Variables[i].Id == toId) {
+                            newFormula = oldFormula.replace(new RegExp("var\\(" + fromVariable.Name + "\\)", 'g'), "");
+                        }
+                        newVars.push(new BMA.Model.Variable(
+                            model.Variables[i].Id,
+                            model.Variables[i].ContainerId,
+                            model.Variables[i].Type,
+                            model.Variables[i].Name,
+                            model.Variables[i].RangeFrom,
+                            model.Variables[i].RangeTo,
+                            newFormula === undefined ? oldFormula : newFormula)
+                        );
+                    }
+
+                    var newmodel = new BMA.Model.BioModel(model.Name, newVars, newRels);
                     var newlayout = new BMA.Model.Layout(layout.Containers, layout.Variables);
                     this.undoRedoPresenter.Dup(newmodel, newlayout);
                 }
