@@ -5699,7 +5699,9 @@ var BMA;
                             var layout = that.undoRedoPresenter.Current.layout;
                             var variables = model.Variables.slice(0);
                             var variableLayouts = layout.Variables.slice(0);
-                            variables.push(new BMA.Model.Variable(that.variableIndex, variable.ContainerId, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
+                            var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
+                            var container = that.GetContainerFromGridCell(gridCell);
+                            variables.push(new BMA.Model.Variable(that.variableIndex, container.Id, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
                             variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle));
                             var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
@@ -6091,16 +6093,31 @@ var BMA;
                 var layout = this.undoRedoPresenter.Current.layout;
                 var relationships = this.undoRedoPresenter.Current.model.Relationships;
                 var newRels = [];
+                var fromId = undefined;
+                var toId = undefined;
                 for (var i = 0; i < relationships.length; i++) {
                     if (relationships[i].Id !== id) {
                         newRels.push(relationships[i]);
                     }
                     else {
                         wasRemoved = true;
+                        //
+                        fromId = relationships[i].FromVariableId;
+                        toId = relationships[i].ToVariableId;
                     }
                 }
                 if (wasRemoved === true) {
-                    var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, newRels);
+                    var fromVariable = model.GetVariableById(fromId);
+                    var newVars = [];
+                    for (var i = 0; i < model.Variables.length; i++) {
+                        var oldFormula = model.Variables[i].Formula;
+                        var newFormula = undefined;
+                        if (model.Variables[i].Id == toId) {
+                            newFormula = oldFormula.replace(new RegExp("var\\(" + fromVariable.Name + "\\)", 'g'), "");
+                        }
+                        newVars.push(new BMA.Model.Variable(model.Variables[i].Id, model.Variables[i].ContainerId, model.Variables[i].Type, model.Variables[i].Name, model.Variables[i].RangeFrom, model.Variables[i].RangeTo, newFormula === undefined ? oldFormula : newFormula));
+                    }
+                    var newmodel = new BMA.Model.BioModel(model.Name, newVars, newRels);
                     var newlayout = new BMA.Model.Layout(layout.Containers, layout.Variables);
                     this.undoRedoPresenter.Dup(newmodel, newlayout);
                 }
@@ -12196,8 +12213,8 @@ jQuery.fn.extend({
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
                             .appendTo(ltltestdiv);
-                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(ltltestdiv);
-                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
                         if (that.options.steps == 1) {
                             minusd.addClass("testing");
@@ -12216,7 +12233,7 @@ jQuery.fn.extend({
                                 minusb.addClass("testing");
                             }
                         });
-                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click(function (e) {
                             that.options.steps++;
@@ -12229,7 +12246,7 @@ jQuery.fn.extend({
                         });
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                        var btn = $("<button>TEST </button>").appendTo(li);
+                        var btn = $("<button>TEST </button>").css("margin-top", "0px").appendTo(li);
                         btn.click(function () {
                             if (that.options.ontestrequested !== undefined) {
                                 that.options.ontestrequested();
@@ -12259,12 +12276,12 @@ jQuery.fn.extend({
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
                             .appendTo(ltltestdiv);
-                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(ltltestdiv);
-                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
                         minusd.addClass("testing");
                         minusb.addClass("testing");
-                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusd.addClass("testing");
                         plusb.addClass("testing");
@@ -12298,8 +12315,8 @@ jQuery.fn.extend({
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
                             .appendTo(sr);
-                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(sr);
-                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
                         if (that.options.steps == 1) {
                             minusd.addClass("testing");
@@ -12319,7 +12336,7 @@ jQuery.fn.extend({
                                 }
                             }
                         });
-                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click(function (e) {
                             that.options.steps++;
@@ -12375,8 +12392,8 @@ jQuery.fn.extend({
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
                             .appendTo(sr);
-                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(sr);
-                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
                         if (that.options.steps == 1) {
                             minusd.addClass("testing");
@@ -12396,7 +12413,7 @@ jQuery.fn.extend({
                                 }
                             }
                         });
-                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click(function (e) {
                             that.options.steps++;
@@ -12463,8 +12480,8 @@ jQuery.fn.extend({
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
                             .appendTo(sr);
-                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(sr);
-                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
                         if (that.options.steps == 1) {
                             minusd.addClass("testing");
@@ -12484,7 +12501,7 @@ jQuery.fn.extend({
                                 }
                             }
                         });
-                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click(function (e) {
                             that.options.steps++;
@@ -13146,6 +13163,11 @@ var BMA;
                             if (operation instanceof BMA.LTLOperations.Operation) {
                                 var op = operation;
                                 var states = that.GetStates(op);
+                                var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(that.appModel.BioModel, that.appModel.Layout, states);
+                                if (statesChanged.isChanged) {
+                                    states = statesChanged.states;
+                                    BMA.LTLOperations.RefreshStatesInOperation(op, states);
+                                }
                                 var merged = that.MergeStates(that.appModel.States, states);
                                 that.appModel.States = merged.states;
                                 that.UpdateOperationStates(op, merged.map);
@@ -13184,7 +13206,10 @@ var BMA;
                 for (var i = 0; i < operation.Operands.length; i++) {
                     var op = operation.Operands[i];
                     if (op instanceof BMA.LTLOperations.Keyframe) {
-                        op.Name = map[op.Name];
+                        if (map[op.Name])
+                            op.Name = map[op.Name];
+                        else
+                            op = undefined;
                     }
                     else if (op instanceof BMA.LTLOperations.Operation) {
                         that.UpdateOperationStates(op, map);

@@ -2480,9 +2480,6 @@ textarea:focus {
 				}
 			}*/
 /*  Analysis Tabs  */
-.proof-variables-popout .scrollable-results {
-  overflow-x: scroll;
-}
 .proof-variables-popout .scrollable-results .variables-table {
   width: 99%;
 }
@@ -2823,7 +2820,6 @@ textarea:focus {
   width: 850px;
 }
 .window.proof-propagation-popout .scrollable-results {
-  overflow-x: scroll;
   max-height: 500px;
   overflow-x: auto;
   overflow-y: auto;
@@ -3534,6 +3530,7 @@ textarea:focus {
   height: 21px;
   padding: 2px;
   margin-top: 5px;
+  margin-right: 5px;
 }
 .temporal-toolbar .temporal-operators .operator .label {
   display: inline-block;
@@ -3653,9 +3650,14 @@ ui-icon-arrowthickstop-1-n {
   border: 1px solid #606060;
   color: #606060;
 }
+.LTL-test-results .pill-button-box {
+  margin-left: 5px;
+}
 .LTL-test-results .pill-button-box .pill-button {
   margin-top: 5px;
   margin-bottom: 0px;
+  width: 17px;
+  font-size: 19.5px;
 }
 .LTL-test-results .button-list {
   margin-top: 5px;

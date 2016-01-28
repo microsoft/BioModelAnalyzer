@@ -130,6 +130,11 @@
                             if (operation instanceof BMA.LTLOperations.Operation) {
                                 var op = <BMA.LTLOperations.Operation>operation;
                                 var states = that.GetStates(op);
+                                var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(that.appModel.BioModel, that.appModel.Layout, states);
+                                if (statesChanged.isChanged) {
+                                    states = statesChanged.states;
+                                    BMA.LTLOperations.RefreshStatesInOperation(op, states);
+                                }
                                 var merged = that.MergeStates(that.appModel.States, states);
                                 that.appModel.States = merged.states;
                                 that.UpdateOperationStates(op, merged.map);
@@ -173,7 +178,9 @@
                 for (var i = 0; i < operation.Operands.length; i++) {
                     var op = operation.Operands[i];
                     if (op instanceof BMA.LTLOperations.Keyframe) {
-                        (<BMA.LTLOperations.Keyframe>op).Name = map[(<BMA.LTLOperations.Keyframe>op).Name];
+                        if (map[(<BMA.LTLOperations.Keyframe>op).Name])
+                            (<BMA.LTLOperations.Keyframe>op).Name = map[(<BMA.LTLOperations.Keyframe>op).Name];
+                        else op = undefined;
                     } else if (op instanceof BMA.LTLOperations.Operation) {
                         that.UpdateOperationStates(<BMA.LTLOperations.Operation>op, map);
                     }
