@@ -699,18 +699,7 @@ module BMA {
                 if (this.operations.length < 1)
                     this.driver.SetVisibleRect({ x: 0, y: 0, width: 800, height: 600 });
                 else {
-                    var bbox = this.operations[0].BoundingBox;
-                    for (var i = 1; i < this.operations.length; i++) {
-                        var unitBbbox = this.operations[i].BoundingBox;
-                        var x = Math.min(bbox.x, unitBbbox.x);
-                        var y = Math.min(bbox.y, unitBbbox.y);
-                        bbox = {
-                            x: x,
-                            y: y,
-                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - x,
-                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
-                        };
-                    }
+                    var bbox = this.CalcOperationsBBox();
 
                     var size = Math.max(bbox.width, bbox.height);
                     var center = {
@@ -731,6 +720,26 @@ module BMA {
                     }
                     this.driver.SetVisibleRect(bbox);
                 }
+            }
+
+            private CalcOperationsBBox() {
+                if (this.operations.length < 1)
+                    return undefined;
+
+                var bbox = this.operations[0].BoundingBox;
+                for (var i = 1; i < this.operations.length; i++) {
+                    var unitBbbox = this.operations[i].BoundingBox;
+                    var x = Math.min(bbox.x, unitBbbox.x);
+                    var y = Math.min(bbox.y, unitBbbox.y);
+                    bbox = {
+                        x: x,
+                        y: y,
+                        width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - x,
+                        height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
+                    };
+                }
+
+                return bbox;
             }
 
             private LoadFromAppModel() {
@@ -1039,6 +1048,10 @@ module BMA {
                     this.appModel.Operations = operations;
                     this.appModel.OperationAppearances = appearances;
                 }
+
+                var bbox = that.CalcOperationsBBox();
+                that.plotConstraints.maxWidth = Math.max(400 * 3, bbox.width);
+                that.plotConstraints.maxHeight = Math.max(200 * 3, bbox.height);
 
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             }

@@ -32,7 +32,7 @@
                 width: _svgCnt.width(),
                 height: _svgCnt.height(),
                 viewBox: "0 0 1 1",
-                preserveAspectRatio: "none meet"
+                preserveAspectRatio: "none"
             }, true);
 
             that.host.trigger("svgLoaded");

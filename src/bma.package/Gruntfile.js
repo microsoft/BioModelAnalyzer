@@ -96,6 +96,7 @@ module.exports = function (grunt) {
                     { src: 'tool.js', dest: '../bma.client/tool.js' },
                     { src: 'app.js', dest: '../bma.client/app.js' },
                     { src: 'css/bma.css', dest: '../bma.client/css/bma.css' },
+                    { src: 'js/idd.js', dest: '../bma.client/js/idd.js' },
                     { src: 'js/jquery.ui-contextmenu.min.js', dest: '../bma.client/js/jquery.ui-contextmenu.min.js' },
                     { src: 'js/jquery.ui-contextmenu.js', dest: '../bma.client/js/jquery.ui-contextmenu.js' }
                 ]
