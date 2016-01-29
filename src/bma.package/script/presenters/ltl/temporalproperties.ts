@@ -268,6 +268,7 @@ module BMA {
                         this.clipboard = {
                             operation: clonned,
                         };
+                        this.tpEditorDriver.SetCopyZoneVisibility(true);
                         this.tpEditorDriver.SetCopyZoneIcon(clonned);
 
                         if (unpinned.isRoot) {
@@ -287,6 +288,7 @@ module BMA {
                         this.clipboard = {
                             operation: clonned
                         };
+                        this.tpEditorDriver.SetCopyZoneVisibility(true);
                         this.tpEditorDriver.SetCopyZoneIcon(clonned);
 
                         tpEditorDriver.SetCopyZoneVisibility(this.clipboard !== undefined);
@@ -376,6 +378,9 @@ module BMA {
                     }
                     this.operations = [];
                     this.LoadFromAppModel();
+                    this.clipboard = undefined;
+                    this.tpEditorDriver.SetCopyZoneIcon(undefined);
+                    this.tpEditorDriver.SetCopyZoneVisibility(false);
                 });
 
                 window.Commands.On("AppModelChanged", (args) => {
@@ -1057,8 +1062,10 @@ module BMA {
                 }
 
                 var bbox = that.CalcOperationsBBox();
-                that.plotConstraints.maxWidth = Math.max(400 * 3, bbox.width * 1.2);
-                that.plotConstraints.maxHeight = Math.max(200 * 3, bbox.height * 1.2);
+                if (bbox !== undefined) {
+                    that.plotConstraints.maxWidth = Math.max(400 * 3, bbox.width * 1.2);
+                    that.plotConstraints.maxHeight = Math.max(200 * 3, bbox.height * 1.2);
+                }
 
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             }

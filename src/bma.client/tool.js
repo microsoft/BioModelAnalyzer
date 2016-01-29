@@ -12801,7 +12801,8 @@ jQuery.fn.extend({
                 onLoad: function (svg) {
                     that.copyzonesvg = svg;
                     svg.configure({
-                        height: "40px"
+                        height: "40px",
+                        width: "40px"
                     });
                     if (that.options.copyzoneoperation !== undefined) {
                         that.updateCopyZoneIcon(that.options.copyzoneoperation);
@@ -12912,13 +12913,24 @@ jQuery.fn.extend({
             }
             if (that.copyzonesvg !== undefined) {
                 that.copyzonesvg.clear();
-                that.operation = new BMA.LTLOperations.OperationLayout(that.copyzonesvg, op, { x: 0, y: 0 });
-                var bbox = that.operation.BoundingBox;
-                that.copyzonesvg.configure({
-                    height: "40px",
-                    viewBox: bbox.x + " " + (bbox.y - 5) + " " + bbox.width + " " + (bbox.height + 10),
-                }, true);
-                that.operation.Refresh();
+                if (op !== undefined) {
+                    that.operation = new BMA.LTLOperations.OperationLayout(that.copyzonesvg, op, { x: 0, y: 0 });
+                    var bbox = that.operation.BoundingBox;
+                    that.copyzonesvg.configure({
+                        height: "40px",
+                        width: bbox.width,
+                        viewBox: bbox.x + " " + (bbox.y - 5) + " " + bbox.width + " " + (bbox.height + 10),
+                    }, true);
+                    that.operation.Refresh();
+                }
+                else {
+                    that.copyzonesvg.configure({
+                        height: "40px",
+                        width: "40px",
+                        viewBox: 0 + " " + 0 + " " + 40 + " " + 40,
+                    }, true);
+                    that.copyzonesvg.load("../images/LTL-copy.svg", { width: 40, height: 40 });
+                }
             }
         },
         setcopyzonevisibility: function (isVisible) {
@@ -13577,6 +13589,7 @@ var BMA;
                         _this.clipboard = {
                             operation: clonned,
                         };
+                        _this.tpEditorDriver.SetCopyZoneVisibility(true);
                         _this.tpEditorDriver.SetCopyZoneIcon(clonned);
                         if (unpinned.isRoot) {
                             _this.operations.splice(_this.operations.indexOf(_this.contextElement.operationlayoutref), 1);
@@ -13593,6 +13606,7 @@ var BMA;
                         _this.clipboard = {
                             operation: clonned
                         };
+                        _this.tpEditorDriver.SetCopyZoneVisibility(true);
                         _this.tpEditorDriver.SetCopyZoneIcon(clonned);
                         tpEditorDriver.SetCopyZoneVisibility(_this.clipboard !== undefined);
                     }
@@ -13668,6 +13682,9 @@ var BMA;
                     }
                     _this.operations = [];
                     _this.LoadFromAppModel();
+                    _this.clipboard = undefined;
+                    _this.tpEditorDriver.SetCopyZoneIcon(undefined);
+                    _this.tpEditorDriver.SetCopyZoneVisibility(false);
                 });
                 window.Commands.On("AppModelChanged", function (args) {
                     if (_this.CompareStatesToLocal(appModel.States)) {
@@ -14240,8 +14257,10 @@ var BMA;
                     this.appModel.OperationAppearances = appearances;
                 }
                 var bbox = that.CalcOperationsBBox();
-                that.plotConstraints.maxWidth = Math.max(400 * 3, bbox.width * 1.2);
-                that.plotConstraints.maxHeight = Math.max(200 * 3, bbox.height * 1.2);
+                if (bbox !== undefined) {
+                    that.plotConstraints.maxWidth = Math.max(400 * 3, bbox.width * 1.2);
+                    that.plotConstraints.maxHeight = Math.max(200 * 3, bbox.height * 1.2);
+                }
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             };
             TemporalPropertiesPresenter.prototype.AddOperation = function (operation, position) {
