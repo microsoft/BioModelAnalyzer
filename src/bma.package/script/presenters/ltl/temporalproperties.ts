@@ -90,31 +90,38 @@ module BMA {
                 tpEditorDriver.SetCopyZoneVisibility(false);
                 tpEditorDriver.SetDeleteZoneVisibility(false);
 
-                
+                var plotHost = (<any>this.navigationDriver.GetNavigationSurface()).master;
                 tpEditorDriver.GetSVGDriver().SetConstraintFunc((plotRect) => {
+
+                    var screenRect = { x: 0, y: 0, left: 0, top: 0, width: plotHost.host.width(), height: plotHost.host.height() };
+                    var minCS = new InteractiveDataDisplay.CoordinateTransform({ x: 0, y: 0, width: that.plotConstraints.minWidth, height: that.plotConstraints.minHeight }, screenRect, plotHost.aspectRatio);
+                    var actualMinRect = minCS.getPlotRect(screenRect);
+                    var maxCS = new InteractiveDataDisplay.CoordinateTransform({ x: 0, y: 0, width: that.plotConstraints.maxWidth, height: that.plotConstraints.maxHeight }, screenRect, plotHost.aspectRatio);
+                    var actualMaxRect = maxCS.getPlotRect(screenRect);
+
                     var resultPR = { x: 0, y: 0, width: 0, height: 0 };
                     var center = {
                         x: plotRect.x + plotRect.width / 2,
                         y: plotRect.y + plotRect.height / 2
                     }
 
-                    if (plotRect.width < that.plotConstraints.minWidth) {
-                        resultPR.x = center.x - that.plotConstraints.minWidth / 2;
-                        resultPR.width = that.plotConstraints.minWidth;
-                    } else if (plotRect.width > that.plotConstraints.maxWidth) {
-                        resultPR.x = center.x - that.plotConstraints.maxWidth / 2;
-                        resultPR.width = that.plotConstraints.maxWidth;
+                    if (plotRect.width < actualMinRect.width) {
+                        resultPR.x = center.x - actualMinRect.width / 2;
+                        resultPR.width = actualMinRect.width;
+                    } else if (plotRect.width > actualMaxRect.width) {
+                        resultPR.x = center.x - actualMaxRect.width / 2;
+                        resultPR.width = actualMaxRect.width;
                     } else {
                         resultPR.x = plotRect.x;
                         resultPR.width = plotRect.width;
                     }
 
-                    if (plotRect.height < that.plotConstraints.minHeight) {
-                        resultPR.y = center.y - that.plotConstraints.minHeight / 2;
-                        resultPR.height = that.plotConstraints.minHeight;
-                    } else if (plotRect.height > that.plotConstraints.maxHeight) {
-                        resultPR.y = center.y - that.plotConstraints.maxHeight / 2;
-                        resultPR.height = that.plotConstraints.maxHeight;
+                    if (plotRect.height < actualMinRect.height) {
+                        resultPR.y = center.y - actualMinRect.height / 2;
+                        resultPR.height = actualMinRect.height;
+                    } else if (plotRect.height > actualMaxRect.height) {
+                        resultPR.y = center.y - actualMaxRect.height / 2;
+                        resultPR.height = actualMaxRect.height;
                     } else {
                         resultPR.y = plotRect.y;
                         resultPR.height = plotRect.height;
@@ -1050,8 +1057,8 @@ module BMA {
                 }
 
                 var bbox = that.CalcOperationsBBox();
-                that.plotConstraints.maxWidth = Math.max(400 * 3, bbox.width);
-                that.plotConstraints.maxHeight = Math.max(200 * 3, bbox.height);
+                that.plotConstraints.maxWidth = Math.max(400 * 3, bbox.width * 1.2);
+                that.plotConstraints.maxHeight = Math.max(200 * 3, bbox.height * 1.2);
 
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             }
