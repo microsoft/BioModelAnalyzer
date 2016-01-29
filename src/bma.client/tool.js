@@ -192,6 +192,15 @@
                         context.font = textheight + "px Segoe-UI";
                     }
                     context.fillText(str, dataToScreenX(rect.x + 0.2), dataToScreenY(rect.y + rect.height - 0.2));
+
+                    //var availableWidth = width * 0.8;
+                    //var circleSize = availableWidth / rect.labels.length;
+                    //var x = 0;
+                    //for (var j = 0; j < rect.labels.length; j++) {
+                    //    ctx.arc(0, rect.height / 2, circleSize, 0, 2 * Math.PI);
+                    //    ctx.stroke();
+                    //}
+
                 }
             }
         };
@@ -14232,8 +14241,8 @@ var BMA;
                     this.appModel.OperationAppearances = appearances;
                 }
                 var bbox = that.CalcOperationsBBox();
-                that.plotConstraints.maxWidth = Math.max(400 * 3, bbox.width);
-                that.plotConstraints.maxHeight = Math.max(200 * 3, bbox.height);
+                that.plotConstraints.maxWidth = Math.max(400 * 3, bbox.width * 1.2);
+                that.plotConstraints.maxHeight = Math.max(200 * 3, bbox.height * 1.2);
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             };
             TemporalPropertiesPresenter.prototype.AddOperation = function (operation, position) {

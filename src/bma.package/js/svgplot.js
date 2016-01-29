@@ -192,6 +192,15 @@
                         context.font = textheight + "px Segoe-UI";
                     }
                     context.fillText(str, dataToScreenX(rect.x + 0.2), dataToScreenY(rect.y + rect.height - 0.2));
+
+                    //var availableWidth = width * 0.8;
+                    //var circleSize = availableWidth / rect.labels.length;
+                    //var x = 0;
+                    //for (var j = 0; j < rect.labels.length; j++) {
+                    //    ctx.arc(0, rect.height / 2, circleSize, 0, 2 * Math.PI);
+                    //    ctx.stroke();
+                    //}
+
                 }
             }
         };
