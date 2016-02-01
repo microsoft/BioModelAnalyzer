@@ -1,3 +1,4 @@
+/// <vs AfterBuild='default' />
 /// <binding AfterBuild='default' />
 /// <vs AfterBuild='default' />
 /// <binding AfterBuild='default' />
