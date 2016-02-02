@@ -12,6 +12,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Security;
 using System.Web.SessionState;
 using System.Xml.Linq;
@@ -41,6 +42,9 @@ namespace bma.client
                 logger = new FailureTraceLogger();
             container.RegisterInstance<IFailureLogger>(logger);
             GlobalConfiguration.Configuration.DependencyResolver = new UnityResolver(container);
+
+            var cors = new EnableCorsAttribute("*", "*", "*");
+            GlobalConfiguration.Configuration.EnableCors(cors);
         }        
     }
 

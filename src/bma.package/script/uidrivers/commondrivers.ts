@@ -554,7 +554,7 @@ module BMA {
             public Invoke(data): JQueryPromise<any> {
                 return $.ajax({
                     type: "POST",
-                    url: "api/Validate",
+                    url: "http://bmamath.cloudapp.net/api/Validate",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"
@@ -566,7 +566,7 @@ module BMA {
             public Invoke(data): JQueryPromise<any> {
                 return $.ajax({
                     type: "POST",
-                    url: "api/FurtherTesting",
+                    url: "http://bmamath.cloudapp.net/api/FurtherTesting",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"
@@ -578,7 +578,7 @@ module BMA {
             public Invoke(data): JQueryPromise<any> {
                 return $.ajax({
                     type: "POST",
-                    url: "api/Analyze",
+                    url: "http://bmamath.cloudapp.net/api/Analyze",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"
@@ -590,7 +590,7 @@ module BMA {
             public Invoke(data): JQueryPromise<any> {
                 return $.ajax({
                     type: "POST",
-                    url: "api/AnalyzeLTL",
+                    url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"
@@ -602,7 +602,7 @@ module BMA {
             public Invoke(data): JQueryPromise<any> {
                 return $.ajax({
                     type: "POST",
-                    url: "api/Simulate",
+                    url: "http://bmamath.cloudapp.net/api/Simulate",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"
