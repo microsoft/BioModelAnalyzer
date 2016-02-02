@@ -176,23 +176,31 @@
                 context.globalAlpha = alpha;
 
                 if (rect.labels !== undefined && rect.labels.length > 0) {
-                    var str = "";
+                    
+
+                    var availableWidth = width * 0.8;
+                    var circleSize = availableWidth / rect.labels.length;
+                    var x = 0;
                     for (var j = 0; j < rect.labels.length; j++) {
-                        str = str + rect.labels[j];
-                        if (j < rect.labels.length - 1) {
-                            str += ", ";
-                        }
+                        context.beginPath();
+                        context.arc(dataToScreenX(rect.x) + x + circleSize / 2 + 0.1 * width, dataToScreenY(rect.y + rect.height / 2), circleSize / 2, 0, 2 * Math.PI, true);
+                        context.closePath();
+
+                        context.strokeStyle = "rgb(96,96,96)";
+                        context.fillStyle = "rgb(238,238,238)";
+                        context.stroke();
+                        context.fill();
+
+                        context.fillStyle = "rgb(96,96,96)";
+                        context.textBaseline = "middle";
+                        context.font = circleSize / 2 + "px Segoe-UI";
+                        var w = context.measureText(rect.labels[j]).width;
+                        context.fillText(rect.labels[j], dataToScreenX(rect.x) + x + circleSize / 2 + 0.1 * width - w / 2, dataToScreenY(rect.y + rect.height / 2));
+
+                        x += circleSize;
                     }
-                    context.fillStyle = "rgb(37,96,159)";
-                    context.textBaseline = "top";
-                    var textheight = Math.abs(dataToScreenY(0.5) - dataToScreenY(0));
-                    context.font = textheight + "px Segoe-UI";
-                    while (context.measureText(str).width > width * 0.8) {
-                        var textheight = 0.8 * textheight;
-                        context.font = textheight + "px Segoe-UI";
-                    }
-                    context.fillText(str, dataToScreenX(rect.x + 0.2), dataToScreenY(rect.y + rect.height - 0.2));
                 }
+                
             }
         };
 
@@ -4455,7 +4463,7 @@ var BMA;
             FormulaValidationService.prototype.Invoke = function (data) {
                 return $.ajax({
                     type: "POST",
-                    url: "api/Validate",
+                    url: "http://bmamath.cloudapp.net/api/Validate",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"
@@ -4470,7 +4478,7 @@ var BMA;
             FurtherTestingService.prototype.Invoke = function (data) {
                 return $.ajax({
                     type: "POST",
-                    url: "api/FurtherTesting",
+                    url: "http://bmamath.cloudapp.net/api/FurtherTesting",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"
@@ -4485,7 +4493,7 @@ var BMA;
             ProofAnalyzeService.prototype.Invoke = function (data) {
                 return $.ajax({
                     type: "POST",
-                    url: "api/Analyze",
+                    url: "http://bmamath.cloudapp.net/api/Analyze",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"
@@ -4500,7 +4508,7 @@ var BMA;
             LTLAnalyzeService.prototype.Invoke = function (data) {
                 return $.ajax({
                     type: "POST",
-                    url: "api/AnalyzeLTL",
+                    url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"
@@ -4515,7 +4523,7 @@ var BMA;
             SimulationService.prototype.Invoke = function (data) {
                 return $.ajax({
                     type: "POST",
-                    url: "api/Simulate",
+                    url: "http://bmamath.cloudapp.net/api/Simulate",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"
@@ -12793,7 +12801,8 @@ jQuery.fn.extend({
                 onLoad: function (svg) {
                     that.copyzonesvg = svg;
                     svg.configure({
-                        height: "40px"
+                        height: "40px",
+                        width: "40px"
                     });
                     if (that.options.copyzoneoperation !== undefined) {
                         that.updateCopyZoneIcon(that.options.copyzoneoperation);
@@ -12904,13 +12913,24 @@ jQuery.fn.extend({
             }
             if (that.copyzonesvg !== undefined) {
                 that.copyzonesvg.clear();
-                that.operation = new BMA.LTLOperations.OperationLayout(that.copyzonesvg, op, { x: 0, y: 0 });
-                var bbox = that.operation.BoundingBox;
-                that.copyzonesvg.configure({
-                    height: "40px",
-                    viewBox: bbox.x + " " + (bbox.y - 5) + " " + bbox.width + " " + (bbox.height + 10),
-                }, true);
-                that.operation.Refresh();
+                if (op !== undefined) {
+                    that.operation = new BMA.LTLOperations.OperationLayout(that.copyzonesvg, op, { x: 0, y: 0 });
+                    var bbox = that.operation.BoundingBox;
+                    that.copyzonesvg.configure({
+                        height: "40px",
+                        width: bbox.width,
+                        viewBox: bbox.x + " " + (bbox.y - 5) + " " + bbox.width + " " + (bbox.height + 10),
+                    }, true);
+                    that.operation.Refresh();
+                }
+                else {
+                    that.copyzonesvg.configure({
+                        height: "40px",
+                        width: "40px",
+                        viewBox: 0 + " " + 0 + " " + 40 + " " + 40,
+                    }, true);
+                    that.copyzonesvg.load("../images/LTL-copy.svg", { width: 40, height: 40 });
+                }
             }
         },
         setcopyzonevisibility: function (isVisible) {
@@ -13414,23 +13434,37 @@ var BMA;
                 var contextMenu = tpEditorDriver.GetContextMenuDriver();
                 tpEditorDriver.SetCopyZoneVisibility(false);
                 tpEditorDriver.SetDeleteZoneVisibility(false);
+                var plotHost = this.navigationDriver.GetNavigationSurface().master;
                 tpEditorDriver.GetSVGDriver().SetConstraintFunc(function (plotRect) {
+                    var screenRect = { x: 0, y: 0, left: 0, top: 0, width: plotHost.host.width(), height: plotHost.host.height() };
+                    var minCS = new InteractiveDataDisplay.CoordinateTransform({ x: 0, y: 0, width: that.plotConstraints.minWidth, height: that.plotConstraints.minHeight }, screenRect, plotHost.aspectRatio);
+                    var actualMinRect = minCS.getPlotRect(screenRect);
+                    var maxCS = new InteractiveDataDisplay.CoordinateTransform({ x: 0, y: 0, width: that.plotConstraints.maxWidth, height: that.plotConstraints.maxHeight }, screenRect, plotHost.aspectRatio);
+                    var actualMaxRect = maxCS.getPlotRect(screenRect);
                     var resultPR = { x: 0, y: 0, width: 0, height: 0 };
                     var center = {
                         x: plotRect.x + plotRect.width / 2,
                         y: plotRect.y + plotRect.height / 2
                     };
-                    if (plotRect.width < that.plotConstraints.minWidth) {
-                        resultPR.x = center.x - that.plotConstraints.minWidth / 2;
-                        resultPR.width = that.plotConstraints.minWidth;
+                    if (plotRect.width < actualMinRect.width) {
+                        resultPR.x = center.x - actualMinRect.width / 2;
+                        resultPR.width = actualMinRect.width;
+                    }
+                    else if (plotRect.width > actualMaxRect.width) {
+                        resultPR.x = center.x - actualMaxRect.width / 2;
+                        resultPR.width = actualMaxRect.width;
                     }
                     else {
                         resultPR.x = plotRect.x;
                         resultPR.width = plotRect.width;
                     }
-                    if (plotRect.height < that.plotConstraints.minHeight) {
-                        resultPR.y = center.y - that.plotConstraints.minHeight / 2;
-                        resultPR.height = that.plotConstraints.minHeight;
+                    if (plotRect.height < actualMinRect.height) {
+                        resultPR.y = center.y - actualMinRect.height / 2;
+                        resultPR.height = actualMinRect.height;
+                    }
+                    else if (plotRect.height > actualMaxRect.height) {
+                        resultPR.y = center.y - actualMaxRect.height / 2;
+                        resultPR.height = actualMaxRect.height;
                     }
                     else {
                         resultPR.y = plotRect.y;
@@ -13555,6 +13589,7 @@ var BMA;
                         _this.clipboard = {
                             operation: clonned,
                         };
+                        _this.tpEditorDriver.SetCopyZoneVisibility(true);
                         _this.tpEditorDriver.SetCopyZoneIcon(clonned);
                         if (unpinned.isRoot) {
                             _this.operations.splice(_this.operations.indexOf(_this.contextElement.operationlayoutref), 1);
@@ -13571,6 +13606,7 @@ var BMA;
                         _this.clipboard = {
                             operation: clonned
                         };
+                        _this.tpEditorDriver.SetCopyZoneVisibility(true);
                         _this.tpEditorDriver.SetCopyZoneIcon(clonned);
                         tpEditorDriver.SetCopyZoneVisibility(_this.clipboard !== undefined);
                     }
@@ -13646,6 +13682,9 @@ var BMA;
                     }
                     _this.operations = [];
                     _this.LoadFromAppModel();
+                    _this.clipboard = undefined;
+                    _this.tpEditorDriver.SetCopyZoneIcon(undefined);
+                    _this.tpEditorDriver.SetCopyZoneVisibility(false);
                 });
                 window.Commands.On("AppModelChanged", function (args) {
                     if (_this.CompareStatesToLocal(appModel.States)) {
@@ -13931,18 +13970,7 @@ var BMA;
                 if (this.operations.length < 1)
                     this.driver.SetVisibleRect({ x: 0, y: 0, width: 800, height: 600 });
                 else {
-                    var bbox = this.operations[0].BoundingBox;
-                    for (var i = 1; i < this.operations.length; i++) {
-                        var unitBbbox = this.operations[i].BoundingBox;
-                        var x = Math.min(bbox.x, unitBbbox.x);
-                        var y = Math.min(bbox.y, unitBbbox.y);
-                        bbox = {
-                            x: x,
-                            y: y,
-                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - x,
-                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
-                        };
-                    }
+                    var bbox = this.CalcOperationsBBox();
                     var size = Math.max(bbox.width, bbox.height);
                     var center = {
                         x: bbox.x + bbox.width / 2,
@@ -13960,6 +13988,23 @@ var BMA;
                     };
                     this.driver.SetVisibleRect(bbox);
                 }
+            };
+            TemporalPropertiesPresenter.prototype.CalcOperationsBBox = function () {
+                if (this.operations.length < 1)
+                    return undefined;
+                var bbox = this.operations[0].BoundingBox;
+                for (var i = 1; i < this.operations.length; i++) {
+                    var unitBbbox = this.operations[i].BoundingBox;
+                    var x = Math.min(bbox.x, unitBbbox.x);
+                    var y = Math.min(bbox.y, unitBbbox.y);
+                    bbox = {
+                        x: x,
+                        y: y,
+                        width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - x,
+                        height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
+                    };
+                }
+                return bbox;
             };
             TemporalPropertiesPresenter.prototype.LoadFromAppModel = function () {
                 var appModel = this.appModel;
@@ -14210,6 +14255,11 @@ var BMA;
                 if (updateAppModel) {
                     this.appModel.Operations = operations;
                     this.appModel.OperationAppearances = appearances;
+                }
+                var bbox = that.CalcOperationsBBox();
+                if (bbox !== undefined) {
+                    that.plotConstraints.maxWidth = Math.max(400 * 3, bbox.width * 1.2);
+                    that.plotConstraints.maxHeight = Math.max(200 * 3, bbox.height * 1.2);
                 }
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);
             };

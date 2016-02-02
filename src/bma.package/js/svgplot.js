@@ -176,23 +176,31 @@
                 context.globalAlpha = alpha;
 
                 if (rect.labels !== undefined && rect.labels.length > 0) {
-                    var str = "";
+                    
+
+                    var availableWidth = width * 0.8;
+                    var circleSize = availableWidth / rect.labels.length;
+                    var x = 0;
                     for (var j = 0; j < rect.labels.length; j++) {
-                        str = str + rect.labels[j];
-                        if (j < rect.labels.length - 1) {
-                            str += ", ";
-                        }
+                        context.beginPath();
+                        context.arc(dataToScreenX(rect.x) + x + circleSize / 2 + 0.1 * width, dataToScreenY(rect.y + rect.height / 2), circleSize / 2, 0, 2 * Math.PI, true);
+                        context.closePath();
+
+                        context.strokeStyle = "rgb(96,96,96)";
+                        context.fillStyle = "rgb(238,238,238)";
+                        context.stroke();
+                        context.fill();
+
+                        context.fillStyle = "rgb(96,96,96)";
+                        context.textBaseline = "middle";
+                        context.font = circleSize / 2 + "px Segoe-UI";
+                        var w = context.measureText(rect.labels[j]).width;
+                        context.fillText(rect.labels[j], dataToScreenX(rect.x) + x + circleSize / 2 + 0.1 * width - w / 2, dataToScreenY(rect.y + rect.height / 2));
+
+                        x += circleSize;
                     }
-                    context.fillStyle = "rgb(37,96,159)";
-                    context.textBaseline = "top";
-                    var textheight = Math.abs(dataToScreenY(0.5) - dataToScreenY(0));
-                    context.font = textheight + "px Segoe-UI";
-                    while (context.measureText(str).width > width * 0.8) {
-                        var textheight = 0.8 * textheight;
-                        context.font = textheight + "px Segoe-UI";
-                    }
-                    context.fillText(str, dataToScreenX(rect.x + 0.2), dataToScreenY(rect.y + rect.height - 0.2));
                 }
+                
             }
         };
 
