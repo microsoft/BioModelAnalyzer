@@ -7136,7 +7136,7 @@ var BMA;
                                 that.expandedViewer.AddResult(res);
                                 var d = that.ConvertResult(res);
                                 that.AddData(d);
-                                that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1 });
+                                that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1, attempt: 1 });
                             }
                             else {
                                 that.expandedViewer.ActiveMode();
@@ -7144,10 +7144,17 @@ var BMA;
                             }
                         })
                             .fail(function (XMLHttpRequest, textStatus, errorThrown) {
-                            this.logService.LogSimulationError();
-                            console.log(textStatus);
-                            that.expandedViewer.ActiveMode();
-                            alert("Simulate error: " + errorThrown);
+                            if (param.attempt !== undefined && param.attempt < 5) {
+                                var time = Math.random() * (Math.pow(2, param.attempt) - 1);
+                                console.log("Attempt to rerun simulation due to server error: " + param.attempt);
+                                setTimeout(function () { that.StartSimulation({ model: param.model, variables: param.variables, num: param.num, attempt: param.attempt + 1 }); }, time * 1000);
+                            }
+                            else {
+                                this.logService.LogSimulationError();
+                                console.log(textStatus);
+                                that.expandedViewer.ActiveMode();
+                                alert("Simulate error: " + errorThrown);
+                            }
                             return;
                         });
                     }

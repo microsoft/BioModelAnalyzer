@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ServiceDefinition name="ApiService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2015-04.2.6">
-  <WebRole name="ApiServer" vmsize="Medium">
+  <WebRole name="ApiServer" vmsize="A5">
     <Sites>
       <Site name="Web">
         <Bindings>
