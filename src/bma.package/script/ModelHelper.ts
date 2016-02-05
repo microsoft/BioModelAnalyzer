@@ -384,7 +384,7 @@
                 }
             }
 
-            var newStateName = newState.Name;
+            var newStateName = newState ? newState.Name : "";
             var newStateIdx = (newStateName && newStateName.length > 1) ? parseFloat(newStateName.slice(1)) : 0;
             
             if (lastStateName && lastStateIdx == newStateIdx && lastStateName.charAt(0) > newStateName.charAt(0)) {

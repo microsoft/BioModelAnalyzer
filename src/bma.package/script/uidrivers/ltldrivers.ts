@@ -616,6 +616,7 @@ module BMA {
             private ltlResultsViewer: JQuery;
 
             private exportCSVcallback = undefined;
+            private createStateRequested = undefined;
 
             private dataToSet = undefined;
 
@@ -647,6 +648,11 @@ module BMA {
                     if (this.exportCSVcallback !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer({ onExportCSV: that.exportCSVcallback });
                         this.exportCSVcallback = undefined;
+                    }
+
+                    if (this.createStateRequested !== undefined) {
+                        this.ltlResultsViewer.ltlresultsviewer({ createStateRequested: that.createStateRequested });
+                        this.createStateRequested = undefined;
                     }
                 }
             }
@@ -893,6 +899,14 @@ module BMA {
                     this.ltlResultsViewer.ltlresultsviewer({ onExportCSV: callback });
                 } else {
                     this.exportCSVcallback = callback;
+                }
+            }
+
+            public SetOnCreateStateRequested(callback) {
+                if (this.ltlResultsViewer !== undefined) {
+                    this.ltlResultsViewer.ltlresultsviewer({ createStateRequested: callback });
+                } else {
+                    this.createStateRequested = callback;
                 }
             }
 

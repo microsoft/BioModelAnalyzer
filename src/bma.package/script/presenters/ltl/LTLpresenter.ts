@@ -113,6 +113,26 @@
                     }
                 });
 
+                ltlresultsviewer.SetOnCreateStateRequested(function (args) {
+                    if (args !== undefined) {
+                        var keyframeEqs = [];
+                        for (var i = 0; i < args.length; i++) {
+                            keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(
+                                new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId),
+                                "=",
+                                new BMA.LTLOperations.ConstOperand(args[i].value)
+                            ));
+                        }
+
+                        var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
+                        var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
+                        var merged = that.MergeStates(that.appModel.States, [newState]);
+                        that.appModel.States = merged.states;
+                        that.statespresenter.UpdateStatesFromModel();
+                        that.tppresenter.UpdateStatesFromModel();
+                    }
+                });
+
                 commands.On("ExportLTLFormula",(args) => {
                     if (args.operation !== undefined) {
                         exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "txt");

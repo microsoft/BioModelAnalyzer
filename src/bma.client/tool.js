@@ -867,7 +867,7 @@ var BMA;
                         lastStateName : states[i].Name;
                 }
             }
-            var newStateName = newState.Name;
+            var newStateName = newState ? newState.Name : "";
             var newStateIdx = (newStateName && newStateName.length > 1) ? parseFloat(newStateName.slice(1)) : 0;
             if (lastStateName && lastStateIdx == newStateIdx && lastStateName.charAt(0) > newStateName.charAt(0)) {
                 var charCode = lastStateName ? lastStateName.charCodeAt(0) : 65;
@@ -5100,6 +5100,7 @@ var BMA;
         var LTLResultsViewer = (function () {
             function LTLResultsViewer(commands, popupWindow) {
                 this.exportCSVcallback = undefined;
+                this.createStateRequested = undefined;
                 this.dataToSet = undefined;
                 this.popupWindow = popupWindow;
                 this.commands = commands;
@@ -5124,6 +5125,10 @@ var BMA;
                     if (this.exportCSVcallback !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer({ onExportCSV: that.exportCSVcallback });
                         this.exportCSVcallback = undefined;
+                    }
+                    if (this.createStateRequested !== undefined) {
+                        this.ltlResultsViewer.ltlresultsviewer({ createStateRequested: that.createStateRequested });
+                        this.createStateRequested = undefined;
                     }
                 }
             };
@@ -5343,6 +5348,14 @@ var BMA;
                 }
                 else {
                     this.exportCSVcallback = callback;
+                }
+            };
+            LTLResultsViewer.prototype.SetOnCreateStateRequested = function (callback) {
+                if (this.ltlResultsViewer !== undefined) {
+                    this.ltlResultsViewer.ltlresultsviewer({ createStateRequested: callback });
+                }
+                else {
+                    this.createStateRequested = callback;
                 }
             };
             return LTLResultsViewer;
@@ -9214,6 +9227,8 @@ var BMA;
             tags: undefined,
             init: undefined,
             canEditInitialValue: true,
+            columnContextMenuItems: undefined,
+            onContextMenuItemSelected: undefined
         },
         _create: function () {
             var that = this;
@@ -9366,6 +9381,7 @@ var BMA;
                     for (var i = 0; i < data.length; i++) {
                         var tr = $('<tr></tr>').appendTo(table);
                         var td = $('<td></td>').text(data[i]).appendTo(tr);
+                        that.createColumnContextMenu(td);
                     }
                 }
                 else {
@@ -9376,6 +9392,7 @@ var BMA;
                         //$('<span></span>').text(data[ind]).appendTo(td);
                         if (td.text() !== td.prev().text())
                             td.addClass('change');
+                        that.createColumnContextMenu(td);
                     });
                     var last = that.data.find("tr").children("td:last-child");
                     if (that.repeat !== undefined) {
@@ -9405,6 +9422,51 @@ var BMA;
         },
         GetRandomInt: function (min, max) {
             return Math.floor(Math.random() * (max - min + 1) + min);
+        },
+        createColumnContextMenu: function (td) {
+            var that = this;
+            if (this.options.columnContextMenuItems !== undefined && this.options.columnContextMenuItems.length != 0) {
+                var holdCords = {
+                    holdX: 0,
+                    holdY: 0
+                };
+                $(document).on('vmousedown', function (event) {
+                    holdCords.holdX = event.pageX;
+                    holdCords.holdY = event.pageY;
+                });
+                td.contextmenu({
+                    delegate: td,
+                    autoFocus: true,
+                    preventContextMenuForPopup: true,
+                    preventSelect: true,
+                    //taphold: true,
+                    menu: [{ title: "Create State", cmd: "CreateState" }],
+                    beforeOpen: function (event, ui) {
+                        ui.menu.zIndex(50);
+                        var x = holdCords.holdX || event.pageX;
+                        var y = holdCords.holdX || event.pageY;
+                        //var left = x - drawingSurface.offset().left;
+                        //var top = y - drawingSurface.offset().top;
+                        //that._executeCommand("ColumnContextMenuOpenning", {
+                        //    left: x,
+                        //    top: y
+                        //});
+                    },
+                    select: function (event, ui) {
+                        var args = {};
+                        //var commandName = "LTLResults" + ui.cmd;
+                        //var x = holdCords.holdX || event.pageX;
+                        //var y = holdCords.holdX || event.pageY;
+                        //args.left = x - that.data.offset().left;
+                        //args.top = y - that.data.offset().top;
+                        args.command = ui.cmd;
+                        args.column = td.index();
+                        if (that.options.onContextMenuItemSelected !== undefined)
+                            that.options.onContextMenuItemSelected(args);
+                        //window.Commands.Execute(commandName, args);
+                    }
+                });
+            }
         },
         _destroy: function () {
             this.element.empty();
@@ -11298,7 +11360,8 @@ jQuery.fn.extend({
             ranges: [],
             visibleItems: [],
             colors: [],
-            onExportCSV: undefined
+            onExportCSV: undefined,
+            createStateRequested: undefined
         },
         _create: function () {
             var that = this;
@@ -11397,9 +11460,6 @@ jQuery.fn.extend({
                 this.createPlotData();
             }
         },
-        _setOptions: function (options) {
-            this._super(options);
-        },
         refresh: function () {
             var that = this;
             if (this.options.variables !== undefined && this.options.variables.length !== 0) {
@@ -11411,13 +11471,27 @@ jQuery.fn.extend({
                 if (this.options.interval !== undefined && this.options.interval.length !== 0
                     && this.options.data !== undefined && this.options.data.length !== 0
                     && this.options.tags !== undefined && this.options.tags.length !== 0) {
+                    var onContextMenuItemSelected = function (args) {
+                        var columnData = [];
+                        for (var i = 0; i < that.options.data[args.column].length; i++) {
+                            columnData.push({
+                                variable: that.options.variables[i][2],
+                                variableId: that.options.id[i],
+                                value: that.options.data[args.column][i]
+                            });
+                        }
+                        if (args.command == "CreateState" && that.options.createStateRequested !== undefined)
+                            that.options.createStateRequested(columnData);
+                    };
                     this._table.progressiontable({
                         interval: that.options.interval,
                         data: that.options.data,
                         tags: that.options.tags,
                         canEditInitialValue: false,
                         showInitialValue: false,
-                        init: that.options.init
+                        init: that.options.init,
+                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        onContextMenuItemSelected: onContextMenuItemSelected
                     });
                     if (this.options.colors === undefined || this.options.colors.length == 0)
                         this.createPlotData();
@@ -13197,6 +13271,20 @@ var BMA;
                 ltlresultsviewer.SetOnExportCSV(function () {
                     if (ltlDataToExport !== undefined) {
                         exportService.Export(that.CreateCSV(ltlDataToExport, ","), "ltl", "csv");
+                    }
+                });
+                ltlresultsviewer.SetOnCreateStateRequested(function (args) {
+                    if (args !== undefined) {
+                        var keyframeEqs = [];
+                        for (var i = 0; i < args.length; i++) {
+                            keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId), "=", new BMA.LTLOperations.ConstOperand(args[i].value)));
+                        }
+                        var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
+                        var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
+                        var merged = that.MergeStates(that.appModel.States, [newState]);
+                        that.appModel.States = merged.states;
+                        that.statespresenter.UpdateStatesFromModel();
+                        that.tppresenter.UpdateStatesFromModel();
                     }
                 });
                 commands.On("ExportLTLFormula", function (args) {

@@ -15,7 +15,8 @@
             ranges: [],
             visibleItems: [],
             colors: [],
-            onExportCSV: undefined
+            onExportCSV: undefined,
+            createStateRequested: undefined
         },
 
         _create: function () {
@@ -124,10 +125,7 @@
                 this.createPlotData();
             }
         },
-
-        _setOptions: function (options) {
-            this._super(options);
-        },
+        
 
         refresh: function () {
             var that = this;
@@ -143,13 +141,30 @@
                 if (this.options.interval !== undefined && this.options.interval.length !== 0
                     && this.options.data !== undefined && this.options.data.length !== 0
                     && this.options.tags !== undefined && this.options.tags.length !== 0) {
+
+                    var onContextMenuItemSelected = function (args) {
+                        var columnData = [];
+                        for (var i = 0; i < that.options.data[args.column].length; i++) {
+                            columnData.push({
+                                variable: that.options.variables[i][2],
+                                variableId: that.options.id[i],
+                                value: that.options.data[args.column][i]
+                            });
+                        }
+
+                        if (args.command == "CreateState" && that.options.createStateRequested !== undefined)
+                            that.options.createStateRequested(columnData);
+                    };
+
                     this._table.progressiontable({
                         interval: that.options.interval,
                         data: that.options.data,
                         tags: that.options.tags,
                         canEditInitialValue: false,
                         showInitialValue: false,
-                        init: that.options.init
+                        init: that.options.init,
+                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        onContextMenuItemSelected: onContextMenuItemSelected
                     });
                     if (this.options.colors === undefined || this.options.colors.length == 0)
                         this.createPlotData();
