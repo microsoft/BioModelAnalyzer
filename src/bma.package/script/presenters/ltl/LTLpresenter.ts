@@ -130,6 +130,7 @@
                         that.appModel.States = merged.states;
                         that.statespresenter.UpdateStatesFromModel();
                         that.tppresenter.UpdateStatesFromModel();
+                        //ltlresultsviewer.UpdataStateFromModel(that.appModel.BioModel, that.appModel.States);
                     }
                 });
 

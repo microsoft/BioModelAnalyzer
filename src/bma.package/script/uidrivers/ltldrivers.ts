@@ -619,6 +619,7 @@ module BMA {
             private createStateRequested = undefined;
 
             private dataToSet = undefined;
+            private currentData = undefined;
 
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
@@ -866,6 +867,8 @@ module BMA {
                     labels: labels
                 };
 
+                that.currentData = options;
+
                 if (this.ltlResultsViewer !== undefined) {
                     this.ltlResultsViewer.ltlresultsviewer(options);
                 } else {
@@ -910,6 +913,34 @@ module BMA {
                 }
             }
 
+            public UpdataStateFromModel(model: BMA.Model.BioModel, states: BMA.LTLOperations.Keyframe[]) {
+                var that = this;
+                var vars = model.Variables.sort((x, y) => {
+                    return x.Id < y.Id ? -1 : 1;
+                });
+
+                var ranges = [];
+                for (var i = 0; i < vars.length; i++) {
+                    ranges.push({
+                        min: vars[i].RangeFrom,
+                        max: vars[i].RangeTo
+                    });
+                }
+
+                var tags = this.PrepareTableTags(that.currentData.data, states, vars);
+                var labelsHeight = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
+                    - Math.min.apply(Math, ranges.map(function (s) { return s.min; }));
+                var labels = this.PreparePlotLabels(tags, labelsHeight);
+
+                that.currentData.tags = tags;
+                that.currentData.labels = labels;
+
+                if (this.ltlResultsViewer !== undefined) {
+                    this.ltlResultsViewer.ltlresultsviewer(that.currentData);
+                } else {
+                    that.dataToSet = that.currentData;
+                }
+            }
         }
     }
 }

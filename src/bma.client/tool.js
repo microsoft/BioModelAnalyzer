@@ -2300,6 +2300,7 @@ var BMA;
                 },
                 set: function (value) {
                     this.states = value;
+                    window.Commands.Execute("AppModelChanged", {});
                     //TODO: update inner components (ltl)
                 },
                 enumerable: true,
@@ -5102,6 +5103,7 @@ var BMA;
                 this.exportCSVcallback = undefined;
                 this.createStateRequested = undefined;
                 this.dataToSet = undefined;
+                this.currentData = undefined;
                 this.popupWindow = popupWindow;
                 this.commands = commands;
             }
@@ -5317,6 +5319,7 @@ var BMA;
                     variables: variables,
                     labels: labels
                 };
+                that.currentData = options;
                 if (this.ltlResultsViewer !== undefined) {
                     this.ltlResultsViewer.ltlresultsviewer(options);
                 }
@@ -5356,6 +5359,31 @@ var BMA;
                 }
                 else {
                     this.createStateRequested = callback;
+                }
+            };
+            LTLResultsViewer.prototype.UpdataStateFromModel = function (model, states) {
+                var that = this;
+                var vars = model.Variables.sort(function (x, y) {
+                    return x.Id < y.Id ? -1 : 1;
+                });
+                var ranges = [];
+                for (var i = 0; i < vars.length; i++) {
+                    ranges.push({
+                        min: vars[i].RangeFrom,
+                        max: vars[i].RangeTo
+                    });
+                }
+                var tags = this.PrepareTableTags(that.currentData.data, states, vars);
+                var labelsHeight = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
+                    - Math.min.apply(Math, ranges.map(function (s) { return s.min; }));
+                var labels = this.PreparePlotLabels(tags, labelsHeight);
+                that.currentData.tags = tags;
+                that.currentData.labels = labels;
+                if (this.ltlResultsViewer !== undefined) {
+                    this.ltlResultsViewer.ltlresultsviewer(that.currentData);
+                }
+                else {
+                    that.dataToSet = that.currentData;
                 }
             };
             return LTLResultsViewer;
@@ -11460,6 +11488,10 @@ jQuery.fn.extend({
                 this.createPlotData();
             }
         },
+        //_setOptions: function (options) {
+        //    this._super(options);
+        //    this.refresh();
+        //},
         refresh: function () {
             var that = this;
             if (this.options.variables !== undefined && this.options.variables.length !== 0) {

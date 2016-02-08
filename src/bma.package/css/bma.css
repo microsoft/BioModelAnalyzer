@@ -4346,6 +4346,7 @@ ui-icon-arrowthickstop-1-n {
   border-radius: 5px;
   padding: 5px;
   width: 120px;
+  max-height: 300px;
   font-family: 'Segoe-UI';
   font-size: 13px;
   line-height: 17px;
@@ -4357,6 +4358,8 @@ ui-icon-arrowthickstop-1-n {
   font-family: 'Segoe-UI-Light';
   vertical-align: middle;
   text-align: left;
+  max-height: 300px;
+  overflow-y: hidden;
 }
 .state-tooltip table tr {
   margin-bottom: 5px;

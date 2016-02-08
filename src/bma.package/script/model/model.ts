@@ -41,6 +41,7 @@ module BMA {
 
             public set States(value: BMA.LTLOperations.Keyframe[]) {
                 this.states = value;
+                window.Commands.Execute("AppModelChanged", {});
                 //TODO: update inner components (ltl)
             }
 

@@ -125,6 +125,11 @@
                 this.createPlotData();
             }
         },
+
+        //_setOptions: function (options) {
+        //    this._super(options);
+        //    this.refresh();
+        //},
         
 
         refresh: function () {

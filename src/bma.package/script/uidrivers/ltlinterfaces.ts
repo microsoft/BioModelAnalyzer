@@ -83,6 +83,7 @@ module BMA {
             SetData(model: BMA.Model.BioModel, layout: BMA.Model.Layout, ticks: any, states: BMA.LTLOperations.Keyframe[]); //to do: Set proper type for ticks
             SetOnExportCSV(callback);
             SetOnCreateStateRequested(callback);
+            UpdataStateFromModel(model: BMA.Model.BioModel, states: BMA.LTLOperations.Keyframe[]);
         }
     }
 } 
