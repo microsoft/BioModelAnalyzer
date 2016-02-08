@@ -5744,6 +5744,13 @@ var BMA;
                 window.Commands.On("DrawingSurfaceRefreshOutput", function (args) {
                     if (_this.undoRedoPresenter.Current !== undefined) {
                         if (args !== undefined) {
+                            var bbox = BMA.ModelHelper.GetModelBoundingBox(_this.undoRedoPresenter.Current.layout, { xOrigin: _this.Grid.x0, yOrigin: _this.Grid.y0, xStep: _this.Grid.xStep, yStep: _this.Grid.yStep });
+                            var screenRect = { x: 0, y: 0, left: 0, top: 0, width: plotHost.host.width(), height: plotHost.host.height() };
+                            var cs = new InteractiveDataDisplay.CoordinateTransform({ x: bbox.x, y: bbox.y, width: bbox.width, height: bbox.height }, screenRect, plotHost.aspectRatio);
+                            var actualRect = cs.getPlotRect(screenRect);
+                            bbox.width = actualRect.width;
+                            bbox.height = actualRect.height;
+                            window.Commands.Execute('SetPlotSettings', { MaxWidth: Math.max(3200, bbox.width * 1.1) });
                             if (args.status === "Undo" || args.status === "Redo" || args.status === "Set") {
                                 _this.variableEditor.Hide();
                                 _this.editingId = undefined;
@@ -5751,7 +5758,6 @@ var BMA;
                             if (args.status === "Set") {
                                 _this.ResetVariableIdIndex();
                                 var center = _this.GetLayoutCentralPoint();
-                                var bbox = BMA.ModelHelper.GetModelBoundingBox(_this.undoRedoPresenter.Current.layout, { xOrigin: _this.Grid.x0, yOrigin: _this.Grid.y0, xStep: _this.Grid.xStep, yStep: _this.Grid.yStep });
                                 _this.driver.SetVisibleRect(bbox);
                             }
                         }
@@ -5770,10 +5776,12 @@ var BMA;
                 window.Commands.On("ModelFitToView", function (args) {
                     if (_this.undoRedoPresenter.Current !== undefined) {
                         var bbox = BMA.ModelHelper.GetModelBoundingBox(_this.undoRedoPresenter.Current.layout, { xOrigin: _this.Grid.x0, yOrigin: _this.Grid.y0, xStep: _this.Grid.xStep, yStep: _this.Grid.yStep });
-                        if (bbox.width > window.PlotSettings.MaxWidth) {
-                            //window.PlotSettings.MaxWidth = bbox.width;
-                            window.Commands.Execute('SetPlotSettings', { MaxWidth: bbox.width });
-                        }
+                        var screenRect = { x: 0, y: 0, left: 0, top: 0, width: plotHost.host.width(), height: plotHost.host.height() };
+                        var cs = new InteractiveDataDisplay.CoordinateTransform({ x: bbox.x, y: bbox.y, width: bbox.width, height: bbox.height }, screenRect, plotHost.aspectRatio);
+                        var actualRect = cs.getPlotRect(screenRect);
+                        bbox.width = actualRect.width;
+                        bbox.height = actualRect.height;
+                        window.Commands.Execute('SetPlotSettings', { MaxWidth: Math.max(3200, bbox.width * 1.1) });
                         _this.driver.SetVisibleRect(bbox);
                     }
                 });
@@ -5827,15 +5835,53 @@ var BMA;
                         navigationDriver.SetZoom(value);
                     }
                 });
+                var plotHost = this.navigationDriver.GetNavigationSurface().master;
+                svgPlotDriver.SetConstraintFunc(function (plotRect) {
+                    var screenRect = { x: 0, y: 0, left: 0, top: 0, width: plotHost.host.width(), height: plotHost.host.height() };
+                    var minCS = new InteractiveDataDisplay.CoordinateTransform({ x: 0, y: 0, width: window.PlotSettings.MinWidth, height: 1 }, screenRect, plotHost.aspectRatio);
+                    var actualMinRect = minCS.getPlotRect(screenRect);
+                    var maxCS = new InteractiveDataDisplay.CoordinateTransform({ x: 0, y: 0, width: window.PlotSettings.MaxWidth, height: 1 }, screenRect, plotHost.aspectRatio);
+                    var actualMaxRect = maxCS.getPlotRect(screenRect);
+                    var resultPR = { x: 0, y: 0, width: 0, height: 0 };
+                    var center = {
+                        x: plotRect.x + plotRect.width / 2,
+                        y: plotRect.y + plotRect.height / 2
+                    };
+                    if (plotRect.width < actualMinRect.width) {
+                        resultPR.x = center.x - actualMinRect.width / 2;
+                        resultPR.width = actualMinRect.width;
+                    }
+                    else if (plotRect.width > actualMaxRect.width) {
+                        resultPR.x = center.x - actualMaxRect.width / 2;
+                        resultPR.width = actualMaxRect.width;
+                    }
+                    else {
+                        resultPR.x = plotRect.x;
+                        resultPR.width = plotRect.width;
+                    }
+                    if (plotRect.height < actualMinRect.height) {
+                        resultPR.y = center.y - actualMinRect.height / 2;
+                        resultPR.height = actualMinRect.height;
+                    }
+                    else if (plotRect.height > actualMaxRect.height) {
+                        resultPR.y = center.y - actualMaxRect.height / 2;
+                        resultPR.height = actualMaxRect.height;
+                    }
+                    else {
+                        resultPR.y = plotRect.y;
+                        resultPR.height = plotRect.height;
+                    }
+                    return resultPR;
+                });
                 window.Commands.On("VisibleRectChanged", function (param) {
-                    if (param < window.PlotSettings.MinWidth) {
-                        param = window.PlotSettings.MinWidth;
-                        navigationDriver.SetZoom(param);
-                    }
-                    if (param > window.PlotSettings.MaxWidth) {
-                        param = window.PlotSettings.MaxWidth;
-                        navigationDriver.SetZoom(param);
-                    }
+                    //if (param < window.PlotSettings.MinWidth) {
+                    //    param = window.PlotSettings.MinWidth;
+                    //    navigationDriver.SetZoom(param);
+                    //}
+                    //if (param > window.PlotSettings.MaxWidth) {
+                    //    param = window.PlotSettings.MaxWidth;
+                    //    navigationDriver.SetZoom(param);
+                    //}
                     var zoom = (param - window.PlotSettings.MinWidth) / 24;
                     window.Commands.Execute("ZoomSliderBind", zoom);
                 });
