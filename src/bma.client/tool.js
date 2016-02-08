@@ -3677,7 +3677,13 @@ var BMA;
                     "font-size": fontSize,
                     "fill": "rgb(96,96,96)"
                 });
-                var bbox = t.getBBox();
+                var bbox = undefined;
+                try {
+                    bbox = t.getBBox();
+                }
+                catch (exc) {
+                    bbox = { x: 0, y: 0, width: 1, height: 1 };
+                }
                 var result = { width: bbox.width, height: bbox.height };
                 //console.log(operator + ": " + bbox.width);
                 svg.remove(t);
@@ -3756,7 +3762,13 @@ var BMA;
                                 "font-size": 16,
                                 "fill": "rgb(96,96,96)",
                             });
-                            var bbox = label.getBBox();
+                            var bbox = undefined;
+                            try {
+                                bbox = label.getBBox();
+                            }
+                            catch (exc) {
+                                bbox = { x: 0, y: 0, width: 1, height: 1 };
+                            }
                             var scale = 1;
                             if (bbox.width > this.keyFrameSize / 2) {
                                 scale = this.keyFrameSize / (2 * bbox.width);
@@ -5750,6 +5762,7 @@ var BMA;
                             var actualRect = cs.getPlotRect(screenRect);
                             bbox.width = actualRect.width;
                             bbox.height = actualRect.height;
+                            var oldMaxWidth = window.PlotSettings.MaxWidth;
                             window.Commands.Execute('SetPlotSettings', { MaxWidth: Math.max(3200, bbox.width * 1.1) });
                             if (args.status === "Undo" || args.status === "Redo" || args.status === "Set") {
                                 _this.variableEditor.Hide();
@@ -5759,6 +5772,11 @@ var BMA;
                                 _this.ResetVariableIdIndex();
                                 var center = _this.GetLayoutCentralPoint();
                                 _this.driver.SetVisibleRect(bbox);
+                            }
+                            else {
+                                if (oldMaxWidth > window.PlotSettings.MaxWidth) {
+                                    _this.driver.SetVisibleRect(bbox);
+                                }
                             }
                         }
                         if (that.editingId !== undefined) {
