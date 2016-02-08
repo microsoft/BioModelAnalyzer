@@ -369,7 +369,13 @@
                     "font-size": fontSize,
                     "fill": "rgb(96,96,96)"
                 });
-                var bbox = t.getBBox();
+                var bbox = undefined;
+                try {
+                    bbox = t.getBBox();
+                }
+                catch (exc) {
+                    bbox = { x: 0, y: 0, width: 1, height: 1 };
+                }
                 var result = { width: bbox.width, height: bbox.height };
                 //console.log(operator + ": " + bbox.width);
                 svg.remove(t);
@@ -477,7 +483,14 @@
                                 //"dominant-baseline": "central"
                             });
 
-                            var bbox = label.getBBox();
+                            var bbox = undefined;
+                            try {
+                                bbox = label.getBBox();
+                            }
+                            catch (exc) {
+                                bbox = { x: 0, y: 0, width: 1, height: 1 };
+                            }
+
 
                             var scale = 1;
                             if (bbox.width > this.keyFrameSize / 2) {
