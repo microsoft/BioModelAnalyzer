@@ -5371,6 +5371,7 @@ var BMA;
             function UndoRedoPresenter(appModel, undoButton, redoButton) {
                 var _this = this;
                 this.currentModelIndex = -1;
+                this.maxStackCount = 10;
                 var that = this;
                 this.appModel = appModel;
                 this.undoButton = undoButton;
@@ -5406,7 +5407,17 @@ var BMA;
                 }
             };
             UndoRedoPresenter.prototype.Truncate = function () {
-                this.models.length = this.currentModelIndex + 1;
+                if (this.models.length < this.maxStackCount) {
+                    this.models.length = this.currentModelIndex + 1;
+                }
+                else {
+                    var cuttedModels = [];
+                    for (var i = this.models.length - this.maxStackCount; i < this.models.length; i++) {
+                        cuttedModels.push(this.models[i]);
+                    }
+                    this.models = cuttedModels;
+                    this.currentModelIndex = this.models.length - 1;
+                }
             };
             UndoRedoPresenter.prototype.Dup = function (m, l) {
                 this.Truncate();
