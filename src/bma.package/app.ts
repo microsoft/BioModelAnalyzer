@@ -527,8 +527,8 @@ function loadScript(version) {
         }
     });
 
-    window.Commands.On("DrawingSurfaceVariableEditorOpened",() => {
-        popupDriver.Hide();
+    window.Commands.On("DrawingSurfaceVariableEditorOpened", () => {
+        popupDriver.Collapse();
         accordionHider.Hide();
     });
 
