@@ -444,6 +444,7 @@ module BMA {
                             var actualRect = cs.getPlotRect(screenRect);
                             bbox.width = actualRect.width;
                             bbox.height = actualRect.height;
+                            var oldMaxWidth = window.PlotSettings.MaxWidth;
                             window.Commands.Execute('SetPlotSettings', { MaxWidth: Math.max(3200, bbox.width * 1.1) });
 
                             if (args.status === "Undo" || args.status === "Redo" || args.status === "Set") {
@@ -457,6 +458,10 @@ module BMA {
 
                                 this.driver.SetVisibleRect(bbox);
                                 //this.navigationDriver.SetCenter(center.x, center.y);
+                            } else {
+                                if (oldMaxWidth > window.PlotSettings.MaxWidth) {
+                                    this.driver.SetVisibleRect(bbox);
+                                }
                             }
                         }
 

@@ -154,6 +154,7 @@
 
             var context = this.getContext(true);
 
+            var circleSize = Number.POSITIVE_INFINITY;
             for (var i = 0; i < _rects.length; i++) {
                 var rect = _rects[i];
                 context.fillStyle = rect.fill;
@@ -163,10 +164,21 @@
                 var width = dataToScreenX(rect.x + rect.width) - dataToScreenX(rect.x);
                 var height = dataToScreenY(rect.y) - dataToScreenY(rect.y + rect.height);
 
-                //var labels = [];
-                //for (var j = 0; j < _rects.labels.length; j++) {
-                //    context.fill
-                //}
+                if (rect.labels !== undefined && rect.labels.length > 0) {
+                    var availableWidth = Math.min(height * 0.8, width * 0.8);
+                    var size = availableWidth / rect.labels.length;
+                    circleSize = Math.min(circleSize, size);
+                }
+            }
+
+            for (var i = 0; i < _rects.length; i++) {
+                var rect = _rects[i];
+                context.fillStyle = rect.fill;
+
+                var x = dataToScreenX(rect.x);
+                var y = dataToScreenY(rect.y + rect.height);
+                var width = dataToScreenX(rect.x + rect.width) - dataToScreenX(rect.x);
+                var height = dataToScreenY(rect.y) - dataToScreenY(rect.y + rect.height);
 
                 var alpha = context.globalAlpha;
                 if (rect.opacity !== undefined) {
@@ -176,14 +188,10 @@
                 context.globalAlpha = alpha;
 
                 if (rect.labels !== undefined && rect.labels.length > 0) {
-                    
-
-                    var availableWidth = width * 0.8;
-                    var circleSize = availableWidth / rect.labels.length;
-                    var x = 0;
+                    var x = 0.1 * width + (0.8 * width - rect.labels.length * circleSize) / 2;
                     for (var j = 0; j < rect.labels.length; j++) {
                         context.beginPath();
-                        context.arc(dataToScreenX(rect.x) + x + circleSize / 2 + 0.1 * width, dataToScreenY(rect.y + rect.height / 2), circleSize / 2, 0, 2 * Math.PI, true);
+                        context.arc(dataToScreenX(rect.x) + x + circleSize / 2, dataToScreenY(rect.y + rect.height / 2), 0.95 * circleSize / 2, 0, 2 * Math.PI, true);
                         context.closePath();
 
                         context.strokeStyle = "rgb(96,96,96)";
@@ -195,12 +203,11 @@
                         context.textBaseline = "middle";
                         context.font = circleSize / 2 + "px Segoe-UI";
                         var w = context.measureText(rect.labels[j]).width;
-                        context.fillText(rect.labels[j], dataToScreenX(rect.x) + x + circleSize / 2 + 0.1 * width - w / 2, dataToScreenY(rect.y + rect.height / 2));
+                        context.fillText(rect.labels[j], dataToScreenX(rect.x) + x + circleSize / 2 - w / 2, dataToScreenY(rect.y + rect.height / 2));
 
                         x += circleSize;
                     }
                 }
-                
             }
         };
 
@@ -5412,6 +5419,7 @@ var BMA;
             function UndoRedoPresenter(appModel, undoButton, redoButton) {
                 var _this = this;
                 this.currentModelIndex = -1;
+                this.maxStackCount = 10;
                 var that = this;
                 this.appModel = appModel;
                 this.undoButton = undoButton;
@@ -5447,7 +5455,17 @@ var BMA;
                 }
             };
             UndoRedoPresenter.prototype.Truncate = function () {
-                this.models.length = this.currentModelIndex + 1;
+                if (this.models.length < this.maxStackCount) {
+                    this.models.length = this.currentModelIndex + 1;
+                }
+                else {
+                    var cuttedModels = [];
+                    for (var i = this.models.length - this.maxStackCount; i < this.models.length; i++) {
+                        cuttedModels.push(this.models[i]);
+                    }
+                    this.models = cuttedModels;
+                    this.currentModelIndex = this.models.length - 1;
+                }
             };
             UndoRedoPresenter.prototype.Dup = function (m, l) {
                 this.Truncate();
@@ -5803,6 +5821,7 @@ var BMA;
                             var actualRect = cs.getPlotRect(screenRect);
                             bbox.width = actualRect.width;
                             bbox.height = actualRect.height;
+                            var oldMaxWidth = window.PlotSettings.MaxWidth;
                             window.Commands.Execute('SetPlotSettings', { MaxWidth: Math.max(3200, bbox.width * 1.1) });
                             if (args.status === "Undo" || args.status === "Redo" || args.status === "Set") {
                                 _this.variableEditor.Hide();
@@ -5812,6 +5831,11 @@ var BMA;
                                 _this.ResetVariableIdIndex();
                                 var center = _this.GetLayoutCentralPoint();
                                 _this.driver.SetVisibleRect(bbox);
+                            }
+                            else {
+                                if (oldMaxWidth > window.PlotSettings.MaxWidth) {
+                                    _this.driver.SetVisibleRect(bbox);
+                                }
                             }
                         }
                         if (that.editingId !== undefined) {
