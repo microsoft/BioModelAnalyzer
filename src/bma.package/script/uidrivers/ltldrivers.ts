@@ -861,10 +861,10 @@ module BMA {
                     id: id,
                     interval: interval,
                     tags: tags,
-                    data: data,
                     init: init,
+                    labels: labels,
+                    data: data,
                     variables: variables,
-                    labels: labels
                 };
 
                 that.currentData = options;
@@ -913,7 +913,7 @@ module BMA {
                 }
             }
 
-            public UpdataStateFromModel(model: BMA.Model.BioModel, states: BMA.LTLOperations.Keyframe[]) {
+            public UpdateStateFromModel(model: BMA.Model.BioModel, states: BMA.LTLOperations.Keyframe[]) {
                 var that = this;
                 var vars = model.Variables.sort((x, y) => {
                     return x.Id < y.Id ? -1 : 1;
@@ -936,7 +936,7 @@ module BMA {
                 that.currentData.labels = labels;
 
                 if (this.ltlResultsViewer !== undefined) {
-                    this.ltlResultsViewer.ltlresultsviewer(that.currentData);
+                    this.ltlResultsViewer.ltlresultsviewer({ tags: tags, labels: labels });
                 } else {
                     that.dataToSet = that.currentData;
                 }

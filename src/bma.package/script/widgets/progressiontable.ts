@@ -41,7 +41,9 @@
                     for (var i = 0; i < data.length; i++) {
                         this.AddData(data[i]);
                     }
+                this.createColumnContextMenu();
             }
+
         },
 
         RefreshInit: function () {
@@ -182,7 +184,7 @@
                         var tr = $('<tr></tr>').appendTo(table);
                         var td = $('<td></td>').text(data[i]).appendTo(tr);
                         
-                        that.createColumnContextMenu(td);
+                        //that.createColumnContextMenu(td);
                         
                         //$('<span></span>').text(data[i]).appendTo(td);
                     }
@@ -196,7 +198,7 @@
                         if (td.text() !== td.prev().text())
                             td.addClass('change')
                         
-                        that.createColumnContextMenu(td);
+                        //that.createColumnContextMenu(td);
                     })
                     var last = that.data.find("tr").children("td:last-child");
                     if (that.repeat !== undefined) {
@@ -229,55 +231,58 @@
             return Math.floor(Math.random() * (max - min + 1) + min);
         },
 
-        createColumnContextMenu: function (td) {
+        createColumnContextMenu: function () {
             var that = this;
             if (this.options.columnContextMenuItems !== undefined && this.options.columnContextMenuItems.length != 0) {
-                var holdCords = {
-                    holdX: 0,
-                    holdY: 0
-                };
+                //var holdCords = {
+                //    holdX: 0,
+                //    holdY: 0
+                //};
 
-                $(document).on('vmousedown', function (event) {
-                    holdCords.holdX = event.pageX;
-                    holdCords.holdY = event.pageY;
-                });
+                //$(document).on('vmousedown', function (event) {
+                //    holdCords.holdX = event.pageX;
+                //    holdCords.holdY = event.pageY;
+                //});
+                    this.data.contextmenu({
+                        delegate: "td",//".bma-drawingsurface",
+                        autoFocus: true,
+                        preventContextMenuForPopup: true,
+                        preventSelect: true,
+                        //taphold: true,
+                        menu: [{ title: "Create State", cmd: "CreateState" }],//that.options.columnContextMenuItems,
+                        beforeOpen: function (event, ui) {
+                            ui.menu.zIndex(50);
+                            if ($(ui.target.context.parentElement).index() == 0)
+                                return false;
+                            //var x = holdCords.holdX || event.pageX;
+                            //var y = holdCords.holdX || event.pageY;
+                            //var left = x - drawingSurface.offset().left;
+                            //var top = y - drawingSurface.offset().top;
 
-                td.contextmenu({
-                    delegate: td,//".bma-drawingsurface",
-                    autoFocus: true,
-                    preventContextMenuForPopup: true,
-                    preventSelect: true,
-                    //taphold: true,
-                    menu: [{ title: "Create State", cmd: "CreateState" }],//that.options.columnContextMenuItems,
-                    beforeOpen: function (event, ui) {
-                        ui.menu.zIndex(50);
-                        var x = holdCords.holdX || event.pageX;
-                        var y = holdCords.holdX || event.pageY;
-                        //var left = x - drawingSurface.offset().left;
-                        //var top = y - drawingSurface.offset().top;
-
-                        //that._executeCommand("ColumnContextMenuOpenning", {
-                        //    left: x,
-                        //    top: y
-                        //});
-                    },
-                    select: function (event, ui) {
-                        var args: any = {};
-                        //var commandName = "LTLResults" + ui.cmd;
-                        //var x = holdCords.holdX || event.pageX;
-                        //var y = holdCords.holdX || event.pageY;
-                        //args.left = x - that.data.offset().left;
-                        //args.top = y - that.data.offset().top;
-                        args.command = ui.cmd;
-                        args.column = td.index();
-                        if (that.options.onContextMenuItemSelected !== undefined)
-                            that.options.onContextMenuItemSelected(args);
-                        //window.Commands.Execute(commandName, args);
-                    }
-                });
+                            //that._executeCommand("ColumnContextMenuOpenning", {
+                            //    left: x,
+                            //    top: y
+                            //});
+                        },
+                        select: function (event, ui) {
+                            var args: any = {};
+                            //var commandName = "LTLResults" + ui.cmd;
+                            //var x = holdCords.holdX || event.pageX;
+                            //var y = holdCords.holdX || event.pageY;
+                            //args.left = x - that.data.offset().left;
+                            //args.top = y - that.data.offset().top;
+                            args.command = ui.cmd;
+                            args.column = $(ui.target.context).index();
+                            if (that.options.onContextMenuItemSelected !== undefined)
+                                that.options.onContextMenuItemSelected(args);
+                            //alert(args.column);
+                            //this.executeOnContextMenuItemSelected(args);
+                            //window.Commands.Execute(commandName, args);
+                        }
+                    });
             }
         },
-
+        
         _destroy: function () {
             this.element.empty();
         },

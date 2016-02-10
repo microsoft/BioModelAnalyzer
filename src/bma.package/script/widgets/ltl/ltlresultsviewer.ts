@@ -6,6 +6,8 @@
         _plot: undefined,
         _variables: undefined,
         _table: undefined,
+        tablesContainer: undefined,
+        //loading: undefined,
 
         options: {
             data: [],
@@ -25,9 +27,12 @@
             this.element.addClass("ltlresultsviewer");
 
             var root = this.element;
-            var tablesContainer = $("<div></div>").addClass('ltl-simplot-container').appendTo(root);
-            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(tablesContainer);//root);
-            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(tablesContainer);//root);
+            //this.loading = $("<div></div>").addClass("page-loading").css("position", "absolute").css("top", "27").css("height", 470- 47).hide().appendTo(that.element);
+            //var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
+
+            this.tablesContainer = $("<div></div>").addClass('ltl-simplot-container').appendTo(root);
+            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer);//root);
+            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer);//root);
 
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
@@ -45,13 +50,45 @@
             })
 
             var changeVisibility = function (params) {
-                var visibility = that.options.visibleItems.slice(0);
-                visibility[params.ind] = params.check;
-                that._setOption("visibleItems", visibility);
+                if (that._plot !== undefined) {
+                    that._plot.simulationplot("ChangeVisibility", params.ind, params.check);
+                }
+                if (that.options.visibleItems !== undefined && that.options.visibleItems.length != 0)
+                    that.options.visibleItems[params.ind] = params.check;
+                if (that.options.variables !== undefined && that.options.variables.length != 0)
+                    that.options.variables[params.ind][1] = params.check;
+                //that._setOption("visibleItems", visibility);
             };
 
             this._variables.coloredtableviewer({
                 onChangePlotVariables: changeVisibility
+            });
+
+            var onContextMenuItemSelected = function (args) {
+                if (that.options.data !== undefined && that.options.data.length !== 0) {
+                    //that.loading.show();
+                    var columnData = [];
+                    for (var i = 0; i < that.options.data[args.column].length; i++) {
+                        columnData.push({
+                            variable: that.options.variables[i][2],
+                            variableId: that.options.id[i],
+                            value: that.options.data[args.column][i]
+                        });
+                    }
+
+                    if (args.command == "CreateState" && that.options.createStateRequested !== undefined)
+                        that.options.createStateRequested(columnData);
+                }
+                //that.loading.hide();
+                //that.tablesContainer.show();
+                //that._plot.show();
+            };
+
+            this._table.progressiontable({
+                canEditInitialValue: false,
+                showInitialValue: false,
+                columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                onContextMenuItemSelected: onContextMenuItemSelected
             });
 
             this.refresh();
@@ -64,11 +101,14 @@
             switch (key) {
 
                 case "tags": {
-                    needUpdate = true;
+                    //needUpdate = true;
+                    if (that._table !== undefined)
+                        that._table.progressiontable({ tags: value });
                     break;
                 }
                 case "labels": {
-                    needUpdate = true;
+                    if (that._plot !== undefined)
+                        this._plot.simulationplot({ labels: value });
                     break;
                 }
                 case "data": {
@@ -122,14 +162,49 @@
             }
             if (needUpdate) {
                 this.refresh();
-                this.createPlotData();
+                //this.createPlotData();
             }
         },
 
-        //_setOptions: function (options) {
-        //    this._super(options);
-        //    this.refresh();
-        //},
+        _setOptions: function (options) {
+            var that = this;
+            $.each(options, function (key, value) {
+                switch (key) {
+                    case "tags": {
+                        that.options.tags = value;
+                        break;
+                    }
+                    case "labels": {
+                        that.options.labels = value;
+                        break;
+                    }
+                    case "data": {
+                        that.options.data = value;
+                        break;
+                    }
+                    case "init": {
+                        that.options.init = value;
+                        break;
+                    }
+                    case "interval": {
+                        that.options.interval = value;
+                        break;
+                    }
+                    case "variables": {
+                        that.options.variables = value;
+                        break;
+                    }
+                    case "id": {
+                        that.options.id = value;
+                        break;
+                    }
+                    default: that._setOption(key, value);
+                        break;
+                }
+            });
+            this.refresh();
+        },
+        
         
 
         refresh: function () {
@@ -147,29 +222,11 @@
                     && this.options.data !== undefined && this.options.data.length !== 0
                     && this.options.tags !== undefined && this.options.tags.length !== 0) {
 
-                    var onContextMenuItemSelected = function (args) {
-                        var columnData = [];
-                        for (var i = 0; i < that.options.data[args.column].length; i++) {
-                            columnData.push({
-                                variable: that.options.variables[i][2],
-                                variableId: that.options.id[i],
-                                value: that.options.data[args.column][i]
-                            });
-                        }
-
-                        if (args.command == "CreateState" && that.options.createStateRequested !== undefined)
-                            that.options.createStateRequested(columnData);
-                    };
-
                     this._table.progressiontable({
                         interval: that.options.interval,
                         data: that.options.data,
                         tags: that.options.tags,
-                        canEditInitialValue: false,
-                        showInitialValue: false,
                         init: that.options.init,
-                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
-                        onContextMenuItemSelected: onContextMenuItemSelected
                     });
                     if (this.options.colors === undefined || this.options.colors.length == 0)
                         this.createPlotData();
@@ -182,10 +239,10 @@
             var plotData = [];
             if (this.options.id === undefined && this.options.id.length == 0)
                 this.options.id = [];
-            if (this.options.ranges == undefined && this.options.ranges.length == 0)
-                this.options.ranges = [];
-            if (this.options.visibleItems == undefined && this.options.visibleItems.length == 0)
-                this.options.visibleItems = [];
+            //if (this.options.ranges == undefined && this.options.ranges.length == 0)
+                //this.options.ranges = [];
+            //if (this.options.visibleItems == undefined && this.options.visibleItems.length == 0)
+                //this.options.visibleItems = [];
 
             for (var i = 0; i < this.options.variables.length; i++) {
                 var pData = [];
@@ -205,13 +262,13 @@
                     Name: that.options.variables[i][2],
                 });
 
-                if (this.options.ranges.length < i + 1)
-                    this.options.ranges.push({
-                        min: that.options.variables[i][3],
-                        max: that.options.variables[i][4]
-                    });
-                if (this.options.visibleItems.length < i + 1)
-                    this.options.visibleItems.push(that.options.variables[i][1]);
+                //if (this.options.ranges.length < i + 1)
+                    //this.options.ranges.push({
+                    //    min: that.options.variables[i][3],
+                    //    max: that.options.variables[i][4]
+                    //});
+                //if (this.options.visibleItems.length < i + 1)
+                    //this.options.visibleItems.push(that.options.variables[i][1]);
             }
             if (plotData !== undefined && plotData.length !== 0)
                 this._plot.simulationplot({
