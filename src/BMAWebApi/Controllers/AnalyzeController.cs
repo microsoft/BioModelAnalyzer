@@ -33,7 +33,6 @@ namespace bma.client.Controllers
     }
 
 
-
     public class AnalyzeController : ApiController
     {
         private readonly IFailureLogger faultLogger;

@@ -55,7 +55,7 @@
             });
         },
 
-        _convertForTooltip: function(state) {
+        _convertForTooltip: function (state) {
             var formulas = [];
             for (var i = 0; i < state.Operands.length; i++) {
                 var op = state.Operands[i];
@@ -190,7 +190,7 @@
 
             //Adding drawing surface
             var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").css("min-height", "200px").height(this.options.drawingSurfaceHeight).width("100%").appendTo(root);
-            
+
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface({ useContraints: false });
             var drawingSurface = this._drawingSurface;
@@ -244,7 +244,8 @@
                     that.copyzonesvg = svg;
 
                     svg.configure({
-                        height: "40px"
+                        height: "40px",
+                        width: "40px"
                     });
 
                     if (that.options.copyzoneoperation !== undefined) {
@@ -372,15 +373,26 @@
 
             if (that.copyzonesvg !== undefined) {
                 that.copyzonesvg.clear();
-                that.operation = new BMA.LTLOperations.OperationLayout(that.copyzonesvg, op, { x: 0, y: 0 });
-                var bbox = that.operation.BoundingBox;
-                
-                that.copyzonesvg.configure({
-                    height: "40px",
-                    viewBox: bbox.x + " " + (bbox.y - 5) + " " + bbox.width + " " + (bbox.height + 10),
-                }, true);
 
-                that.operation.Refresh();
+                if (op !== undefined) {
+                    that.operation = new BMA.LTLOperations.OperationLayout(that.copyzonesvg, op, { x: 0, y: 0 });
+                    var bbox = that.operation.BoundingBox;
+
+                    that.copyzonesvg.configure({
+                        height: "40px",
+                        width: bbox.width,
+                        viewBox: bbox.x + " " + (bbox.y - 5) + " " + bbox.width + " " + (bbox.height + 10),
+                    }, true);
+
+                    that.operation.Refresh();
+                } else {
+                    that.copyzonesvg.configure({
+                        height: "40px",
+                        width: "40px",
+                        viewBox: 0 + " " + 0 + " " + 40 + " " + 40,
+                    }, true);
+                    that.copyzonesvg.load("../images/LTL-copy.svg", { width: 40, height: 40 });
+                }
             }
         },
 

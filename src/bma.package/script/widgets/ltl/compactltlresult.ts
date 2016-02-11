@@ -35,8 +35,8 @@
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
                             .appendTo(ltltestdiv);
-                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(ltltestdiv);
-                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
 
                         if (that.options.steps == 1) {
@@ -57,7 +57,7 @@
                                 minusb.addClass("testing");
                             }
                         });
-                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click((e) => {
                             that.options.steps++;
@@ -71,7 +71,7 @@
 
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                        var btn = $("<button>TEST </button>").appendTo(li);
+                        var btn = $("<button>TEST </button>").css("margin-top", "0px").appendTo(li);
                         btn.click(function () {
                             if (that.options.ontestrequested !== undefined) {
                                 that.options.ontestrequested();
@@ -103,12 +103,12 @@
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
                             .appendTo(ltltestdiv);
-                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(ltltestdiv);
-                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
                         minusd.addClass("testing");
                         minusb.addClass("testing");
-                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusd.addClass("testing");
                         plusb.addClass("testing");
@@ -145,8 +145,8 @@
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
                             .appendTo(sr);
-                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(sr);
-                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
 
                         if (that.options.steps == 1) {
@@ -169,7 +169,7 @@
                                 }
                             }
                         });
-                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click((e) => {
                             that.options.steps++;
@@ -232,8 +232,8 @@
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
                             .appendTo(sr);
-                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(sr);
-                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
 
                         if (that.options.steps == 1) {
@@ -256,7 +256,7 @@
                                 }
                             }
                         });
-                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click((e) => {
                             that.options.steps++;
@@ -331,8 +331,8 @@
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
                             .appendTo(sr);
-                        var box = $("<div></div>").addClass("pill-button-box").css("margin-left", 5).appendTo(sr);
-                        var minusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
 
                         if (that.options.steps == 1) {
@@ -355,7 +355,7 @@
                                 }
                             }
                         });
-                        var plusd = $("<div></div>").addClass("pill-button").width(17).css("font-size", "13.333px").appendTo(box);
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click((e) => {
                             that.options.steps++;

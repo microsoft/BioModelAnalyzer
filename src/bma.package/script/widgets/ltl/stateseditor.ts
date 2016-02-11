@@ -212,52 +212,7 @@
            
 
             var operatorTd = $("<td></td>").addClass("operator").appendTo(tr);
-            var operatorImg = $("<img>").appendTo(operatorTd);
-
-            var setOperatorValue = function (value) {
-                switch (value) {
-                    case ">":
-                        operatorImg.attr("src", "images/ltlimgs/mo.png");
-                        break;
-                    case ">=":
-                        operatorImg.attr("src", "images/ltlimgs/moeq.png");
-                        break;
-                    case "<":
-                        operatorImg.attr("src", "images/ltlimgs/le.png");
-                        break;
-                    case "<=":
-                        operatorImg.attr("src", "images/ltlimgs/leeq.png");
-                        break;
-                    case "=":
-                        operatorImg.attr("src", "images/ltlimgs/eq.png");
-                        break;  
-                    case "!=":
-                        operatorImg.attr("src", "images/ltlimgs/noeq.png");
-                        break;
-                    case "<>":
-                        value = ">";
-                        formula[1].value = value;
-                        operatorImg.attr("src", "images/ltlimgs/mo.png");
-                        var secondEq = [
-                            {
-                                type: "variable", value: formula[0] && formula[0].value ? formula[0].value : {
-                                    container: undefined,
-                                    variable: undefined
-                                },
-                            },
-                            { type: "operator", value: "<" },
-                            { type: "const", value: 0 },
-                        ];
-                        that.options.states[stateIdx].formula.splice(formulaIdx + 1, 0, secondEq);
-                        that.refresh();
-                        break;                      
-                    default: break;
-                }
-                formula[1].value = value;
-            }
-
-            that.createOperatorPicker(operatorTd, setOperatorValue);
-            setOperatorValue(formula[1].value);
+            that.createOperatorPicker(operatorTd, formula[1], { variable: formula[0], stateIdx: stateIdx, formulaIdx: formulaIdx });
 
 
             var constTd = $("<td></td>").addClass("const").appendTo(tr);
@@ -284,15 +239,92 @@
             table.insertBefore(this._ltlStates.children().last());
         },
 
-        createOperatorPicker: function (operatorTd, setOperatorValue) {
+        createOperatorPicker: function (operatorTd, operatorValue, forRangeOp) {
             var that = this;
 
             var firstLeft = $(operatorTd).offset().left;
-            var firstTop = $(operatorTd).offset().top;
+            var firstTop = $(operatorTd).offset().top + 47;
 
+            var operatorImg = $("<img>").appendTo(operatorTd);
             var operatorExpandButton = $("<div></div>").addClass('arrow-down').appendTo(operatorTd);
-            var operatorSelector = $("<div></div>").addClass("operator-picker").appendTo('body').hide();
-            operatorSelector.offset({ top: firstTop + 47, left: firstLeft });
+            var operatorSelector = undefined;
+
+            var setOperatorValue = function (value) {
+                switch (value) {
+                    case ">":
+                        operatorImg.attr("src", "images/ltlimgs/mo.png");
+                        break;
+                    case ">=":
+                        operatorImg.attr("src", "images/ltlimgs/moeq.png");
+                        break;
+                    case "<":
+                        operatorImg.attr("src", "images/ltlimgs/le.png");
+                        break;
+                    case "<=":
+                        operatorImg.attr("src", "images/ltlimgs/leeq.png");
+                        break;
+                    case "=":
+                        operatorImg.attr("src", "images/ltlimgs/eq.png");
+                        break;
+                    case "!=":
+                        operatorImg.attr("src", "images/ltlimgs/noeq.png");
+                        break;
+                    case "<>":
+                        value = ">";
+                        operatorValue.value = value;
+                        operatorImg.attr("src", "images/ltlimgs/mo.png");
+                        var secondEq = [
+                            {
+                                type: "variable", value: forRangeOp.variable && forRangeOp.variable.value ? forRangeOp.variable.value : {
+                                    container: undefined,
+                                    variable: undefined
+                                },
+                            },
+                            { type: "operator", value: "<" },
+                            { type: "const", value: 0 },
+                        ];
+                        that.options.states[forRangeOp.stateIdx].formula.splice(forRangeOp.formulaIdx + 1, 0, secondEq);
+                        that.refresh();
+                        break;
+                    default: break;
+                }
+                operatorValue.value = value;
+                if (operatorSelector) {
+                    operatorSelector.remove();
+                    operatorSelector = undefined;
+                }
+            }
+
+            setOperatorValue(operatorValue.value);
+
+            $(document).mousedown(function (e) {
+                if (operatorSelector) {
+                    if (!operatorSelector.is(e.target) && operatorSelector.has(e.target).length === 0) {
+                        operatorSelector.remove();
+                        //operatorExpandButton.removeClass('inputs-list-header-expanded');
+                    }
+                }
+            });
+
+            operatorExpandButton.bind("click", function () {
+                if (!operatorSelector) {
+                    firstLeft = $(operatorTd).offset().left;
+                    firstTop = $(operatorTd).offset().top + 47;
+
+                    operatorSelector = that.updateOperatorPicker({ top: firstTop, left: firstLeft }, setOperatorValue);
+                    //operatorExpandButton.addClass('inputs-list-header-expanded');
+                } else {
+                    operatorSelector.remove();
+                    operatorSelector = undefined;
+                    //operatorExpandButton.removeClass('inputs-list-header-expanded');
+                }
+            });
+        },
+
+        updateOperatorPicker: function (position, setOperatorValue) {
+            var that = this;
+            var operatorSelector = $("<div></div>").addClass("operator-picker").appendTo('body');
+            operatorSelector.offset({ top: position.top, left: position.left });
 
             var greDiv = $("<div></div>").attr("data-operator-type", ">").appendTo(operatorSelector);
             var gre = $("<img>").attr("src", "images/ltlimgs/mo.png").appendTo(greDiv);
@@ -315,40 +347,15 @@
             var rangeDiv = $("<div></div>").attr("data-operator-type", "<>").appendTo(operatorSelector)
             var range = $("<img>").attr("src", "images/range.png").appendTo(rangeDiv);
 
-            operatorExpandButton.bind("click", function () {
-                if (operatorSelector.is(":hidden")) {
-                    var offLeft = $(operatorTd).offset().left - firstLeft;
-                    var offTop = $(operatorTd).offset().top - firstTop;
-                    operatorSelector.offset({ top: offTop, left: offLeft });
-                    firstLeft = $(operatorTd).offset().left;
-                    firstTop = $(operatorTd).offset().top;
-
-                    operatorSelector.show();
-                    //operatorExpandButton.addClass('inputs-list-header-expanded');
-                } else {
-                    operatorSelector.hide();
-                    //operatorExpandButton.removeClass('inputs-list-header-expanded');
-                }
-            });
-
             operatorSelector.children().bind("click", function () {
                 var newOperator = $(this).attr("data-operator-type");
                 setOperatorValue(newOperator);
-                operatorSelector.hide();
                 //operatorExpandButton.removeClass('inputs-list-header-expanded');
 
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
 
-            $(document).mousedown(function (e) {
-                if (!operatorSelector.is(":hidden")) {
-                    if (!operatorTd.is(e.target) && operatorTd.has(e.target).length === 0
-                        && !operatorSelector.is(e.target) && operatorSelector.has(e.target).length === 0) {
-                        operatorSelector.hide();
-                        //operatorExpandButton.removeClass('inputs-list-header-expanded');
-                    }
-                }
-            });
+            return operatorSelector;
         },
 
         createVariablePicker: function (variableTd, variable) {
@@ -362,10 +369,87 @@
             var expandButton = $("<div></div>").addClass('arrow-down').appendTo(variableTd);
 
             var firstLeft = $(variableTd).offset().left;
-            var firstTop = $(variableTd).offset().top;
+            var firstTop = $(variableTd).offset().top + 47;
 
-            var variablePicker = $("<div></div>").addClass("variable-picker").appendTo('body').hide();
-            variablePicker.offset({ top: firstTop + 47, left: firstLeft });
+           
+            var setSelectedValue = function (value) {
+
+                if (value.container === undefined) {
+                    value.container = that.findContainer(value.variable);
+                }
+
+                var containerName;
+                for (var i = 0; i < that.options.variables.length; i++) 
+                    if (that.options.variables[i].id == value.container) {
+                        containerName = that.options.variables[i].name;
+                        break;
+                    }
+                
+                containerName = containerName ? containerName : "ALL";
+
+                $(selectedContainer).text(containerName);
+                $(selectedVariable).text(value.variable);
+                selectedVariable.removeClass("not-selected");
+
+                if (variablePicker) {
+                    variablePicker.remove();
+                    variablePicker = undefined;
+                }
+
+                //expandButton.removeClass('inputs-list-header-expanded');
+                if (containerName !== "ALL") {
+                    containerImg.removeClass("hidden");
+                    selectedContainer.removeClass("hidden");
+                    selectedVariable.removeClass("only-variable");
+                } else {
+                    containerImg.addClass("hidden");
+                    selectedContainer.addClass("hidden");
+                    selectedVariable.addClass("only-variable");
+                }
+            }
+
+            if (!$(selectedVariable).text())
+                selectedVariable.addClass("not-selected");
+
+            var variablePicker = undefined;
+            setSelectedValue(variable.value);
+
+            //var trDivs = this.updateVariablePicker(trList, setSelectedValue, variable);
+
+            $(document).mousedown(function (e) {
+                if (variablePicker) {
+                    if (/*!variableTd.is(e.target) && variableTd.has(e.target).length === 0*/
+                        !variablePicker.is(e.target) && variablePicker.has(e.target).length === 0) {
+                        variablePicker.remove();
+                        //expandButton.removeClass('inputs-list-header-expanded');
+                    }
+                }
+            });
+
+            expandButton.bind("click", function () {
+                if (!variablePicker) {
+                    //var offLeft = $(variableTd).offset().left - firstLeft;
+                    //var offTop = $(variableTd).offset().top - firstTop;
+
+                    firstLeft = $(variableTd).offset().left;
+                    firstTop = $(variableTd).offset().top + 47;
+
+                    that.executeonComboBoxOpen();
+                    variablePicker = that.updateVariablePicker({ top: firstTop, left: firstLeft }, setSelectedValue, variable);
+                    //expandButton.addClass('inputs-list-header-expanded');
+                } else {
+                    variablePicker.remove();
+                    variablePicker = undefined;
+                    //expandButton.removeClass('inputs-list-header-expanded');
+                }
+            });
+        },
+        
+        updateVariablePicker: function (position, setSelectedValue, currSymbol) {
+            var that = this;
+
+            var variablePicker = $("<div></div>").addClass("variable-picker").appendTo('body');
+            variablePicker.offset({ top: position.top, left: position.left });
             var table = $("<table></table>").appendTo(variablePicker);
             var tbody = $("<tbody></tbody>").appendTo(table);
 
@@ -377,76 +461,15 @@
 
             var trList = $("<tr></tr>").appendTo(tbody);
 
-            var setSelectedValue = function (value) {
-                var containerName;
-                for (var i = 0; i < that.options.variables.length; i++) 
-                    if (that.options.variables[i].id == value.container) {
-                        containerName = that.options.variables[i].name;
-                        break;
-                    }
 
-                $(selectedContainer).text(containerName? containerName: "ALL");
-                $(selectedVariable).text(value.variable);
-                selectedVariable.removeClass("not-selected");
 
-                variablePicker.hide();
-                //expandButton.removeClass('inputs-list-header-expanded');
-                if (containerName !== "ALL") {
-                    containerImg.removeClass("hidden");
-                    selectedContainer.removeClass("hidden");
-                    selectedVariable.removeClass("only-variable");
-                }
-            }
-
-            if (!$(selectedVariable).text())
-                selectedVariable.addClass("not-selected");
-
-            var trDivs = this.updateVariablePicker(trList, setSelectedValue, variable);
-
-            $(document).mousedown(function (e) {
-                if (!variablePicker.is(":hidden")) {
-                    if (!variableTd.is(e.target) && variableTd.has(e.target).length === 0
-                        && !variablePicker.is(e.target) && variablePicker.has(e.target).length === 0) {
-                        variablePicker.hide();
-                        //expandButton.removeClass('inputs-list-header-expanded');
-                    }
-                }
-            });
-
-            expandButton.bind("click", function () {
-                if (variablePicker.is(":hidden")) {
-                    var offLeft = $(variableTd).offset().left - firstLeft;
-                    var offTop = $(variableTd).offset().top - firstTop;
-                    variablePicker.offset({ top: offTop, left: offLeft });
-                    firstLeft = $(variableTd).offset().left;
-                    firstTop = $(variableTd).offset().top;
-
-                    that.executeonComboBoxOpen();
-                    trDivs = that.updateVariablePicker(trList, setSelectedValue, variable);
-                    variablePicker.show();
-                    //expandButton.addClass('inputs-list-header-expanded');
-                } else {
-                    variablePicker.hide();
-                    //expandButton.removeClass('inputs-list-header-expanded');
-                }
-            });
-        },
-        
-        updateVariablePicker: function (trList, setSelectedValue, currSymbol) {
-            var that = this;
-            trList.children().remove();
             var tdContainersList = $("<td></td>").addClass("container list").appendTo(trList);
             var divContainers = $("<div></div>").addClass("scrollable").appendTo(tdContainersList);
             var tdVariablesList = $("<td></td>").addClass("variable list").appendTo(trList);
             var divVariables = $("<div></div>").addClass("scrollable").appendTo(tdVariablesList);
 
             if (currSymbol.value.container === undefined) {
-                currSymbol.value.container = 0;
-                for (var i = 1; i < this.options.variables.length; i++)
-                    if (that.options.variables[i].vars.indexOf(currSymbol.value.variable) >= 0) {
-                        currSymbol.value.container = that.options.variables[i].id;
-                        break;
-                    }
+                currSymbol.value.container = that.findContainer(currSymbol.value.variable);
             }
 
             for (var i = 0; i < this.options.variables.length; i++) {
@@ -455,14 +478,16 @@
                         .appendTo(divContainers).click(function () {
                             that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
                         });
-                    if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id)
+                    if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id) {
                         that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
+                    }
                // }
             }
-            if (currSymbol.value == 0)
+            if (currSymbol.value == 0) {
                 that.setActiveContainer(divContainers, divVariables, divContainers.children().eq(0), setSelectedValue, currSymbol);
+            }
 
-            return { containers: divContainers, variables: divVariables, setSelectedValue: setSelectedValue };
+            return variablePicker;
         },
 
         setActiveContainer: function (divContainers, divVariables, container, setSelectedValue, currSymbol) {
@@ -504,6 +529,17 @@
                     }
                 }
             }
+        },
+
+        findContainer: function (variable) {
+            var that = this;
+            var container = 0;
+            for (var i = 1; i < this.options.variables.length; i++)
+                if (that.options.variables[i].vars.indexOf(variable) >= 0) {
+                    container = that.options.variables[i].id;
+                    break;
+                }
+            return container;
         },
 
         isInsideVariableField: function (location) {

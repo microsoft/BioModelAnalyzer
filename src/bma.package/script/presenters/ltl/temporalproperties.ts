@@ -90,31 +90,38 @@ module BMA {
                 tpEditorDriver.SetCopyZoneVisibility(false);
                 tpEditorDriver.SetDeleteZoneVisibility(false);
 
-                
+                var plotHost = (<any>this.navigationDriver.GetNavigationSurface()).master;
                 tpEditorDriver.GetSVGDriver().SetConstraintFunc((plotRect) => {
+
+                    var screenRect = { x: 0, y: 0, left: 0, top: 0, width: plotHost.host.width(), height: plotHost.host.height() };
+                    var minCS = new InteractiveDataDisplay.CoordinateTransform({ x: 0, y: 0, width: that.plotConstraints.minWidth, height: that.plotConstraints.minHeight }, screenRect, plotHost.aspectRatio);
+                    var actualMinRect = minCS.getPlotRect(screenRect);
+                    var maxCS = new InteractiveDataDisplay.CoordinateTransform({ x: 0, y: 0, width: that.plotConstraints.maxWidth, height: that.plotConstraints.maxHeight }, screenRect, plotHost.aspectRatio);
+                    var actualMaxRect = maxCS.getPlotRect(screenRect);
+
                     var resultPR = { x: 0, y: 0, width: 0, height: 0 };
                     var center = {
                         x: plotRect.x + plotRect.width / 2,
                         y: plotRect.y + plotRect.height / 2
                     }
 
-                    if (plotRect.width < that.plotConstraints.minWidth) {
-                        resultPR.x = center.x - that.plotConstraints.minWidth / 2;
-                        resultPR.width = that.plotConstraints.minWidth;
-                    } else if (plotRect.width > that.plotConstraints.maxWidth) {
-                        resultPR.x = center.x - that.plotConstraints.maxWidth / 2;
-                        resultPR.width = that.plotConstraints.maxWidth;
+                    if (plotRect.width < actualMinRect.width) {
+                        resultPR.x = center.x - actualMinRect.width / 2;
+                        resultPR.width = actualMinRect.width;
+                    } else if (plotRect.width > actualMaxRect.width) {
+                        resultPR.x = center.x - actualMaxRect.width / 2;
+                        resultPR.width = actualMaxRect.width;
                     } else {
                         resultPR.x = plotRect.x;
                         resultPR.width = plotRect.width;
                     }
 
-                    if (plotRect.height < that.plotConstraints.minHeight) {
-                        resultPR.y = center.y - that.plotConstraints.minHeight / 2;
-                        resultPR.height = that.plotConstraints.minHeight;
-                    } else if (plotRect.height > that.plotConstraints.maxHeight) {
-                        resultPR.y = center.y - that.plotConstraints.maxHeight / 2;
-                        resultPR.height = that.plotConstraints.maxHeight;
+                    if (plotRect.height < actualMinRect.height) {
+                        resultPR.y = center.y - actualMinRect.height / 2;
+                        resultPR.height = actualMinRect.height;
+                    } else if (plotRect.height > actualMaxRect.height) {
+                        resultPR.y = center.y - actualMaxRect.height / 2;
+                        resultPR.height = actualMaxRect.height;
                     } else {
                         resultPR.y = plotRect.y;
                         resultPR.height = plotRect.height;
@@ -261,6 +268,7 @@ module BMA {
                         this.clipboard = {
                             operation: clonned,
                         };
+                        this.tpEditorDriver.SetCopyZoneVisibility(true);
                         this.tpEditorDriver.SetCopyZoneIcon(clonned);
 
                         if (unpinned.isRoot) {
@@ -280,6 +288,7 @@ module BMA {
                         this.clipboard = {
                             operation: clonned
                         };
+                        this.tpEditorDriver.SetCopyZoneVisibility(true);
                         this.tpEditorDriver.SetCopyZoneIcon(clonned);
 
                         tpEditorDriver.SetCopyZoneVisibility(this.clipboard !== undefined);
@@ -369,6 +378,9 @@ module BMA {
                     }
                     this.operations = [];
                     this.LoadFromAppModel();
+                    this.clipboard = undefined;
+                    this.tpEditorDriver.SetCopyZoneIcon(undefined);
+                    this.tpEditorDriver.SetCopyZoneVisibility(false);
                 });
 
                 window.Commands.On("AppModelChanged", (args) => {
@@ -699,18 +711,7 @@ module BMA {
                 if (this.operations.length < 1)
                     this.driver.SetVisibleRect({ x: 0, y: 0, width: 800, height: 600 });
                 else {
-                    var bbox = this.operations[0].BoundingBox;
-                    for (var i = 1; i < this.operations.length; i++) {
-                        var unitBbbox = this.operations[i].BoundingBox;
-                        var x = Math.min(bbox.x, unitBbbox.x);
-                        var y = Math.min(bbox.y, unitBbbox.y);
-                        bbox = {
-                            x: x,
-                            y: y,
-                            width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - x,
-                            height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
-                        };
-                    }
+                    var bbox = this.CalcOperationsBBox();
 
                     var size = Math.max(bbox.width, bbox.height);
                     var center = {
@@ -731,6 +732,26 @@ module BMA {
                     }
                     this.driver.SetVisibleRect(bbox);
                 }
+            }
+
+            private CalcOperationsBBox() {
+                if (this.operations.length < 1)
+                    return undefined;
+
+                var bbox = this.operations[0].BoundingBox;
+                for (var i = 1; i < this.operations.length; i++) {
+                    var unitBbbox = this.operations[i].BoundingBox;
+                    var x = Math.min(bbox.x, unitBbbox.x);
+                    var y = Math.min(bbox.y, unitBbbox.y);
+                    bbox = {
+                        x: x,
+                        y: y,
+                        width: Math.max(bbox.x + bbox.width, unitBbbox.x + unitBbbox.width) - x,
+                        height: Math.max(bbox.y + bbox.height, unitBbbox.y + unitBbbox.height) - y
+                    };
+                }
+
+                return bbox;
             }
 
             private LoadFromAppModel() {
@@ -1038,6 +1059,12 @@ module BMA {
                 if (updateAppModel) {
                     this.appModel.Operations = operations;
                     this.appModel.OperationAppearances = appearances;
+                }
+
+                var bbox = that.CalcOperationsBBox();
+                if (bbox !== undefined) {
+                    that.plotConstraints.maxWidth = Math.max(400 * 3, bbox.width * 1.2);
+                    that.plotConstraints.maxHeight = Math.max(200 * 3, bbox.height * 1.2);
                 }
 
                 this.commands.Execute("TemporalPropertiesOperationsChanged", ops);

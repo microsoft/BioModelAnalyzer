@@ -443,7 +443,7 @@ function loadScript(version) {
         }
     });
     window.Commands.On("DrawingSurfaceVariableEditorOpened", function () {
-        popupDriver.Hide();
+        popupDriver.Collapse();
         accordionHider.Hide();
     });
     //Loading Drivers

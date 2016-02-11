@@ -1,6 +1,8 @@
 /// <binding AfterBuild='default' />
 /// <vs AfterBuild='default' />
 /// <binding AfterBuild='default' />
+/// <vs AfterBuild='default' />
+/// <binding AfterBuild='default' />
 /*
 This file in the main entry point for defining grunt tasks and using grunt plugins.
 Click here to learn more. http://go.microsoft.com/fwlink/?LinkID=513275&clcid=0x409
@@ -96,6 +98,7 @@ module.exports = function (grunt) {
                     { src: 'tool.js', dest: '../bma.client/tool.js' },
                     { src: 'app.js', dest: '../bma.client/app.js' },
                     { src: 'css/bma.css', dest: '../bma.client/css/bma.css' },
+                    { src: 'js/idd.js', dest: '../bma.client/js/idd.js' },
                     { src: 'js/jquery.ui-contextmenu.min.js', dest: '../bma.client/js/jquery.ui-contextmenu.min.js' },
                     { src: 'js/jquery.ui-contextmenu.js', dest: '../bma.client/js/jquery.ui-contextmenu.js' }
                 ]

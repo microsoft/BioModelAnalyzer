@@ -113,6 +113,27 @@
                     }
                 });
 
+                ltlresultsviewer.SetOnCreateStateRequested(function (args) {
+                    if (args !== undefined) {
+                        var keyframeEqs = [];
+                        for (var i = 0; i < args.length; i++) {
+                            keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(
+                                new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId),
+                                "=",
+                                new BMA.LTLOperations.ConstOperand(args[i].value)
+                            ));
+                        }
+
+                        var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
+                        var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
+                        var merged = that.MergeStates(that.appModel.States, [newState]);
+                        that.appModel.States = merged.states;
+                        that.statespresenter.UpdateStatesFromModel();
+                        that.tppresenter.UpdateStatesFromModel();
+                        ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
+                    }
+                });
+
                 commands.On("ExportLTLFormula",(args) => {
                     if (args.operation !== undefined) {
                         exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "txt");
@@ -130,6 +151,11 @@
                             if (operation instanceof BMA.LTLOperations.Operation) {
                                 var op = <BMA.LTLOperations.Operation>operation;
                                 var states = that.GetStates(op);
+                                var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(that.appModel.BioModel, that.appModel.Layout, states);
+                                if (statesChanged.isChanged) {
+                                    states = statesChanged.states;
+                                    BMA.LTLOperations.RefreshStatesInOperation(op, states);
+                                }
                                 var merged = that.MergeStates(that.appModel.States, states);
                                 that.appModel.States = merged.states;
                                 that.UpdateOperationStates(op, merged.map);
@@ -173,7 +199,9 @@
                 for (var i = 0; i < operation.Operands.length; i++) {
                     var op = operation.Operands[i];
                     if (op instanceof BMA.LTLOperations.Keyframe) {
-                        (<BMA.LTLOperations.Keyframe>op).Name = map[(<BMA.LTLOperations.Keyframe>op).Name];
+                        if (map[(<BMA.LTLOperations.Keyframe>op).Name])
+                            (<BMA.LTLOperations.Keyframe>op).Name = map[(<BMA.LTLOperations.Keyframe>op).Name];
+                        else op = undefined;
                     } else if (op instanceof BMA.LTLOperations.Operation) {
                         that.UpdateOperationStates(<BMA.LTLOperations.Operation>op, map);
                     }

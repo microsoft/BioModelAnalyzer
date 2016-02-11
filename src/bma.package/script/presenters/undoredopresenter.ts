@@ -8,6 +8,8 @@
             private undoButton: BMA.UIDrivers.ITurnableButton;
             private redoButton: BMA.UIDrivers.ITurnableButton;
 
+            private maxStackCount = 10;
+
             constructor(appModel: BMA.Model.AppModel,
                 undoButton: BMA.UIDrivers.ITurnableButton,
                 redoButton: BMA.UIDrivers.ITurnableButton) {
@@ -58,7 +60,16 @@
             }
 
             private Truncate() {
-                this.models.length = this.currentModelIndex + 1;
+                if (this.models.length < this.maxStackCount) {
+                    this.models.length = this.currentModelIndex + 1;
+                } else {
+                    var cuttedModels = [];
+                    for (var i = this.models.length - this.maxStackCount; i < this.models.length; i++) {
+                        cuttedModels.push(this.models[i]);
+                    }
+                    this.models = cuttedModels;
+                    this.currentModelIndex = this.models.length - 1;
+                }
             }
 
             public Dup(m: BMA.Model.BioModel, l: BMA.Model.Layout) {

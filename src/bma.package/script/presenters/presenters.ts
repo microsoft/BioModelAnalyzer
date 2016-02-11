@@ -30,7 +30,7 @@ module BMA {
             private yOrigin = 0;
             private xStep = 250;
             private yStep = 280;
-            
+
             private variableIndex = 1;
 
             private stagingLine = undefined;
@@ -394,7 +394,9 @@ module BMA {
                             var layout = that.undoRedoPresenter.Current.layout;
                             var variables = model.Variables.slice(0);
                             var variableLayouts = layout.Variables.slice(0);
-                            variables.push(new BMA.Model.Variable(that.variableIndex, variable.ContainerId, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
+                            var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
+                            var container = that.GetContainerFromGridCell(gridCell);
+                            variables.push(new BMA.Model.Variable(that.variableIndex, container.Id, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
                             variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle));
                             var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
@@ -436,6 +438,15 @@ module BMA {
                     if (this.undoRedoPresenter.Current !== undefined) {
 
                         if (args !== undefined) {
+                            var bbox = BMA.ModelHelper.GetModelBoundingBox(this.undoRedoPresenter.Current.layout, { xOrigin: this.Grid.x0, yOrigin: this.Grid.y0, xStep: this.Grid.xStep, yStep: this.Grid.yStep });
+                            var screenRect = { x: 0, y: 0, left: 0, top: 0, width: plotHost.host.width(), height: plotHost.host.height() };
+                            var cs = new InteractiveDataDisplay.CoordinateTransform({ x: bbox.x, y: bbox.y, width: bbox.width, height: bbox.height }, screenRect, plotHost.aspectRatio);
+                            var actualRect = cs.getPlotRect(screenRect);
+                            bbox.width = actualRect.width;
+                            bbox.height = actualRect.height;
+                            var oldMaxWidth = window.PlotSettings.MaxWidth;
+                            window.Commands.Execute('SetPlotSettings', { MaxWidth: Math.max(3200, bbox.width * 1.1) });
+
                             if (args.status === "Undo" || args.status === "Redo" || args.status === "Set") {
                                 this.variableEditor.Hide();
                                 this.editingId = undefined;
@@ -444,9 +455,13 @@ module BMA {
                             if (args.status === "Set") {
                                 this.ResetVariableIdIndex();
                                 var center = this.GetLayoutCentralPoint();
-                                var bbox = BMA.ModelHelper.GetModelBoundingBox(this.undoRedoPresenter.Current.layout, { xOrigin: this.Grid.x0, yOrigin: this.Grid.y0, xStep: this.Grid.xStep, yStep: this.Grid.yStep });
+
                                 this.driver.SetVisibleRect(bbox);
                                 //this.navigationDriver.SetCenter(center.x, center.y);
+                            } else {
+                                if (oldMaxWidth > window.PlotSettings.MaxWidth) {
+                                    this.driver.SetVisibleRect(bbox);
+                                }
                             }
                         }
 
@@ -466,10 +481,14 @@ module BMA {
                 window.Commands.On("ModelFitToView", (args) => {
                     if (this.undoRedoPresenter.Current !== undefined) {
                         var bbox = BMA.ModelHelper.GetModelBoundingBox(this.undoRedoPresenter.Current.layout, { xOrigin: this.Grid.x0, yOrigin: this.Grid.y0, xStep: this.Grid.xStep, yStep: this.Grid.yStep });
-                        if (bbox.width > window.PlotSettings.MaxWidth) {
-                            //window.PlotSettings.MaxWidth = bbox.width;
-                            window.Commands.Execute('SetPlotSettings', { MaxWidth: bbox.width });
-                        }
+
+                        var screenRect = { x: 0, y: 0, left: 0, top: 0, width: plotHost.host.width(), height: plotHost.host.height() };
+                        var cs = new InteractiveDataDisplay.CoordinateTransform({ x: bbox.x, y: bbox.y, width: bbox.width, height: bbox.height }, screenRect, plotHost.aspectRatio);
+                        var actualRect = cs.getPlotRect(screenRect);
+                        bbox.width = actualRect.width;
+                        bbox.height = actualRect.height;
+
+                        window.Commands.Execute('SetPlotSettings', { MaxWidth: Math.max(3200, bbox.width * 1.1) });
                         this.driver.SetVisibleRect(bbox);
                     }
                 });
@@ -533,18 +552,60 @@ module BMA {
                     }
                 });
 
+                var plotHost = (<any>this.navigationDriver.GetNavigationSurface()).master;
+                svgPlotDriver.SetConstraintFunc((plotRect) => {
+
+                    var screenRect = { x: 0, y: 0, left: 0, top: 0, width: plotHost.host.width(), height: plotHost.host.height() };
+                    var minCS = new InteractiveDataDisplay.CoordinateTransform({ x: 0, y: 0, width: window.PlotSettings.MinWidth, height: 1 }, screenRect, plotHost.aspectRatio);
+                    var actualMinRect = minCS.getPlotRect(screenRect);
+                    var maxCS = new InteractiveDataDisplay.CoordinateTransform({ x: 0, y: 0, width: window.PlotSettings.MaxWidth, height: 1 }, screenRect, plotHost.aspectRatio);
+                    var actualMaxRect = maxCS.getPlotRect(screenRect);
+
+                    var resultPR = { x: 0, y: 0, width: 0, height: 0 };
+                    var center = {
+                        x: plotRect.x + plotRect.width / 2,
+                        y: plotRect.y + plotRect.height / 2
+                    }
+
+                    if (plotRect.width < actualMinRect.width) {
+                        resultPR.x = center.x - actualMinRect.width / 2;
+                        resultPR.width = actualMinRect.width;
+                    } else if (plotRect.width > actualMaxRect.width) {
+                        resultPR.x = center.x - actualMaxRect.width / 2;
+                        resultPR.width = actualMaxRect.width;
+                    } else {
+                        resultPR.x = plotRect.x;
+                        resultPR.width = plotRect.width;
+                    }
+
+                    if (plotRect.height < actualMinRect.height) {
+                        resultPR.y = center.y - actualMinRect.height / 2;
+                        resultPR.height = actualMinRect.height;
+                    } else if (plotRect.height > actualMaxRect.height) {
+                        resultPR.y = center.y - actualMaxRect.height / 2;
+                        resultPR.height = actualMaxRect.height;
+                    } else {
+                        resultPR.y = plotRect.y;
+                        resultPR.height = plotRect.height;
+                    }
+
+                    return resultPR;
+                });
+
+
                 window.Commands.On("VisibleRectChanged", function (param) {
-                    if (param < window.PlotSettings.MinWidth) {
-                        param = window.PlotSettings.MinWidth;
-                        navigationDriver.SetZoom(param);
-                    }
-                    if (param > window.PlotSettings.MaxWidth) {
-                        param = window.PlotSettings.MaxWidth;
-                        navigationDriver.SetZoom(param);
-                    }
+                    //if (param < window.PlotSettings.MinWidth) {
+                    //    param = window.PlotSettings.MinWidth;
+                    //    navigationDriver.SetZoom(param);
+                    //}
+                    //if (param > window.PlotSettings.MaxWidth) {
+                    //    param = window.PlotSettings.MaxWidth;
+                    //    navigationDriver.SetZoom(param);
+                    //}
                     var zoom = (param - window.PlotSettings.MinWidth) / 24;
                     window.Commands.Execute("ZoomSliderBind", zoom);
                 });
+
 
                 variableEditorDriver.SetOnClosingCallback(() => {
                     if (that.isVariableEdited) {
@@ -598,7 +659,7 @@ module BMA {
                 dragSubject.drag.subscribe(
                     (gesture) => {
 
-                        
+
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined) {
                             this.stagingLine.x1 = gesture.x1;
                             this.stagingLine.y1 = gesture.y1;
@@ -622,7 +683,7 @@ module BMA {
                                 that.driver.DrawLayer2(<SVGElement>that.CreateStagingSvg());
                             }
                         }
-                        
+
                     });
 
                 dragSubject.dragEnd.subscribe(
@@ -737,7 +798,7 @@ module BMA {
             private GetCurrentSVG(svg): any {
                 return $(svg.toSVG()).children();
             }
-            
+
             private RemoveVariable(id: number) {
                 if (this.editingId === id) {
                     this.editingId = undefined;
@@ -858,17 +919,42 @@ module BMA {
                 var relationships = this.undoRedoPresenter.Current.model.Relationships;
 
                 var newRels = [];
+                var fromId = undefined;
+                var toId = undefined;
 
                 for (var i = 0; i < relationships.length; i++) {
                     if (relationships[i].Id !== id) {
                         newRels.push(relationships[i]);
                     } else {
                         wasRemoved = true;
+                        //
+                        fromId = relationships[i].FromVariableId;
+                        toId = relationships[i].ToVariableId
                     }
                 }
 
                 if (wasRemoved === true) {
-                    var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, newRels);
+                    //updating formula
+                    var fromVariable = model.GetVariableById(fromId);
+                    var newVars = [];
+                    for (var i = 0; i < model.Variables.length; i++) {
+                        var oldFormula = model.Variables[i].Formula;
+                        var newFormula = undefined;
+                        if (model.Variables[i].Id == toId) {
+                            newFormula = oldFormula.replace(new RegExp("var\\(" + fromVariable.Name + "\\)", 'g'), "");
+                        }
+                        newVars.push(new BMA.Model.Variable(
+                            model.Variables[i].Id,
+                            model.Variables[i].ContainerId,
+                            model.Variables[i].Type,
+                            model.Variables[i].Name,
+                            model.Variables[i].RangeFrom,
+                            model.Variables[i].RangeTo,
+                            newFormula === undefined ? oldFormula : newFormula)
+                        );
+                    }
+
+                    var newmodel = new BMA.Model.BioModel(model.Name, newVars, newRels);
                     var newlayout = new BMA.Model.Layout(layout.Containers, layout.Variables);
                     this.undoRedoPresenter.Dup(newmodel, newlayout);
                 }
@@ -896,7 +982,7 @@ module BMA {
                 var grid = this.Grid;
                 for (var i = 0; i < containers.length; i++) {
                     var containerLayout = containers[i];
-                    if (element.IntersectsBorder(x, y,(containerLayout.PositionX + 0.5) * grid.xStep + grid.x0,(containerLayout.PositionY + 0.5) * grid.yStep + grid.y0, { Size: containerLayout.Size, xStep: grid.xStep / 2, yStep: grid.yStep / 2 })) {
+                    if (element.IntersectsBorder(x, y, (containerLayout.PositionX + 0.5) * grid.xStep + grid.x0, (containerLayout.PositionY + 0.5) * grid.yStep + grid.y0, { Size: containerLayout.Size, xStep: grid.xStep / 2, yStep: grid.yStep / 2 })) {
                         return containerLayout.Id;
                     }
                 }
@@ -1016,7 +1102,7 @@ module BMA {
 
                         if (container === undefined ||
                             !(<BMA.Elements.BorderContainerElement>window.ElementRegistry.GetElementByType("Container"))
-                                .ContainsBBox(bbox,(container.PositionX + 0.5) * that.xStep,(container.PositionY + 0.5) * that.yStep, { Size: container.Size, xStep: that.Grid.xStep / 2, yStep: that.Grid.yStep / 2 })) {
+                                .ContainsBBox(bbox, (container.PositionX + 0.5) * that.xStep, (container.PositionY + 0.5) * that.yStep, { Size: container.Size, xStep: that.Grid.xStep / 2, yStep: that.Grid.yStep / 2 })) {
                             return false;
                         }
 
@@ -1041,7 +1127,7 @@ module BMA {
 
                         if (container === undefined ||
                             !(<BMA.Elements.BorderContainerElement>window.ElementRegistry.GetElementByType("Container"))
-                                .IntersectsBorder(x, y,(container.PositionX + 0.5) * that.xStep,(container.PositionY + 0.5) * that.yStep, { Size: container.Size, xStep: that.Grid.xStep / 2, yStep: that.Grid.yStep / 2 })) {
+                                .IntersectsBorder(x, y, (container.PositionX + 0.5) * that.xStep, (container.PositionY + 0.5) * that.yStep, { Size: container.Size, xStep: that.Grid.xStep / 2, yStep: that.Grid.yStep / 2 })) {
                             return false;
                         }
 

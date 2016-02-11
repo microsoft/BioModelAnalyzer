@@ -32,7 +32,7 @@
                 width: _svgCnt.width(),
                 height: _svgCnt.height(),
                 viewBox: "0 0 1 1",
-                preserveAspectRatio: "none meet"
+                preserveAspectRatio: "none"
             }, true);
 
             that.host.trigger("svgLoaded");
@@ -154,6 +154,7 @@
 
             var context = this.getContext(true);
 
+            var circleSize = Number.POSITIVE_INFINITY;
             for (var i = 0; i < _rects.length; i++) {
                 var rect = _rects[i];
                 context.fillStyle = rect.fill;
@@ -163,10 +164,21 @@
                 var width = dataToScreenX(rect.x + rect.width) - dataToScreenX(rect.x);
                 var height = dataToScreenY(rect.y) - dataToScreenY(rect.y + rect.height);
 
-                //var labels = [];
-                //for (var j = 0; j < _rects.labels.length; j++) {
-                //    context.fill
-                //}
+                if (rect.labels !== undefined && rect.labels.length > 0) {
+                    var availableWidth = Math.min(height * 0.8, width * 0.8);
+                    var size = availableWidth / rect.labels.length;
+                    circleSize = Math.min(circleSize, size);
+                }
+            }
+
+            for (var i = 0; i < _rects.length; i++) {
+                var rect = _rects[i];
+                context.fillStyle = rect.fill;
+
+                var x = dataToScreenX(rect.x);
+                var y = dataToScreenY(rect.y + rect.height);
+                var width = dataToScreenX(rect.x + rect.width) - dataToScreenX(rect.x);
+                var height = dataToScreenY(rect.y) - dataToScreenY(rect.y + rect.height);
 
                 var alpha = context.globalAlpha;
                 if (rect.opacity !== undefined) {
@@ -176,22 +188,25 @@
                 context.globalAlpha = alpha;
 
                 if (rect.labels !== undefined && rect.labels.length > 0) {
-                    var str = "";
+                    var x = 0.1 * width + (0.8 * width - rect.labels.length * circleSize) / 2;
                     for (var j = 0; j < rect.labels.length; j++) {
-                        str = str + rect.labels[j];
-                        if (j < rect.labels.length - 1) {
-                            str += ", ";
-                        }
+                        context.beginPath();
+                        context.arc(dataToScreenX(rect.x) + x + circleSize / 2, dataToScreenY(rect.y + rect.height / 2), 0.95 * circleSize / 2, 0, 2 * Math.PI, true);
+                        context.closePath();
+
+                        context.strokeStyle = "rgb(96,96,96)";
+                        context.fillStyle = "rgb(238,238,238)";
+                        context.stroke();
+                        context.fill();
+
+                        context.fillStyle = "rgb(96,96,96)";
+                        context.textBaseline = "middle";
+                        context.font = circleSize / 2 + "px Segoe-UI";
+                        var w = context.measureText(rect.labels[j]).width;
+                        context.fillText(rect.labels[j], dataToScreenX(rect.x) + x + circleSize / 2 - w / 2, dataToScreenY(rect.y + rect.height / 2));
+
+                        x += circleSize;
                     }
-                    context.fillStyle = "rgb(37,96,159)";
-                    context.textBaseline = "top";
-                    var textheight = Math.abs(dataToScreenY(0.5) - dataToScreenY(0));
-                    context.font = textheight + "px Segoe-UI";
-                    while (context.measureText(str).width > width * 0.8) {
-                        var textheight = 0.8 * textheight;
-                        context.font = textheight + "px Segoe-UI";
-                    }
-                    context.fillText(str, dataToScreenX(rect.x + 0.2), dataToScreenY(rect.y + rect.height - 0.2));
                 }
             }
         };
