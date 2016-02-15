@@ -4085,6 +4085,10 @@ ui-icon-arrowthickstop-1-n {
   height: 273px;
   width: 20%;
 }
+.LTL-state {
+  max-height: 270px;
+  overflow-y: auto;
+}
 .LTL-state table tr td.variable {
   max-width: 210px;
   height: 45px;

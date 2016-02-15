@@ -2902,7 +2902,7 @@ var BMA;
                             if (state && state.Name === obj.name)
                                 return state.Clone();
                         }
-                        alert(state.Name);
+                        alert(obj.Name);
                         throw "No suitable states found"; //TODO: replace this by editing empty operation
                     }
                     else {
@@ -4854,7 +4854,6 @@ var BMA;
                 for (var i = 0; i < states.length; i++) {
                     var ops = [];
                     var formulas = states[i].formula;
-                    var op = undefined;
                     var isEmpty = false;
                     for (var j = 0; j < formulas.length; j++) {
                         var op = undefined;
@@ -4873,10 +4872,8 @@ var BMA;
                             op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable, id), operator, new BMA.LTLOperations.ConstOperand(constant));
                             ops.push(op);
                         }
-                        if (op === undefined)
-                            isEmpty = true;
                     }
-                    if (formulas.length != 0 && ops.length != 0 && !isEmpty) {
+                    if (formulas.length != 0 && ops.length != 0) {
                         var ws = new BMA.LTLOperations.Keyframe(states[i].name, states[i].description, ops);
                         wstates.push(ws);
                     }
@@ -12165,6 +12162,13 @@ jQuery.fn.extend({
                     && location.y > formulaPosition.top && location.y < formulaPosition.top + formulaHeight))
                     return i;
             }
+            var plusBtn = $(this._ltlStates).children().last();
+            var plusBtnPosition = plusBtn.offset();
+            var plusBtnWidth = plusBtn.width();
+            var plusBtnHeight = plusBtn.height();
+            if ((location.x > plusBtnPosition.left && location.x < plusBtnPosition.left + plusBtnWidth
+                && location.y > plusBtnPosition.top && location.y < plusBtnPosition.top + plusBtnHeight))
+                return states.length;
             return -1;
         },
         checkDroppedItem: function (itemParams) {
@@ -12172,6 +12176,8 @@ jQuery.fn.extend({
             var idx = that.isInsideVariableField(itemParams.screenLocation);
             if (idx > -1) {
                 var stateIdx = that.options.states.indexOf(that._activeState);
+                if (that.options.states[stateIdx].formula.length == idx)
+                    that.addFormula();
                 that.options.states[stateIdx].formula[idx][0] = { type: "variable", value: itemParams.variable };
                 that._activeState.formula[idx][0] = { type: "variable", value: itemParams.variable };
                 that.refresh();

@@ -302,7 +302,6 @@ module BMA {
                 for (var i = 0; i < states.length; i++) {
                     var ops = [];
                     var formulas = states[i].formula;
-                    var op = undefined;
                     var isEmpty = false;
                     for (var j = 0; j < formulas.length; j++) {
                         var op = undefined;
@@ -324,10 +323,10 @@ module BMA {
                             ops.push(op);
                         }
 
-                        if (op === undefined)
-                            isEmpty = true;
+                        //if (op === undefined)
+                          //  isEmpty = true;
                     }
-                    if (formulas.length != 0 && ops.length != 0 && !isEmpty) {
+                    if (formulas.length != 0 && ops.length != 0) {
                         var ws = new BMA.LTLOperations.Keyframe(states[i].name, states[i].description, ops);
                         wstates.push(ws);
                     }

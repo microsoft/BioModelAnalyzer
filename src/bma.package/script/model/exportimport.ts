@@ -342,7 +342,7 @@
                             if (state && state.Name === obj.name)
                                 return state.Clone();
                         }
-                        alert(state.Name);
+                        alert(obj.Name);
                         throw "No suitable states found";//TODO: replace this by editing empty operation
                     } else {
 

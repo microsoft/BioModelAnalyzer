@@ -559,6 +559,15 @@
                     && location.y > formulaPosition.top && location.y < formulaPosition.top + formulaHeight))
                     return i;
             }
+
+            var plusBtn = $(this._ltlStates).children().last();
+            var plusBtnPosition = plusBtn.offset();
+            var plusBtnWidth = plusBtn.width();
+            var plusBtnHeight = plusBtn.height();
+            if ((location.x > plusBtnPosition.left && location.x < plusBtnPosition.left + plusBtnWidth
+                && location.y > plusBtnPosition.top && location.y < plusBtnPosition.top + plusBtnHeight))
+                return states.length;
+
             return -1;
         },
 
@@ -567,6 +576,10 @@
             var idx = that.isInsideVariableField(itemParams.screenLocation);
             if (idx > -1) {
                 var stateIdx = that.options.states.indexOf(that._activeState);
+
+                if (that.options.states[stateIdx].formula.length == idx) 
+                    that.addFormula();
+
                 that.options.states[stateIdx].formula[idx][0] = { type: "variable", value: itemParams.variable };
                 that._activeState.formula[idx][0] = { type: "variable", value: itemParams.variable };
 
