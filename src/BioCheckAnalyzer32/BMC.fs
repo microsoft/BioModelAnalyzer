@@ -106,7 +106,7 @@ let BoundedMC (ltl_formula : LTLFormulaType) network initBound (paths : Map<QN.v
 
     ctx.Push()
     // 6. Model check negative
-    let (the_model2,the_result2) = 
+    let (the_result2,the_model2) = 
         if (check_both) then 
             EncodingForFormula.assert_top_most_formula ltl_formula ctx list_of_maps.Head false
             let start_time2 = System.DateTime.Now
