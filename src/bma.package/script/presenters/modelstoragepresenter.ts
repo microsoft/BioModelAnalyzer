@@ -14,14 +14,15 @@
                     try {
                         if (checker.IsChanged(appModel)) {
                             var userDialog = $('<div></div>').appendTo('body').userdialog({
-                                message: "Do you want to save changes?",
+                                message: "Model has unsaved changes.\nDo you want to continue?",
+                                //"Do you want to save changes?",
                                 actions: [
+                                    //{
+                                    //    button: 'Yes',
+                                    //    callback: function () { userDialog.detach(); }
+                                    //},
                                     {
                                         button: 'Yes',
-                                        callback: function () { userDialog.detach(); }
-                                    },
-                                    {
-                                        button: 'No',
                                         callback: function () {
                                             userDialog.detach();
                                             load();
@@ -53,14 +54,15 @@
                     try {
                         if (checker.IsChanged(appModel)) {
                             var userDialog = $('<div></div>').appendTo('body').userdialog({
-                                message: "Do you want to save changes?",
+                                message: "Model has unsaved changes.\nDo you want to continue?",
+                                //"Do you want to save changes?",
                                 actions: [
+                                    //{
+                                    //    button: 'Yes',
+                                    //    callback: function () { userDialog.detach(); }
+                                    //},
                                     {
                                         button: 'Yes',
-                                        callback: function () { userDialog.detach(); }
-                                    },
-                                    {
-                                        button: 'No',
                                         callback: function () {
                                             userDialog.detach();
                                             load();

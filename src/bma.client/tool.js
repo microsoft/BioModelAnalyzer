@@ -5261,11 +5261,11 @@ var BMA;
                 //for (var i = 0; i < tags.length - 1; i++) {
                 //    currState.push([]);
                 //    for (var j = 0; j < tags[i].length; j++) {
-                //        //for (var k = 0; k < tags[i + 1].length; k++)
-                //        //    if (tags[i][j] == tags[i + 1][k]) {
+                //        for (var k = 0; k < tags[i + 1].length; k++)
+                //            if (tags[i][j] == tags[i + 1][k]) {
                 //                currState[i].push(tags[i][j]);
                 //                break;
-                //            //}
+                //            }
                 //    }
                 //}
                 var prevState = tags[0]; //currState[0];
@@ -7394,14 +7394,15 @@ var BMA;
                     try {
                         if (checker.IsChanged(appModel)) {
                             var userDialog = $('<div></div>').appendTo('body').userdialog({
-                                message: "Do you want to save changes?",
+                                message: "Model has unsaved changes.\nDo you want to continue?",
+                                //"Do you want to save changes?",
                                 actions: [
+                                    //{
+                                    //    button: 'Yes',
+                                    //    callback: function () { userDialog.detach(); }
+                                    //},
                                     {
                                         button: 'Yes',
-                                        callback: function () { userDialog.detach(); }
-                                    },
-                                    {
-                                        button: 'No',
                                         callback: function () {
                                             userDialog.detach();
                                             load();
@@ -7432,14 +7433,15 @@ var BMA;
                     try {
                         if (checker.IsChanged(appModel)) {
                             var userDialog = $('<div></div>').appendTo('body').userdialog({
-                                message: "Do you want to save changes?",
+                                message: "Model has unsaved changes.\nDo you want to continue?",
+                                //"Do you want to save changes?",
                                 actions: [
+                                    //{
+                                    //    button: 'Yes',
+                                    //    callback: function () { userDialog.detach(); }
+                                    //},
                                     {
                                         button: 'Yes',
-                                        callback: function () { userDialog.detach(); }
-                                    },
-                                    {
-                                        button: 'No',
                                         callback: function () {
                                             userDialog.detach();
                                             load();
