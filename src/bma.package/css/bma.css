@@ -4090,7 +4090,7 @@ ui-icon-arrowthickstop-1-n {
   overflow-y: auto;
 }
 .LTL-state table tr td.variable {
-  max-width: 210px;
+  width: 200px;
   height: 45px;
 }
 .LTL-state table tr td.variable .state-container-image {
