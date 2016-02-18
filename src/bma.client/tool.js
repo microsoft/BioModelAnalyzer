@@ -13943,7 +13943,7 @@ var BMA;
                             op.RefreshStates(args.states);
                         }
                         _this.FitToView();
-                        _this.OnOperationsChanged(true, false);
+                        _this.OnOperationsChanged(true, true);
                         that.isUpdateControlRequested = true;
                     }
                 });

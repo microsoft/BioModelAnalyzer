@@ -341,7 +341,7 @@ module BMA {
                         }
 
                         this.FitToView();
-                        this.OnOperationsChanged(true, false);
+                        this.OnOperationsChanged(true, true);
                         that.isUpdateControlRequested = true;
                     }
                 });
