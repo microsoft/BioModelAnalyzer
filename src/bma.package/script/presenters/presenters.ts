@@ -1043,9 +1043,21 @@ module BMA {
                         var model = current.model;
                         var layout = current.layout;
                         var relationships = model.Relationships.slice(0);
-                        relationships.push(new BMA.Model.Relationship(this.variableIndex++, this.stagingLine.id, variable.Id, this.selectedType));
-                        var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, relationships);
-                        this.undoRedoPresenter.Dup(newmodel, layout);
+
+                        var containsSameRelationship = false;
+                        for (var j = 0; j < model.Relationships.length; j++) {
+                            var rel = model.Relationships[j];
+                            if (rel.FromVariableId === this.stagingLine.id && rel.ToVariableId === variable.Id && rel.Type === this.selectedType) {
+                                containsSameRelationship = true;
+                                break;
+                            }
+                        }
+
+                        if (!containsSameRelationship) {
+                            relationships.push(new BMA.Model.Relationship(this.variableIndex++, this.stagingLine.id, variable.Id, this.selectedType));
+                            var newmodel = new BMA.Model.BioModel(model.Name, model.Variables, relationships);
+                            this.undoRedoPresenter.Dup(newmodel, layout);
+                        }
 
                         return;
                     }
