@@ -864,7 +864,7 @@ var BMA;
         ModelHelper.FindAllRelationships = FindAllRelationships;
         function GenerateStateName(states, newState) {
             var k = states.length;
-            var lastStateName = "";
+            var lastStateName = "A";
             for (var i = 0; i < k; i++) {
                 var lastStateIdx = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
                 var stateIdx = states[i].Name.length > 1 ? parseFloat(states[i].Name.slice(1)) : 0;
@@ -874,9 +874,9 @@ var BMA;
                         lastStateName : states[i].Name;
                 }
             }
-            var newStateName = newState ? newState.Name : "";
+            var newStateName = newState ? newState.Name : "A";
             var newStateIdx = (newStateName && newStateName.length > 1) ? parseFloat(newStateName.slice(1)) : 0;
-            if (lastStateName && lastStateIdx == newStateIdx && lastStateName.charAt(0) > newStateName.charAt(0)) {
+            if (lastStateName && lastStateIdx == newStateIdx && lastStateName.charAt(0) >= newStateName.charAt(0)) {
                 var charCode = lastStateName ? lastStateName.charCodeAt(0) : 65;
                 var n = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
                 if (charCode >= 90) {
