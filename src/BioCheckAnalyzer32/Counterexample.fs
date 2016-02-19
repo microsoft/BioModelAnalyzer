@@ -46,56 +46,60 @@ let find_cex_fixpoint (net : QN.node list) (bounds : Map<QN.var, int*int>) =
 /// Find a counterexample to the stability of a network.
 // Compose the above three functions; not part of the UI Interface itself but used by Main and UIMain.
 // Right now, we call the inners of each of these three functions; we should just call them straight. 
-let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) =
+let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) (no_sat : bool) =
 
-    // Try to find a bifurcation first....
-    Log.log_debug "CEx(1): check whether the model bifurcates."
-    let bifurcation = Z.find_bifurcation net bounds(*was: range*)
+    if (no_sat) then
+        Log.log_debug "Not allowed to run sat solver. Just returning none"
+        Result.CExUnknown
+    else
+        // Try to find a bifurcation first....
+        Log.log_debug "CEx(1): check whether the model bifurcates."
+        let bifurcation = Z.find_bifurcation net bounds(*was: range*)
 
-    match bifurcation with
-    | Some(x) -> Result.CExBifurcation(x)
-    | None ->
-        Log.log_debug "No bifurcation..."
-
-        // No bifurcation - let's try to find a cycle...
-
-
-        // TODO:
-        // Try to find one fixpoint. 
-        // If there is no fixpoint - just run a simulation from an arbitrary point
-        //                           this simulation will return a cycle and this cycle
-        //                           can be returned as the counter example.
-        // If there is a fixpoint continue to finding a cycle as before.
-
-        Log.log_debug "CEx(2): check whether the model cycles."
-        // diameter = \Pi_{v \in bounds} (hi (bounds v)) - (lo (bounds v)) + 1
-
-// Diameter calculation was needed for running bound on Z.find_cycle_steps net diameter bounds
-//        let diameter =
-//                Map.fold 
-//                    (fun total _ (lo: int, hi: int) -> 
-//                        bigint.Multiply(total, bigint.Subtract(bigint.Add(bigint.One, bigint(hi)), bigint(lo))))
-//                    bigint.One
-//                    bounds
-
-//        let cycle = Z.find_cycle_steps net diameter bounds //range
-
-        let cycle = Z.find_cycle_steps_optimized net bounds //range
-
-        match cycle with
-        | Some(x) -> Result.CExCycle(x)
+        match bifurcation with
+        | Some(x) -> Result.CExBifurcation(x)
         | None ->
-            Log.log_debug "No cycle..."
+            Log.log_debug "No bifurcation..."
 
-            // No cycle either... so if there is a fixpoint, it must be unique
-            // and reachable from every other state.
-            Log.log_debug "CEx(3): check whether the model has a fixpoint."
-            let fix = Z.find_fixpoint net bounds(*was: range*)
+            // No bifurcation - let's try to find a cycle...
 
-            match fix with
-            | Some(x) -> Result.CExFixpoint(x)
+
+            // TODO:
+            // Try to find one fixpoint. 
+            // If there is no fixpoint - just run a simulation from an arbitrary point
+            //                           this simulation will return a cycle and this cycle
+            //                           can be returned as the counter example.
+            // If there is a fixpoint continue to finding a cycle as before.
+
+            Log.log_debug "CEx(2): check whether the model cycles."
+            // diameter = \Pi_{v \in bounds} (hi (bounds v)) - (lo (bounds v)) + 1
+
+    // Diameter calculation was needed for running bound on Z.find_cycle_steps net diameter bounds
+    //        let diameter =
+    //                Map.fold 
+    //                    (fun total _ (lo: int, hi: int) -> 
+    //                        bigint.Multiply(total, bigint.Subtract(bigint.Add(bigint.One, bigint(hi)), bigint(lo))))
+    //                    bigint.One
+    //                    bounds
+
+    //        let cycle = Z.find_cycle_steps net diameter bounds //range
+
+            let cycle = Z.find_cycle_steps_optimized net bounds //range
+
+            match cycle with
+            | Some(x) -> Result.CExCycle(x)
             | None ->
-                Log.log_debug "...and no fixpoint???"
-                Result.CExUnknown
+                Log.log_debug "No cycle..."
+
+                // No cycle either... so if there is a fixpoint, it must be unique
+                // and reachable from every other state.
+                Log.log_debug "CEx(3): check whether the model has a fixpoint."
+                let fix = Z.find_fixpoint net bounds(*was: range*)
+
+                match fix with
+                | Some(x) -> Result.CExFixpoint(x)
+                | None ->
+                    Log.log_debug "...and no fixpoint???"
+                    Result.CExUnknown
 
 

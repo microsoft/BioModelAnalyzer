@@ -40,7 +40,7 @@ let find_cex_fixpoint qn bounds =
 //        Result.Stabilizing(bounds)
 //    else
 //        Counterexample.find_counterexample network bounds range
-let stabilization_prover model = 
+let stabilization_prover model no_sat = 
     let results = check_stability_lazy model
     let results = Seq.toArray results
     let result = Seq.nth ((Seq.length results) - 1) results 
@@ -49,6 +49,6 @@ let stabilization_prover model =
         (result, None) 
     | Result.SRNotStabilizing(bounds_history) -> 
         let (_last_tick,last_bounds) = List.maxBy (fun (t,_b) -> t) bounds_history
-        let cex = Counterexample.find_cex model last_bounds
+        let cex = Counterexample.find_cex model last_bounds no_sat
         Log.log_debug (cex.ToString())
         (result, Some(cex))
