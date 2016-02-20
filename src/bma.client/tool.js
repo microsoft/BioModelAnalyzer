@@ -9545,48 +9545,23 @@ var BMA;
         createColumnContextMenu: function () {
             var that = this;
             if (this.options.columnContextMenuItems !== undefined && this.options.columnContextMenuItems.length != 0) {
-                //var holdCords = {
-                //    holdX: 0,
-                //    holdY: 0
-                //};
-                //$(document).on('vmousedown', function (event) {
-                //    holdCords.holdX = event.pageX;
-                //    holdCords.holdY = event.pageY;
-                //});
                 this.data.contextmenu({
                     delegate: "td",
                     autoFocus: true,
                     preventContextMenuForPopup: true,
                     preventSelect: true,
-                    //taphold: true,
                     menu: [{ title: "Create State", cmd: "CreateState" }],
                     beforeOpen: function (event, ui) {
                         ui.menu.zIndex(50);
                         if ($(ui.target.context.parentElement).index() == 0)
                             return false;
-                        //var x = holdCords.holdX || event.pageX;
-                        //var y = holdCords.holdX || event.pageY;
-                        //var left = x - drawingSurface.offset().left;
-                        //var top = y - drawingSurface.offset().top;
-                        //that._executeCommand("ColumnContextMenuOpenning", {
-                        //    left: x,
-                        //    top: y
-                        //});
                     },
                     select: function (event, ui) {
                         var args = {};
-                        //var commandName = "LTLResults" + ui.cmd;
-                        //var x = holdCords.holdX || event.pageX;
-                        //var y = holdCords.holdX || event.pageY;
-                        //args.left = x - that.data.offset().left;
-                        //args.top = y - that.data.offset().top;
                         args.command = ui.cmd;
                         args.column = $(ui.target.context).index();
                         if (that.options.onContextMenuItemSelected !== undefined)
                             that.options.onContextMenuItemSelected(args);
-                        //alert(args.column);
-                        //this.executeOnContextMenuItemSelected(args);
-                        //window.Commands.Execute(commandName, args);
                     }
                 });
             }
@@ -11495,9 +11470,17 @@ jQuery.fn.extend({
             var root = this.element;
             //this.loading = $("<div></div>").addClass("page-loading").css("position", "absolute").css("top", "27").css("height", 470- 47).hide().appendTo(that.element);
             //var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
+            //this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(root);
             this.tablesContainer = $("<div></div>").addClass('ltl-simplot-container').appendTo(root);
             this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer); //root);
             this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer); //root);
+            //this._table.height(that._table.height() + 10);
+            this._table.on('scroll', function () {
+                that._variables.scrollTop($(this).scrollTop());
+            });
+            this._variables.on('scroll', function () {
+                that._table.scrollTop($(this).scrollTop());
+            });
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
             var stepsul = $('<ul></ul>').addClass('button-list').css("float", "left").appendTo(root);
@@ -11739,6 +11722,7 @@ jQuery.fn.extend({
             var that = this;
             this._stateToolbar = $("<div></div>").addClass("state-toolbar").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this._stateToolbar);
+            that.addContextMenu();
             that._initStates();
             this._addStateButton = $("<div>+</div>").addClass("state-button").addClass("new").appendTo(this._stateButtons).click(function () {
                 that.addState();
@@ -11776,6 +11760,32 @@ jQuery.fn.extend({
                     that.refresh();
                 });
             }
+        },
+        addContextMenu: function () {
+            var that = this;
+            this._stateButtons.contextmenu({
+                delegate: ".state",
+                autoFocus: true,
+                preventContextMenuForPopup: true,
+                preventSelect: true,
+                menu: [{ title: "Delete State", cmd: "DeleteState" }],
+                beforeOpen: function (event, ui) {
+                    ui.menu.zIndex(50);
+                },
+                select: function (event, ui) {
+                    var args = {};
+                    args.command = ui.cmd;
+                    var state = ui.target.context;
+                    args.stateName = $(state).attr("data-state-name");
+                    for (var j = 0; j < that.options.states.length; j++) {
+                        if (that.options.states[j].name == $(state).attr("data-state-name")) {
+                            args.stateIdx = j;
+                            break;
+                        }
+                    }
+                    that.onContextMenuItemSelected(args);
+                }
+            });
         },
         addState: function (state) {
             if (state === void 0) { state = null; }
@@ -11836,6 +11846,17 @@ jQuery.fn.extend({
             this._activeState = this.options.states[idx];
             state.insertBefore(this._stateButtons.children().last());
             this.refresh();
+        },
+        onContextMenuItemSelected: function (args) {
+            var that = this;
+            if (that.options.states[args.stateIdx] == that._activeState) {
+                that._activeState = (args.stateIdx == that.options.states.length - 1) ? that.options.states[args.stateIdx - 1] :
+                    that.options.states[args.stateIdx + 1];
+            }
+            that.options.states.splice(args.stateIdx, 1);
+            that._stateButtons.find("[data-state-name='" + args.stateName + "']").remove();
+            that.refresh();
+            that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
         },
         addFormula: function (formula) {
             if (formula === void 0) { formula = null; }

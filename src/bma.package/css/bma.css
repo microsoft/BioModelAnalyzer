@@ -3852,6 +3852,29 @@ ui-icon-arrowthickstop-1-n {
   overflow-y: auto;
   margin-top: 5px;
   margin-bottom: 15px;
+  /*.small-simulation-popout-table {
+            display: inline-block;
+            float:left;
+            max-width: 250px;
+            max-height: 322px;
+
+            .variables-table {
+                td:nth-child(1) {
+                    width: 40px;
+                }
+
+                tr:last-child td:first-child {
+                    background-color: Window;
+                    border-left-color: transparent;
+                    border-right-color:transparent;
+                    border-bottom-color: transparent;
+                }
+
+                td:nth-child(3) {
+                    width: 50px;
+                }
+            }
+        }*/
 }
 .ltlresultsviewer::-webkit-scrollbar-track {
   width: 20px;
@@ -3996,12 +4019,13 @@ ui-icon-arrowthickstop-1-n {
   float: left;
   max-height: 322px;
   width: 520px;
-  overflow-y: auto;
 }
 .ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table {
   display: inline-block;
   float: left;
   max-width: 250px;
+  max-height: 322px;
+  overflow-y: hidden;
 }
 .ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table .variables-table td:nth-child(1) {
   width: 40px;
@@ -4009,6 +4033,7 @@ ui-icon-arrowthickstop-1-n {
 .ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table .variables-table tr:last-child td:first-child {
   background-color: Window;
   border-left-color: transparent;
+  border-right-color: transparent;
   border-bottom-color: transparent;
 }
 .ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table .variables-table td:nth-child(3) {
@@ -4019,11 +4044,18 @@ ui-icon-arrowthickstop-1-n {
   float: left;
   vertical-align: top;
   max-width: 250px;
+  max-height: 322px;
+  overflow-x: auto;
+}
+.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table:after {
+  content: "";
+  height: 18px;
+  display: block;
 }
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .bma-simulation-data-table {
   max-width: calc(100% - 90px);
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow-x: visible;
+  overflow-y: visible;
 }
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .bma-simulation-data-table .progression-table {
   width: auto;

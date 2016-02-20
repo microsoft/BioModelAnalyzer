@@ -185,6 +185,30 @@
     width:1060px;
     .scrollbox(470px);
 
+    /*.small-simulation-popout-table {
+            display: inline-block;
+            float:left;
+            max-width: 250px;
+            max-height: 322px;
+
+            .variables-table {
+                td:nth-child(1) {
+                    width: 40px;
+                }
+
+                tr:last-child td:first-child {
+                    background-color: Window;
+                    border-left-color: transparent;
+                    border-right-color:transparent;
+                    border-bottom-color: transparent;
+                }
+
+                td:nth-child(3) {
+                    width: 50px;
+                }
+            }
+        }*/
+
     .simulationplot-label{
         background-color:rgba(100, 100, 100, 0.5);
         //border:1px solid @darkgrey;
@@ -285,12 +309,14 @@
         float:left;
         max-height: 322px;
         width: 520px;
-        overflow-y: auto;
+        //overflow-y: auto;
 
         .small-simulation-popout-table {
             display: inline-block;
             float:left;
             max-width: 250px;
+            max-height: 322px;
+            overflow-y: hidden;
 
             .variables-table {
                 td:nth-child(1) {
@@ -300,6 +326,7 @@
                 tr:last-child td:first-child {
                     background-color: Window;
                     border-left-color: transparent;
+                    border-right-color:transparent;
                     border-bottom-color: transparent;
                 }
 
@@ -315,13 +342,19 @@
             vertical-align: top;
             //min-width:250px;
             max-width:250px;
+            max-height: 322px;
+            overflow-x:auto;
 
-            
+            &:after {
+                content:"";
+                height:18px;
+                display:block;
+            }
 
             .bma-simulation-data-table {
                 max-width: calc(~"100% - 90px");
-                overflow-x: auto;
-                overflow-y: hidden;
+                overflow-x: visible;
+                overflow-y: visible;
 
                 .progression-table {
                     width:auto;
@@ -335,6 +368,8 @@
                         background-color:@lightgrey;
                     }
                 }
+
+
             }
 
             .variables-table {
@@ -383,6 +418,7 @@
         float: left;
         width: 500px;
         overflow: auto;
+
 
         &.simulation-plot-box {
             margin-top: 23px;

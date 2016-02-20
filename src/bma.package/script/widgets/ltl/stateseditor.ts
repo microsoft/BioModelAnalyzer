@@ -28,6 +28,7 @@
 
             this._stateToolbar = $("<div></div>").addClass("state-toolbar").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this._stateToolbar);
+            that.addContextMenu();
 
             that._initStates();
 
@@ -74,6 +75,35 @@
                         that.refresh();
                     });
             }
+        },
+
+        addContextMenu: function () {
+            var that = this;
+
+            this._stateButtons.contextmenu({
+                delegate: ".state",
+                autoFocus: true,
+                preventContextMenuForPopup: true,
+                preventSelect: true,
+                menu: [{ title: "Delete State", cmd: "DeleteState" }],
+                beforeOpen: function (event, ui) {
+                    ui.menu.zIndex(50);
+                    
+                },
+                select: function (event, ui) {
+                    var args: any = {};
+                    args.command = ui.cmd;
+                    var state = ui.target.context;
+                    args.stateName = $(state).attr("data-state-name");
+                    for (var j = 0; j < that.options.states.length; j++) {
+                        if (that.options.states[j].name == $(state).attr("data-state-name")) {
+                            args.stateIdx = j;
+                            break;
+                        }
+                    }
+                    that.onContextMenuItemSelected(args);
+                }
+            });
         },
 
         addState: function (state = null) {
@@ -138,8 +168,23 @@
                 that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
             this._activeState = this.options.states[idx];
             state.insertBefore(this._stateButtons.children().last());
-
+            
             this.refresh();
+        },
+
+        onContextMenuItemSelected: function (args) {
+            var that = this;
+
+            if (that.options.states[args.stateIdx] == that._activeState) {
+                that._activeState = (args.stateIdx == that.options.states.length - 1) ? that.options.states[args.stateIdx - 1] :
+                    that.options.states[args.stateIdx + 1];
+            }
+
+            that.options.states.splice(args.stateIdx, 1);
+            that._stateButtons.find("[data-state-name='" + args.stateName + "']").remove();
+            that.refresh();
+
+            that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
         },
 
         addFormula: function (formula = null) {

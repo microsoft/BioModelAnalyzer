@@ -29,10 +29,18 @@
             var root = this.element;
             //this.loading = $("<div></div>").addClass("page-loading").css("position", "absolute").css("top", "27").css("height", 470- 47).hide().appendTo(that.element);
             //var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
-
+            //this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(root);
             this.tablesContainer = $("<div></div>").addClass('ltl-simplot-container').appendTo(root);
             this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer);//root);
             this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer);//root);
+            //this._table.height(that._table.height() + 10);
+            this._table.on('scroll', function () {
+                that._variables.scrollTop($(this).scrollTop());
+            });
+
+            this._variables.on('scroll', function () {
+                that._table.scrollTop($(this).scrollTop());
+            });
 
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
@@ -90,7 +98,7 @@
                 columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
                 onContextMenuItemSelected: onContextMenuItemSelected
             });
-
+            
             this.refresh();
         },
 
@@ -228,6 +236,7 @@
                         tags: that.options.tags,
                         init: that.options.init,
                     });
+                    
                     if (this.options.colors === undefined || this.options.colors.length == 0)
                         this.createPlotData();
                 }
