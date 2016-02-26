@@ -848,6 +848,7 @@ module BMA {
                 if (operation.IsCompleted) {
                     operation.AnalysisStatus = "processing";
                     driver.SetStatus("processing");
+                    domplot.updateLayout();
 
                     var formula = operation.Operation.GetFormula();
 
@@ -863,8 +864,8 @@ module BMA {
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
                             if (res.Ticks == null) {
-                                alert(res.Error);
-                                driver.SetStatus("nottested");
+                                //alert(res.Error);
+                                driver.SetStatus("nottested", "Timed out");
                                 operation.AnalysisStatus = "nottested";
                                 domplot.updateLayout();
                             }
@@ -932,8 +933,8 @@ module BMA {
                             }
                         })
                         .fail(function (err, msg) {
-                            alert("LTL failed");
-                            driver.SetStatus("nottested");
+                            //alert("LTL failed");
+                            driver.SetStatus("nottested", "Server Error");
                             operation.AnalysisStatus = "nottested";
                             domplot.updateLayout();
                         })

@@ -574,13 +574,16 @@ module BMA {
                 this.compactltlresult.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1);
             }
 
-            public SetStatus(status: string) {
+            public SetStatus(status: string, message: string = undefined) {
                 var options: any = {
-                    status: status
+                    status: status,
                 };
                 if (status !== "processing") {
                     options.isexpanded = false;
                 }
+
+                if (message)
+                    options.error = message;
 
                 this.compactltlresult.compactltlresult(options);
             }

@@ -5095,13 +5095,16 @@ var BMA;
             LTLResultsCompactViewer.prototype.MoveToTop = function () {
                 this.compactltlresult.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1);
             };
-            LTLResultsCompactViewer.prototype.SetStatus = function (status) {
+            LTLResultsCompactViewer.prototype.SetStatus = function (status, message) {
+                if (message === void 0) { message = undefined; }
                 var options = {
-                    status: status
+                    status: status,
                 };
                 if (status !== "processing") {
                     options.isexpanded = false;
                 }
+                if (message)
+                    options.error = message;
                 this.compactltlresult.compactltlresult(options);
             };
             LTLResultsCompactViewer.prototype.SetSteps = function (steps) {
@@ -12428,10 +12431,17 @@ jQuery.fn.extend({
                     if (that.options.state && that.options.state.formula && that.options.state.formula.lenght !== 0) {
                         var table = $("<table></table>").appendTo(stateTooltip);
                         var tbody = $("<tbody></tbody>").appendTo(table);
-                        for (var j = 0; j < that.options.state.formula.length; j++) {
+                        var k = that.options.state.formula.length;
+                        for (var j = 0; j < k && j < 3; j++) {
                             var tr = that.getFormula(that.options.state.formula[j]);
                             tr.appendTo(tbody);
                         }
+                        var message = "and " + (k - 3) + " more condition" + ((k - 3) > 1 ? "s" : "");
+                        var tooMuchStates = $("<div>" + message + "</div>").appendTo(stateTooltip);
+                        if (k > 3)
+                            tooMuchStates.show();
+                        else
+                            tooMuchStates.hide();
                     }
                     return stateTooltip;
                 },
@@ -12512,6 +12522,7 @@ jQuery.fn.extend({
             status: "nottested",
             isexpanded: false,
             steps: 10,
+            error: undefined,
             ontestrequested: undefined,
             onstepschanged: undefined,
             onexpanded: undefined,
@@ -12528,68 +12539,70 @@ jQuery.fn.extend({
             var opDiv = this.maindiv;
             switch (this.options.status) {
                 case "nottested":
-                    if (this.options.isexpanded) {
-                        var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                        //var sr = $("<div></div>").appendTo(ltltestdiv);
-                        var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
-                            .appendTo(ltltestdiv);
-                        var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
-                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
-                        var minusb = $("<button>-</button>").appendTo(minusd);
-                        if (that.options.steps == 1) {
-                            minusd.addClass("testing");
-                            minusb.addClass("testing");
-                        }
-                        minusb.click(function (e) {
-                            if (that.options.steps > 1) {
-                                that.options.steps--;
-                                d.text(that.options.steps + " steps");
-                                if (that.options.onstepschanged !== undefined) {
-                                    that.options.onstepschanged(that.options.steps);
-                                }
-                            }
-                            if (that.options.steps == 1) {
-                                minusd.addClass("testing");
-                                minusb.addClass("testing");
-                            }
-                        });
-                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
-                        var plusb = $("<button>+</button>").appendTo(plusd);
-                        plusb.click(function (e) {
-                            that.options.steps++;
+                    //if (this.options.isexpanded) {
+                    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
+                    //var sr = $("<div></div>").appendTo(ltltestdiv);
+                    if (that.options.error) {
+                        var errorMessage = $("<div>" + that.options.error + "</div>").addClass("red").appendTo(ltltestdiv);
+                    }
+                    var d = $("<div>" + that.options.steps + " steps</div>")
+                        .css("display", "inline-block")
+                        .appendTo(ltltestdiv);
+                    var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
+                    var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                    var minusb = $("<button>-</button>").appendTo(minusd);
+                    if (that.options.steps == 1) {
+                        minusd.addClass("testing");
+                        minusb.addClass("testing");
+                    }
+                    minusb.click(function (e) {
+                        if (that.options.steps > 1) {
+                            that.options.steps--;
                             d.text(that.options.steps + " steps");
                             if (that.options.onstepschanged !== undefined) {
                                 that.options.onstepschanged(that.options.steps);
                             }
-                            minusd.removeClass("testing");
-                            minusb.removeClass("testing");
-                        });
-                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
-                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                        var btn = $("<button>TEST </button>").css("margin-top", "0px").appendTo(li);
-                        btn.click(function () {
-                            if (that.options.ontestrequested !== undefined) {
-                                that.options.ontestrequested();
-                                minusd.addClass("testing");
-                                plusd.addClass("testing");
-                                plusb.addClass("testing").unbind("click");
-                                minusb.addClass("testing").unbind("click");
-                            }
-                        });
-                    }
-                    else {
-                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
-                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                        var btn = $("<button>TEST </button>").appendTo(li);
-                        btn.click(function () {
-                            that.options.isexpanded = true;
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
-                            }
-                        });
-                    }
+                        }
+                        if (that.options.steps == 1) {
+                            minusd.addClass("testing");
+                            minusb.addClass("testing");
+                        }
+                    });
+                    var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                    var plusb = $("<button>+</button>").appendTo(plusd);
+                    plusb.click(function (e) {
+                        that.options.steps++;
+                        d.text(that.options.steps + " steps");
+                        if (that.options.onstepschanged !== undefined) {
+                            that.options.onstepschanged(that.options.steps);
+                        }
+                        minusd.removeClass("testing");
+                        minusb.removeClass("testing");
+                    });
+                    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
+                    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var btn = $("<button>TEST </button>").css("margin-top", "0px").appendTo(li);
+                    btn.click(function () {
+                        if (that.options.ontestrequested !== undefined) {
+                            that.options.ontestrequested();
+                            minusd.addClass("testing");
+                            plusd.addClass("testing");
+                            plusb.addClass("testing").unbind("click");
+                            minusb.addClass("testing").unbind("click");
+                        }
+                    });
+                    //} else {
+                    //    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                    //    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    //    var btn = $("<button>TEST </button>").appendTo(li);
+                    //    btn.click(function () {
+                    //        that.options.isexpanded = true;
+                    //        that._createView();
+                    //        if (that.options.onexpanded !== undefined) {
+                    //            that.options.onexpanded();
+                    //        }
+                    //    });
+                    //}
                     break;
                 case "processing":
                     if (this.options.isexpanded) {
@@ -12891,6 +12904,9 @@ jQuery.fn.extend({
                     needRefreshStates = true;
                     break;
                 case "steps":
+                    needRefreshStates = true;
+                    break;
+                case "error":
                     needRefreshStates = true;
                     break;
                 default:
@@ -14407,6 +14423,7 @@ var BMA;
                 if (operation.IsCompleted) {
                     operation.AnalysisStatus = "processing";
                     driver.SetStatus("processing");
+                    domplot.updateLayout();
                     var formula = operation.Operation.GetFormula();
                     var model = BMA.Model.ExportBioModel(that.appModel.BioModel);
                     var proofInput = {
@@ -14419,8 +14436,8 @@ var BMA;
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
                         if (res.Ticks == null) {
-                            alert(res.Error);
-                            driver.SetStatus("nottested");
+                            //alert(res.Error);
+                            driver.SetStatus("nottested", "Timed out");
                             operation.AnalysisStatus = "nottested";
                             domplot.updateLayout();
                         }
@@ -14473,8 +14490,8 @@ var BMA;
                         }
                     })
                         .fail(function (err, msg) {
-                        alert("LTL failed");
-                        driver.SetStatus("nottested");
+                        //alert("LTL failed");
+                        driver.SetStatus("nottested", "Server Error");
                         operation.AnalysisStatus = "nottested";
                         domplot.updateLayout();
                     });

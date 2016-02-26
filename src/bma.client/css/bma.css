@@ -4479,6 +4479,13 @@ ui-icon-arrowthickstop-1-n {
   display: inline-block;
   vertical-align: middle;
 }
+.LTL-test-results.default {
+  border: none;
+  color: #606060;
+}
+.LTL-test-results.default .red {
+  color: #CF451B;
+}
 /*.LTL-test-results {
 
     img {

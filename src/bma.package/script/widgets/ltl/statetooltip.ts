@@ -23,10 +23,17 @@
                         if (that.options.state && that.options.state.formula && that.options.state.formula.lenght !== 0) {
                             var table = $("<table></table>").appendTo(stateTooltip);
                             var tbody = $("<tbody></tbody>").appendTo(table);
-                            for (var j = 0; j < that.options.state.formula.length; j++) {
+                            var k = that.options.state.formula.length;
+                            for (var j = 0; j < k && j < 3; j++) {
                                 var tr = that.getFormula(that.options.state.formula[j]);
                                 tr.appendTo(tbody);
                             }
+                            var message = "and " + (k - 3) + " more condition" + ((k - 3) > 1 ? "s" : "");
+                            var tooMuchStates = $("<div>" + message + "</div>").appendTo(stateTooltip);
+                            if (k > 3)
+                                tooMuchStates.show();
+                            else
+                                tooMuchStates.hide();
                         }
                         return stateTooltip;
                     },

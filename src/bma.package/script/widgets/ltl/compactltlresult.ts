@@ -8,6 +8,7 @@
             status: "nottested",
             isexpanded: false,
             steps: 10,
+            error: undefined,
             ontestrequested: undefined,
             onstepschanged: undefined,
             onexpanded: undefined,
@@ -28,10 +29,13 @@
             switch (this.options.status) {
                 case "nottested":
 
-                    if (this.options.isexpanded) {
+                    //if (this.options.isexpanded) {
 
                         var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
                         //var sr = $("<div></div>").appendTo(ltltestdiv);
+                        if (that.options.error) {
+                            var errorMessage = $("<div>" + that.options.error + "</div>").addClass("red").appendTo(ltltestdiv);
+                        }
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block")
                             .appendTo(ltltestdiv);
@@ -82,19 +86,19 @@
                             }
                         });
 
-                    } else {
+                    //} else {
 
-                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
-                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                        var btn = $("<button>TEST </button>").appendTo(li);
-                        btn.click(function () {
-                            that.options.isexpanded = true;
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
-                            }
-                        });
-                    }
+                    //    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                    //    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    //    var btn = $("<button>TEST </button>").appendTo(li);
+                    //    btn.click(function () {
+                    //        that.options.isexpanded = true;
+                    //        that._createView();
+                    //        if (that.options.onexpanded !== undefined) {
+                    //            that.options.onexpanded();
+                    //        }
+                    //    });
+                    //}
                     break;
                 case "processing":
                     if (this.options.isexpanded) {
@@ -439,6 +443,9 @@
                     needRefreshStates = true;
                     break;
                 case "steps":
+                    needRefreshStates = true;
+                    break;
+                case "error":
                     needRefreshStates = true;
                     break;
                 default:
