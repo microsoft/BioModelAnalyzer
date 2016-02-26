@@ -877,8 +877,8 @@ var BMA;
             }
             var newStateName = newState && newState.Name ? newState.Name : "A";
             var newStateIdx = (newStateName && newStateName.length > 1) ? parseFloat(newStateName.slice(1)) : 0;
-            if ((lastStateName && lastStateIdx == newStateIdx && lastStateName.charAt(0) >= newStateName.charAt(0))
-                || lastStateIdx > newStateIdx) {
+            if (lastStateName && ((lastStateIdx == newStateIdx && lastStateName.charAt(0) >= newStateName.charAt(0))
+                || lastStateIdx > newStateIdx)) {
                 var charCode = lastStateName ? lastStateName.charCodeAt(0) : 65;
                 var n = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
                 if (charCode >= 90) {
@@ -2866,7 +2866,7 @@ var BMA;
                 for (var i = 0; i < result.states.length; i++) {
                     var currState = result.states[i];
                     var slicedStates = result.states.slice(0);
-                    slicedStates.splice(i, 1);
+                    slicedStates = slicedStates.splice(0, i);
                     if (!currState.Name) {
                         var newName = BMA.ModelHelper.GenerateStateName(slicedStates, currState);
                         result.states[i] = new BMA.LTLOperations.Keyframe(newName, currState.Description, currState.Operands);

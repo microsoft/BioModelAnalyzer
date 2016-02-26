@@ -301,7 +301,7 @@
                 for (var i = 0; i < result.states.length; i++) {
                     var currState = result.states[i];
                     var slicedStates = result.states.slice(0);
-                    slicedStates.splice(i, 1);
+                    slicedStates = slicedStates.splice(0, i);
                     if (!currState.Name) {
                         var newName = BMA.ModelHelper.GenerateStateName(slicedStates, currState);
                         result.states[i] = new BMA.LTLOperations.Keyframe(newName, currState.Description, currState.Operands);

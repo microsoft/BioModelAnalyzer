@@ -388,16 +388,17 @@
             var newStateName = newState && newState.Name ? newState.Name : "A";
             var newStateIdx = (newStateName && newStateName.length > 1) ? parseFloat(newStateName.slice(1)) : 0;
             
-            if ((lastStateName && lastStateIdx == newStateIdx && lastStateName.charAt(0) >= newStateName.charAt(0))
-                || lastStateIdx > newStateIdx) {
+            if (lastStateName && ((lastStateIdx == newStateIdx && lastStateName.charAt(0) >= newStateName.charAt(0))
+                || lastStateIdx > newStateIdx)) {
                 
                 var charCode = lastStateName ? lastStateName.charCodeAt(0) : 65;
                 var n = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
-
+                
                 if (charCode >= 90) {
                     n++;
                     charCode = 65;
                 } else if (lastStateName) charCode++;
+               
 
                 newStateName = n ? String.fromCharCode(charCode) + n : String.fromCharCode(charCode);
             }
