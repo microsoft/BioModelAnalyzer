@@ -590,7 +590,7 @@ module BMA {
             public Invoke(data): JQueryPromise<any> {
                 return $.ajax({
                     type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
+                    url: /*"http://bmamath.cloudapp.net*/"/api/AnalyzeLTL",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"

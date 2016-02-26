@@ -298,6 +298,15 @@
                 for (var i = 0; i < infoset.states.length; i++) {
                     result.states.push(<BMA.LTLOperations.Keyframe>ImportOperand(infoset.states[i], undefined));
                 }
+                for (var i = 0; i < result.states.length; i++) {
+                    var currState = result.states[i];
+                    var slicedStates = result.states.slice(0);
+                    slicedStates.splice(i, 1);
+                    if (!currState.Name) {
+                        var newName = BMA.ModelHelper.GenerateStateName(slicedStates, currState);
+                        result.states[i] = new BMA.LTLOperations.Keyframe(newName, currState.Description, currState.Operands);
+                    }
+                }
             }
 
             if (infoset.operations !== undefined && infoset.operations.length > 0) {

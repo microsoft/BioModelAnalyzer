@@ -375,19 +375,21 @@
             var lastStateName = "A";
             for (var i = 0; i < k; i++) {
                 var lastStateIdx = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
-                var stateIdx = states[i].Name.length > 1 ? parseFloat(states[i].Name.slice(1)) : 0;
+                var stateName = states[i].Name ? states[i].Name : "A"; 
+                var stateIdx = stateName.length > 1 ? parseFloat(stateName.slice(1)) : 0;
 
                 if (stateIdx >= lastStateIdx) {
                     lastStateName = (lastStateName && stateIdx == lastStateIdx
-                        && lastStateName.charAt(0) > states[i].Name.charAt(0)) ?
-                        lastStateName : states[i].Name;
+                        && lastStateName.charAt(0) > stateName.charAt(0)) ?
+                        lastStateName : stateName;
                 }
             }
 
-            var newStateName = newState ? newState.Name : "A";
+            var newStateName = newState && newState.Name ? newState.Name : "A";
             var newStateIdx = (newStateName && newStateName.length > 1) ? parseFloat(newStateName.slice(1)) : 0;
             
-            if (lastStateName && lastStateIdx == newStateIdx && lastStateName.charAt(0) >= newStateName.charAt(0)) {
+            if ((lastStateName && lastStateIdx == newStateIdx && lastStateName.charAt(0) >= newStateName.charAt(0))
+                || lastStateIdx > newStateIdx) {
                 
                 var charCode = lastStateName ? lastStateName.charCodeAt(0) : 65;
                 var n = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
