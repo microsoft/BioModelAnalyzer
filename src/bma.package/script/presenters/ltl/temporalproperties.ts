@@ -931,7 +931,7 @@ module BMA {
                                 //}
                             }
                         })
-                        .fail(function () {
+                        .fail(function (err, msg) {
                             alert("LTL failed");
                             driver.SetStatus("nottested");
                             operation.AnalysisStatus = "nottested";
