@@ -23,6 +23,7 @@
             this.table = $('<table></table>');
             this.table.appendTo(that.element);
 
+            
             switch (options.type) {
 
                 case "standart":
@@ -95,6 +96,7 @@
                     }
                     break;
             }
+            
         },
 
         _destroy: function () {

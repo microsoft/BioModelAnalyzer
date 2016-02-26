@@ -4539,7 +4539,7 @@ var BMA;
             LTLAnalyzeService.prototype.Invoke = function (data) {
                 return $.ajax({
                     type: "POST",
-                    url: /*"http://bmamath.cloudapp.net*/ "/api/AnalyzeLTL",
+                    url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
                     data: JSON.stringify(data),
                     contentType: "application/json",
                     dataType: "json"
@@ -10128,41 +10128,57 @@ var BMA;
         },
         _create: function () {
             var that = this;
-            this.refresh();
+            //this.refresh();
             this.element.addClass('simulation-plot-box');
-        },
-        //changeVisibility: function (param) {
-        //    var polyline = this._chart.get(this.chartdiv.children().eq(param.ind).attr("id"));
-        //    polyline.isVisible = param.check;
-        //    var legenditem = this.element.find(".simulationplot-legend-legendcontainer");//[data-index=" + param.ind + "]");//.attr("data-index", i)
-        //    //if (param.check) legenditem.hide();
-        //    //else legenditem.show();
-        //    alert(legenditem.length);
-        //},
-        refresh: function () {
-            var that = this;
-            var options = this.options;
-            this.element.empty();
             this.chartdiv = $('<div id="chart"></div>')
                 .attr("data-idd-plot", "figure")
                 .width("70%")
                 .height('100%')
                 .css("float", "left")
                 .appendTo(that.element);
-            var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
+            this.legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(that.element);
             var gridLinesPlotDiv = $("<div></div>")
                 .attr("id", "glPlot")
                 .attr("data-idd-plot", "scalableGridLines")
                 .appendTo(this.chartdiv);
-            if (that.options.labels !== undefined && that.options.labels !== null) {
-                var rectsPlotDiv = $("<div></div>")
-                    .attr("id", "rectsPlot")
-                    .attr("data-idd-plot", "rectsPlot")
-                    .appendTo(this.chartdiv);
-            }
+            var rectsPlotDiv = $("<div></div>")
+                .attr("id", "rectsPlot")
+                .attr("data-idd-plot", "rectsPlot")
+                .appendTo(this.chartdiv);
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
-            //
-            ///states markers on plot
+            that._chart.isAutoFitEnabled = true;
+            this._gridLinesPlot = that._chart.get(gridLinesPlotDiv[0]);
+            this._gridLinesPlot.x0 = 0;
+            this._gridLinesPlot.y0 = 0;
+            this._gridLinesPlot.xStep = 1;
+            this._gridLinesPlot.yStep = 1;
+            this.highlightPlot = that._chart.polyline("_hightlightPlot", undefined);
+            this.highlightPlot.host.css("z-index", 10);
+            this.bottomAxis = that._chart.addAxis("bottom", "labels", { labels: [] });
+            this.leftAxis = that._chart.addAxis("left", "labels", { labels: [] });
+            var bottomAxis = this.bottomAxis;
+            var leftAxis = this.leftAxis;
+            that._chart.centralPart.mousedown(function (e) {
+                e.stopPropagation();
+            });
+            bottomAxis.mousedown(function (e) {
+                e.stopPropagation();
+            });
+            leftAxis.mousedown(function (e) {
+                e.stopPropagation();
+            });
+            var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._chart.centralPart);
+            var bottomAxisGestures = InteractiveDataDisplay.Gestures.applyHorizontalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(bottomAxis));
+            var leftAxisGestures = InteractiveDataDisplay.Gestures.applyVerticalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(leftAxis));
+            that._chart.navigation.gestureSource = gestureSource.merge(bottomAxisGestures.merge(leftAxisGestures));
+            this.refresh();
+        },
+        refresh: function () {
+            var that = this;
+            var options = this.options;
+            //Clear legend
+            this.legendDiv.empty();
+            //states markers on plot
             if (that.options.labels !== undefined && that.options.labels !== null) {
                 that.rectsPlot = that._chart.get("rectsPlot");
                 var rects = [];
@@ -10176,33 +10192,19 @@ var BMA;
                     });
                 that.rectsPlot.draw({ rects: rects });
             }
-            //if (that.domPlot !== undefined) {
-            //    var domPlot2 = that._chart.get(that.domPlot[0]);
-            //    for (var i = 0; i < that.options.labels.length; i++) {
-            //        var label = $("<div></div>").attr("data-idd-plot", "svgPlot").addClass((that.options.labels[i].text.length > 1) ? "stripes" : "")
-            //            .addClass("simulationplot-label");
-            //        for (var j = 0; j < that.options.labels[i].text.length; j++)
-            //            var marker = $("<div></div>").text(that.options.labels[i].text[j]).attr("data-idd-scale", "element")
-            //                .addClass("state-button").appendTo(label);
-            //        domPlot2.add(label, "element", that.options.labels[i].x, that.options.labels[i].y, that.options.labels[i].width, that.options.labels[i].height,
-            //            (that.options.labels[i].width > 1) ? 0: 0.5 , 1);
-            //        (i % 2 == 0) ? label.addClass("repeat") : 0;
-            //    }
-            //    //that._chart.addDOM(domPlot);
-            //    //domPlot2.find("simulationplot-label").
-            //}
-            //
             if (that.options.colors !== undefined && that.options.colors !== null) {
-                for (var i = 0; i < that.options.colors.length; i++) {
-                    var plotName = "plot" + i;
-                    that._chart.polyline(plotName, undefined);
+                var index = 0;
+                while (true) {
+                    var plotName = "plot" + index;
+                    var polyline = that._chart.get(plotName);
+                    if (polyline !== undefined) {
+                        polyline.isVisible = false;
+                        index++;
+                    }
+                    else {
+                        break;
+                    }
                 }
-                that._chart.isAutoFitEnabled = true;
-                this._gridLinesPlot = that._chart.get(gridLinesPlotDiv[0]);
-                this._gridLinesPlot.x0 = 0;
-                this._gridLinesPlot.y0 = 0;
-                this._gridLinesPlot.xStep = 1;
-                this._gridLinesPlot.yStep = 1;
                 var bottomLabels = [];
                 var leftLabels = [];
                 var max = 0;
@@ -10214,12 +10216,13 @@ var BMA;
                             max = m;
                         var plotName = "plot" + i;
                         var polyline = that._chart.get(plotName);
-                        if (polyline !== undefined) {
-                            polyline.stroke = options.colors[i].Color;
-                            polyline.isVisible = options.colors[i].Seen;
-                            polyline.draw({ y: y, thickness: 4, lineJoin: 'round' });
+                        if (polyline === undefined) {
+                            polyline = that._chart.polyline(plotName, undefined);
                         }
-                        var legendItem = $("<div></div>").addClass("simulationplot-legend-legenditem").attr("data-index", i).appendTo(legendDiv);
+                        polyline.stroke = options.colors[i].Color;
+                        polyline.isVisible = options.colors[i].Seen;
+                        polyline.draw({ y: y, thickness: 4, lineJoin: 'round' });
+                        var legendItem = $("<div></div>").addClass("simulationplot-legend-legenditem").attr("data-index", i).appendTo(that.legendDiv);
                         if (!options.colors[i].Seen)
                             legendItem.hide();
                         var colorBoxContainer = $("<div></div>").addClass("simulationplot-legend-colorboxcontainer").appendTo(legendItem);
@@ -10261,26 +10264,16 @@ var BMA;
                         leftLabels[i] = i.toString();
                     }
                 }
-                this.highlightPlot = that._chart.polyline("_hightlightPlot", undefined);
-                var bottomAxis = that._chart.addAxis("bottom", "labels", { labels: bottomLabels });
-                var leftAxis = that._chart.addAxis("left", "labels", { labels: leftLabels });
+                that._chart.removeDiv(this.bottomAxis[0]);
+                this.bottomAxis.remove();
+                this.bottomAxis = that._chart.addAxis("bottom", "labels", { labels: bottomLabels });
+                that._chart.removeDiv(this.leftAxis[0]);
+                this.leftAxis.remove();
+                this.leftAxis = that._chart.addAxis("left", "labels", { labels: leftLabels });
                 var bounds = that._chart.aggregateBounds();
                 bounds.bounds.height += 0.04; // padding
                 bounds.bounds.y -= 0.02; // padding
                 that._chart.navigation.setVisibleRect(bounds.bounds, false);
-                that._chart.centralPart.mousedown(function (e) {
-                    e.stopPropagation();
-                });
-                bottomAxis.mousedown(function (e) {
-                    e.stopPropagation();
-                });
-                leftAxis.mousedown(function (e) {
-                    e.stopPropagation();
-                });
-                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._chart.centralPart);
-                var bottomAxisGestures = InteractiveDataDisplay.Gestures.applyHorizontalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(bottomAxis));
-                var leftAxisGestures = InteractiveDataDisplay.Gestures.applyVerticalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(leftAxis));
-                that._chart.navigation.gestureSource = gestureSource.merge(bottomAxisGestures.merge(leftAxisGestures));
             }
         },
         Max: function (y) {
@@ -14479,7 +14472,7 @@ var BMA;
                             that.OnOperationsChanged(false);
                         }
                     })
-                        .fail(function () {
+                        .fail(function (err, msg) {
                         alert("LTL failed");
                         driver.SetStatus("nottested");
                         operation.AnalysisStatus = "nottested";

@@ -26,6 +26,7 @@
 
             var container = $('<div></div>').addClass("marginable");
             
+            
             if (data !== undefined &&
                 data.variables !== undefined &&
                 data.variables.length !== 0) {
@@ -34,12 +35,13 @@
                     .appendTo(container)
                     .addClass("scrollable-results");
 
+                
                 variablestable.coloredtableviewer({
                     header: ["Graph", "Cell", "Name", "Range"],
                     type: "graph-min",
                     numericData: data.variables
                 });
-
+                
                 if (data.colorData !== undefined && data.colorData.length !== 0) {
                     var colortable = $('<div></div>')
                         //.attr("id", "Simulation-min-table")
@@ -50,20 +52,25 @@
                             colorData: data.colorData
                         });
                 }
+                
                 that.variables.resultswindowviewer({
                     header: "Variables",
                     content: container,
                     icon: "max",
                     tabid: "SimulationVariables"
                 });
+                
             }
             else {
                 this.variables.resultswindowviewer();
                 that.variables.resultswindowviewer("destroy");
             }
+            
 
+            
             if (that.options.plot !== undefined && that.options.plot.length !== 0) {
                 that.plot = $('<div></div>').addClass('plot-min').simulationplot({ colors: that.options.plot });//.height(160)
+
                 that.plotDiv.resultswindowviewer({
                     header: "Simulation Graph",
                     content: that.plot,
@@ -75,6 +82,7 @@
                 that.plotDiv.resultswindowviewer();
                 that.plotDiv.resultswindowviewer("destroy");
             }
+            
         },
 
 
