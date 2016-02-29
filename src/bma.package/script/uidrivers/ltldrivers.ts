@@ -610,6 +610,22 @@ module BMA {
             public SetShowResultsCallback(callback) {
                 this.showresultcallback = callback;
             }
+
+            public Destroy() {
+                this.compactltlresult.compactltlresult({
+                    ontestrequested: undefined,
+                    onstepschanged: undefined,
+                    onexpanded: undefined,
+                    onshowresultsrequested: undefined
+                });
+
+                this.ltlrequested = undefined;
+                this.expandedcallback = undefined;
+                this.showresultcallback = undefined;
+
+                this.compactltlresult.compactltlresult("destroy");
+                this.compactltlresult.empty();
+            }
         }
 
         export class LTLResultsViewer implements ILTLResultsViewer {

@@ -75,6 +75,7 @@ module BMA {
             SetLTLRequestedCallback(callback: Function);
             SetOnExpandedCallback(callback: Function);
             SetShowResultsCallback(callback: Function);
+            Destroy();
         }
 
         export interface ILTLResultsViewer {

@@ -37,7 +37,6 @@ module BMA {
 
             private commands: BMA.CommandRegistry;
 
-            private controlPanels = [];
             private controlPanelPadding = 3;
 
             private appModel: BMA.Model.AppModel;
@@ -129,7 +128,7 @@ module BMA {
 
                     return resultPR;
                 });
-                
+
 
                 commands.On("AddOperatorSelect", (operatorName: string) => {
                     that.elementToAdd = { type: "operator", name: operatorName };
@@ -261,7 +260,7 @@ module BMA {
                 commands.On("TemporalPropertiesEditorCut", (args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
                         this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
-                        this.contextElement.operationlayoutref.Tag = undefined;
+                        this.ClearOperationTag(this.contextElement.operationlayoutref);
 
                         var unpinned = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
@@ -272,6 +271,7 @@ module BMA {
                         this.tpEditorDriver.SetCopyZoneIcon(clonned);
 
                         if (unpinned.isRoot) {
+                            this.ClearOperationTag(this.contextElement.operationlayoutref);
                             this.operations.splice(this.operations.indexOf(this.contextElement.operationlayoutref), 1);
                             this.contextElement.operationlayoutref.IsVisible = false;
                         }
@@ -318,10 +318,11 @@ module BMA {
                 commands.On("TemporalPropertiesEditorDelete", (args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
                         this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
-                        this.contextElement.operationlayoutref.Tag = undefined;
+                        this.ClearOperationTag(this.contextElement.operationlayoutref);
 
                         var op = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
                         if (op.isRoot) {
+                            this.ClearOperationTag(this.contextElement.operationlayoutref);
                             var ind = this.operations.indexOf(this.contextElement.operationlayoutref);
                             this.contextElement.operationlayoutref.IsVisible = false;
                             this.operations.splice(ind, 1);
@@ -353,8 +354,8 @@ module BMA {
                     }
 
                     //if (that.isUpdateControlRequested) {
-                        that.UpdateControlPanels();
-                        that.isUpdateControlRequested = false;
+                    that.UpdateControlPanels();
+                    that.isUpdateControlRequested = false;
                     //}
                 });
 
@@ -458,8 +459,8 @@ module BMA {
                                 var staginOp = this.GetOperationAtPoint(gesture.x, gesture.y);
                                 if (staginOp !== undefined) {
                                     //if (staginOp.AnalysisStatus !== "processing") {
-                                        //staginOp.AnalysisStatus = "nottested";
-                                        //staginOp.Tag = undefined;
+                                    //staginOp.AnalysisStatus = "nottested";
+                                    //staginOp.Tag = undefined;
                                     //}
 
                                     that.navigationDriver.TurnNavigation(false);
@@ -472,7 +473,8 @@ module BMA {
                                     } else {
                                         if (!picked.isRoot) {
                                             staginOp.AnalysisStatus = "nottested";
-                                            staginOp.Tag = undefined;
+                                            this.ClearOperationTag(staginOp);
+                                            //staginOp.Tag = undefined;
                                         }
 
                                         tpEditorDriver.SetCopyZoneVisibility(true);
@@ -489,9 +491,12 @@ module BMA {
                                             fromclipboard: false
                                         };
 
-                                        if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
-                                            that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
+                                        if (staginOp.Tag !== undefined && staginOp.Tag.dommarker !== undefined) {
+                                            staginOp.Tag.dommarker.hide();
                                         }
+                                        //if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
+                                        //    that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
+                                        //}
 
                                         //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
                                         staginOp.IsVisible = !unpinned.isRoot;
@@ -569,6 +574,7 @@ module BMA {
                                 } else if (that.Intersects(position, deleteZoneBB) && !this.stagingOperation.fromclipboard) {
 
                                     if (this.stagingOperation.isRoot) {
+                                        this.ClearOperationTag(this.stagingOperation.originRef);
                                         this.operations.splice(this.stagingOperation.originIndex, 1);
                                     }
 
@@ -625,11 +631,14 @@ module BMA {
                                                     emptyCell.operation.Operands[emptyCell.operandIndex] = this.stagingOperation.operation.Operation.Clone();
                                                     operation.Refresh();
                                                     operation.AnalysisStatus = "nottested";
-                                                    operation.Tag = undefined;
+                                                    this.ClearOperationTag(operation);
+                                                    //operation.Tag = undefined;
 
                                                     if (this.stagingOperation.isRoot) {
+                                                        this.ClearOperationTag(this.stagingOperation.originRef);
                                                         this.operations[this.stagingOperation.originIndex].IsVisible = false;
                                                         this.operations.splice(this.stagingOperation.originIndex, 1);
+
                                                     }
                                                 } else {
                                                     if (!this.stagingOperation.fromclipboard) {
@@ -864,7 +873,6 @@ module BMA {
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
                             if (res.Ticks == null) {
-                                //alert(res.Error);
                                 driver.SetStatus("nottested", "Timed out");
                                 operation.AnalysisStatus = "nottested";
                                 domplot.updateLayout();
@@ -881,10 +889,9 @@ module BMA {
                                     driver.SetStatus("success");
                                     driver.Expand();
                                     operation.AnalysisStatus = "success";
-                                    operation.Tag = {
-                                        data: res.Ticks,
-                                        steps: driver.GetSteps()
-                                    }
+                                    operation.Tag.data = res.Ticks;
+                                    operation.Tag.steps = driver.GetSteps();
+
                                 } else if (res.Status === "PartiallyTrue") {
 
                                     driver.SetShowResultsCallback(function (showpositive) {
@@ -896,11 +903,10 @@ module BMA {
                                     driver.SetStatus("partialsuccess");
                                     driver.Expand();
                                     operation.AnalysisStatus = "partialsuccess";
-                                    operation.Tag = {
-                                        data: res.Ticks,
-                                        negdata: res.NegTicks,
-                                        steps: driver.GetSteps()
-                                    }
+                                    operation.Tag.data = res.Ticks;
+                                    operation.Tag.negdata = res.NegTicks;
+                                    operation.Tag.steps = driver.GetSteps();
+
 
                                 } else {
                                     driver.SetShowResultsCallback(function (showpositive) {
@@ -912,10 +918,8 @@ module BMA {
                                     driver.SetStatus("fail");
                                     driver.Expand();
                                     operation.AnalysisStatus = "fail";
-                                    operation.Tag = {
-                                        data: res.NegTicks,
-                                        steps: driver.GetSteps()
-                                    };
+                                    operation.Tag.negdata = res.NegTicks;
+                                    operation.Tag.steps = driver.GetSteps();
                                 }
 
                                 domplot.updateLayout();
@@ -933,9 +937,9 @@ module BMA {
                             }
                         })
                         .fail(function (err, msg) {
-                            //alert("LTL failed");
                             driver.SetStatus("nottested", "Server Error");
                             operation.AnalysisStatus = "nottested";
+                            that.ClearOperationTag(operation);
                             domplot.updateLayout();
                         })
 
@@ -985,11 +989,14 @@ module BMA {
 
             private SubscribeToExpandLTLResult(driver: BMA.UIDrivers.LTLResultsCompactViewer, domplot) {
                 driver.SetOnExpandedCallback(() => {
-                    for (var i = 0; i < this.drivers.length; i++) {
-                        if (this.drivers[i] !== driver) {
-                            this.drivers[i].Collapse();
-                        } else {
-                            this.drivers[i].MoveToTop();
+                    for (var i = 0; i < this.operations.length; i++) {
+                        if (this.operations[i].Tag !== undefined && this.operations[i].Tag.driver !== undefined) {
+                            var driverToCheck = this.operations[i].Tag.driver;
+                            if (driverToCheck !== driver) {
+                                driverToCheck.Collapse();
+                            } else {
+                                driverToCheck.MoveToTop();
+                            }
                         }
                     }
 
@@ -997,44 +1004,35 @@ module BMA {
                 });
             }
 
-            private drivers: BMA.UIDrivers.LTLResultsCompactViewer[] = [];
             private UpdateControlPanels() {
                 var that = this;
-                var copyzonebbox = this.tpEditorDriver.GetCopyZoneBBox();
-                var deletezonebbox = this.tpEditorDriver.GetDeleteZoneBBox();
-
-                var cps = this.controlPanels;
                 var dom = this.navigationDriver.GetNavigationSurface();
-
-                for (var i = 0; i < cps.length; i++) {
-                    dom.remove(cps[i].dommarker);
-                }
-
-                this.controlPanels = [];
-                this.drivers = [];
 
                 for (var i = 0; i < this.operations.length; i++) {
                     var op = this.operations[i];
+
+                    var steps = 10;
+                    if (op.Tag !== undefined && op.Tag.steps !== undefined) {
+                        steps = op.Tag.steps;
+                    }
+                    that.ClearOperationTag(op);
+
                     var bbox = op.BoundingBox;
 
                     var opDiv = $("<div></div>");
-                    var cp = {
-                        dommarker: opDiv,
-                        status: op.AnalysisStatus
-                    };
                     var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
                     driver.SetStatus(op.AnalysisStatus);
-                    if (op.Tag) driver.SetSteps(op.Tag.steps);
+                    driver.SetSteps(steps);
 
-                    //TODO: set steps 
                     that.SubscribeToLTLRequest(driver, dom, op);
                     that.SubscribeToLTLCompactExpand(driver, dom);
                     that.SubscribeToShowLTLRequest(driver, op);
                     that.SubscribeToExpandLTLResult(driver, dom);
 
                     (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);
-                    this.controlPanels.push(cp);
-                    this.drivers.push(driver);
+
+                    op.Tag.driver = driver;
+                    op.Tag.dommarker = opDiv;
                 }
             }
 
@@ -1082,6 +1080,48 @@ module BMA {
             public UpdateStatesFromModel() {
                 this.states = this.appModel.States;
                 this.tpEditorDriver.SetStates(this.appModel.States);
+            }
+
+            private ClearOperationTag(operation: BMA.LTLOperations.OperationLayout) {
+                if (operation.Tag !== undefined) {
+                    if (operation.Tag.data !== undefined) {
+                        operation.Tag.data = undefined;
+                    }
+
+                    if (operation.Tag.negdata !== undefined) {
+                        operation.Tag.negdata = undefined;
+                    }
+
+                    if (operation.Tag.steps !== undefined) {
+                        operation.Tag.steps = 10;
+                    }
+
+                    if (operation.Tag.driver !== undefined) {
+                        operation.Tag.driver.SetOnExpandedCallback(undefined);
+                        operation.Tag.driver.SetLTLRequestedCallback(undefined);
+                        operation.Tag.driver.SetShowResultsCallback(undefined);
+                        operation.Tag.driver.Destroy();
+                        operation.Tag.driver = undefined;
+                    }
+
+                    if (operation.Tag.dommarker !== undefined) {
+                        var dom = this.navigationDriver.GetNavigationSurface();
+                        dom.remove(operation.Tag.dommarker);
+                        operation.Tag.dommarker = undefined;
+                    }
+                } else {
+                    this.InitializeOperationTag(operation);
+                }
+            }
+
+            private InitializeOperationTag(operation: BMA.LTLOperations.OperationLayout) {
+                operation.Tag = {
+                    data: undefined,
+                    negdata: undefined,
+                    steps: 10,
+                    driver: undefined,
+                    dommarker: undefined
+                };
             }
         }
     }
