@@ -481,14 +481,10 @@ module BMA {
                                             fromclipboard: false
                                         };
 
-                                        //if (staginOp.Tag !== undefined && staginOp.Tag.dommarker !== undefined) {
-                                        //    staginOp.Tag.dommarker.hide();
-                                        //}
-                                        //if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
-                                        //    that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
-                                        //}
+                                        if (staginOp.Tag !== undefined && staginOp.Tag.dommarker !== undefined) {
+                                            staginOp.Tag.dommarker.hide();
+                                        }
 
-                                        //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
                                         staginOp.IsVisible = !unpinned.isRoot;
                                     }
                                 }
@@ -937,8 +933,8 @@ module BMA {
                                 //}
                             }
                         })
-                        .fail(function (err, msg) {
-                            driver.SetStatus("nottested", "Server Error");
+                        .fail(function (xhr, textStatus, errorThrown) {
+                            driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
                             operation.AnalysisStatus = "nottested";
                             domplot.updateLayout();
                         })

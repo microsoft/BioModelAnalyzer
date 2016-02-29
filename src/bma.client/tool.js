@@ -4496,7 +4496,7 @@ var BMA;
                     type: "POST",
                     url: "http://bmamath.cloudapp.net/api/Validate",
                     data: JSON.stringify(data),
-                    contentType: "application/json",
+                    contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 });
             };
@@ -4511,7 +4511,7 @@ var BMA;
                     type: "POST",
                     url: "http://bmamath.cloudapp.net/api/FurtherTesting",
                     data: JSON.stringify(data),
-                    contentType: "application/json",
+                    contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 });
             };
@@ -4526,7 +4526,7 @@ var BMA;
                     type: "POST",
                     url: "http://bmamath.cloudapp.net/api/Analyze",
                     data: JSON.stringify(data),
-                    contentType: "application/json",
+                    contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 });
             };
@@ -4541,7 +4541,7 @@ var BMA;
                     type: "POST",
                     url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
                     data: JSON.stringify(data),
-                    contentType: "application/json",
+                    contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 });
             };
@@ -4556,7 +4556,7 @@ var BMA;
                     type: "POST",
                     url: "http://bmamath.cloudapp.net/api/Simulate",
                     data: JSON.stringify(data),
-                    contentType: "application/json",
+                    contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 });
             };
@@ -4752,7 +4752,7 @@ var BMA;
                 return this.contextMenuDriver;
             };
             TemporalPropertiesEditorDriver.prototype.HighlightCopyZone = function (ishighlighted) {
-                this.tpeditor.temporalpropertieseditor("highlightcopyzone", ishighlighted);
+                //this.tpeditor.temporalpropertieseditor("highlightcopyzone", ishighlighted);
             };
             TemporalPropertiesEditorDriver.prototype.HighlightDeleteZone = function (ishighlighted) {
                 this.tpeditor.temporalpropertieseditor("highlightdeletezone", ishighlighted);
@@ -13138,24 +13138,30 @@ jQuery.fn.extend({
             dropzonescnt.width("100%");
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dropzonescnt);
             dropzones.width("100%");
+            /*
             this.copyzone = $("<div></div>").addClass("dropzone copy").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dropzones);
             this.copyzone.width("calc(50% - 15px - 3px)");
+
             var copyzonesvgdiv = $("<div></div>").width("100%").height("calc(100% - 20px)").css("margin-top", 10).css("margin-bottom", 10).appendTo(this.copyzone);
+
             copyzonesvgdiv.svg({
                 loadURL: "../images/LTL-copy.svg",
                 onLoad: function (svg) {
                     that.copyzonesvg = svg;
+
                     svg.configure({
                         height: "40px",
                         width: "40px"
                     });
+
                     if (that.options.copyzoneoperation !== undefined) {
                         that.updateCopyZoneIcon(that.options.copyzoneoperation);
                     }
                 }
             });
+            */
             this.deletezone = $("<div></div>").addClass("dropzone delete").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dropzones);
-            this.deletezone.width("calc(50% - 15px - 3px)");
+            this.deletezone.width("calc(100% - 30px)").css("margin-left", 15).css("margin-bottom", 0);
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
             var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).css("cursor", "pointer").css("position", "relative").appendTo(dom.host);
             $("<img>").attr("src", "../images/screen-fit.svg").appendTo(fitDiv);
@@ -13253,22 +13259,26 @@ jQuery.fn.extend({
         },
         updateCopyZoneIcon: function (op) {
             var that = this;
+            /*
             if (that.operation !== undefined) {
                 that.operation.Clear();
             }
+
             if (that.copyzonesvg !== undefined) {
                 that.copyzonesvg.clear();
+
                 if (op !== undefined) {
                     that.operation = new BMA.LTLOperations.OperationLayout(that.copyzonesvg, op, { x: 0, y: 0 });
                     var bbox = that.operation.BoundingBox;
+
                     that.copyzonesvg.configure({
                         height: "40px",
                         width: bbox.width,
                         viewBox: bbox.x + " " + (bbox.y - 5) + " " + bbox.width + " " + (bbox.height + 10),
                     }, true);
+
                     that.operation.Refresh();
-                }
-                else {
+                } else {
                     that.copyzonesvg.configure({
                         height: "40px",
                         width: "40px",
@@ -13277,14 +13287,16 @@ jQuery.fn.extend({
                     that.copyzonesvg.load("../images/LTL-copy.svg", { width: 40, height: 40 });
                 }
             }
+            */
         },
         setcopyzonevisibility: function (isVisible) {
+            /*
             if (isVisible) {
                 this.copyzone.show();
-            }
-            else {
+            } else {
                 this.copyzone.hide();
             }
+            */
         },
         setdeletezonevisibility: function (isVisible) {
             if (isVisible) {
@@ -13295,12 +13307,13 @@ jQuery.fn.extend({
             }
         },
         highlightcopyzone: function (isHighlighted) {
+            /*
             if (isHighlighted) {
                 this.copyzone.addClass("hovered");
-            }
-            else {
+            } else {
                 this.copyzone.removeClass("hovered");
             }
+            */
         },
         highlightdeletezone: function (isHighlighted) {
             if (isHighlighted) {
@@ -13311,6 +13324,7 @@ jQuery.fn.extend({
             }
         },
         getcopyzonebbox: function () {
+            /*
             var x = this._drawingSurface.drawingsurface("getPlotX", 15);
             var y = this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10 - this.copyzone.height());
             var bbox = {
@@ -13319,15 +13333,21 @@ jQuery.fn.extend({
                 width: this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width()) - x,
                 height: this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10) - y
             };
+
+
             return bbox;
+            */
+            return {
+                x: Number.POSITIVE_INFINITY, y: Number.POSITIVE_INFINITY, width: 0, height: 0
+            };
         },
         getdeletezonebbox: function () {
-            var x = this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width() + 6);
+            var x = this._drawingSurface.drawingsurface("getPlotX", 15);
             var y = this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10 - this.deletezone.height());
             var bbox = {
                 x: x,
                 y: y,
-                width: this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width() + 6 + this.copyzone.width()) - x,
+                width: this._drawingSurface.drawingsurface("getPlotX", 15 + this.deletezone.width()) - x,
                 height: this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10) - y
             };
             return bbox;
@@ -14143,13 +14163,9 @@ var BMA;
                                         parentoperationindex: unpinned.parentoperationindex,
                                         fromclipboard: false
                                     };
-                                    //if (staginOp.Tag !== undefined && staginOp.Tag.dommarker !== undefined) {
-                                    //    staginOp.Tag.dommarker.hide();
-                                    //}
-                                    //if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
-                                    //    that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
-                                    //}
-                                    //this.stagingOperation.operation.Scale = { x: 0.4, y: 0.4 };
+                                    if (staginOp.Tag !== undefined && staginOp.Tag.dommarker !== undefined) {
+                                        staginOp.Tag.dommarker.hide();
+                                    }
                                     staginOp.IsVisible = !unpinned.isRoot;
                                 }
                             }
@@ -14523,8 +14539,8 @@ var BMA;
                             that.OnOperationsChanged(false);
                         }
                     })
-                        .fail(function (err, msg) {
-                        driver.SetStatus("nottested", "Server Error");
+                        .fail(function (xhr, textStatus, errorThrown) {
+                        driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
                         operation.AnalysisStatus = "nottested";
                         domplot.updateLayout();
                     });

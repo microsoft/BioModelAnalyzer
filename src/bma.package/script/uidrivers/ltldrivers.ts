@@ -163,7 +163,7 @@ module BMA {
             }
 
             HighlightCopyZone(ishighlighted: boolean) {
-                this.tpeditor.temporalpropertieseditor("highlightcopyzone", ishighlighted);
+                //this.tpeditor.temporalpropertieseditor("highlightcopyzone", ishighlighted);
             }
 
             HighlightDeleteZone(ishighlighted: boolean) {
