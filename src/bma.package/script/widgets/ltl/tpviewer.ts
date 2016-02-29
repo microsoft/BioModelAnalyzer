@@ -74,6 +74,7 @@
                     var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i].operation, { x: 0, y: 0 });
                     opLayout.AnalysisStatus = operations[i].status;
                     var opbbox = opLayout.BoundingBox;
+
                     if (opbbox.height > maxHeight) {
                         opLayout.Scale = {
                             x: maxHeight / opbbox.height,
@@ -84,6 +85,15 @@
                     }
 
                     opLayout.Position = { x: opbbox.width / 2 + this.options.padding.x, y: height + opbbox.height / 2 };
+
+                    if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
+                        var t = svg.text(opbbox.width + 10, opLayout.Position.y + 5, operations[i].steps + " steps", {
+                            "font-size": 14,
+                            "fill": opLayout.AnalysisStatus === "fail" ? "rgb(254, 172, 158)" : "green"
+                        });
+                        opbbox.width += t.getBBox().width + 10;
+                    } 
+
                     height += opbbox.height + this.options.padding.y;
                     width = Math.max(width, opbbox.width);
                 }
