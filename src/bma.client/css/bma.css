@@ -3755,7 +3755,8 @@ ui-icon-arrowthickstop-1-n {
     }
 }*/
 .state-toolbar {
-  max-width: 380px;
+  width: 380px;
+  padding: 5px 5px 0px 8px;
 }
 .state-toolbar .state-buttons {
   padding-bottom: 10px;
@@ -3765,6 +3766,7 @@ ui-icon-arrowthickstop-1-n {
 }
 .state-toolbar .state-buttons .state-button.active {
   border: 3px solid #606060;
+  margin: 3px -2px -2px 3px;
 }
 .state-toolbar .state-buttons .state-button:hover {
   cursor: pointer;
@@ -4480,6 +4482,7 @@ ui-icon-arrowthickstop-1-n {
   vertical-align: middle;
 }
 .LTL-test-results.default {
+  background-color: transparent;
   border: none;
   color: #606060;
 }
