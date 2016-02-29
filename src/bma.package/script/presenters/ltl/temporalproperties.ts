@@ -365,6 +365,7 @@ module BMA {
                 window.Commands.On("ModelReset", (args) => {
                     for (var i = 0; i < this.operations.length; i++) {
                         this.operations[i].IsVisible = false;
+                        this.ClearOperationTag(this.operations[i], true);
                     }
                     this.operations = [];
                     this.LoadFromAppModel();
@@ -975,7 +976,7 @@ module BMA {
                 var appearances = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     operations.push(this.operations[i].Operation.Clone());
-                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus });
+                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus, steps: this.operations[i].Tag.steps });
                     appearances.push({
                         x: this.operations[i].Position.x,
                         y: this.operations[i].Position.y

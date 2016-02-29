@@ -13387,6 +13387,7 @@ jQuery.fn.extend({
                 svg.rect(mask, "-50%", "-50%", "100%", "100%", {
                     fill: "url(#pattern-stripe)"
                 });
+                var maxHeight = 25 * 4;
                 var operations = this.options.operations;
                 var currentPos = { x: 0, y: 0 };
                 var height = this.options.padding.y;
@@ -13395,6 +13396,14 @@ jQuery.fn.extend({
                     var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i].operation, { x: 0, y: 0 });
                     opLayout.AnalysisStatus = operations[i].status;
                     var opbbox = opLayout.BoundingBox;
+                    if (opbbox.height > maxHeight) {
+                        opLayout.Scale = {
+                            x: maxHeight / opbbox.height,
+                            y: maxHeight / opbbox.height
+                        };
+                        opbbox.width *= maxHeight / opbbox.height;
+                        opbbox.height *= maxHeight / opbbox.height;
+                    }
                     opLayout.Position = { x: opbbox.width / 2 + this.options.padding.x, y: height + opbbox.height / 2 };
                     height += opbbox.height + this.options.padding.y;
                     width = Math.max(width, opbbox.width);
@@ -14029,6 +14038,7 @@ var BMA;
                 window.Commands.On("ModelReset", function (args) {
                     for (var i = 0; i < _this.operations.length; i++) {
                         _this.operations[i].IsVisible = false;
+                        _this.ClearOperationTag(_this.operations[i], true);
                     }
                     _this.operations = [];
                     _this.LoadFromAppModel();
@@ -14541,7 +14551,7 @@ var BMA;
                 var appearances = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     operations.push(this.operations[i].Operation.Clone());
-                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus });
+                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus, steps: this.operations[i].Tag.steps });
                     appearances.push({
                         x: this.operations[i].Position.x,
                         y: this.operations[i].Position.y
