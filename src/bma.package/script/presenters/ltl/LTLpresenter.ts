@@ -171,7 +171,7 @@
                 });
 
                 commands.On("KeyframesChanged", (args: { states: BMA.LTLOperations.Keyframe[] }) => {
-                    //TP presenter should normally handle this but in case it was not shown and user tryies to modify states for imported states and formulas
+                    //TP presenter should normally handle this but in case it was not shown and user tries to modify states for imported states and formulas
                     if (this.tppresenter === undefined) {
                         this.UpdateOperations(args.states);
                     }

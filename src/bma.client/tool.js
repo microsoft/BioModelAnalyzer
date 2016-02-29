@@ -13561,7 +13561,7 @@ var BMA;
                     });
                 });
                 commands.On("KeyframesChanged", function (args) {
-                    //TP presenter should normally handle this but in case it was not shown and user tryies to modify states for imported states and formulas
+                    //TP presenter should normally handle this but in case it was not shown and user tries to modify states for imported states and formulas
                     if (_this.tppresenter === undefined) {
                         _this.UpdateOperations(args.states);
                     }
@@ -13861,6 +13861,7 @@ var BMA;
                                     operationLayout.IsVisible = false;
                                 }
                                 else {
+                                    that.InitializeOperationTag(operationLayout);
                                     that.operations.push(operationLayout);
                                 }
                             }
@@ -13941,7 +13942,7 @@ var BMA;
                 commands.On("TemporalPropertiesEditorCut", function (args) {
                     if (_this.contextElement !== undefined) {
                         _this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
-                        _this.ClearOperationTag(_this.contextElement.operationlayoutref);
+                        //this.ClearOperationTag(this.contextElement.operationlayoutref, false);
                         var unpinned = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
                         _this.clipboard = {
@@ -13950,7 +13951,7 @@ var BMA;
                         _this.tpEditorDriver.SetCopyZoneVisibility(true);
                         _this.tpEditorDriver.SetCopyZoneIcon(clonned);
                         if (unpinned.isRoot) {
-                            _this.ClearOperationTag(_this.contextElement.operationlayoutref);
+                            _this.ClearOperationTag(_this.contextElement.operationlayoutref, true);
                             _this.operations.splice(_this.operations.indexOf(_this.contextElement.operationlayoutref), 1);
                             _this.contextElement.operationlayoutref.IsVisible = false;
                         }
@@ -13982,6 +13983,7 @@ var BMA;
                         }
                         else {
                             var operationLayout = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), op, { x: x, y: y });
+                            that.InitializeOperationTag(operationLayout);
                             _this.operations.push(operationLayout);
                         }
                         _this.OnOperationsChanged();
@@ -13990,10 +13992,10 @@ var BMA;
                 commands.On("TemporalPropertiesEditorDelete", function (args) {
                     if (_this.contextElement !== undefined) {
                         _this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
-                        _this.ClearOperationTag(_this.contextElement.operationlayoutref);
+                        //this.ClearOperationTag(this.contextElement.operationlayoutref);
                         var op = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         if (op.isRoot) {
-                            _this.ClearOperationTag(_this.contextElement.operationlayoutref);
+                            _this.ClearOperationTag(_this.contextElement.operationlayoutref, true);
                             var ind = _this.operations.indexOf(_this.contextElement.operationlayoutref);
                             _this.contextElement.operationlayoutref.IsVisible = false;
                             _this.operations.splice(ind, 1);
@@ -14003,7 +14005,6 @@ var BMA;
                 });
                 commands.On("KeyframesChanged", function (args) {
                     if (_this.CompareStatesToLocal(args.states)) {
-                        //this.ClearResults();
                         _this.states = args.states;
                         tpEditorDriver.SetStates(args.states);
                         for (var i = 0; i < _this.operations.length; i++) {
@@ -14013,6 +14014,7 @@ var BMA;
                         _this.FitToView();
                         _this.OnOperationsChanged(true, true);
                         that.isUpdateControlRequested = true;
+                        _this.RunAllQueries();
                     }
                 });
                 commands.On("TemporalPropertiesEditorExpanded", function (args) {
@@ -14023,18 +14025,6 @@ var BMA;
                     that.UpdateControlPanels();
                     that.isUpdateControlRequested = false;
                     //}
-                });
-                commands.On("VisibleRectChanged", function (param) {
-                    //if (param < this.zoomConstraints.minWidth) {
-                    //    param = this.zoomConstraints.minWidth;
-                    //    this.navigationDriver.SetZoom(param);
-                    //}
-                    //if (param > this.zoomConstraints.maxWidth) {
-                    //    param = this.zoomConstraints.maxWidth;
-                    //    this.navigationDriver.SetZoom(param);
-                    //}
-                    //var zoom = (param - window.PlotSettings.MinWidth) / 24;
-                    //commands.Execute("ZoomSliderBind", zoom);
                 });
                 window.Commands.On("ModelReset", function (args) {
                     for (var i = 0; i < _this.operations.length; i++) {
@@ -14048,7 +14038,6 @@ var BMA;
                 });
                 window.Commands.On("AppModelChanged", function (args) {
                     if (_this.CompareStatesToLocal(appModel.States)) {
-                        //this.ClearResults();
                         _this.states = appModel.States;
                         tpEditorDriver.SetStates(appModel.States);
                         for (var i = 0; i < _this.operations.length; i++) {
@@ -14058,6 +14047,7 @@ var BMA;
                         _this.FitToView();
                         _this.OnOperationsChanged(true, false);
                         that.isUpdateControlRequested = true;
+                        _this.RunAllQueries();
                     }
                 });
                 tpEditorDriver.SetFitToViewCallback(function () {
@@ -14123,7 +14113,6 @@ var BMA;
                                 else {
                                     if (!picked.isRoot) {
                                         staginOp.AnalysisStatus = "nottested";
-                                        _this.ClearOperationTag(staginOp);
                                     }
                                     tpEditorDriver.SetCopyZoneVisibility(true);
                                     tpEditorDriver.SetDeleteZoneVisibility(true);
@@ -14137,9 +14126,9 @@ var BMA;
                                         parentoperationindex: unpinned.parentoperationindex,
                                         fromclipboard: false
                                     };
-                                    if (staginOp.Tag !== undefined && staginOp.Tag.dommarker !== undefined) {
-                                        staginOp.Tag.dommarker.hide();
-                                    }
+                                    //if (staginOp.Tag !== undefined && staginOp.Tag.dommarker !== undefined) {
+                                    //    staginOp.Tag.dommarker.hide();
+                                    //}
                                     //if (that.controlPanels !== undefined && that.controlPanels[that.stagingOperation.originIndex] !== undefined) {
                                     //    that.controlPanels[that.stagingOperation.originIndex].dommarker.hide();
                                     //}
@@ -14206,7 +14195,7 @@ var BMA;
                             }
                             else if (that.Intersects(position, deleteZoneBB) && !_this.stagingOperation.fromclipboard) {
                                 if (_this.stagingOperation.isRoot) {
-                                    _this.ClearOperationTag(_this.stagingOperation.originRef);
+                                    _this.ClearOperationTag(_this.stagingOperation.originRef, true);
                                     _this.operations.splice(_this.stagingOperation.originIndex, 1);
                                 }
                             }
@@ -14214,7 +14203,9 @@ var BMA;
                                 if (!_this.HasIntersections(_this.stagingOperation.operation)) {
                                     if (_this.stagingOperation.fromclipboard) {
                                         if (_this.stagingOperation.operation.IsOperation) {
-                                            _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation.Clone(), _this.stagingOperation.operation.Position));
+                                            var newOp = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation.Clone(), _this.stagingOperation.operation.Position);
+                                            that.InitializeOperationTag(newOp);
+                                            _this.operations.push(newOp);
                                         }
                                     }
                                     else {
@@ -14224,7 +14215,9 @@ var BMA;
                                                 _this.stagingOperation.originRef.IsVisible = true;
                                             }
                                             else {
-                                                _this.operations.push(new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation, _this.stagingOperation.operation.Position));
+                                                var newOp = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), _this.stagingOperation.operation.Operation, _this.stagingOperation.operation.Position);
+                                                that.InitializeOperationTag(newOp);
+                                                _this.operations.push(newOp);
                                             }
                                         }
                                         else {
@@ -14257,10 +14250,10 @@ var BMA;
                                                 emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation.Clone();
                                                 operation.Refresh();
                                                 operation.AnalysisStatus = "nottested";
-                                                _this.ClearOperationTag(operation);
+                                                //this.ClearOperationTag(operation);
                                                 //operation.Tag = undefined;
                                                 if (_this.stagingOperation.isRoot) {
-                                                    _this.ClearOperationTag(_this.stagingOperation.originRef);
+                                                    _this.ClearOperationTag(_this.stagingOperation.originRef, true);
                                                     _this.operations[_this.stagingOperation.originIndex].IsVisible = false;
                                                     _this.operations.splice(_this.stagingOperation.originIndex, 1);
                                                 }
@@ -14390,6 +14383,7 @@ var BMA;
                             }
                         }
                         var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVGRef(), appModel.Operations[i], position);
+                        this.InitializeOperationTag(newOp);
                         if (!checkAppearance) {
                             height += newOp.BoundingBox.height / 2 + padding;
                             newOp.Position = { x: 0, y: height };
@@ -14406,6 +14400,7 @@ var BMA;
                 }
                 this.FitToView();
                 this.OnOperationsChanged(true, false);
+                this.RunAllQueries();
             };
             TemporalPropertiesPresenter.prototype.GetOperationAtPoint = function (x, y) {
                 var that = this;
@@ -14441,8 +14436,14 @@ var BMA;
             TemporalPropertiesPresenter.prototype.Intersects = function (point, bbox) {
                 return bbox.x <= point.x && (bbox.x + bbox.width) >= point.x && bbox.y <= point.y && (bbox.y + bbox.height) >= point.y;
             };
-            TemporalPropertiesPresenter.prototype.PerformLTL = function (operation, domplot, driver) {
+            TemporalPropertiesPresenter.prototype.PerformLTL = function (operation) {
                 var that = this;
+                var domplot = this.navigationDriver.GetNavigationSurface();
+                if (operation.Tag === undefined || operation.Tag.driver === undefined) {
+                    console.log("Unable to perform LTL request. No driver assosiated with requested operation");
+                    return;
+                }
+                var driver = operation.Tag.driver;
                 if (operation.IsCompleted) {
                     operation.AnalysisStatus = "processing";
                     driver.SetStatus("processing");
@@ -14471,7 +14472,7 @@ var BMA;
                                     });
                                 });
                                 driver.SetStatus("success");
-                                driver.Expand();
+                                //driver.Expand();
                                 operation.AnalysisStatus = "success";
                                 operation.Tag.data = res.Ticks;
                                 operation.Tag.steps = driver.GetSteps();
@@ -14483,7 +14484,7 @@ var BMA;
                                     });
                                 });
                                 driver.SetStatus("partialsuccess");
-                                driver.Expand();
+                                //driver.Expand();
                                 operation.AnalysisStatus = "partialsuccess";
                                 operation.Tag.data = res.Ticks;
                                 operation.Tag.negdata = res.NegTicks;
@@ -14496,7 +14497,7 @@ var BMA;
                                     });
                                 });
                                 driver.SetStatus("fail");
-                                driver.Expand();
+                                //driver.Expand();
                                 operation.AnalysisStatus = "fail";
                                 operation.Tag.negdata = res.NegTicks;
                                 operation.Tag.steps = driver.GetSteps();
@@ -14508,7 +14509,6 @@ var BMA;
                         .fail(function (err, msg) {
                         driver.SetStatus("nottested", "Server Error");
                         operation.AnalysisStatus = "nottested";
-                        that.ClearOperationTag(operation);
                         domplot.updateLayout();
                     });
                 }
@@ -14519,73 +14519,17 @@ var BMA;
                     domplot.updateLayout();
                 }
             };
-            /*
-            private ClearResults() {
-                for (var i = 0; i < this.operations.length; i++) {
-                    this.operations[i].AnalysisStatus = "nottested";
-                }
-            }
-            */
-            TemporalPropertiesPresenter.prototype.SubscribeToLTLRequest = function (driver, domplot, op) {
-                var that = this;
-                driver.SetLTLRequestedCallback(function () {
-                    that.PerformLTL(op, domplot, driver);
-                });
-            };
-            TemporalPropertiesPresenter.prototype.SubscribeToLTLCompactExpand = function (driver, domplot) {
-                driver.SetOnExpandedCallback(function () {
-                    domplot.updateLayout();
-                });
-            };
-            TemporalPropertiesPresenter.prototype.SubscribeToShowLTLRequest = function (driver, op) {
-                var that = this;
-                if (op.Tag !== undefined && op.Tag.data !== undefined) {
-                    driver.SetShowResultsCallback(function (showpositive) {
-                        that.commands.Execute("ShowLTLResults", {
-                            ticks: showpositive === undefined || showpositive === true ? op.Tag.data : op.Tag.negdata
-                        });
-                    });
-                }
-            };
-            TemporalPropertiesPresenter.prototype.SubscribeToExpandLTLResult = function (driver, domplot) {
-                var _this = this;
-                driver.SetOnExpandedCallback(function () {
-                    for (var i = 0; i < _this.operations.length; i++) {
-                        if (_this.operations[i].Tag !== undefined && _this.operations[i].Tag.driver !== undefined) {
-                            var driverToCheck = _this.operations[i].Tag.driver;
-                            if (driverToCheck !== driver) {
-                                driverToCheck.Collapse();
-                            }
-                            else {
-                                driverToCheck.MoveToTop();
-                            }
-                        }
-                    }
-                    domplot.updateLayout();
-                });
-            };
             TemporalPropertiesPresenter.prototype.UpdateControlPanels = function () {
                 var that = this;
                 var dom = this.navigationDriver.GetNavigationSurface();
                 for (var i = 0; i < this.operations.length; i++) {
                     var op = this.operations[i];
-                    var steps = 10;
-                    if (op.Tag !== undefined && op.Tag.steps !== undefined) {
-                        steps = op.Tag.steps;
-                    }
-                    that.ClearOperationTag(op);
                     var bbox = op.BoundingBox;
-                    var opDiv = $("<div></div>");
-                    var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
+                    var driver = op.Tag.driver;
                     driver.SetStatus(op.AnalysisStatus);
-                    driver.SetSteps(steps);
-                    that.SubscribeToLTLRequest(driver, dom, op);
-                    that.SubscribeToLTLCompactExpand(driver, dom);
-                    that.SubscribeToShowLTLRequest(driver, op);
-                    that.SubscribeToExpandLTLResult(driver, dom);
-                    dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);
-                    op.Tag.driver = driver;
-                    op.Tag.dommarker = opDiv;
+                    driver.SetSteps(op.Tag.steps);
+                    dom.set(op.Tag.dommarker[0], bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/);
+                    op.Tag.dommarker.show();
                 }
             };
             TemporalPropertiesPresenter.prototype.OnOperationsChanged = function (updateControls, updateAppModel) {
@@ -14621,6 +14565,7 @@ var BMA;
                 var that = this;
                 var newOp = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), operation, position);
                 newOp.RefreshStates(this.appModel.States);
+                that.InitializeOperationTag(newOp);
                 this.operations.push(newOp);
                 this.OnOperationsChanged(true);
             };
@@ -14628,7 +14573,7 @@ var BMA;
                 this.states = this.appModel.States;
                 this.tpEditorDriver.SetStates(this.appModel.States);
             };
-            TemporalPropertiesPresenter.prototype.ClearOperationTag = function (operation) {
+            TemporalPropertiesPresenter.prototype.ClearOperationTag = function (operation, isCompleteClear) {
                 if (operation.Tag !== undefined) {
                     if (operation.Tag.data !== undefined) {
                         operation.Tag.data = undefined;
@@ -14636,34 +14581,79 @@ var BMA;
                     if (operation.Tag.negdata !== undefined) {
                         operation.Tag.negdata = undefined;
                     }
-                    if (operation.Tag.steps !== undefined) {
-                        operation.Tag.steps = 10;
-                    }
-                    if (operation.Tag.driver !== undefined) {
-                        operation.Tag.driver.SetOnExpandedCallback(undefined);
-                        operation.Tag.driver.SetLTLRequestedCallback(undefined);
-                        operation.Tag.driver.SetShowResultsCallback(undefined);
-                        operation.Tag.driver.Destroy();
-                        operation.Tag.driver = undefined;
+                    if (isCompleteClear) {
+                        if (operation.Tag.driver !== undefined) {
+                            operation.Tag.driver.SetOnExpandedCallback(undefined);
+                            operation.Tag.driver.SetLTLRequestedCallback(undefined);
+                            operation.Tag.driver.SetShowResultsCallback(undefined);
+                            operation.Tag.driver.Destroy();
+                            operation.Tag.driver = undefined;
+                        }
                     }
                     if (operation.Tag.dommarker !== undefined) {
-                        var dom = this.navigationDriver.GetNavigationSurface();
-                        dom.remove(operation.Tag.dommarker);
-                        operation.Tag.dommarker = undefined;
+                        if (isCompleteClear) {
+                            var dom = this.navigationDriver.GetNavigationSurface();
+                            dom.remove(operation.Tag.dommarker);
+                        }
+                        else {
+                            operation.Tag.dommarker.hide();
+                        }
                     }
-                }
-                else {
-                    this.InitializeOperationTag(operation);
                 }
             };
             TemporalPropertiesPresenter.prototype.InitializeOperationTag = function (operation) {
+                var _this = this;
+                var that = this;
+                var defaultSteps = 10;
+                var opDiv = $("<div></div>");
+                var driver = new BMA.UIDrivers.LTLResultsCompactViewer(opDiv);
+                driver.SetSteps(defaultSteps);
+                driver.SetStatus(operation.AnalysisStatus);
+                var dom = this.navigationDriver.GetNavigationSurface();
+                driver.SetLTLRequestedCallback(function () {
+                    that.PerformLTL(operation);
+                });
+                driver.SetOnExpandedCallback(function () {
+                    dom.updateLayout();
+                });
+                driver.SetShowResultsCallback(function (showpositive) {
+                    if (operation.Tag.data !== undefined) {
+                        that.commands.Execute("ShowLTLResults", {
+                            ticks: showpositive === undefined || showpositive === true ? operation.Tag.data : operation.Tag.negdata
+                        });
+                    }
+                });
+                driver.SetOnExpandedCallback(function () {
+                    for (var i = 0; i < _this.operations.length; i++) {
+                        if (_this.operations[i].Tag !== undefined && _this.operations[i].Tag.driver !== undefined) {
+                            var driverToCheck = _this.operations[i].Tag.driver;
+                            if (driverToCheck !== driver) {
+                                driverToCheck.Collapse();
+                            }
+                            else {
+                                driverToCheck.MoveToTop();
+                            }
+                        }
+                    }
+                    dom.updateLayout();
+                });
+                var bbox = operation.BoundingBox;
+                dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -operation.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);
                 operation.Tag = {
                     data: undefined,
                     negdata: undefined,
-                    steps: 10,
-                    driver: undefined,
-                    dommarker: undefined
+                    steps: defaultSteps,
+                    driver: driver,
+                    dommarker: opDiv
                 };
+            };
+            TemporalPropertiesPresenter.prototype.RunAllQueries = function () {
+                for (var i = 0; i < this.operations.length; i++) {
+                    var op = this.operations[i];
+                    if (op.AnalysisStatus === "nottested") {
+                        this.PerformLTL(op);
+                    }
+                }
             };
             return TemporalPropertiesPresenter;
         })();
