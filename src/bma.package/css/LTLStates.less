@@ -73,7 +73,8 @@
     }
 }*/
 .state-toolbar {
-    max-width:380px;
+    width:380px;
+    padding: 5px 5px 0px 8px;
 
     .state-buttons{
         padding-bottom:10px;
@@ -83,6 +84,7 @@
 
             &.active {
                 border: 3px solid @darkgrey;
+                margin: 3px -2px -2px 3px;
             }
             &:hover {
                 cursor: pointer;
@@ -861,6 +863,7 @@
         vertical-align:middle;
     }
     &.default{
+        background-color: transparent;
 		border: none;
 		color:@darkgrey;
         

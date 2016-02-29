@@ -182,7 +182,9 @@
 
             that.options.states.splice(args.stateIdx, 1);
             that._stateButtons.find("[data-state-name='" + args.stateName + "']").remove();
-            that.refresh();
+            if (that.options.states.length == 0) {
+                that.addState();
+            } else that.refresh();
 
             that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
         },
