@@ -180,6 +180,8 @@
     <Content Include="images\icon-cut.svg" />
     <Content Include="images\icon-delete.svg" />
     <Content Include="images\icon-edit.svg" />
+    <Content Include="images\icon-export-LTL.svg" />
+    <Content Include="images\icon-import-LTL.svg" />
     <Content Include="images\icon-paste.svg" />
     <Content Include="images\icon-size.svg" />
     <Content Include="images\inhibit-ON.png" />
