@@ -4029,6 +4029,9 @@ ui-icon-arrowthickstop-1-n {
   max-height: 322px;
   overflow-y: hidden;
 }
+.ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table .variables-table td {
+  white-space: nowrap;
+}
 .ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table .variables-table td:nth-child(1) {
   width: 40px;
 }
@@ -4038,7 +4041,7 @@ ui-icon-arrowthickstop-1-n {
   border-right-color: transparent;
   border-bottom-color: transparent;
 }
-.ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table .variables-table td:nth-child(3) {
+.ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table .variables-table td:nth-child(4) {
   width: 50px;
 }
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table {
@@ -4542,6 +4545,16 @@ ui-icon-arrowthickstop-1-n {
 .ui-icon-clipboard {
   background-size: 20px 20px;
   background-position: 0px 0px;
+}
+.ui-icon-export {
+  background-image: url('../images/icon-export-LTL.svg') !important;
+  /*background-size: 20px 20px;
+    background-position: 0px 0px;*/
+}
+.ui-icon-import {
+  background-image: url('../images/icon-import-LTL.svg') !important;
+  /*background-size: 20px 20px;
+    background-position: 0px 0px;*/
 }
 /*ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons {
     width: 85px;

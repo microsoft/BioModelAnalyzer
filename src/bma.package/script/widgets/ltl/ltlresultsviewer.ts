@@ -7,7 +7,7 @@
         _variables: undefined,
         _table: undefined,
         tablesContainer: undefined,
-        //loading: undefined,
+        loading: undefined,
 
         options: {
             data: [],
@@ -43,7 +43,14 @@
             });
 
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
+            
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
+            this.loading = $("<div></div>").addClass("page-loading").css("top", "27").css("width", 500).css("height", 324).css("margin-top", 50).appendTo(this._plot);
+            var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
+            var snipper = $('<div></div>').addClass('spinner').appendTo(loadingText);
+            for (var i = 1; i < 4; i++) {
+                $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+            }
 
             var stepsul = $('<ul></ul>').addClass('button-list').css("float", "left").appendTo(root);
             var li = $('<li></li>').addClass('action-button-small grey').appendTo(stepsul);
@@ -221,8 +228,8 @@
             if (this.options.variables !== undefined && this.options.variables.length !== 0) {
 
                 this._variables.coloredtableviewer({
-                    header: ["Graph", "Name", "Range"],
-                    type: "graph-max",
+                    header: ["Graph", "Cell", "Name", "Range"],
+                    type: "graph-all",
                     numericData: that.options.variables,
                 });
 
@@ -279,11 +286,16 @@
                 //if (this.options.visibleItems.length < i + 1)
                     //this.options.visibleItems.push(that.options.variables[i][1]);
             }
-            if (plotData !== undefined && plotData.length !== 0)
-                this._plot.simulationplot({
-                    colors: plotData,
-                    labels: that.options.labels
-                });
+            if (plotData !== undefined && plotData.length !== 0) {
+                this.loading.show();
+                setTimeout(function () {
+                    that._plot.simulationplot({
+                        colors: plotData,
+                        labels: that.options.labels
+                    });
+                    that.loading.hide();
+                },1000);
+            }
         },
 
     });

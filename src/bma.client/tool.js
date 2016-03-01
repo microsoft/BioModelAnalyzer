@@ -5327,7 +5327,9 @@ var BMA;
                         max: vars[i].RangeTo
                     });
                     var color = this.getRandomColor();
-                    variables.push([color, true, vars[i].Name, vars[i].RangeFrom, vars[i].RangeTo]);
+                    var container; // = layout.GetContainerById(vars[i].ContainerId);
+                    var containerName = container && container.Name ? container.Name : "ALL";
+                    variables.push([color, true, containerName, vars[i].Name, vars[i].RangeFrom, vars[i].RangeTo]);
                 }
                 ticks = ticks.sort(function (x, y) {
                     return x.Time < y.Time ? -1 : 1;
@@ -8681,6 +8683,18 @@ var BMA;
                             this.paintTable(options.colorData);
                     }
                     break;
+                case "graph-all":
+                    if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
+                        this.table.addClass("variables-table");
+                        this.createHeader(options.header);
+                        var tr0 = that.table.find("tr").eq(0);
+                        tr0.children("td").eq(0).attr("colspan", "2");
+                        tr0.children("td").eq(3).attr("colspan", "2");
+                        this.arrayToTableGraphMax(options.numericData);
+                        if (options.colorData !== undefined)
+                            this.paintTable(options.colorData);
+                    }
+                    break;
                 case "simulation-min":
                     this.table.addClass("proof-propagation-overview");
                     if (options.colorData !== undefined && options.colorData.length !== 0) {
@@ -11458,7 +11472,7 @@ jQuery.fn.extend({
         _variables: undefined,
         _table: undefined,
         tablesContainer: undefined,
-        //loading: undefined,
+        loading: undefined,
         options: {
             data: [],
             init: [],
@@ -11490,6 +11504,12 @@ jQuery.fn.extend({
             });
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
+            this.loading = $("<div></div>").addClass("page-loading").css("top", "27").css("width", 500).css("height", 324).css("margin-top", 50).appendTo(this._plot);
+            var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
+            var snipper = $('<div></div>').addClass('spinner').appendTo(loadingText);
+            for (var i = 1; i < 4; i++) {
+                $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+            }
             var stepsul = $('<ul></ul>').addClass('button-list').css("float", "left").appendTo(root);
             var li = $('<li></li>').addClass('action-button-small grey').appendTo(stepsul);
             var exportCSV = $('<button></button>')
@@ -11651,8 +11671,8 @@ jQuery.fn.extend({
             var that = this;
             if (this.options.variables !== undefined && this.options.variables.length !== 0) {
                 this._variables.coloredtableviewer({
-                    header: ["Graph", "Name", "Range"],
-                    type: "graph-max",
+                    header: ["Graph", "Cell", "Name", "Range"],
+                    type: "graph-all",
                     numericData: that.options.variables,
                 });
                 if (this.options.interval !== undefined && this.options.interval.length !== 0
@@ -11694,11 +11714,16 @@ jQuery.fn.extend({
                     Name: that.options.variables[i][2],
                 });
             }
-            if (plotData !== undefined && plotData.length !== 0)
-                this._plot.simulationplot({
-                    colors: plotData,
-                    labels: that.options.labels
-                });
+            if (plotData !== undefined && plotData.length !== 0) {
+                this.loading.show();
+                setTimeout(function () {
+                    that._plot.simulationplot({
+                        colors: plotData,
+                        labels: that.options.labels
+                    });
+                    that.loading.hide();
+                }, 1000);
+            }
         },
     });
 }(jQuery));
@@ -13171,8 +13196,8 @@ jQuery.fn.extend({
                     { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
                     { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
-                    { title: "Export", cmd: "Export" },
-                    { title: "Import", cmd: "Import" }
+                    { title: "Export", cmd: "Export", uiIcon: "ui-icon-export" },
+                    { title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
                 ],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);

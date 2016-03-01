@@ -79,6 +79,19 @@
                             this.paintTable(options.colorData);
                     }
                     break;
+                case "graph-all":
+                    if (options.numericData !== undefined && options.numericData !== null && options.numericData.length !== 0) {
+                        this.table.addClass("variables-table");
+                        this.createHeader(options.header);
+                        var tr0 = that.table.find("tr").eq(0);
+                        tr0.children("td").eq(0).attr("colspan", "2");
+                        tr0.children("td").eq(3).attr("colspan", "2");
+                        this.arrayToTableGraphMax(options.numericData);
+
+                        if (options.colorData !== undefined)
+                            this.paintTable(options.colorData);
+                    }
+                    break;
                 case "simulation-min":
                     this.table.addClass("proof-propagation-overview");
                     if (options.colorData !== undefined && options.colorData.length !== 0) {

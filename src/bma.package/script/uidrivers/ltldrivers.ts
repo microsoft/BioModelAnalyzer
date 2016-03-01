@@ -839,9 +839,10 @@ module BMA {
                         min: vars[i].RangeFrom,
                         max: vars[i].RangeTo
                     });
-
                     var color = this.getRandomColor();
-                    variables.push([color, true, vars[i].Name, vars[i].RangeFrom, vars[i].RangeTo]);
+                    var container;// = layout.GetContainerById(vars[i].ContainerId);
+                    var containerName = container && container.Name ? container.Name : "ALL";
+                    variables.push([color, true, containerName, vars[i].Name, vars[i].RangeFrom, vars[i].RangeTo]);
                 }
 
                 ticks = ticks.sort((x, y) => {

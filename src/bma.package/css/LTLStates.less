@@ -321,6 +321,11 @@
             overflow-y: hidden;
 
             .variables-table {
+
+                td {
+                    white-space:nowrap;
+                }
+
                 td:nth-child(1) {
                     width: 40px;
                 }
@@ -332,7 +337,7 @@
                     border-bottom-color: transparent;
                 }
 
-                td:nth-child(3) {
+                td:nth-child(4) {
                     width: 50px;
                 }
             }
@@ -933,6 +938,17 @@
 .ui-icon-clipboard{
     background-size: 20px 20px;
     background-position: 0px 0px;
+}
+
+.ui-icon-export { 
+    background-image: url('../images/icon-export-LTL.svg') !important;
+    /*background-size: 20px 20px;
+    background-position: 0px 0px;*/
+}
+.ui-icon-import{ 
+    background-image: url('../images/icon-import-LTL.svg') !important;
+    /*background-size: 20px 20px;
+    background-position: 0px 0px;*/
 }
 
 /*ul.ui-helper-hidden.ui-menu.ui-widget.ui-widget-content.ui-corner-all.ui-menu-icons {
