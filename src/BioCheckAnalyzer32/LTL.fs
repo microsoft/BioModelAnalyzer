@@ -177,7 +177,7 @@ let print_in_order(formula : LTLFormulaType) =
     Log.log_debug string_res
 
 // parsers
-let string_to_LTL_formula (s:string) (network) = 
+let string_to_LTL_formula (s : string) (network) (varbyid : bool) = 
     let until = "Until"
     let wuntil = "Weakuntil"
     let release = "Release"
@@ -281,28 +281,35 @@ let string_to_LTL_formula (s:string) (network) =
             let first_space = substring.IndexOf(" ")
             // Strips out antideath in (> antideath 2)
             let var_name_str = substring.Substring(0, first_space)
+            let var_number = (int) var_name_str
             // Variable names are matched to QN node names: Loop through all variable names and check against the formula variable name
             let match_name_function (n : QN.node) = n.name = var_name_str
+            let match_id_function (n : QN.node) = n.number = var_number
             // Strips out 2 in (> antideath 2) 
             let value_string = substring.Substring(first_space + 1, substring.Length - first_space - 1)
-            if ((List.exists match_name_function network) &&  
-                (value_string.IndexOfAny(non_digit.ToCharArray()) <= 0)) then
+            if (not varbyid && ((List.exists match_name_function network) &&  
+               (value_string.IndexOfAny(non_digit.ToCharArray()) <= 0))) then
                 let var = List.find match_name_function network 
                 let value = (int) value_string
                 (var,value)
+            elif (varbyid && ((List.exists match_id_function network) && 
+                (value_string.IndexOfAny(non_digit.ToCharArray()) <= 0))) then
+                let var = List.find match_id_function network
+                let value = (int) value_string
+                (var, value)
             else
                 (network.Head , -1)
                              
         let analyze_two_operands (length_of_keyword : int) (s: string) (location : int list) =
             let substring = s.Substring((length_of_keyword + 1), (s.Length - length_of_keyword - 1))
             let (str_sub_formula1, str_sub_formula2) = partition_string_to_balanced_paren (substring)
-            let sub_formula1 = parse str_sub_formula1 (0::location)
-            let sub_formula2 = parse str_sub_formula2 (1::location)
+            let sub_formula1 = parse str_sub_formula1 (0::location) 
+            let sub_formula2 = parse str_sub_formula2 (1::location) 
             (sub_formula1, sub_formula2)
 
         let analyze_one_operand length_of_keyword (s: string) (location : int list) = 
             let str_sub_formula = s.Substring((length_of_keyword + 1),(s.Length - length_of_keyword - 1))
-            let sub_formula = parse str_sub_formula (0::location)
+            let sub_formula = parse str_sub_formula (0::location) 
             sub_formula
 
         if (not(s.StartsWith("(")) || not(s.EndsWith(")"))) then
@@ -321,7 +328,7 @@ let string_to_LTL_formula (s:string) (network) =
         else
             let without_paren = s.Substring(1,s.Length - 2)
             if (IsUntil(without_paren)) then
-                let (sub_formula1, sub_formula2) = analyze_two_operands length_of_until without_paren location
+                let (sub_formula1, sub_formula2) = analyze_two_operands length_of_until without_paren location 
                 if (sub_formula1 = Error || sub_formula2 = Error) then
                     Error
                 else
@@ -435,7 +442,7 @@ let string_to_LTL_formula (s:string) (network) =
             else
                 Error
                     
-    parse s []
+    parse s [] 
 
 let unable_to_parse_formula =
     ignore (Log.log_debug "Was not able to parse the LTL formula!")

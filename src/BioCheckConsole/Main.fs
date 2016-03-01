@@ -207,7 +207,7 @@ let runSimulateEngine qn (simul_output : string) start_state_file simulation_tim
 
 let runVMCAIEngine qn (proof_output : string) (no_sat : bool) =
     Log.log_debug "Running the proof"
-    let (sr,cex_o) = Stabilize.stabilization_prover qn no_sat
+    runcavlet (sr,cex_o) = Stabilize.stabilization_prover qn no_sat
     match (sr,cex_o) with 
     | (Result.SRStabilizing(_), None) -> 
         write_json_to_file proof_output (Marshal.AnalysisResult_of_stability_result sr)
@@ -225,7 +225,7 @@ let runCAVEngine qn length_of_path formula model_check output_proof output_model
         else
             formula
 
-    let ltl_formula = LTL.string_to_LTL_formula ltl_formula_str qn 
+    let ltl_formula = LTL.string_to_LTL_formula ltl_formula_str qn false  
 
     LTL.print_in_order ltl_formula
     if (ltl_formula = LTL.Error) then

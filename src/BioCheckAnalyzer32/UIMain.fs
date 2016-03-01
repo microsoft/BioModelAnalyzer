@@ -80,7 +80,7 @@ type Analyzer () =
         member this.checkLTL(input_model:Model, formula:string, num_of_steps:string) = 
             try
                 let network = Marshal.QN_of_Model input_model
-                let formula = LTL.string_to_LTL_formula formula network
+                let formula = LTL.string_to_LTL_formula formula network true
                 let num_of_steps = (int)num_of_steps 
                 if (formula = LTL.Error) then
                     Marshal.xml_of_error -1 "unable to parse formula"                  
