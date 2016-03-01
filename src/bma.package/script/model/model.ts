@@ -193,8 +193,10 @@ module BMA {
             public Reset(model: BMA.Model.BioModel, layout: BMA.Model.Layout) {
                 this.model = model;
                 this.layout = layout;
-                var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
-                if (statesChanged.isChanged) this.states = statesChanged.states;
+                this.states = [];
+                this.operations = [];
+                //var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
+                //if (statesChanged.isChanged) this.states = statesChanged.states;
                 window.Commands.Execute("ModelReset", undefined);
             }
 
