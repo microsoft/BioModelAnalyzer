@@ -5379,7 +5379,7 @@ var BMA;
                         max: vars[i].RangeTo
                     });
                     var color = this.getRandomColor();
-                    var container; // = layout.GetContainerById(vars[i].ContainerId);
+                    var container = layout.GetContainerById(vars[i].ContainerId);
                     var containerName = container && container.Name ? container.Name : "ALL";
                     variables.push([color, true, containerName, vars[i].Name, vars[i].RangeFrom, vars[i].RangeTo]);
                 }
