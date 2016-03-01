@@ -16,12 +16,15 @@ module BMA {
             }
 
             public set BioModel(value: BMA.Model.BioModel) {
+                var isMajorChange = false;
+                if (JSON.stringify(this.model) !== JSON.stringify(value))
+                    isMajorChange = true;
                 this.model = value;
 
                 //if (this.states.length != 0) this.UpdateStates();
                 var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
                 if (statesChanged.isChanged) this.states = statesChanged.states;
-                window.Commands.Execute("AppModelChanged", {});
+                window.Commands.Execute("AppModelChanged", { isMajorChange: isMajorChange });
                 //TODO: update inner components (analytics)
             }
 
@@ -31,7 +34,7 @@ module BMA {
 
             public set Layout(value: BMA.Model.Layout) {
                 this.layout = value;
-                window.Commands.Execute("AppModelChanged", {});
+                window.Commands.Execute("AppModelChanged", { isMajorChange: false});
                 //TODO: update inner components (analytics)
             }
 
