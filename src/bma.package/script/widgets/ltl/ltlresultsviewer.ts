@@ -269,13 +269,15 @@
                 for (var j = 1; j < this.options.data.length; j++)
                     pData.push(this.options.data[j][i]);
 
+                var name = that.options.variables[i][2] + (that.options.variables[i][2] ? "." : "") + that.options.variables[i][3];
+
                 plotData.push({
                     Id: that.options.id[i],
                     Color: that.options.variables[i][0],
                     Seen: that.options.variables[i][1],
                     Plot: pData,
                     Init: that.options.init[i],
-                    Name: that.options.variables[i][2],
+                    Name: name,
                 });
 
                 //if (this.options.ranges.length < i + 1)

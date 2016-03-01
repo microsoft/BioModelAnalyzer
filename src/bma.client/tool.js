@@ -5380,7 +5380,7 @@ var BMA;
                     });
                     var color = this.getRandomColor();
                     var container = layout.GetContainerById(vars[i].ContainerId);
-                    var containerName = container && container.Name ? container.Name : "ALL";
+                    var containerName = container && container.Name ? container.Name : "";
                     variables.push([color, true, containerName, vars[i].Name, vars[i].RangeFrom, vars[i].RangeTo]);
                 }
                 ticks = ticks.sort(function (x, y) {
@@ -11757,13 +11757,14 @@ jQuery.fn.extend({
                 pData.push(this.options.init[i]);
                 for (var j = 1; j < this.options.data.length; j++)
                     pData.push(this.options.data[j][i]);
+                var name = that.options.variables[i][2] + (that.options.variables[i][2] ? "." : "") + that.options.variables[i][3];
                 plotData.push({
                     Id: that.options.id[i],
                     Color: that.options.variables[i][0],
                     Seen: that.options.variables[i][1],
                     Plot: pData,
                     Init: that.options.init[i],
-                    Name: that.options.variables[i][2],
+                    Name: name,
                 });
             }
             if (plotData !== undefined && plotData.length !== 0) {
