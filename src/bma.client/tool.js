@@ -4534,16 +4534,46 @@ var BMA;
         })();
         UIDrivers.ProofAnalyzeService = ProofAnalyzeService;
         var LTLAnalyzeService = (function () {
-            function LTLAnalyzeService() {
+            function LTLAnalyzeService(maxRequestCount) {
+                this.maxRequestCount = 1;
+                this.currentActiveRequestCount = 0;
+                this.maxRequestCount = maxRequestCount;
+                this.pendingRequests = [];
+                this.currentActiveRequestCount = 0;
             }
             LTLAnalyzeService.prototype.Invoke = function (data) {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
+                var that = this;
+                var deferred = $.Deferred();
+                this.pendingRequests.push({ data: data, deferred: deferred });
+                this.ShiftRequest();
+                return deferred.promise();
+            };
+            LTLAnalyzeService.prototype.ShiftRequest = function () {
+                var that = this;
+                if (this.pendingRequests.length > 0) {
+                    var request = this.pendingRequests.shift();
+                    if (this.currentActiveRequestCount < this.maxRequestCount) {
+                        this.currentActiveRequestCount++;
+                        $.ajax({
+                            type: "POST",
+                            url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
+                            data: JSON.stringify(request.data),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json"
+                        }).done(function (res) {
+                            that.currentActiveRequestCount--;
+                            that.ShiftRequest();
+                            request.deferred.resolve(res);
+                        }).fail(function (xhr, textStatus, errorThrown) {
+                            that.currentActiveRequestCount--;
+                            that.ShiftRequest();
+                            request.deferred.reject(xhr, textStatus, errorThrown);
+                        });
+                    }
+                    else {
+                        this.pendingRequests.push(request);
+                    }
+                }
             };
             return LTLAnalyzeService;
         })();
@@ -14495,6 +14525,9 @@ var BMA;
                         if (res.Ticks == null) {
                             driver.SetStatus("nottested", "Timed out");
                             operation.AnalysisStatus = "nottested";
+                            operation.Tag.data = undefined;
+                            operation.Tag.negdata = undefined;
+                            operation.Tag.steps = driver.GetSteps();
                             domplot.updateLayout();
                         }
                         else {
@@ -14508,6 +14541,7 @@ var BMA;
                                 //driver.Expand();
                                 operation.AnalysisStatus = "success";
                                 operation.Tag.data = res.Ticks;
+                                operation.Tag.negdata = undefined;
                                 operation.Tag.steps = driver.GetSteps();
                             }
                             else if (res.Status === "PartiallyTrue") {
@@ -14532,6 +14566,7 @@ var BMA;
                                 driver.SetStatus("fail");
                                 //driver.Expand();
                                 operation.AnalysisStatus = "fail";
+                                operation.Tag.data = undefined;
                                 operation.Tag.negdata = res.NegTicks;
                                 operation.Tag.steps = driver.GetSteps();
                             }
@@ -14542,6 +14577,9 @@ var BMA;
                         .fail(function (xhr, textStatus, errorThrown) {
                         driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
                         operation.AnalysisStatus = "nottested";
+                        operation.Tag.data = undefined;
+                        operation.Tag.negdata = undefined;
+                        operation.Tag.steps = driver.GetSteps();
                         domplot.updateLayout();
                     });
                 }
@@ -14549,6 +14587,9 @@ var BMA;
                     operation.HighlightEmptySlots("red");
                     driver.SetStatus("nottested");
                     operation.AnalysisStatus = "nottested";
+                    operation.Tag.data = undefined;
+                    operation.Tag.negdata = undefined;
+                    operation.Tag.steps = driver.GetSteps();
                     domplot.updateLayout();
                 }
             };
@@ -14681,10 +14722,11 @@ var BMA;
                 };
             };
             TemporalPropertiesPresenter.prototype.RunAllQueries = function () {
-                for (var i = 0; i < this.operations.length; i++) {
-                    var op = this.operations[i];
+                var that = this;
+                for (var i = 0; i < that.operations.length; i++) {
+                    var op = that.operations[i];
                     if (op.AnalysisStatus === "nottested") {
-                        this.PerformLTL(op);
+                        that.PerformLTL(op);
                     }
                 }
             };
