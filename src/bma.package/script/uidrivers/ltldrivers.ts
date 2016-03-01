@@ -30,6 +30,8 @@ module BMA {
             private ltlviewer: JQuery;
             private accordion: JQuery;
 
+            private onTabEcpandedCallback = undefined;
+
             constructor(accordion: JQuery, ltlviewer: JQuery) {
                 this.ltlviewer = ltlviewer;
                 this.accordion = accordion;
@@ -44,8 +46,13 @@ module BMA {
                 });
 
                 accordion.bmaaccordion({
-                    onactivetabchanged: () => {
-                        this.ltlviewer.ltlviewer("GetTPViewer").temporalpropertiesviewer("refresh");
+                    onactivetabchanged: (args) => {
+                        if (this.ltlviewer.attr("aria-hidden") === "false") {
+                            this.ltlviewer.ltlviewer("GetTPViewer").temporalpropertiesviewer("refresh");
+                            if (this.onTabEcpandedCallback !== undefined) {
+                                this.onTabEcpandedCallback();
+                            }
+                        }
                     }
                 });
             }
@@ -92,6 +99,10 @@ module BMA {
 
             GetStatesViewer() {
                 return new BMA.UIDrivers.StatesViewerDriver(this.ltlviewer.ltlviewer("GetStatesViewer"));
+            }
+
+            SetOnTabExpandedCallback(callback) {
+                this.onTabEcpandedCallback = callback;
             }
         }
 

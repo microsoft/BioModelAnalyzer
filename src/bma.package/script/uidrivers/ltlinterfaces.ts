@@ -10,6 +10,7 @@ module BMA {
             SetResult(result);
             GetTemporalPropertiesViewer(): BMA.UIDrivers.ITemporalPropertiesViewer;
             GetStatesViewer(): BMA.UIDrivers.IStatesViewer;
+            SetOnTabExpandedCallback(callback);
         }
 
         export interface IKeyframesList {

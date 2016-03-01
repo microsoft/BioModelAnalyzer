@@ -506,7 +506,7 @@
                 });
 
             if (that.options.onactivetabchanged) {
-                that.options.onactivetabchanged();
+                that.options.onactivetabchanged({ toShow: toShow });
             }
         },
 
@@ -537,7 +537,7 @@
                 that = this,
                 adjust = 0,
                 down = toShow.length &&
-                (!toHide.length || (toShow.index() < toHide.index())),
+                    (!toHide.length || (toShow.index() < toHide.index())),
                 animate = this.options.animate || {},
                 options = down && animate.down || animate,
                 complete = function () {

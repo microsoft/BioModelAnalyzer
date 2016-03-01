@@ -4678,6 +4678,7 @@ var BMA;
         var LTLViewer = (function () {
             function LTLViewer(accordion, ltlviewer) {
                 var _this = this;
+                this.onTabEcpandedCallback = undefined;
                 this.ltlviewer = ltlviewer;
                 this.accordion = accordion;
                 this.ltlviewer.ltlviewer({
@@ -4689,8 +4690,13 @@ var BMA;
                     }
                 });
                 accordion.bmaaccordion({
-                    onactivetabchanged: function () {
-                        _this.ltlviewer.ltlviewer("GetTPViewer").temporalpropertiesviewer("refresh");
+                    onactivetabchanged: function (args) {
+                        if (_this.ltlviewer.attr("aria-hidden") === "false") {
+                            _this.ltlviewer.ltlviewer("GetTPViewer").temporalpropertiesviewer("refresh");
+                            if (_this.onTabEcpandedCallback !== undefined) {
+                                _this.onTabEcpandedCallback();
+                            }
+                        }
                     }
                 });
             }
@@ -4730,6 +4736,9 @@ var BMA;
             };
             LTLViewer.prototype.GetStatesViewer = function () {
                 return new BMA.UIDrivers.StatesViewerDriver(this.ltlviewer.ltlviewer("GetStatesViewer"));
+            };
+            LTLViewer.prototype.SetOnTabExpandedCallback = function (callback) {
+                this.onTabEcpandedCallback = callback;
             };
             return LTLViewer;
         })();
@@ -8488,7 +8497,7 @@ var BMA;
                 "aria-expanded": "true"
             });
             if (that.options.onactivetabchanged) {
-                that.options.onactivetabchanged();
+                that.options.onactivetabchanged({ toShow: toShow });
             }
         },
         _showLoading: function (clicked) {
@@ -13516,6 +13525,13 @@ var BMA;
                 this.ltlviewer = ltlviewer;
                 this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer());
                 temporlapropertieseditor.SetStates(appModel.States);
+                ltlviewer.SetOnTabExpandedCallback(function () {
+                    if (_this.tppresenter === undefined) {
+                        temporlapropertieseditor.Show();
+                        _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, _this.statespresenter);
+                        temporlapropertieseditor.Hide();
+                    }
+                });
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 window.Commands.On("AppModelChanged", function (args) {
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);

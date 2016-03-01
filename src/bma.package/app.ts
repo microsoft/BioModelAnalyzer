@@ -568,7 +568,7 @@ function loadScript(version) {
     var proofAnalyzeService = new BMA.UIDrivers.ProofAnalyzeService();
     var simulationService = new BMA.UIDrivers.SimulationService();
     var logService = new BMA.SessionLog();
-    var ltlService = new BMA.UIDrivers.LTLAnalyzeService(2);
+    var ltlService = new BMA.UIDrivers.LTLAnalyzeService(1);
     var waitScreen = new BMA.UIDrivers.LoadingWaitScreen($('.page-loading'));
     var dragndropextender = new BMA.UIDrivers.DrawingSurfaceDragnDropExtender(drawingSurface, popup);
 

@@ -31,6 +31,19 @@
 
                 temporlapropertieseditor.SetStates(appModel.States);
 
+                ltlviewer.SetOnTabExpandedCallback(() => {
+                    if (this.tppresenter === undefined) {
+                        temporlapropertieseditor.Show();
+                        this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(
+                            commands,
+                            appModel,
+                            ajax,
+                            temporlapropertieseditor,
+                            this.statespresenter);
+                        temporlapropertieseditor.Hide();
+                    }
+                });
+
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 window.Commands.On("AppModelChanged",(args) => {
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
