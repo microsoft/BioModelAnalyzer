@@ -10,6 +10,7 @@ module BMA {
             SetResult(result);
             GetTemporalPropertiesViewer(): BMA.UIDrivers.ITemporalPropertiesViewer;
             GetStatesViewer(): BMA.UIDrivers.IStatesViewer;
+            SetOnTabExpandedCallback(callback);
         }
 
         export interface IKeyframesList {
@@ -75,6 +76,7 @@ module BMA {
             SetLTLRequestedCallback(callback: Function);
             SetOnExpandedCallback(callback: Function);
             SetShowResultsCallback(callback: Function);
+            Destroy();
         }
 
         export interface ILTLResultsViewer {

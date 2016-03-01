@@ -101,7 +101,7 @@
                     var plotName = "plot" + index;
                     var polyline = that._chart.get(plotName);
                     if (polyline !== undefined) {
-                        polyline.isVisible = false;
+                        polyline.remove();
                         index++;
                     } else {
                         break;

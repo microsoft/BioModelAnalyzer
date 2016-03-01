@@ -153,7 +153,7 @@ module BMA {
                 this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
                 this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
 
-                
+
             }
 
             public Show(x: number, y: number) {
@@ -265,9 +265,9 @@ module BMA {
                     this.viewer.furthertesting("SetData", { tabLabels: data.tabLabels, tableHeaders: data.tableHeaders, data: data.data });
                 else { this.viewer.furthertesting("SetData", undefined) }
             }
-            
+
             public HideResults() {
-                this.viewer.furthertesting({data: null});
+                this.viewer.furthertesting({ data: null });
             }
 
             public StandbyMode() {
@@ -299,10 +299,10 @@ module BMA {
                     .removeClass('proof-propagation-popout')
                     .removeClass('proof-variables-popout')
                     .removeClass('simulation-popout')
-                    //.removeClass('analysis-popout');
+                //.removeClass('analysis-popout');
 
                 switch (params.tab) {
-                    case "ProofVariables": 
+                    case "ProofVariables":
                         header = "Variables";
                         this.popupWindow.addClass('proof-variables-popout');
                         break;
@@ -314,7 +314,7 @@ module BMA {
                         header = "Simulation Progression";
                         this.popupWindow.addClass('simulation-popout');
                         break;
-                    case "FurtherTesting": 
+                    case "FurtherTesting":
                         header = "Further Testing";
                         this.popupWindow.addClass('further-testing-popout')
                         break;
@@ -366,11 +366,11 @@ module BMA {
             }
 
             public StandbyMode() {
-                this.viewer.simulationexpanded({buttonMode: "StandbyMode"});
+                this.viewer.simulationexpanded({ buttonMode: "StandbyMode" });
             }
 
             public ActiveMode() {
-                this.viewer.simulationexpanded({buttonMode: "ActiveMode"});
+                this.viewer.simulationexpanded({ buttonMode: "ActiveMode" });
             }
 
             public AddResult(res) {
@@ -381,9 +381,9 @@ module BMA {
             public CreatePlotView(colors) {
                 var data = [];
                 for (var i = 1; i < colors[0].Plot.length; i++) {
-                    data[i-1] = [];
+                    data[i - 1] = [];
                     for (var j = 0; j < colors.length; j++) {
-                        data[i-1][j] = colors[j].Plot[i];
+                        data[i - 1][j] = colors[j].Plot[i];
                     }
                 }
                 return data;
@@ -416,7 +416,7 @@ module BMA {
                 return undefined;
             }
 
-            public CreateExpandedTable(variables,colors) {
+            public CreateExpandedTable(variables, colors) {
                 var table = [];
                 //var variables = this.appModel.BioModel.Variables;
                 for (var i = 0; i < variables.length; i++) {
@@ -556,7 +556,7 @@ module BMA {
                     type: "POST",
                     url: "http://bmamath.cloudapp.net/api/Validate",
                     data: JSON.stringify(data),
-                    contentType: "application/json",
+                    contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 });
             }
@@ -568,7 +568,7 @@ module BMA {
                     type: "POST",
                     url: "http://bmamath.cloudapp.net/api/FurtherTesting",
                     data: JSON.stringify(data),
-                    contentType: "application/json",
+                    contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 });
             }
@@ -580,21 +580,57 @@ module BMA {
                     type: "POST",
                     url: "http://bmamath.cloudapp.net/api/Analyze",
                     data: JSON.stringify(data),
-                    contentType: "application/json",
+                    contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 });
             }
         }
 
         export class LTLAnalyzeService implements IServiceDriver {
+            private maxRequestCount: number = 1;
+            private pendingRequests: { data: any; deferred: JQueryDeferred<any> }[];
+            private currentActiveRequestCount: number = 0;
+
+            constructor(maxRequestCount: number) {
+                this.maxRequestCount = maxRequestCount;
+                this.pendingRequests = [];
+                this.currentActiveRequestCount = 0;
+            }
+
             public Invoke(data): JQueryPromise<any> {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
-                    data: JSON.stringify(data),
-                    contentType: "application/json",
-                    dataType: "json"
-                });
+                var that = this;
+                var deferred = $.Deferred<any>();
+                this.pendingRequests.push({ data: data, deferred: deferred });
+                this.ShiftRequest();
+                return deferred.promise();
+            }
+
+            private ShiftRequest() {
+                var that = this;
+                if (this.pendingRequests.length > 0) {
+                    var request = this.pendingRequests.shift();
+
+                    if (this.currentActiveRequestCount < this.maxRequestCount) {
+                        this.currentActiveRequestCount++;
+                        $.ajax({
+                            type: "POST",
+                            url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
+                            data: JSON.stringify(request.data),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json"
+                        }).done(function (res) {
+                            that.currentActiveRequestCount--;
+                            that.ShiftRequest();
+                            request.deferred.resolve(res);
+                        }).fail(function (xhr, textStatus, errorThrown) {
+                            that.currentActiveRequestCount--;
+                            that.ShiftRequest();
+                            request.deferred.reject(xhr, textStatus, errorThrown);
+                        });
+                    } else {
+                        this.pendingRequests.push(request);
+                    }
+                }
             }
         }
 
@@ -604,7 +640,7 @@ module BMA {
                     type: "POST",
                     url: "http://bmamath.cloudapp.net/api/Simulate",
                     data: JSON.stringify(data),
-                    contentType: "application/json",
+                    contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 });
             }
@@ -612,7 +648,7 @@ module BMA {
 
         export class MessageBoxDriver implements IMessageServiсe {
 
-            public Show(message: string){
+            public Show(message: string) {
                 alert(message);
             }
 
@@ -672,6 +708,6 @@ module BMA {
                 return isInsidePopup;
             }
         }
-       
+
     }
 } 

@@ -31,6 +31,19 @@
 
                 temporlapropertieseditor.SetStates(appModel.States);
 
+                ltlviewer.SetOnTabExpandedCallback(() => {
+                    if (this.tppresenter === undefined) {
+                        temporlapropertieseditor.Show();
+                        this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(
+                            commands,
+                            appModel,
+                            ajax,
+                            temporlapropertieseditor,
+                            this.statespresenter);
+                        temporlapropertieseditor.Hide();
+                    }
+                });
+
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                 window.Commands.On("AppModelChanged",(args) => {
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
@@ -171,7 +184,7 @@
                 });
 
                 commands.On("KeyframesChanged", (args: { states: BMA.LTLOperations.Keyframe[] }) => {
-                    //TP presenter should normally handle this but in case it was not shown and user tryies to modify states for imported states and formulas
+                    //TP presenter should normally handle this but in case it was not shown and user tries to modify states for imported states and formulas
                     if (this.tppresenter === undefined) {
                         this.UpdateOperations(args.states);
                     }

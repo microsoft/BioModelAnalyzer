@@ -233,6 +233,7 @@
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dropzonescnt);
             dropzones.width("100%");
 
+            /*
             this.copyzone = $("<div></div>").addClass("dropzone copy").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dropzones);
             this.copyzone.width("calc(50% - 15px - 3px)");
 
@@ -253,10 +254,10 @@
                     }
                 }
             });
-
+            */
 
             this.deletezone = $("<div></div>").addClass("dropzone delete").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dropzones);
-            this.deletezone.width("calc(50% - 15px - 3px)");
+            this.deletezone.width("calc(100% - 30px)").css("margin-left", 15).css("margin-bottom", 0);
             $("<img>").attr("src", "../images/LTL-delete.svg").attr("alt", "").appendTo(this.deletezone);
 
             var fitDiv = $("<div></div>").addClass("fit-screen").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).css("cursor", "pointer").css("position", "relative").appendTo(dom.host);
@@ -366,7 +367,7 @@
 
         updateCopyZoneIcon: function (op) {
             var that = this;
-
+            /*
             if (that.operation !== undefined) {
                 that.operation.Clear();
             }
@@ -394,14 +395,17 @@
                     that.copyzonesvg.load("../images/LTL-copy.svg", { width: 40, height: 40 });
                 }
             }
+            */
         },
 
         setcopyzonevisibility: function (isVisible) {
+            /*
             if (isVisible) {
                 this.copyzone.show();
             } else {
                 this.copyzone.hide();
             }
+            */
         },
 
         setdeletezonevisibility: function (isVisible) {
@@ -414,11 +418,13 @@
 
 
         highlightcopyzone: function (isHighlighted) {
+            /*
             if (isHighlighted) {
                 this.copyzone.addClass("hovered");
             } else {
                 this.copyzone.removeClass("hovered");
             }
+            */
         },
 
         highlightdeletezone: function (isHighlighted) {
@@ -430,6 +436,7 @@
         },
 
         getcopyzonebbox: function () {
+            /*
             var x = this._drawingSurface.drawingsurface("getPlotX", 15);
             var y = this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10 - this.copyzone.height());
             var bbox = {
@@ -441,16 +448,20 @@
 
 
             return bbox;
+            */
+            return {
+                x: Number.POSITIVE_INFINITY, y: Number.POSITIVE_INFINITY, width: 0, height: 0
+            };
         },
 
         getdeletezonebbox: function () {
 
-            var x = this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width() + 6);
+            var x = this._drawingSurface.drawingsurface("getPlotX", 15);
             var y = this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10 - this.deletezone.height());
             var bbox = {
                 x: x,
                 y: y,
-                width: this._drawingSurface.drawingsurface("getPlotX", 15 + this.copyzone.width() + 6 + this.copyzone.width()) - x,
+                width: this._drawingSurface.drawingsurface("getPlotX", 15 + this.deletezone.width()) - x,
                 height: this._drawingSurface.drawingsurface("getPlotY", this._drawingSurface.height() - 10) - y
             };
 
