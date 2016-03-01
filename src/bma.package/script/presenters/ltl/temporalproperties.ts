@@ -375,12 +375,15 @@ module BMA {
                 });
 
                 window.Commands.On("AppModelChanged", (args) => {
-                    if (this.CompareStatesToLocal(appModel.States)) {
+                    if (this.CompareStatesToLocal(appModel.States) || args.isMajorChange) {
                         this.states = appModel.States;
                         tpEditorDriver.SetStates(appModel.States);
                         for (var i = 0; i < this.operations.length; i++) {
                             var op = this.operations[i];
                             op.RefreshStates(appModel.States);
+                            if (args.isMajorChange) {
+                                op.AnalysisStatus = "nottested";
+                            }
                         }
 
                         this.FitToView();

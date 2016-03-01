@@ -2280,12 +2280,15 @@ var BMA;
                     return this.model;
                 },
                 set: function (value) {
+                    var isMajorChange = false;
+                    if (JSON.stringify(this.model) !== JSON.stringify(value))
+                        isMajorChange = true;
                     this.model = value;
                     //if (this.states.length != 0) this.UpdateStates();
                     var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
                     if (statesChanged.isChanged)
                         this.states = statesChanged.states;
-                    window.Commands.Execute("AppModelChanged", {});
+                    window.Commands.Execute("AppModelChanged", { isMajorChange: isMajorChange });
                     //TODO: update inner components (analytics)
                 },
                 enumerable: true,
@@ -2297,7 +2300,7 @@ var BMA;
                 },
                 set: function (value) {
                     this.layout = value;
-                    window.Commands.Execute("AppModelChanged", {});
+                    window.Commands.Execute("AppModelChanged", { isMajorChange: false });
                     //TODO: update inner components (analytics)
                 },
                 enumerable: true,
@@ -14146,12 +14149,15 @@ var BMA;
                     _this.tpEditorDriver.SetCopyZoneVisibility(false);
                 });
                 window.Commands.On("AppModelChanged", function (args) {
-                    if (_this.CompareStatesToLocal(appModel.States)) {
+                    if (_this.CompareStatesToLocal(appModel.States) || args.isMajorChange) {
                         _this.states = appModel.States;
                         tpEditorDriver.SetStates(appModel.States);
                         for (var i = 0; i < _this.operations.length; i++) {
                             var op = _this.operations[i];
                             op.RefreshStates(appModel.States);
+                            if (args.isMajorChange) {
+                                op.AnalysisStatus = "nottested";
+                            }
                         }
                         _this.FitToView();
                         _this.OnOperationsChanged(true, false);
