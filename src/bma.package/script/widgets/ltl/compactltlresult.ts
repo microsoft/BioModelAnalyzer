@@ -20,6 +20,10 @@
 
             this.maindiv = $("<div></div>").appendTo(this.element);
             this._createView();
+
+            this.maindiv.click(function (e) {
+                e.stopPropagation();
+            });
         },
 
         _createView: function () {

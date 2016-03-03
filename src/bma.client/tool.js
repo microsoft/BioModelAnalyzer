@@ -12618,6 +12618,9 @@ jQuery.fn.extend({
             this.element.empty();
             this.maindiv = $("<div></div>").appendTo(this.element);
             this._createView();
+            this.maindiv.click(function (e) {
+                e.stopPropagation();
+            });
         },
         _createView: function () {
             var that = this;
@@ -13988,6 +13991,14 @@ var BMA;
                         _this.OnOperationsChanged();
                     }
                 });
+                commands.On("DrawingSurfaceClick", function (args) {
+                    for (var i = 0; i < _this.operations.length; i++) {
+                        if (_this.operations[i].Tag !== undefined && _this.operations[i].Tag.driver !== undefined) {
+                            _this.operations[i].Tag.driver.Collapse();
+                        }
+                    }
+                    _this.navigationDriver.GetNavigationSurface().updateLayout();
+                });
                 commands.On("TemporalPropertiesEditorContextMenuOpening", function (args) {
                     var x = that.driver.GetPlotX(args.left);
                     var y = that.driver.GetPlotY(args.top);
@@ -14811,6 +14822,8 @@ var BMA;
                 this.operators.push(new LTLOperations.Operator('NEXT', 1, formulacreator('Next')));
                 this.operators.push(new LTLOperations.Operator('ALWAYS', 1, formulacreator('Always')));
                 this.operators.push(new LTLOperations.Operator('EVENTUALLY', 1, formulacreator('Eventually')));
+                this.operators.push(new LTLOperations.Operator('WEAKUNTIL', 2, formulacreator('Weakuntil')));
+                this.operators.push(new LTLOperations.Operator('UPTO', 2, formulacreator('Upto')));
             }
             Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
                 get: function () {

@@ -181,6 +181,15 @@ module BMA {
                     }
                 });
 
+                commands.On("DrawingSurfaceClick", (args) => {
+                    for (var i = 0; i < this.operations.length; i++) {
+                        if (this.operations[i].Tag !== undefined && this.operations[i].Tag.driver !== undefined) {
+                            this.operations[i].Tag.driver.Collapse();
+                        }
+                    }
+                    (<any>this.navigationDriver.GetNavigationSurface()).updateLayout();
+                });
+
                 commands.On("TemporalPropertiesEditorContextMenuOpening", (args) => {
                     var x = that.driver.GetPlotX(args.left);
                     var y = that.driver.GetPlotY(args.top);
