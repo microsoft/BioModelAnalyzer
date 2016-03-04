@@ -43,6 +43,8 @@ module BMA {
                 this.operators.push(new Operator('NEXT', 1, formulacreator('Next')));
                 this.operators.push(new Operator('ALWAYS', 1, formulacreator('Always')));
                 this.operators.push(new Operator('EVENTUALLY', 1, formulacreator('Eventually')));
+                this.operators.push(new Operator('WEAKUNTIL', 2, formulacreator('Weakuntil')));
+                this.operators.push(new Operator('UPTO', 2, formulacreator('Upto')));
             }
         }
     }

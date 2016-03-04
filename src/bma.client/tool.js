@@ -2439,9 +2439,10 @@ var BMA;
             AppModel.prototype.Reset = function (model, layout) {
                 this.model = model;
                 this.layout = layout;
-                var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
-                if (statesChanged.isChanged)
-                    this.states = statesChanged.states;
+                this.states = [];
+                this.operations = [];
+                //var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
+                //if (statesChanged.isChanged) this.states = statesChanged.states;
                 window.Commands.Execute("ModelReset", undefined);
             };
             AppModel.prototype.Serialize = function () {
@@ -6388,7 +6389,7 @@ var BMA;
                         var containsSameRelationship = false;
                         for (var j = 0; j < model.Relationships.length; j++) {
                             var rel = model.Relationships[j];
-                            if (rel.FromVariableId === this.stagingLine.id && rel.ToVariableId === variable.Id && rel.Type === this.selectedType) {
+                            if (rel.FromVariableId === this.stagingLine.id && rel.ToVariableId === variable.Id) {
                                 containsSameRelationship = true;
                                 break;
                             }
@@ -11594,7 +11595,7 @@ jQuery.fn.extend({
                     var columnData = [];
                     for (var i = 0; i < that.options.data[args.column].length; i++) {
                         columnData.push({
-                            variable: that.options.variables[i][2],
+                            variable: that.options.variables[i][3],
                             variableId: that.options.id[i],
                             value: that.options.data[args.column][i]
                         });
@@ -12654,6 +12655,9 @@ jQuery.fn.extend({
             this.element.empty();
             this.maindiv = $("<div></div>").appendTo(this.element);
             this._createView();
+            this.maindiv.click(function (e) {
+                e.stopPropagation();
+            });
         },
         _createView: function () {
             var that = this;
@@ -14024,6 +14028,14 @@ var BMA;
                         _this.OnOperationsChanged();
                     }
                 });
+                commands.On("DrawingSurfaceClick", function (args) {
+                    for (var i = 0; i < _this.operations.length; i++) {
+                        if (_this.operations[i].Tag !== undefined && _this.operations[i].Tag.driver !== undefined) {
+                            _this.operations[i].Tag.driver.Collapse();
+                        }
+                    }
+                    _this.navigationDriver.GetNavigationSurface().updateLayout();
+                });
                 commands.On("TemporalPropertiesEditorContextMenuOpening", function (args) {
                     var x = that.driver.GetPlotX(args.left);
                     var y = that.driver.GetPlotY(args.top);
@@ -14847,6 +14859,8 @@ var BMA;
                 this.operators.push(new LTLOperations.Operator('NEXT', 1, formulacreator('Next')));
                 this.operators.push(new LTLOperations.Operator('ALWAYS', 1, formulacreator('Always')));
                 this.operators.push(new LTLOperations.Operator('EVENTUALLY', 1, formulacreator('Eventually')));
+                this.operators.push(new LTLOperations.Operator('WEAKUNTIL', 2, formulacreator('Weakuntil')));
+                this.operators.push(new LTLOperations.Operator('UPTO', 2, formulacreator('Upto')));
             }
             Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
                 get: function () {

@@ -85,7 +85,7 @@
                     var columnData = [];
                     for (var i = 0; i < that.options.data[args.column].length; i++) {
                         columnData.push({
-                            variable: that.options.variables[i][2],
+                            variable: that.options.variables[i][3],
                             variableId: that.options.id[i],
                             value: that.options.data[args.column][i]
                         });

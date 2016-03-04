@@ -20,7 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <TypeScriptToolsVersion>1.6</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.7</TypeScriptToolsVersion>
     <SilverlightApplicationList>{68041FBC-F127-4770-93D3-DCA3AE200A64}|..\LegacyModelsImporter\LegacyModelsImporter.csproj|ClientBin|False</SilverlightApplicationList>
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
