@@ -59,6 +59,7 @@ let proof_output = ref "proof_output" // output filename
 let formula = ref "True"
 let number_of_steps = ref -1
 let model_check = ref false
+let no_sat = ref false
 let modelsdir = ref ".\\" 
 let output_model = ref false
 let output_proof = ref false
@@ -76,7 +77,8 @@ let usage i =
     Printf.printfn "                           -modelsdir model_directory"
     Printf.printfn "                           -log "
     Printf.printfn "                           -loglevel n"
-    Printf.printfn "                         [ -engine [ VMCAI | SCM | SYN ] –prove output_file_name.json |"
+    Printf.printfn "                         [ -engine [ SCM | SYN ] –prove output_file_name.json |"
+    Printf.printfn "                         [ -engine VMCAI –prove output_file_name.json -nosat? |"
     Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? |"
     Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.json |"
     Printf.printfn "                           -engine PATH –model2 model2.json –state initial_state.csv –state2 target_state.csv ]"
@@ -98,6 +100,7 @@ let rec parse_args args =
     | "-simulate_v0" :: v0 :: rest -> simul_v0 := v0; parse_args rest
     | "-formula" :: f :: rest -> formula := f; parse_args rest
     | "-mc" :: rest -> model_check := true; parse_args rest
+    | "-nosat" :: rest -> no_sat := true; parse_args rest
     | "-outputmodel" :: rest -> output_model := true; parse_args rest
     | "-proof" :: rest -> output_proof := true; parse_args rest
     | "-path" :: i :: rest -> number_of_steps := (int)i; parse_args rest
@@ -202,9 +205,9 @@ let runSimulateEngine qn (simul_output : string) start_state_file simulation_tim
     Log.log_debug "Writing excel spreadsheet"
     ModelToExcel.saveSpreadsheet app sheet (simul_output + ".xlsx")
 
-let runVMCAIEngine qn (proof_output : string) =
+let runVMCAIEngine qn (proof_output : string) (no_sat : bool) =
     Log.log_debug "Running the proof"
-    let (sr,cex_o) = Stabilize.stabilization_prover qn
+    let (sr,cex_o) = Stabilize.stabilization_prover qn no_sat
     match (sr,cex_o) with 
     | (Result.SRStabilizing(_), None) -> 
         write_json_to_file proof_output (Marshal.AnalysisResult_of_stability_result sr)
@@ -222,7 +225,7 @@ let runCAVEngine qn length_of_path formula model_check output_proof output_model
         else
             formula
 
-    let ltl_formula = LTL.string_to_LTL_formula ltl_formula_str qn 
+    let ltl_formula = LTL.string_to_LTL_formula ltl_formula_str qn false  
 
     LTL.print_in_order ltl_formula
     if (ltl_formula = LTL.Error) then
@@ -313,7 +316,7 @@ let main args =
                 | Some EngineSYN -> runSYNEngine qn; true
                 | Some EngineSCM -> runSCMEngine qn; true
                 | Some EngineVMCAI ->
-                    if (!proof_output <> "") then runVMCAIEngine qn !proof_output; true
+                    if (!proof_output <> "") then runVMCAIEngine qn !proof_output !no_sat; true
                     else false
                 | Some EngineCAV -> runCAVEngine qn !number_of_steps !formula !model_check !output_proof !output_model; true
                 | Some EngineSimulate ->

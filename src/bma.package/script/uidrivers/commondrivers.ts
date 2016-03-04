@@ -614,7 +614,7 @@ module BMA {
                         this.currentActiveRequestCount++;
                         $.ajax({
                             type: "POST",
-                            url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
+                            url: "api/AnalyzeLTL",
                             data: JSON.stringify(request.data),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json"

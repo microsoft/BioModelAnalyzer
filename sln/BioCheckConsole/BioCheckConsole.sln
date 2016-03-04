@@ -97,7 +97,10 @@ Global
 		{0F088352-D63F-48AD-A000-AFD456157B7D}.nuget|x86.ActiveCfg = Release|x86
 		{0F088352-D63F-48AD-A000-AFD456157B7D}.nuget|x86.Build.0 = Release|x86
 		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+<<<<<<< HEAD
 		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|Any CPU.Build.0 = Release|Any CPU
+=======
+>>>>>>> a5c24bc15356b5e985cadd0f3d72c861b79228d4
 		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|Mixed Platforms.Build.0 = Release|x86
 		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|x86.ActiveCfg = Release|x86
