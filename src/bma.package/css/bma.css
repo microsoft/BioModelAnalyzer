@@ -4051,11 +4051,11 @@ ui-icon-arrowthickstop-1-n {
   max-width: 250px;
   max-height: 322px;
   overflow-x: auto;
-}
-.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table:after {
-  content: "";
-  height: 18px;
-  display: block;
+  /*&:after {
+                content:"";
+                //height:18px;
+                display:block;
+            }*/
 }
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .bma-simulation-data-table {
   max-width: calc(100% - 90px);

@@ -404,5 +404,16 @@
             }
             return newStateName;
         }
+
+        export function GetScrollBarSize(): { width: number, height: number } {
+            var $outer = $('<div>').css({ visibility: 'hidden', width: 100, height: 100, overflow: 'scroll' }).appendTo('body'),
+                widthWithScroll = $('<div>').css({ width: '100%' }).appendTo($outer).outerWidth(),
+                heightWithScroll = $('<div>').css({ height: '100%' }).appendTo($outer).outerHeight();
+            $outer.remove();
+            var width =  100 - widthWithScroll;
+            var height = 100 - heightWithScroll;
+
+            return { width: width, height: height };
+        }
     }
 } 

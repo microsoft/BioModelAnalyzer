@@ -34,6 +34,9 @@
             this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer);//root);
             this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer);//root);
             //this._table.height(that._table.height() + 10);
+
+            var scrollBarSize = BMA.ModelHelper.GetScrollBarSize();            
+
             this._table.on('scroll', function () {
                 that._variables.scrollTop($(this).scrollTop());
             });
@@ -42,6 +45,7 @@
                 that._table.scrollTop($(this).scrollTop());
             });
 
+            this._variables.css("max-height", 322 - scrollBarSize.height);
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
@@ -106,6 +110,8 @@
                 onContextMenuItemSelected: onContextMenuItemSelected
             });
             
+            var after = $("<div></div>").css("height", 23).css("width", "100%").appendTo(this._table);
+
             this.refresh();
         },
 

@@ -892,6 +892,14 @@ var BMA;
             return newStateName;
         }
         ModelHelper.GenerateStateName = GenerateStateName;
+        function GetScrollBarSize() {
+            var $outer = $('<div>').css({ visibility: 'hidden', width: 100, height: 100, overflow: 'scroll' }).appendTo('body'), widthWithScroll = $('<div>').css({ width: '100%' }).appendTo($outer).outerWidth(), heightWithScroll = $('<div>').css({ height: '100%' }).appendTo($outer).outerHeight();
+            $outer.remove();
+            var width = 100 - widthWithScroll;
+            var height = 100 - heightWithScroll;
+            return { width: width, height: height };
+        }
+        ModelHelper.GetScrollBarSize = GetScrollBarSize;
     })(ModelHelper = BMA.ModelHelper || (BMA.ModelHelper = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=ModelHelper.js.map
@@ -11552,12 +11560,15 @@ jQuery.fn.extend({
             this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer); //root);
             this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer); //root);
             //this._table.height(that._table.height() + 10);
+            var scrollBarSize = BMA.ModelHelper.GetScrollBarSize();
+            //alert(scrollBarSize.height);
             this._table.on('scroll', function () {
                 that._variables.scrollTop($(this).scrollTop());
             });
             this._variables.on('scroll', function () {
                 that._table.scrollTop($(this).scrollTop());
             });
+            this._variables.css("max-height", 322 - scrollBarSize.height);
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
             this.loading = $("<div></div>").addClass("page-loading").css("top", "27").css("width", 500).css("height", 324).css("margin-top", 50).appendTo(this._plot);
@@ -11613,6 +11624,7 @@ jQuery.fn.extend({
                 columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
                 onContextMenuItemSelected: onContextMenuItemSelected
             });
+            var after = $("<div></div>").css("height", 23).css("width", "100%").appendTo(this._table);
             this.refresh();
         },
         _setOption: function (key, value) {
@@ -12392,7 +12404,7 @@ jQuery.fn.extend({
             });
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
-            that.addContextMenu();
+            //that.addContextMenu();
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons);
             }
@@ -12457,45 +12469,44 @@ jQuery.fn.extend({
         },
         refresh: function () {
         },
-        addContextMenu: function () {
-            var that = this;
-            this._stateButtons.contextmenu({
-                delegate: ".state-button",
-                autoFocus: true,
-                preventContextMenuForPopup: true,
-                preventSelect: true,
-                menu: [{ title: "Delete State", cmd: "DeleteState" }],
-                beforeOpen: function (event, ui) {
-                    ui.menu.zIndex(50);
-                },
-                select: function (event, ui) {
-                    var args = {};
-                    args.command = ui.cmd;
-                    var state = ui.target.context;
-                    args.stateName = $(state).attr("data-state-name");
-                    for (var j = 0; j < that.options.states.length; j++) {
-                        if (that.options.states[j].name == $(state).attr("data-state-name")) {
-                            args.stateIdx = j;
-                            break;
-                        }
-                    }
-                    that.onContextMenuItemSelected(args);
-                }
-            });
-        },
-        onContextMenuItemSelected: function (args) {
-            var that = this;
-            that.options.states.splice(args.stateIdx, 1);
-            that._stateButtons.find("[data-state-name='" + args.stateName + "']").remove();
-            if (this.options.states.length == 0) {
-                this._stateButtons.hide();
-            }
-            else {
-                this._emptyStateAddButton.hide();
-                this._emptyStatePlaceholder.hide();
-            }
-            window.Commands.Execute("KeyframesChanged", { states: that.options.states });
-        },
+        //addContextMenu: function () {
+        //    var that = this;
+        //    this._stateButtons.contextmenu({
+        //        delegate: ".state-button",
+        //        autoFocus: true,
+        //        preventContextMenuForPopup: true,
+        //        preventSelect: true,
+        //        menu: [{ title: "Delete State", cmd: "DeleteState" }],
+        //        beforeOpen: function (event, ui) {
+        //            ui.menu.zIndex(50);
+        //        },
+        //        select: function (event, ui) {
+        //            var args: any = {};
+        //            args.command = ui.cmd;
+        //            var state = ui.target.context;
+        //            args.stateName = $(state).attr("data-state-name");
+        //            for (var j = 0; j < that.options.states.length; j++) {
+        //                if (that.options.states[j].name == $(state).attr("data-state-name")) {
+        //                    args.stateIdx = j;
+        //                    break;
+        //                }
+        //            }
+        //            that.onContextMenuItemSelected(args);
+        //        }
+        //    });
+        //},
+        //onContextMenuItemSelected: function (args) {
+        //    var that = this;
+        //    that.options.states.splice(args.stateIdx, 1);
+        //    that._stateButtons.find("[data-state-name='" + args.stateName + "']").remove();
+        //    if (this.options.states.length == 0) {
+        //        this._stateButtons.hide();
+        //    } else {
+        //        this._emptyStateAddButton.hide();
+        //        this._emptyStatePlaceholder.hide();
+        //    }
+        //    window.Commands.Execute("KeyframesChanged", { states: that.options.states });
+        //},
         convertForTooltip: function (state) {
             var formulas = [];
             for (var j = 0; j < state.formula.length; j++) {
