@@ -12391,9 +12391,9 @@ jQuery.fn.extend({
             });
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
+            that.addContextMenu();
             for (var i = 0; i < this.options.states.length; i++) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons);
-                that.createToolTip(this.options.states[i], stateButton);
             }
             if (this.options.states.length == 0) {
                 this._stateButtons.hide();
@@ -12456,7 +12456,44 @@ jQuery.fn.extend({
         },
         refresh: function () {
         },
-        addState: function (state) {
+        addContextMenu: function () {
+            var that = this;
+            this._stateButtons.contextmenu({
+                delegate: ".state-button",
+                autoFocus: true,
+                preventContextMenuForPopup: true,
+                preventSelect: true,
+                menu: [{ title: "Delete State", cmd: "DeleteState" }],
+                beforeOpen: function (event, ui) {
+                    ui.menu.zIndex(50);
+                },
+                select: function (event, ui) {
+                    var args = {};
+                    args.command = ui.cmd;
+                    var state = ui.target.context;
+                    args.stateName = $(state).attr("data-state-name");
+                    for (var j = 0; j < that.options.states.length; j++) {
+                        if (that.options.states[j].name == $(state).attr("data-state-name")) {
+                            args.stateIdx = j;
+                            break;
+                        }
+                    }
+                    that.onContextMenuItemSelected(args);
+                }
+            });
+        },
+        onContextMenuItemSelected: function (args) {
+            var that = this;
+            that.options.states.splice(args.stateIdx, 1);
+            that._stateButtons.find("[data-state-name='" + args.stateName + "']").remove();
+            if (this.options.states.length == 0) {
+                this._stateButtons.hide();
+            }
+            else {
+                this._emptyStateAddButton.hide();
+                this._emptyStatePlaceholder.hide();
+            }
+            window.Commands.Execute("KeyframesChanged", { states: that.options.states });
         },
         convertForTooltip: function (state) {
             var formulas = [];
