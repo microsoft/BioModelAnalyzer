@@ -324,11 +324,20 @@ module BMA {
                             var id;
                             for (var k = 0; k < that.model.Variables.length; k++)
                                 if (that.model.Variables[k].Name == f[0].value.variable) {
-                                    if ((f[0].value.container == undefined) || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
+                                    if ((f[0].value.container === undefined)
+                                        || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
                                         id = that.model.Variables[k].Id;
                                         break;
                                     } 
                                 }
+                            //if (id === undefined) {
+                            //    for (var k = 0; k < that.model.Variables.length; k++)
+                            //        if (that.model.Variables[k].Name == f[0].value.variable) {
+                            //            id = that.model.Variables[k].Id;
+                            //            break;
+                            //        }
+                            //}
+
                             op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable, id),
                                 operator, new BMA.LTLOperations.ConstOperand(constant));
                             ops.push(op);

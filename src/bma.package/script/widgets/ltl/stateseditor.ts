@@ -563,7 +563,12 @@
                             divVariables.find(".active").removeClass("active");
                             $(this).addClass("active");
 
-                            currSymbol.value = { container: $(container).attr("data-container-id"), variable: $(this).attr("data-variable-name") };
+                            var containerId = $(container).attr("data-container-id");
+                            var variablesName = $(this).attr("data-variable-name");
+                            if (containerId == "0")
+                                containerId = that.findContainer(variablesName);
+
+                            currSymbol.value = { container: containerId, variable: variablesName };
                             setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable ? currSymbol.value.variable : "Unnamed" });
 
                             that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });

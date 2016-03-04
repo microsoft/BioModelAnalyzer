@@ -32,7 +32,7 @@
             }
 
             public Clone() {
-                return new NameOperand(this.name);
+                return new NameOperand(this.name, this.id);
             }
         }
 

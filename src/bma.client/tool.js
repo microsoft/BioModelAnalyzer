@@ -3003,7 +3003,7 @@ var BMA;
                 return this.name;
             };
             NameOperand.prototype.Clone = function () {
-                return new NameOperand(this.name);
+                return new NameOperand(this.name, this.id);
             };
             return NameOperand;
         })();
@@ -4926,11 +4926,19 @@ var BMA;
                             var id;
                             for (var k = 0; k < that.model.Variables.length; k++)
                                 if (that.model.Variables[k].Name == f[0].value.variable) {
-                                    if ((f[0].value.container == undefined) || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
+                                    if ((f[0].value.container === undefined)
+                                        || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
                                         id = that.model.Variables[k].Id;
                                         break;
                                     }
                                 }
+                            //if (id === undefined) {
+                            //    for (var k = 0; k < that.model.Variables.length; k++)
+                            //        if (that.model.Variables[k].Name == f[0].value.variable) {
+                            //            id = that.model.Variables[k].Id;
+                            //            break;
+                            //        }
+                            //}
                             op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable, id), operator, new BMA.LTLOperations.ConstOperand(constant));
                             ops.push(op);
                         }
@@ -11561,7 +11569,6 @@ jQuery.fn.extend({
             this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer); //root);
             //this._table.height(that._table.height() + 10);
             var scrollBarSize = BMA.ModelHelper.GetScrollBarSize();
-            //alert(scrollBarSize.height);
             this._table.on('scroll', function () {
                 that._variables.scrollTop($(this).scrollTop());
             });
@@ -12261,7 +12268,11 @@ jQuery.fn.extend({
                         .appendTo(divVariables).click(function () {
                         divVariables.find(".active").removeClass("active");
                         $(this).addClass("active");
-                        currSymbol.value = { container: $(container).attr("data-container-id"), variable: $(this).attr("data-variable-name") };
+                        var containerId = $(container).attr("data-container-id");
+                        var variablesName = $(this).attr("data-variable-name");
+                        if (containerId == "0")
+                            containerId = that.findContainer(variablesName);
+                        currSymbol.value = { container: containerId, variable: variablesName };
                         setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable ? currSymbol.value.variable : "Unnamed" });
                         that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                     });
