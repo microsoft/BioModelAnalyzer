@@ -1,6 +1,3 @@
-/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
-/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-/// <reference path="..\..\script\uidrivers.interfaces.ts"/>
 var BMA;
 (function (BMA) {
     var Test;
@@ -65,9 +62,12 @@ var BMA;
             }
             TestElementsPanel.prototype.GetDragSubject = function () {
                 return {
-                    dragStart: { subscribe: function () { } },
-                    drag: { subscribe: function () { } },
-                    dragEnd: { subscribe: function () { } }
+                    dragStart: { subscribe: function () {
+                    } },
+                    drag: { subscribe: function () {
+                    } },
+                    dragEnd: { subscribe: function () {
+                    } }
                 };
             };
             return TestElementsPanel;
@@ -82,12 +82,14 @@ var BMA;
             TestVariableEditor.prototype.SetValidation = function (v) {
                 return v;
             };
-            TestVariableEditor.prototype.Initialize = function (variable, model) { };
-            TestVariableEditor.prototype.Show = function (x, y) { };
-            TestVariableEditor.prototype.Hide = function () { };
+            TestVariableEditor.prototype.Initialize = function (variable, model) {
+            };
+            TestVariableEditor.prototype.Show = function (x, y) {
+            };
+            TestVariableEditor.prototype.Hide = function () {
+            };
             return TestVariableEditor;
         })();
         Test.TestVariableEditor = TestVariableEditor;
     })(Test = BMA.Test || (BMA.Test = {}));
 })(BMA || (BMA = {}));
-//# sourceMappingURL=BMA.TestComponents.js.map
