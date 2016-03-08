@@ -281,7 +281,10 @@ let string_to_LTL_formula (s : string) (network) (varbyid : bool) =
             let first_space = substring.IndexOf(" ")
             // Strips out antideath in (> antideath 2)
             let var_name_str = substring.Substring(0, first_space)
-            let var_number = (int) var_name_str
+            let var_number = 
+                match System.Int32.TryParse var_name_str with
+                | true, n -> n
+                | failse, _ -> -1
             // Variable names are matched to QN node names: Loop through all variable names and check against the formula variable name
             let match_name_function (n : QN.node) = n.name = var_name_str
             let match_id_function (n : QN.node) = n.number = var_number

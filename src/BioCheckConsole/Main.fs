@@ -207,7 +207,7 @@ let runSimulateEngine qn (simul_output : string) start_state_file simulation_tim
 
 let runVMCAIEngine qn (proof_output : string) (no_sat : bool) =
     Log.log_debug "Running the proof"
-    runcavlet (sr,cex_o) = Stabilize.stabilization_prover qn no_sat
+    let (sr,cex_o) = Stabilize.stabilization_prover qn no_sat
     match (sr,cex_o) with 
     | (Result.SRStabilizing(_), None) -> 
         write_json_to_file proof_output (Marshal.AnalysisResult_of_stability_result sr)
