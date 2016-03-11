@@ -13563,6 +13563,10 @@ jQuery.fn.extend({
                         });
                         opbbox.width += t.getBBox().width + 10;
                     }
+                    else {
+                        this._createWaitAnimation(opbbox.width + 10, opLayout.Position.y);
+                        opbbox.width += 20;
+                    }
                     height += opbbox.height + this.options.padding.y;
                     width = Math.max(width, opbbox.width);
                 }
@@ -13576,6 +13580,38 @@ jQuery.fn.extend({
                     viewBox: "0 0 " + width + " " + height
                 }, true);
             }
+        },
+        _createWaitAnimation: function (x, y) {
+            var x0 = x;
+            var myrect = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
+            var animate = function () {
+                $(myrect).animate({ svgR: "+=5" }, 500, function () {
+                    $(myrect).animate({ svgR: "-=5" }, 500, function () {
+                        animate();
+                    });
+                });
+            };
+            animate();
+            x0 += 13;
+            var myrect2 = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
+            var animate2 = function () {
+                $(myrect2).animate({ svgR: "+=5" }, 500, function () {
+                    $(myrect2).animate({ svgR: "-=5" }, 500, function () {
+                        animate2();
+                    });
+                });
+            };
+            animate2();
+            x0 += 13;
+            var myrect3 = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
+            var animate3 = function () {
+                $(myrect3).animate({ svgR: "+=5" }, 500, function () {
+                    $(myrect3).animate({ svgR: "-=5" }, 500, function () {
+                        animate3();
+                    });
+                });
+            };
+            animate3();
         },
         _setOption: function (key, value) {
             var that = this;
