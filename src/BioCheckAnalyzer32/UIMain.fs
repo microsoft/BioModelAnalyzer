@@ -92,7 +92,7 @@ type Analyzer () =
 
                     // SI: right now, we're just dumping res,model back to the UI.
                     // We should structure the data that res,model,model_checked are.
-                    let (res1,model1,res2,model2) = BMC.BoundedMC formula network range padded_paths false
+                    let (res1,model1,res2,model2) = BMC.BoundedMC formula network padded_paths false
                     let model_checked = BioCheckPlusZ3.check_model model1 res1 network
 //                    let string_model = BioCheckPlusZ3.print_model_to_string model res network true
 //                    Marshal.xml_of_ltl_string_result res string_model

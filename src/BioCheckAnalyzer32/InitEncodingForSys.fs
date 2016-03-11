@@ -147,9 +147,6 @@ let encode_transition_with_loop (network:QN) (last_range : VariableRange) (curre
             let z3_constraint_for_loop_at_time = BioCheckPlusZ3.constraint_for_loop_at_time current_step last_step z
             (z.AssertCnstr(z.MkImplies(z3_constraint_for_loop_at_time,z3_constraint_for_trans)))
 
-// SI: Initialize Z3 ctx for the boolean encoding. 
-
-// 1. removed initBound and initK from params
 
 /// Encode the path 
 let encode_boolean_paths network (z : Context) (ranges : VariableRange list)  =
@@ -170,13 +167,17 @@ let encode_boolean_paths network (z : Context) (ranges : VariableRange list)  =
 
 
 // Encode the loop closure
-let encode_loop_closure network (z : Context) (ranges : VariableRange list) =
+// if loop_closure_loop is in the range 0 .. ranges.Length-1 then it indicates
+// the exact position of loop closure and only the constraint for that position needs to be 
+// asserted
+let encode_loop_closure network (z : Context) (ranges : VariableRange list) (loop_closure_loc : int) =
     let last_time = ranges.Length - 1 
     let last_range = List.head (List.rev ranges)
 
     let time = ref 0
     for range in ranges do
-        encode_transition_with_loop network last_range range last_time !time z
+        if !time = loop_closure_loc || loop_closure_loc < 0 || loop_closure_loc > last_time then
+            encode_transition_with_loop network last_range range last_time !time z
 
         incr time
 
@@ -201,7 +202,13 @@ let encode_loop_closure network (z : Context) (ranges : VariableRange list) =
 // The loop closes at time 1 if !v0 & v1 
 // The loop closes at time i if !vi-1 & vi
 // The loop closes at time n-1 if !vn-2
-let encode_loop_closure_variables (z : Context) length =
+//
+// loop_closure_loop indicates the exact position of loop closure (-1 for leave open)
+let encode_loop_closure_variables (z : Context) length loop_closure_loc =
     let list_of_variables = BioCheckPlusZ3.allocate_loop_vars z length
-    ignore(BioCheckPlusZ3.create_implication_for_bool_vars list_of_variables z)
+    if (loop_closure_loc < 0 || loop_closure_loc >= length) then
+        ignore(BioCheckPlusZ3.create_implication_for_bool_vars list_of_variables z)
+    else
+        let list_of_values = [ for i in 0 .. length-2  -> if  i < loop_closure_loc then false else true ]
+        ignore(BioCheckPlusZ3.assert_values_for_bool_vars list_of_variables list_of_values z)
 

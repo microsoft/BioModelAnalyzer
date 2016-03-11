@@ -8,6 +8,7 @@ open System.Xml.Linq
 open System.Diagnostics
 
 open LTL
+open Simulate
 
 
 //SI: un-used? 
@@ -57,7 +58,91 @@ open LTL
 //    printfn "%s" "finish all assertions in K steps"
 
 
-let BoundedMC (ltl_formula : LTLFormulaType) network initBound (paths : Map<QN.var,int list> list) check_both =
+// ltl_formula - the ltl formula
+// network - the QN
+// paths - list (according to time) of the ranges of all the variables
+// loop_closure_loop is either -1 (in which case the loop_closure_loop is left open for the SAT solver to set)
+//                   or a value (in which case the loop closes in that value)
+// polarity - check the formula (true) or its negation (false)
+let SingleSideBoundedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int list> list) (loop_closure_loc : int) (polarity : bool) =
+    
+    let cfg = new Config()
+    cfg.SetParamValue("MODEL", "true")
+    let ctx = new Context(cfg)
+   
+    let model = ref null
+    ctx.Push()
+
+    /// The system encoding part
+    
+    // 1. encode_the_time_variables_for_z3 for the mutual agreement on where the loop closes
+    InitEncodingForSys.encode_loop_closure_variables ctx paths.Length loop_closure_loc ;
+
+    // 2. Encode the path as a Boolean constraint
+    InitEncodingForSys.encode_boolean_paths network ctx paths ;
+    InitEncodingForSys.encode_loop_closure network ctx paths loop_closure_loc ; 
+
+    // 3. Encode the automaton as a boolean constraint
+    let list_of_maps = EncodingForFormula.create_list_of_maps_of_formula_constraints ltl_formula network ctx paths
+    EncodingForFormula.encode_formula_transitions_over_path ltl_formula network ctx list_of_maps 
+    EncodingForFormula.encode_formula_transitions_in_loop_closure ltl_formula network ctx list_of_maps
+    EncodingForFormula.encode_formula_loop_fairness ltl_formula network ctx list_of_maps
+
+
+    // 4. Model check 
+    if polarity then
+        EncodingForFormula.assert_top_most_formula ltl_formula ctx list_of_maps.Head true
+    else
+        EncodingForFormula.assert_top_most_formula ltl_formula ctx list_of_maps.Head false
+
+    let start_time = System.DateTime.Now
+    let sat = ctx.CheckAndGetModel (model)
+    let end_time = System.DateTime.Now
+    let duration = end_time.Subtract start_time
+    Log.log_debug ("Satisfiability check time (pos)" + duration.ToString())
+
+    let (the_result,the_model) = 
+        if sat = LBool.True then
+            (true, BioCheckPlusZ3.z3_model_to_loop (!model) paths)
+        else
+            (false,(0,Map.empty))
+
+    if (!model) <> null then (!model).Dispose()
+
+    ctx.Pop()
+    ctx.Dispose()
+    cfg.Dispose()
+
+    (the_result, the_model)
+
+let simulation_to_loop (loop : int) (simulation : Map<QN.var, int> list) =
+    let indices = [ 0 .. (simulation.Length - 1) ]
+    let new_sim = List.fold2 (fun m index state -> Map.add index state m) Map.empty indices simulation
+    (loop, new_sim)
+
+let SimulationBasedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var, int list> list) = 
+    let initial_ranges = paths.Head
+    let initial_values = Map.fold (fun m k (l : int list) -> Map.add k l.Head m) Map.empty initial_ranges
+    let (simulation, loop) = Simulate.simulate_up_to_loop network initial_values
+    let list_simulation = List.map (fun elem -> (Map.map (fun key t -> [t]) elem)) simulation 
+    let (res, model) = SingleSideBoundedMC ltl_formula network list_simulation loop true
+    if res then (res, model)
+    else (res, (simulation_to_loop loop simulation))
+
+let DoubleBoundedMCWithSim (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int list> list) check_both =
+    let (res,model) = SimulationBasedMC ltl_formula network paths
+    if res then
+        let (res1, model1) = (res, model)
+        let (res2, model2) =
+            if check_both then SingleSideBoundedMC ltl_formula network paths -1 false
+            else (false, (0,Map.empty))
+        (res1, model1, res2, model2)
+    else
+        let (res1, model1) = SingleSideBoundedMC ltl_formula network paths -1 false
+        let (res2, model2) = (true, model)
+        (res1, model1, res2, model2)
+
+let BoundedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int list> list) check_both =
     
     let cfg = new Config()
     cfg.SetParamValue("MODEL", "true")
@@ -69,14 +154,12 @@ let BoundedMC (ltl_formula : LTLFormulaType) network initBound (paths : Map<QN.v
 
     /// The system encoding part
     
-    // 0. Pad the paths with the last element in it to the right length.
-    
     // 1. encode_the_time_variables_for_z3 for the mutual agreement on where the loop closes
-    InitEncodingForSys.encode_loop_closure_variables ctx paths.Length ;
+    InitEncodingForSys.encode_loop_closure_variables ctx paths.Length -1 ;
 
     // 2. Encode the path as a Boolean constraint
     InitEncodingForSys.encode_boolean_paths network ctx paths ;
-    InitEncodingForSys.encode_loop_closure network ctx paths ; 
+    InitEncodingForSys.encode_loop_closure network ctx paths -1 ; 
 
     // 3. Encode the automaton as a boolean constraint
     let list_of_maps = EncodingForFormula.create_list_of_maps_of_formula_constraints ltl_formula network ctx paths

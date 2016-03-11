@@ -116,7 +116,18 @@ let allocate_loop_vars (z : Context) length =
         let allocate_z3_bool_var item =  make_z3_bool_var (get_z3_bool_var_loop_at_time(item)) z
         List.map allocate_z3_bool_var times
         
-        
+
+let assert_values_for_bool_vars list_of_bool_vars list_of_bool_vals (z : Context) = 
+    if ((List.length list_of_bool_vars) < 2) then
+        ()
+    else
+        let create_assignment variable truth_val =
+            if truth_val then
+                z.AssertCnstr(variable)
+            else 
+                z.AssertCnstr(z.MkNot(variable))
+        ignore(List.iter2 create_assignment list_of_bool_vars list_of_bool_vals)
+
 // For every pair of Boolean variables in the list add the constraint that the
 // first implies the second
 let create_implication_for_bool_vars list_of_bool_vars (z : Context) = 
