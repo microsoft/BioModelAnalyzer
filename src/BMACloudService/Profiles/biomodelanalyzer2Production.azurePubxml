@@ -9,14 +9,14 @@
     <AzureEnableRemoteDesktop>True</AzureEnableRemoteDesktop>
     <AzureEnableWebDeploy>False</AzureEnableWebDeploy>
     <AzureFallbackToDeleteAndRecreateIfUpgradeFails>True</AzureFallbackToDeleteAndRecreateIfUpgradeFails>
-    <AzureHostedServiceLabel>bmanew</AzureHostedServiceLabel>
-    <AzureHostedServiceName>bmanew</AzureHostedServiceName>
+    <AzureHostedServiceLabel>biomodelanalyzer2</AzureHostedServiceLabel>
+    <AzureHostedServiceName>biomodelanalyzer2</AzureHostedServiceName>
     <AzureEnableIntelliTrace>False</AzureEnableIntelliTrace>
     <AzureEnableProfiling>False</AzureEnableProfiling>
     <AzureServiceConfiguration>Cloud</AzureServiceConfiguration>
     <AzureSolutionConfiguration>Release</AzureSolutionConfiguration>
-    <AzureStorageAccountLabel>bmanew</AzureStorageAccountLabel>
-    <AzureStorageAccountName>bmanew</AzureStorageAccountName>
+    <AzureStorageAccountLabel>biomodelanalyzer2</AzureStorageAccountLabel>
+    <AzureStorageAccountName>biomodelanalyzer2</AzureStorageAccountName>
     <AzureAppendTimestampToDeploymentLabel>True</AzureAppendTimestampToDeploymentLabel>
   </PropertyGroup>
 </Project>
