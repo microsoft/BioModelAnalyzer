@@ -119,15 +119,37 @@ let simulation_to_loop (loop : int) (simulation : Map<QN.var, int> list) =
     let indices = [ 0 .. (simulation.Length - 1) ]
     let new_sim = List.fold2 (fun m index state -> Map.add index state m) Map.empty indices simulation
     (loop, new_sim)
+    
+
+let change_to_right_length (simulation : Map<QN.var, int> list) (loop : int) (desired_length : int) =
+    if desired_length < simulation.Length - loop then 
+        (simulation, loop) // There is no point to do anything
+                           // the simulation produced a too long loop and is not usable
+                           // the SAT solver will find that
+    elif desired_length < simulation.Length then // but desired length >= simulation.Length - loop
+        let rec get_suffix current_simulation items_to_remove =
+            if items_to_remove = 0 then current_simulation
+            else get_suffix (List.tail current_simulation) (items_to_remove-1)
+        ((get_suffix simulation (desired_length-simulation.Length)), (loop - desired_length + simulation.Length))
+    elif desired_length > simulation.Length then // but desired length >= simulation.Length - loop
+        let rec extend_length curr_simulation extend_by index =
+            if extend_by = 0 then simulation
+            else
+                extend_length (List.append curr_simulation ([ List.item index curr_simulation ])) (extend_by-1) (index+1)
+        ((extend_length simulation (desired_length - simulation.Length) loop) , (loop + desired_length - simulation.Length))
+    else // desired_length = simulation.Length
+        (simulation, loop)
+
 
 let SimulationBasedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var, int list> list) = 
     let initial_ranges = paths.Head
     let initial_values = Map.fold (fun m k (l : int list) -> Map.add k l.Head m) Map.empty initial_ranges
     let (simulation, loop) = Simulate.simulate_up_to_loop network initial_values
-    let list_simulation = List.map (fun elem -> (Map.map (fun key t -> [t]) elem)) simulation 
-    let (res, model) = SingleSideBoundedMC ltl_formula network list_simulation loop true
+    let (right_length_sim, right_length_loop) = change_to_right_length simulation loop paths.Length
+    let list_simulation = List.map (fun elem -> (Map.map (fun key t -> [t]) elem)) right_length_sim 
+    let (res, model) = SingleSideBoundedMC ltl_formula network list_simulation right_length_loop true
     if res then (res, model)
-    else (res, (simulation_to_loop loop simulation))
+    else (res, (simulation_to_loop right_length_loop right_length_sim))
 
 let DoubleBoundedMCWithSim (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int list> list) check_both =
     let (res,model) = SimulationBasedMC ltl_formula network paths
