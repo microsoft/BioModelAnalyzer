@@ -445,12 +445,7 @@ var BMA;
     }
     BMA.ParseXmlModel = ParseXmlModel;
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=XmlModelParser.js.map
-=======
-
-///#source 1 1 /script/SVGHelper.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var SVGHelper;
@@ -465,6 +460,7 @@ var BMA;
         SVGHelper.AddClass = AddClass;
         function RemoveClass(elem, c) {
             var s = elem.className.baseVal.replace(new RegExp("(\\s|^)" + c + "(\\s|$)"), " ");
+            // TODO - coalesce spaces
             if (s == " ")
                 s = null;
             elem.className.baseVal = s;
@@ -563,12 +559,7 @@ var BMA;
         SVGHelper.bboxText = bboxText;
     })(SVGHelper = BMA.SVGHelper || (BMA.SVGHelper = {}));
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=SVGHelper.js.map
-=======
-
-///#source 1 1 /script/ModelHelper.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var ModelHelper;
@@ -911,12 +902,7 @@ var BMA;
         ModelHelper.GetScrollBarSize = GetScrollBarSize;
     })(ModelHelper = BMA.ModelHelper || (BMA.ModelHelper = {}));
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=ModelHelper.js.map
-=======
-
-///#source 1 1 /script/commands.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var CommandRegistry = (function () {
@@ -983,14 +969,8 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
-=======
-
-///#source 1 1 /script/elementsregistry.js
-var __extends = this.__extends || function (d, b) {
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -1153,6 +1133,25 @@ var BMA;
                     }
                     $(op).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                     $(op).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
+                    /*
+                    //Helper bounding ellipses
+                    jqSvg.ellipse(
+                        (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerOuterCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
+                        (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2,
+                        containerOuterEllipseWidth * renderParams.layout.Size, containerOuterEllipseHeight * renderParams.layout.Size, { stroke: "red", fill: "none" });
+                    
+                    jqSvg.ellipse(
+                        (renderParams.layout.PositionX + 0.5) * renderParams.grid.xStep + containerInnerCenterOffset * renderParams.layout.Size + (renderParams.layout.Size - 1) * renderParams.grid.xStep / 2,
+                        (renderParams.layout.PositionY + 0.5) * renderParams.grid.yStep + (renderParams.layout.Size - 1) * renderParams.grid.yStep / 2,
+                        containerInnerEllipseWidth * renderParams.layout.Size, containerInnerEllipseHeight * renderParams.layout.Size, { stroke: "red", fill: "none" });
+
+                    jqSvg.ellipse(
+                        x + containerOuterCenterOffset * renderParams.layout.Size / 2,
+                        y,
+                        (containerInnerEllipseWidth + containerOuterEllipseWidth) * renderParams.layout.Size / 2,
+                        (containerInnerEllipseHeight + containerOuterEllipseHeight) * renderParams.layout.Size / 2,
+                        { stroke: "red", fill: "none" });
+                    */
                     var svgElem = $(jqSvg.toSVG()).children();
                     return svgElem;
                 }, function (pointerX, pointerY, elementX, elementY) {
@@ -1214,6 +1213,17 @@ var BMA;
                             });
                         }
                     }
+                    /*
+                    //Helper bounding box
+                    jqSvg.rect(
+                        renderParams.layout.PositionX - that.variableWidthConstant / 2,
+                        renderParams.layout.PositionY - that.variableHeightConstant / 2,
+                        that.variableWidthConstant,
+                        that.variableHeightConstant,
+                        0,
+                        0,
+                        { stroke: "red", fill: "none" });
+                    */
                     $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                     $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
                     var svgElem = $(jqSvg.toSVG()).children();
@@ -1321,6 +1331,17 @@ var BMA;
                             });
                         }
                     }
+                    /*
+                    //Helper bounding box
+                    jqSvg.rect(
+                        renderParams.layout.PositionX - that.variableWidthConstant / 2,
+                        renderParams.layout.PositionY - that.variableHeightConstant / 2,
+                        that.variableWidthConstant,
+                        that.variableHeightConstant,
+                        0,
+                        0,
+                        { stroke: "red", fill: "none" });
+                    */
                     $(variable).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-element-hover')");
                     $(variable).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-element-hover')");
                     var svgElem = $(jqSvg.toSVG()).children();
@@ -1404,6 +1425,7 @@ var BMA;
                         var points = BMA.SVGHelper.GeEllipsePoints(ellipseX, ellipseY, w, h, pointerX, pointerY);
                         var len1 = Math.sqrt(Math.pow(points[0].x - pointerX, 2) + Math.pow(points[0].y - pointerY, 2));
                         var len2 = Math.sqrt(Math.pow(points[1].x - pointerX, 2) + Math.pow(points[1].y - pointerY, 2));
+                        //console.log(len1 + ", " + len2);
                         return len1 < elementX.pixelWidth || len2 < elementX.pixelWidth;
                     }
                 }, "Activating Relationship", "activate-icon"));
@@ -1480,6 +1502,7 @@ var BMA;
                         var points = BMA.SVGHelper.GeEllipsePoints(ellipseX, ellipseY, w, h, pointerX, pointerY);
                         var len1 = Math.sqrt(Math.pow(points[0].x - pointerX, 2) + Math.pow(points[0].y - pointerY, 2));
                         var len2 = Math.sqrt(Math.pow(points[1].x - pointerX, 2) + Math.pow(points[1].y - pointerY, 2));
+                        //console.log(len1 + ", " + len2);
                         return len1 < elementX.pixelWidth || len2 < elementX.pixelWidth;
                     }
                 }, "Inhibiting Relationship", "inhibit-icon"));
@@ -1490,6 +1513,7 @@ var BMA;
                 },
                 set: function (value) {
                     this.lineWidth = value;
+                    //console.log(this.lineWidth);
                 },
                 enumerable: true,
                 configurable: true
@@ -1553,12 +1577,7 @@ var BMA;
         Elements.ElementsRegistry = ElementsRegistry;
     })(Elements = BMA.Elements || (BMA.Elements = {}));
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=elementsregistry.js.map
-=======
-
-///#source 1 1 /script/functionsregistry.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var Functions;
@@ -1646,7 +1665,6 @@ var BMA;
         Functions.FunctionsRegistry = FunctionsRegistry;
     })(Functions = BMA.Functions || (BMA.Functions = {}));
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=functionsregistry.js.map
 var BMA;
 (function (BMA) {
@@ -1727,10 +1745,6 @@ var BMA;
     })(Keyframes = BMA.Keyframes || (BMA.Keyframes = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=keyframesregistry.js.map
-=======
-
-///#source 1 1 /script/localRepository.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var LocalRepositoryTool = (function () {
@@ -1819,12 +1833,7 @@ var BMA;
     })();
     BMA.LocalRepositoryTool = LocalRepositoryTool;
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=localRepository.js.map
-=======
-
-///#source 1 1 /script/changeschecker.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var ChangesChecker = (function () {
@@ -1841,14 +1850,9 @@ var BMA;
     })();
     BMA.ChangesChecker = ChangesChecker;
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=changeschecker.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-
-///#source 1 1 /script/model/biomodel.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var Model;
@@ -1941,26 +1945,14 @@ var BMA;
             function VariableTypes() {
             }
             Object.defineProperty(VariableTypes, "Default", {
-<<<<<<< HEAD
                 get: function () { return "Default"; } // Intracellular
                 ,
-=======
-                get: function () {
-                    return "Default";
-                },
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 enumerable: true,
                 configurable: true
             });
             Object.defineProperty(VariableTypes, "Constant", {
-<<<<<<< HEAD
                 get: function () { return "Constant"; } // Extracellular
                 ,
-=======
-                get: function () {
-                    return "Constant";
-                },
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 enumerable: true,
                 configurable: true
             });
@@ -2272,14 +2264,9 @@ var BMA;
         Model.GenerateNewContainerName = GenerateNewContainerName;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=biomodel.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-
-///#source 1 1 /script/model/model.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var Model;
@@ -2305,16 +2292,12 @@ var BMA;
                     if (JSON.stringify(this.model) !== JSON.stringify(value))
                         isMajorChange = true;
                     this.model = value;
-<<<<<<< HEAD
                     //if (this.states.length != 0) this.UpdateStates();
                     var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
                     if (statesChanged.isChanged)
                         this.states = statesChanged.states;
                     window.Commands.Execute("AppModelChanged", { isMajorChange: isMajorChange });
                     //TODO: update inner components (analytics)
-=======
-                    window.Commands.Execute("AppModelChanged", {});
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 },
                 enumerable: true,
                 configurable: true
@@ -2325,11 +2308,8 @@ var BMA;
                 },
                 set: function (value) {
                     this.layout = value;
-<<<<<<< HEAD
                     window.Commands.Execute("AppModelChanged", { isMajorChange: false });
                     //TODO: update inner components (analytics)
-=======
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 },
                 enumerable: true,
                 configurable: true
@@ -2381,7 +2361,6 @@ var BMA;
             AppModel.prototype.DeserializeLegacyJSON = function (serializedModel) {
                 if (serializedModel !== undefined && serializedModel !== null) {
                     var ml = JSON.parse(serializedModel);
-<<<<<<< HEAD
                     //TODO: verify model
                     if (ml === undefined || ml.model === undefined || ml.layout === undefined ||
                         ml.model.variables === undefined ||
@@ -2389,9 +2368,6 @@ var BMA;
                         ml.model.variables.length !== ml.layout.variables.length ||
                         ml.layout.containers === undefined ||
                         ml.model.relationships === undefined) {
-=======
-                    if (ml === undefined || ml.model === undefined || ml.layout === undefined || ml.model.variables === undefined || ml.layout.variables === undefined || ml.model.variables.length !== ml.layout.variables.length || ml.layout.containers === undefined || ml.model.relationships === undefined) {
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                         console.log("Invalid model");
                         return;
                     }
@@ -2494,12 +2470,7 @@ var BMA;
         Model.AppModel = AppModel;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=model.js.map
-=======
-
-///#source 1 1 /script/model/analytics.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var Model;
@@ -2536,12 +2507,7 @@ var BMA;
         Model.ProofResult = ProofResult;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=analytics.js.map
-=======
-
-///#source 1 1 /script/model/visualsettings.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var Model;
@@ -2626,12 +2592,7 @@ var BMA;
         Model.AppVisualSettings = AppVisualSettings;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=visualsettings.js.map
-=======
-
-///#source 1 1 /script/model/exportimport.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var Model;
@@ -2640,8 +2601,10 @@ var BMA;
             var namestory = {};
             if (f !== undefined && f != null) {
                 f = f.trim();
+                // Convert default function to null
                 if (f.toLowerCase() == "avg(pos)-avg(neg)")
                     return null;
+                // Replace variable names with IDs
                 var varPrefix = "var(";
                 var startPos = 0;
                 var index;
@@ -2669,20 +2632,17 @@ var BMA;
             return f;
         }
         Model.MapVariableNames = MapVariableNames;
+        // Returns object whose JSON representation matches external format:
+        // 1) Variables in formulas are identified by IDs
+        // 2) Default function avg(pos)-avg(neg) is replaced with null formula
         function ExportBioModel(model) {
             function GetIdByName(id, name) {
                 var results = model.Variables.filter(function (v2) {
-<<<<<<< HEAD
                     return v2.Name == name &&
                         model.Relationships.some(function (r) {
                             return r.ToVariableId == id && r.FromVariableId == v2.Id;
                             // || r.FromVariableId == id && r.ToVariableId == v2.Id
                         });
-=======
-                    return v2.Name == name && model.Relationships.some(function (r) {
-                        return r.ToVariableId == id && r.FromVariableId == v2.Id;
-                    });
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 });
                 if (results.length == 0) {
                     var varName = "unnamed";
@@ -2774,7 +2734,6 @@ var BMA;
             };
         }
         Model.ImportModelAndLayout = ImportModelAndLayout;
-<<<<<<< HEAD
         function ExportState(state) {
             if (state instanceof BMA.LTLOperations.NameOperand) {
                 var nameOp = state;
@@ -2785,19 +2744,6 @@ var BMA;
                 if (nameOp.Id !== undefined)
                     result.id = nameOp.Id;
                 return result;
-=======
-    })(Model = BMA.Model || (BMA.Model = {}));
-})(BMA || (BMA = {}));
-
-///#source 1 1 /script/uidrivers.js
-var BMA;
-(function (BMA) {
-    var UIDrivers;
-    (function (UIDrivers) {
-        var SVGPlotDriver = (function () {
-            function SVGPlotDriver(svgPlotDiv) {
-                this.svgPlotDiv = svgPlotDiv;
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             }
             else if (state instanceof BMA.LTLOperations.ConstOperand) {
                 var constOp = state;
@@ -2924,7 +2870,6 @@ var BMA;
                 states: undefined,
                 operations: undefined
             };
-<<<<<<< HEAD
             if (infoset.states !== undefined && infoset.states.length > 0) {
                 result.states = [];
                 for (var i = 0; i < infoset.states.length; i++) {
@@ -3056,22 +3001,6 @@ var BMA;
             });
             NameOperand.prototype.GetFormula = function () {
                 return this.name;
-=======
-            SVGPlotDriver.prototype.TurnNavigation = function (isOn) {
-                this.svgPlotDiv.drawingsurface({ isNavigationEnabled: isOn });
-            };
-            SVGPlotDriver.prototype.SetGrid = function (x0, y0, xStep, yStep) {
-                this.svgPlotDiv.drawingsurface({ grid: { x0: x0, y0: y0, xStep: xStep, yStep: yStep } });
-            };
-            SVGPlotDriver.prototype.GetDragSubject = function () {
-                return this.svgPlotDiv.drawingsurface("getDragSubject");
-            };
-            SVGPlotDriver.prototype.SetZoom = function (zoom) {
-                this.svgPlotDiv.drawingsurface({ zoom: zoom });
-            };
-            SVGPlotDriver.prototype.GetPlotX = function (left) {
-                return this.svgPlotDiv.drawingsurface("getPlotX", left);
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             };
             NameOperand.prototype.Clone = function () {
                 return new NameOperand(this.name, this.id);
@@ -4352,6 +4281,7 @@ var BMA;
             };
             PopupDriver.prototype.Show = function (params) {
                 var that = this;
+                //this.createResultView(params);
                 var header = "";
                 this.popupWindow
                     .removeClass('further-testing-popout')
@@ -4734,14 +4664,9 @@ var BMA;
         UIDrivers.DrawingSurfaceDragnDropExtender = DrawingSurfaceDragnDropExtender;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=commondrivers.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-
-///#source 1 1 /script/presenters/undoredopresenter.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var UIDrivers;
@@ -4829,7 +4754,6 @@ var BMA;
             };
             return LTLViewer;
         })();
-<<<<<<< HEAD
         UIDrivers.LTLViewer = LTLViewer;
         var TemporalPropertiesEditorDriver = (function () {
             function TemporalPropertiesEditorDriver(commands, popupWindow) {
@@ -4959,72 +4883,6 @@ var BMA;
                                 type: "operator",
                                 value: rightop
                             });
-=======
-        Presenters.UndoRedoPresenter = UndoRedoPresenter;
-    })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
-})(BMA || (BMA = {}));
-
-///#source 1 1 /script/presenters/presenters.js
-var BMA;
-(function (BMA) {
-    var Presenters;
-    (function (Presenters) {
-        var DesignSurfacePresenter = (function () {
-            function DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, navigationDriver, dragService, variableEditorDriver, containerEditorDriver, contextMenu, exportservice) {
-                var _this = this;
-                this.xOrigin = 0;
-                this.yOrigin = 0;
-                this.xStep = 250;
-                this.yStep = 280;
-                this.variableIndex = 1;
-                this.stagingLine = undefined;
-                this.stagingGroup = undefined;
-                this.stagingVariable = undefined;
-                this.stagingContainer = undefined;
-                this.editingId = undefined;
-                var that = this;
-                this.appModel = appModel;
-                this.undoRedoPresenter = undoRedoPresenter;
-                this.driver = svgPlotDriver;
-                this.navigationDriver = navigationDriver;
-                this.variableEditor = variableEditorDriver;
-                this.containerEditor = containerEditorDriver;
-                this.contextMenu = contextMenu;
-                this.exportservice = exportservice;
-                svgPlotDriver.SetGrid(this.xOrigin, this.yOrigin, this.xStep, this.yStep);
-                window.Commands.On('SaveSVG', function () {
-                    that.exportservice.Export(that.driver.GetSVG(), appModel.BioModel.Name, 'svg');
-                });
-                window.Commands.On("AddElementSelect", function (type) {
-                    that.selectedType = type;
-                    that.navigationDriver.TurnNavigation(type === undefined);
-                    that.stagingLine = undefined;
-                });
-                window.Commands.On("DrawingSurfaceClick", function (args) {
-                    if (that.selectedType !== undefined) {
-                        if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
-                            var id = that.GetVariableAtPosition(args.x, args.y);
-                            if (id !== undefined) {
-                                if (_this.stagingLine === undefined) {
-                                    _this.stagingLine = {};
-                                    _this.stagingLine.id = id;
-                                    _this.stagingLine.x0 = args.x;
-                                    _this.stagingLine.y0 = args.y;
-                                    return;
-                                }
-                                else {
-                                    _this.stagingLine.x1 = args.x;
-                                    _this.stagingLine.y1 = args.y;
-                                    that.TryAddStagingLineAsLink();
-                                    _this.stagingLine = undefined;
-                                    that.RefreshOutput();
-                                    return;
-                                }
-                            }
-                            else {
-                                _this.stagingLine = undefined;
-                            }
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                         }
                         else {
                             formula.push({
@@ -5365,16 +5223,8 @@ var BMA;
                         this.ltlResultsViewer.ltlresultsviewer(this.dataToSet);
                         this.dataToSet = undefined;
                     }
-<<<<<<< HEAD
                     else {
                         this.ltlResultsViewer.ltlresultsviewer();
-=======
-                });
-                window.Commands.On("DrawingSurfaceResizeCell", function (args) {
-                    if (that.contextElement !== undefined && that.contextElement.type === "container") {
-                        var resized = BMA.ModelHelper.ResizeContainer(undoRedoPresenter.Current.model, undoRedoPresenter.Current.layout, that.contextElement.id, args.size, { xOrigin: that.xOrigin, yOrigin: that.yOrigin, xStep: that.xStep, yStep: that.yStep });
-                        _this.undoRedoPresenter.Dup(resized.model, resized.layout);
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                     }
                     if (this.exportCSVcallback !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer({ onExportCSV: that.exportCSVcallback });
@@ -5474,7 +5324,6 @@ var BMA;
                         if (state.Operands.length !== 0 && result)
                             tags[k].push(state.Name);
                     }
-<<<<<<< HEAD
                 }
                 return tags;
             };
@@ -5490,18 +5339,9 @@ var BMA;
                         for (var j = 0; j < prev.length; j++) {
                             if (prev[j] !== curr[j])
                                 return false;
-=======
-                });
-                window.Commands.On("ModelFitToView", function (args) {
-                    if (_this.undoRedoPresenter.Current !== undefined) {
-                        var bbox = BMA.ModelHelper.GetModelBoundingBox(_this.undoRedoPresenter.Current.layout, { xOrigin: _this.Grid.x0, yOrigin: _this.Grid.y0, xStep: _this.Grid.xStep, yStep: _this.Grid.yStep });
-                        if (bbox.width > window.PlotSettings.MaxWidth) {
-                            window.Commands.Execute('SetPlotSettings', { MaxWidth: bbox.width });
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                         }
                         return true;
                     }
-<<<<<<< HEAD
                     return false;
                 };
                 //for (var i = 0; i < tags.length - 1; i++) {
@@ -5528,115 +5368,6 @@ var BMA;
                         prevState = tags /*currState*/[i];
                         firstTime = i;
                         count = 1;
-=======
-                });
-                window.Commands.On("DrawingSurfaceSetProofResults", function (args) {
-                    if (_this.svg !== undefined && _this.undoRedoPresenter.Current !== undefined) {
-                        var drawingSvg = _this.CreateSvg(args);
-                        _this.driver.Draw(drawingSvg);
-                    }
-                });
-                window.Commands.On("DrawingSurfaceVariableEditorOpened", function (args) {
-                    _this.containerEditor.Hide();
-                });
-                window.Commands.On("DrawingSurfaceContainerEditorOpened", function (args) {
-                    _this.variableEditor.Hide();
-                });
-                var svgCnt = $("<div></div>");
-                svgCnt.svg({
-                    onLoad: function (svg) {
-                        _this.svg = svg;
-                        that.RefreshOutput();
-                    }
-                });
-                var dragSubject = dragService.GetDragSubject();
-                window.Commands.On("ZoomSliderChanged", function (args) {
-                    if (args.isExternal !== true) {
-                        var value = args.value * 24 + 800;
-                        navigationDriver.SetZoom(value);
-                    }
-                });
-                window.Commands.On("VisibleRectChanged", function (param) {
-                    if (param < window.PlotSettings.MinWidth) {
-                        param = window.PlotSettings.MinWidth;
-                        navigationDriver.SetZoom(param);
-                    }
-                    if (param > window.PlotSettings.MaxWidth) {
-                        param = window.PlotSettings.MaxWidth;
-                        navigationDriver.SetZoom(param);
-                    }
-                    var zoom = (param - window.PlotSettings.MinWidth) / 24;
-                    window.Commands.Execute("ZoomSliderBind", zoom);
-                });
-                dragSubject.dragStart.subscribe(function (gesture) {
-                    if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
-                        var id = that.GetVariableAtPosition(gesture.x, gesture.y);
-                        if (id !== undefined) {
-                            _this.stagingLine = {};
-                            _this.stagingLine.id = id;
-                            _this.stagingLine.x0 = gesture.x;
-                            _this.stagingLine.y0 = gesture.y;
-                            return;
-                        }
-                    }
-                    else if (that.selectedType === undefined) {
-                        var id = _this.GetVariableAtPosition(gesture.x, gesture.y);
-                        var containerId = _this.GetContainerAtPosition(gesture.x, gesture.y);
-                        if (id !== undefined) {
-                            that.navigationDriver.TurnNavigation(false);
-                            var vl = that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id);
-                            that.stagingVariable = { model: vl.model, layout: vl.layout };
-                        }
-                        else if (containerId !== undefined) {
-                            that.navigationDriver.TurnNavigation(false);
-                            var cl = that.undoRedoPresenter.Current.layout.GetContainerById(containerId);
-                            that.stagingContainer = { container: cl };
-                        }
-                        else {
-                            that.navigationDriver.TurnNavigation(true);
-                        }
-                    }
-                    _this.stagingLine = undefined;
-                });
-                dragSubject.drag.subscribe(function (gesture) {
-                    if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined) {
-                        _this.stagingLine.x1 = gesture.x1;
-                        _this.stagingLine.y1 = gesture.y1;
-                        if (that.svg !== undefined) {
-                            that.driver.DrawLayer2(that.CreateStagingSvg());
-                        }
-                        return;
-                    }
-                    else if (that.stagingVariable !== undefined) {
-                        that.stagingVariable.layout = new BMA.Model.VariableLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
-                        if (that.svg !== undefined) {
-                            that.driver.DrawLayer2(that.CreateStagingSvg());
-                        }
-                    }
-                    else if (_this.stagingContainer !== undefined) {
-                        that.stagingContainer.position = { x: gesture.x1, y: gesture.y1 };
-                        if (that.svg !== undefined) {
-                            that.driver.DrawLayer2(that.CreateStagingSvg());
-                        }
-                    }
-                });
-                dragSubject.dragEnd.subscribe(function (gesture) {
-                    that.driver.DrawLayer2(undefined);
-                    if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined && that.stagingLine.x1 !== undefined) {
-                        that.TryAddStagingLineAsLink();
-                        that.stagingLine = undefined;
-                        that.RefreshOutput();
-                    }
-                    if (that.stagingVariable !== undefined) {
-                        var x = that.stagingVariable.layout.PositionX;
-                        var y = that.stagingVariable.layout.PositionY;
-                        var type = that.stagingVariable.model.Type;
-                        var id = that.stagingVariable.model.Id;
-                        that.stagingVariable = undefined;
-                        if (!that.TryAddVariable(x, y, type, id)) {
-                            that.RefreshOutput();
-                        }
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                     }
                     else {
                         count++;
@@ -6033,41 +5764,10 @@ var BMA;
                             showPaste = that.CanAddVariable(x, y, variable.m.Type, undefined);
                         }
                     }
-<<<<<<< HEAD
                     var canPaste = true;
                     if (showPaste !== true && id === undefined && containerId === undefined && relationshipId === undefined) {
                         showPaste = true;
                         canPaste = false;
-=======
-                }
-                return undefined;
-            };
-            DesignSurfacePresenter.prototype.GetConstantsFromGridCell = function (gridCell) {
-                var result = [];
-                var variables = this.undoRedoPresenter.Current.model.Variables;
-                var variableLayouts = this.undoRedoPresenter.Current.layout.Variables;
-                for (var i = 0; i < variables.length; i++) {
-                    var variable = variables[i];
-                    var variableLayout = variableLayouts[i];
-                    var vGridCell = this.GetGridCell(variableLayout.PositionX, variableLayout.PositionY);
-                    if (gridCell.x === vGridCell.x && gridCell.y === vGridCell.y) {
-                        result.push({ variable: variable, variableLayout: variableLayout });
-                    }
-                }
-                return result;
-            };
-            DesignSurfacePresenter.prototype.ResetVariableIdIndex = function () {
-                this.variableIndex = 1;
-                var m = this.undoRedoPresenter.Current.model;
-                var l = this.undoRedoPresenter.Current.layout;
-                for (var i = 0; i < m.Variables.length; i++) {
-                    if (m.Variables[i].Id >= this.variableIndex)
-                        this.variableIndex = m.Variables[i].Id + 1;
-                }
-                for (var i = 0; i < l.Containers.length; i++) {
-                    if (l.Containers[i].Id >= this.variableIndex) {
-                        this.variableIndex = l.Containers[i].Id + 1;
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                     }
                     that.contextMenu.ShowMenuItems([
                         { name: "Cut", isVisible: id !== undefined || containerId !== undefined },
@@ -6092,7 +5792,6 @@ var BMA;
                         that.contextElement.id = containerId;
                         that.contextElement.type = "container";
                     }
-<<<<<<< HEAD
                     else if (relationshipId !== undefined) {
                         that.contextElement.id = relationshipId;
                         that.contextElement.type = "relationship";
@@ -6135,208 +5834,6 @@ var BMA;
                             var oldContainerOffset = {
                                 x: clipboardContainer.PositionX * that.Grid.xStep + that.Grid.x0,
                                 y: clipboardContainer.PositionY * that.Grid.yStep + that.Grid.y0,
-=======
-                }
-                throw "No such variable in model";
-            };
-            DesignSurfacePresenter.prototype.GetVariableColorByStatus = function (status) {
-                if (status)
-                    return "green";
-                else
-                    return "red";
-            };
-            DesignSurfacePresenter.prototype.GetContainerColorByStatus = function (status) {
-                if (status)
-                    return "#E9FFCC";
-                else
-                    return "#FFDDDB";
-            };
-            DesignSurfacePresenter.prototype.GetItemById = function (arr, id) {
-                for (var i = 0; i < arr.length; i++) {
-                    if (arr[i].id === id)
-                        return arr[i];
-                }
-                return undefined;
-            };
-            DesignSurfacePresenter.prototype.CreateSvg = function (args) {
-                if (this.svg === undefined)
-                    return undefined;
-                var svgElements = [];
-                var containerLayouts = this.undoRedoPresenter.Current.layout.Containers;
-                for (var i = 0; i < containerLayouts.length; i++) {
-                    var containerLayout = containerLayouts[i];
-                    var element = window.ElementRegistry.GetElementByType("Container");
-                    svgElements.push(element.RenderToSvg({
-                        layout: containerLayout,
-                        grid: this.Grid,
-                        background: args === undefined || args.containersStability === undefined ? undefined : this.GetContainerColorByStatus(args.containersStability[containerLayout.Id])
-                    }));
-                }
-                var variables = this.undoRedoPresenter.Current.model.Variables;
-                var variableLayouts = this.undoRedoPresenter.Current.layout.Variables;
-                for (var i = 0; i < variables.length; i++) {
-                    var variable = variables[i];
-                    var variableLayout = variableLayouts[i];
-                    var element = window.ElementRegistry.GetElementByType(variable.Type);
-                    var additionalInfo = args === undefined ? undefined : this.GetItemById(args.variablesStability, variable.Id);
-                    var container = variable.Type === "MembraneReceptor" ? this.undoRedoPresenter.Current.layout.GetContainerById(variable.ContainerId) : undefined;
-                    var sizeCoef = undefined;
-                    var gridCell = undefined;
-                    if (container !== undefined) {
-                        sizeCoef = container.Size;
-                        gridCell = { x: container.PositionX, y: container.PositionY };
-                    }
-                    svgElements.push(element.RenderToSvg({
-                        model: variable,
-                        layout: variableLayout,
-                        grid: this.Grid,
-                        gridCell: gridCell,
-                        sizeCoef: sizeCoef,
-                        valueText: additionalInfo === undefined ? undefined : additionalInfo.range,
-                        labelColor: additionalInfo === undefined ? undefined : this.GetVariableColorByStatus(additionalInfo.state)
-                    }));
-                }
-                var relationships = this.undoRedoPresenter.Current.model.Relationships;
-                for (var i = 0; i < relationships.length; i++) {
-                    var relationship = relationships[i];
-                    var element = window.ElementRegistry.GetElementByType(relationship.Type);
-                    var start = this.GetVariableById(this.undoRedoPresenter.Current.layout, this.undoRedoPresenter.Current.model, relationship.FromVariableId).layout;
-                    var end = this.GetVariableById(this.undoRedoPresenter.Current.layout, this.undoRedoPresenter.Current.model, relationship.ToVariableId).layout;
-                    svgElements.push(element.RenderToSvg({
-                        layout: { start: start, end: end },
-                        grid: this.Grid
-                    }));
-                }
-                this.svg.clear();
-                var defs = this.svg.defs("bmaDefs");
-                var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 4, "auto", { viewBox: "0 -2 4 4" });
-                this.svg.polyline(activatorMarker, [[0, 2], [4, 0], [0, -2]], { fill: "none", stroke: "#808080", strokeWidth: "1px" });
-                var inhibitorMarker = this.svg.marker(defs, "Inhibitor", 0, 0, 2, 6, "auto", { viewBox: "0 -3 2 6" });
-                this.svg.line(inhibitorMarker, 0, 3, 0, -3, { fill: "none", stroke: "#808080", strokeWidth: "2px" });
-                for (var i = 0; i < svgElements.length; i++) {
-                    this.svg.add(svgElements[i]);
-                }
-                return $(this.svg.toSVG()).children();
-            };
-            DesignSurfacePresenter.prototype.CreateStagingSvg = function () {
-                if (this.svg === undefined)
-                    return undefined;
-                this.svg.clear();
-                var defs = this.svg.defs("bmaDefs");
-                var activatorMarker = this.svg.marker(defs, "Activator", 4, 0, 8, 4, "auto", { viewBox: "0 -2 4 4" });
-                this.svg.polyline(activatorMarker, [[0, 2], [4, 0], [0, -2]], { fill: "none", stroke: "#808080", strokeWidth: "1px" });
-                var inhibitorMarker = this.svg.marker(defs, "Inhibitor", 0, 0, 2, 6, "auto", { viewBox: "0 -3 2 6" });
-                this.svg.line(inhibitorMarker, 0, 3, 0, -3, { fill: "none", stroke: "#808080", strokeWidth: "2px" });
-                if (this.stagingLine !== undefined) {
-                    this.svg.line(this.stagingLine.x0, this.stagingLine.y0, this.stagingLine.x1, this.stagingLine.y1, {
-                        stroke: "#808080",
-                        strokeWidth: 2,
-                        fill: "#808080",
-                        "marker-end": "url(#" + this.selectedType + ")",
-                        id: "stagingLine"
-                    });
-                }
-                if (this.stagingVariable !== undefined) {
-                    var element = window.ElementRegistry.GetElementByType(this.stagingVariable.model.Type);
-                    this.svg.add(element.RenderToSvg({ model: this.stagingVariable.model, layout: this.stagingVariable.layout, grid: this.Grid }));
-                }
-                if (this.stagingContainer !== undefined) {
-                    var element = window.ElementRegistry.GetElementByType("Container");
-                    var x = (this.stagingContainer.container.PositionX + 0.5) * this.Grid.xStep + (this.stagingContainer.container.Size - 1) * this.Grid.xStep / 2;
-                    var y = (this.stagingContainer.container.PositionY + 0.5) * this.Grid.yStep + (this.stagingContainer.container.Size - 1) * this.Grid.yStep / 2;
-                    this.svg.add(element.RenderToSvg({
-                        layout: this.stagingContainer.container,
-                        grid: this.Grid,
-                        background: "none",
-                        translate: {
-                            x: this.stagingContainer.position.x - x,
-                            y: this.stagingContainer.position.y - y
-                        }
-                    }));
-                }
-                return $(this.svg.toSVG()).children();
-            };
-            return DesignSurfacePresenter;
-        })();
-        Presenters.DesignSurfacePresenter = DesignSurfacePresenter;
-    })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
-})(BMA || (BMA = {}));
-
-///#source 1 1 /script/presenters/proofpresenter.js
-var BMA;
-(function (BMA) {
-    var Presenters;
-    (function (Presenters) {
-        var ProofPresenter = (function () {
-            function ProofPresenter(appModel, proofResultViewer, popupViewer, ajax, messagebox, logService) {
-                var _this = this;
-                this.appModel = appModel;
-                this.ajax = ajax;
-                this.messagebox = messagebox;
-                this.logService = logService;
-                var that = this;
-                window.Commands.On("ProofByFurtherTesting", function (param) {
-                    try {
-                        param.fixPoint.forEach(function (val, ind) {
-                            var i = that.getIndById(that.stability.variablesStability, val.Id);
-                            var id = that.stability.variablesStability[i].id;
-                        });
-                    }
-                    catch (ex) {
-                        throw "Event Exception";
-                    }
-                    ;
-                    param.fixPoint.forEach(function (val, ind) {
-                        var i = that.getIndById(that.stability.variablesStability, val.Id);
-                        that.stability.variablesStability[i].state = true;
-                        that.stability.variablesStability[i].range = val.Value;
-                        var id = that.stability.variablesStability[i].id;
-                        var cont = that.appModel.BioModel.GetVariableById(id).ContainerId;
-                        if (cont !== undefined) {
-                            that.stability.containersStability[cont] = true;
-                        }
-                    });
-                    var variablesData = that.CreateTableView(that.stability.variablesStability);
-                    that.expandedProofVariables = that.CreateExpandedProofVariables(variablesData);
-                    that.AddPropagationColumn(that.stability.variablesStability);
-                    proofResultViewer.SetData({
-                        issucceeded: param.issucceeded,
-                        message: param.message,
-                        data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: that.colorData }
-                    });
-                    window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
-                });
-                window.Commands.On("ProofStarting", function () {
-                    try {
-                        var proofInput = BMA.Model.ExportBioModel(appModel.BioModel);
-                    }
-                    catch (ex) {
-                        proofResultViewer.SetData({
-                            issucceeded: "Invalid Model",
-                            message: ex,
-                            data: undefined
-                        });
-                        return;
-                    }
-                    proofResultViewer.OnProofStarted();
-                    that.logService.LogProofRun();
-                    var result = that.ajax.Invoke(proofInput).done(function (res) {
-                        var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", res.Time, res.Ticks);
-                        if (res.Ticks !== null) {
-                            that.expandedProofPropagation = $('<div></div>');
-                            if (res.Status === "NotStabilizing")
-                                window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
-                            else
-                                window.Commands.Execute("ProofFailed", undefined);
-                            that.stability = that.Stability(res.Ticks);
-                            var variablesData = that.CreateTableView(that.stability.variablesStability);
-                            that.colorData = that.CreateColoredTable(res.Ticks);
-                            var deferredProofPropagation = function () {
-                                var d = $.Deferred();
-                                var full = that.CreateExpandedProofPropagation(appModel.ProofResult.Ticks);
-                                d.resolve(full);
-                                return d.promise();
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                             };
                             var newContainerOffset = {
                                 x: gridCell.x * that.Grid.xStep + that.Grid.x0,
@@ -6492,42 +5989,6 @@ var BMA;
                         _this.svg = svg;
                         that.RefreshOutput();
                     }
-<<<<<<< HEAD
-=======
-                }
-                container.coloredtableviewer({ header: header, numericData: table, colorData: color });
-                container.addClass('scrollable-results');
-                container.children('table').removeClass('variables-table').addClass('proof-propagation-table');
-                container.find("td").eq(0).width(150);
-                return container;
-            };
-            return ProofPresenter;
-        })();
-        Presenters.ProofPresenter = ProofPresenter;
-    })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
-})(BMA || (BMA = {}));
-
-///#source 1 1 /script/presenters/simulationpresenter.js
-var BMA;
-(function (BMA) {
-    var Presenters;
-    (function (Presenters) {
-        var SimulationPresenter = (function () {
-            function SimulationPresenter(appModel, simulationAccordeon, simulationExpanded, simulationViewer, popupViewer, ajax, logService, exportService, messagebox) {
-                var _this = this;
-                this.appModel = appModel;
-                this.compactViewer = simulationViewer;
-                this.expandedViewer = simulationExpanded;
-                this.logService = logService;
-                this.ajax = ajax;
-                this.simulationAccordeon = simulationAccordeon;
-                this.messagebox = messagebox;
-                var that = this;
-                this.initValues = [];
-                window.Commands.On("ChangePlotVariables", function (param) {
-                    that.variables[param.ind].Seen = param.check;
-                    that.compactViewer.ChangeVisibility(param);
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 });
                 var dragSubject = dragService.GetDragSubject();
                 window.Commands.On("ZoomSliderChanged", function (args) {
@@ -6878,7 +6339,6 @@ var BMA;
                     this.undoRedoPresenter.Dup(newmodel, newlayout);
                 }
             };
-<<<<<<< HEAD
             DesignSurfacePresenter.prototype.GetVariableAtPosition = function (x, y) {
                 var variables = this.undoRedoPresenter.Current.model.Variables;
                 var variableLayouts = this.undoRedoPresenter.Current.layout.Variables;
@@ -6888,52 +6348,6 @@ var BMA;
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
                     if (element.Contains(x, y, variableLayout.PositionX, variableLayout.PositionY)) {
                         return variable.Id;
-=======
-            return SimulationPresenter;
-        })();
-        Presenters.SimulationPresenter = SimulationPresenter;
-    })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
-})(BMA || (BMA = {}));
-
-///#source 1 1 /script/presenters/modelstoragepresenter.js
-var BMA;
-(function (BMA) {
-    var Presenters;
-    (function (Presenters) {
-        var ModelStoragePresenter = (function () {
-            function ModelStoragePresenter(appModel, fileLoaderDriver, checker, logService, exportService) {
-                var that = this;
-                window.Commands.On("NewModel", function (args) {
-                    try {
-                        if (checker.IsChanged(appModel)) {
-                            var userDialog = $('<div></div>').appendTo('body').userdialog({
-                                message: "Do you want to save changes?",
-                                actions: [
-                                    {
-                                        button: 'Yes',
-                                        callback: function () {
-                                            userDialog.detach();
-                                        }
-                                    },
-                                    {
-                                        button: 'No',
-                                        callback: function () {
-                                            userDialog.detach();
-                                            load();
-                                        }
-                                    },
-                                    {
-                                        button: 'Cancel',
-                                        callback: function () {
-                                            userDialog.detach();
-                                        }
-                                    }
-                                ]
-                            });
-                        }
-                        else
-                            load();
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                     }
                 }
                 return undefined;
@@ -7015,38 +6429,10 @@ var BMA;
                         if (checkCell !== true)
                             return false;
                     }
-<<<<<<< HEAD
                 }
                 return true;
             };
             DesignSurfacePresenter.prototype.CanAddVariable = function (x, y, type, id) {
-=======
-                });
-                window.Commands.On("ExportModel", function (args) {
-                    try {
-                        var data = appModel.Serialize();
-                        exportService.Export(data, appModel.BioModel.Name, 'json');
-                        checker.Snapshot(appModel);
-                    }
-                    catch (ex) {
-                        alert("Couldn't export model: " + ex);
-                    }
-                });
-            }
-            return ModelStoragePresenter;
-        })();
-        Presenters.ModelStoragePresenter = ModelStoragePresenter;
-    })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
-})(BMA || (BMA = {}));
-
-///#source 1 1 /script/presenters/formulavalidationpresenter.js
-var BMA;
-(function (BMA) {
-    var Presenters;
-    (function (Presenters) {
-        var FormulaValidationPresenter = (function () {
-            function FormulaValidationPresenter(editor, ajax) {
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 var that = this;
                 var gridCell = that.GetGridCell(x, y);
                 var variables = that.undoRedoPresenter.Current.model.Variables.slice(0);
@@ -7066,7 +6452,6 @@ var BMA;
                                     return false;
                             }
                         }
-<<<<<<< HEAD
                         return canAdd;
                     case "Default":
                         var bbox = window.ElementRegistry.GetElementByType("Default").GetBoundingBox(x, y);
@@ -7106,56 +6491,6 @@ var BMA;
                                 return false;
                         }
                         return true;
-=======
-                    }
-                    if (formula !== "")
-                        var result = that.ajax.Invoke({ Formula: formula }).done(function (res) {
-                            that.editorDriver.SetValidation(res.IsValid, res.Message);
-                        }).fail(function (res) {
-                            that.editorDriver.SetValidation(undefined, '');
-                        });
-                    else {
-                        that.editorDriver.SetValidation(undefined, '');
-                    }
-                });
-            }
-            return FormulaValidationPresenter;
-        })();
-        Presenters.FormulaValidationPresenter = FormulaValidationPresenter;
-    })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
-})(BMA || (BMA = {}));
-
-///#source 1 1 /script/presenters/furthertestingpresenter.js
-var BMA;
-(function (BMA) {
-    var Presenters;
-    (function (Presenters) {
-        var FurtherTestingPresenter = (function () {
-            function FurtherTestingPresenter(appModel, driver, popupViewer, ajax, messagebox, logService) {
-                var _this = this;
-                var that = this;
-                this.appModel = appModel;
-                this.driver = driver;
-                this.popupViewer = popupViewer;
-                this.ajax = ajax;
-                this.messagebox = messagebox;
-                window.Commands.On("ProofFailed", function (param) {
-                    if (param !== undefined) {
-                        that.driver.ShowStartFurtherTestingToggler();
-                        that.model = param.Model;
-                        that.result = param.Res;
-                        that.variables = param.Variables;
-                    }
-                    else {
-                        that.data = undefined;
-                    }
-                });
-                function OnProofStarting() {
-                    that.driver.ActiveMode();
-                    that.driver.HideStartFurtherTestingToggler();
-                    that.driver.HideResults();
-                    that.data = undefined;
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 }
                 throw "Unknown Variable type";
             };
@@ -7503,12 +6838,7 @@ var BMA;
         Presenters.DesignSurfacePresenter = DesignSurfacePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
-<<<<<<< HEAD
 //# sourceMappingURL=presenters.js.map
-=======
-
-///#source 1 1 /script/presenters/localstoragepresenter.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 var BMA;
 (function (BMA) {
     var Presenters;
@@ -9559,7 +8889,6 @@ var BMA;
                         data[ind] = that.options.data.variables[ind].color;
                 });
             }
-<<<<<<< HEAD
         },
         checkAllButtons: function () {
             var that = this;
@@ -9661,95 +8990,6 @@ var BMA;
 //# sourceMappingURL=containernameeditor.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-            return LocalStoragePresenter;
-        })();
-        Presenters.LocalStoragePresenter = LocalStoragePresenter;
-    })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
-})(BMA || (BMA = {}));
-
-///#source 1 1 /script/UserLog.js
-var BMA;
-(function (BMA) {
-    function generateUUID() {
-        var d = new Date().getTime();
-        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = (d + Math.random() * 16) % 16 | 0;
-            d = Math.floor(d / 16);
-            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-        return uuid;
-    }
-    ;
-    var SessionLog = (function () {
-        function SessionLog() {
-            this.userId = $.cookie("BMAClient.UserID");
-            if (this.userId === undefined)
-                this.userId = generateUUID();
-            $.cookie("BMAClient.UserID", this.userId, { expires: 365 * 10 });
-            this.sessionId = generateUUID();
-            this.logIn = new Date();
-            this.logOut = new Date();
-            this.proofCount = 0;
-            this.simulationCount = 0;
-            this.furtherTestingCount = 0;
-            this.newModelCount = 0;
-            this.saveModelCount = 0;
-            this.importModelCount = 0;
-            this.proofErrorCount = this.furtherTestingErrorCount = this.simulationErrorCount = 0;
-        }
-        SessionLog.prototype.LogProofError = function () {
-            this.proofErrorCount++;
-        };
-        SessionLog.prototype.LogSimulationError = function () {
-            this.simulationErrorCount++;
-        };
-        SessionLog.prototype.LogFurtherTestingError = function () {
-            this.furtherTestingErrorCount++;
-        };
-        SessionLog.prototype.LogProofRun = function () {
-            this.proofCount++;
-        };
-        SessionLog.prototype.LogSimulationRun = function () {
-            this.simulationCount++;
-        };
-        SessionLog.prototype.LogFurtherTestingRun = function () {
-            this.furtherTestingCount++;
-        };
-        SessionLog.prototype.LogNewModelCreated = function () {
-            this.newModelCount++;
-        };
-        SessionLog.prototype.LogImportModel = function () {
-            this.importModelCount++;
-        };
-        SessionLog.prototype.LogSaveModel = function () {
-            this.saveModelCount++;
-        };
-        SessionLog.prototype.CloseSession = function () {
-            this.logOut = new Date();
-            return {
-                Proof: this.proofCount,
-                Simulation: this.simulationCount,
-                FurtherTesting: this.furtherTestingCount,
-                NewModel: this.newModelCount,
-                ImportModel: this.importModelCount,
-                SaveModel: this.saveModelCount,
-                LogIn: this.logIn.toJSON(),
-                LogOut: this.logOut.toJSON(),
-                UserID: this.userId,
-                SessionID: this.sessionId,
-                ProofErrorCount: this.proofErrorCount,
-                SimulationErrorCount: this.simulationErrorCount,
-                FurtherTestingErrorCount: this.furtherTestingErrorCount
-            };
-        };
-        return SessionLog;
-    })();
-    BMA.SessionLog = SessionLog;
-})(BMA || (BMA = {}));
-
-///#source 1 1 /script/widgets/accordeon.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 (function ($) {
     $.widget("BMA.drawingsurface", {
         _plot: null,
@@ -9764,7 +9004,6 @@ var BMA;
         _mouseMoves: null,
         _domPlot: null,
         options: {
-<<<<<<< HEAD
             isNavigationEnabled: true,
             svg: undefined,
             zoom: 50,
@@ -9797,20 +9036,8 @@ var BMA;
                 this._lightSvgPlot.svg.clear();
                 this._lightSvgPlot.svg.add(this.options.svg);
             }
-=======
-            active: 0,
-            animate: {},
-            collapsible: true,
-            event: "click",
-            position: "center",
-            activate: null,
-            beforeActivate: null,
-            contentLoaded: { ind: "", val: true },
-            z_index: 0
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         _create: function () {
-<<<<<<< HEAD
             var that = this;
             if (window.PlotSettings !== undefined) {
                 this._plotSettings = window.PlotSettings;
@@ -10012,18 +9239,6 @@ var BMA;
             }
             else {
                 that._plot.navigation.gestureSource = undefined;
-=======
-            this.element.addClass("bma-accordion-container");
-            var options = this.options;
-            this.prevShow = this.prevHide = $();
-            this.element.addClass("ui-accordion").attr("role", "tablist");
-            if (!options.collapsible && (options.active === false || options.active == null)) {
-                options.active = 0;
-            }
-            this._processPanels();
-            if (options.active < 0) {
-                options.active += this.headers.length;
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             }
             that._plot.navigation.setVisibleRect({ x: 0, y: -50, width: width, height: width / 2.5 }, false);
             that._plot.host.bind("visibleRectChanged", function (args) {
@@ -10035,20 +9250,12 @@ var BMA;
             that.resize();
             this.refresh();
         },
-<<<<<<< HEAD
         resize: function () {
             if (this._plot !== null && this._plot !== undefined) {
                 this._plot.host.width(this.element.width());
                 this._plot.host.height(this.element.height());
                 this._plot.requestUpdateLayout();
             }
-=======
-        _destroy: function () {
-            var contents;
-            this.element.removeClass("ui-accordion ui-widget ui-helper-reset").removeAttr("role");
-            this.headers.removeClass("ui-accordion-header ui-accordion-header-active ui-state-default " + "ui-corner-all ui-state-active ui-state-disabled ui-corner-top").removeAttr("role").removeAttr("aria-expanded").removeAttr("aria-selected").removeAttr("aria-controls").removeAttr("tabIndex").removeUniqueId();
-            contents = this.headers.next().removeClass("ui-helper-reset ui-widget-content ui-corner-bottom " + "ui-accordion-content ui-accordion-content-active ui-state-disabled").css("display", "").removeAttr("role").removeAttr("aria-hidden").removeAttr("aria-labelledby").removeUniqueId();
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         _executeCommand: function (commandName, args) {
             if (this.options.commands !== undefined) {
@@ -10057,7 +9264,6 @@ var BMA;
             else {
                 window.Commands.Execute(commandName, args);
             }
-<<<<<<< HEAD
         },
         _setOption: function (key, value) {
             var that = this;
@@ -10069,84 +9275,6 @@ var BMA;
                             this._svgPlot.svg.add(value);
                         }
                     }
-=======
-            this.hideProps = {};
-            this.showProps = {};
-            this.hideProps[that.options.position] = "-=" + distantion;
-            this.showProps[that.options.position] = "+=" + distantion;
-            context.css("z-index", that.options.z_index + 1);
-            this.headers.next().not(context).css("z-index", that.options.z_index);
-        },
-        _setOption: function (key, value) {
-            var that = this;
-            if (key === "active") {
-                this._activate(value);
-                return;
-            }
-            if (key === "event") {
-                if (this.options.event) {
-                    this._off(this.headers, this.options.event);
-                }
-                value.ind;
-                this._setupEvents(value);
-            }
-            if (key == "contentLoaded") {
-                var isthatActive;
-                if (typeof value.ind === "number") {
-                    isthatActive = that.headers[value.ind][0] === that.active[0];
-                    that.loadingList[value.ind] = value.val;
-                }
-                else if (typeof value.ind === "string") {
-                    isthatActive = $(value.ind)[0] === that.active[0];
-                    that.loadingList[that.headers.index($(value.ind))] = value.val;
-                }
-                else if (typeof value.ind === "JQuery") {
-                    isthatActive = value.ind[0] === that.active[0];
-                    that.loadingList[that.headers.index(value.ind)] = value.val;
-                }
-                if (value.val) {
-                    if (isthatActive) {
-                        that._hideLoading(that.active);
-                        var eventData = {
-                            oldHeader: $(),
-                            oldPanel: $(),
-                            newHeader: that.active,
-                            newPanel: that.active.next()
-                        };
-                        that._toggle(eventData);
-                    }
-                }
-            }
-            if (key == "position") {
-                switch (value) {
-                    case "left":
-                    case "right":
-                    case "top":
-                    case "bottom":
-                    case "center":
-                        that.options.position = value;
-                }
-                return;
-            }
-            if (key === "collapsible" && !value && this.options.active === false) {
-                this._activate(0);
-            }
-            if (key === "disabled") {
-                this.element.toggleClass("ui-state-disabled", !!value).attr("aria-disabled", value);
-                this.headers.add(this.options.context).toggleClass("ui-state-disabled", !!value);
-            }
-            this._super(key, value);
-        },
-        _keydown: function (event) {
-            if (event.altKey || event.ctrlKey) {
-                return;
-            }
-            var keyCode = $.ui.keyCode, length = this.headers.length, currentIndex = this.headers.index(event.target), toFocus = undefined;
-            switch (event.keyCode) {
-                case keyCode.RIGHT:
-                case keyCode.DOWN:
-                    toFocus = this.headers[(currentIndex + 1) % length];
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                     break;
                 case "lightSvg":
                     if (this._lightSvgPlot !== undefined && this._lightSvgPlot.svg !== undefined) {
@@ -10231,47 +9359,10 @@ var BMA;
                     this._setGestureSource(this._onlyZoomEnabled);
                     break;
             }
-<<<<<<< HEAD
             this._super(key, value);
-=======
-            if (toFocus !== undefined) {
-                $(event.target).attr("tabIndex", -1);
-                $(toFocus).attr("tabIndex", 0);
-                event.preventDefault();
-            }
-        },
-        _panelKeyDown: function (event) {
-            if (event.keyCode === $.ui.keyCode.UP && event.ctrlKey) {
-            }
-        },
-        refresh: function () {
-            var options = this.options;
-            this._processPanels();
-            if ((options.active === false && options.collapsible === true) || !this.headers.length) {
-                options.active = false;
-                this.active = $();
-            }
-            else if (options.active === false) {
-                this._activate(0);
-            }
-            else if (this.active.length && !$.contains(this.element[0], this.active[0])) {
-                if (this.headers.length === this.headers.find(".ui-state-disabled").length) {
-                    options.active = false;
-                    this.active = $();
-                }
-                else {
-                    this._activate(Math.max(0, options.active - 1));
-                }
-            }
-            else {
-                options.active = this.headers.index(this.active);
-            }
-            this._refresh();
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         _setGestureSource: function (onlyZoom) {
             var that = this;
-<<<<<<< HEAD
             var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(this._plot.host).where(function (g) {
                 var constraint = onlyZoom ?
                     g.Type === "Zoom" && (!that.options.useContraints || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth) :
@@ -10369,70 +9460,6 @@ var BMA;
                 .addClass("bma-simulation-data-table")
                 .appendTo(that.element);
             this.InitData();
-=======
-            var position = that.options.position;
-            this.element.css(position, 0);
-            this.headers = that.element.children().filter(':even');
-            this.headers.addClass("bma-accordion-header");
-            this.loadingList = [];
-            for (var ind = 0; ind < this.headers.length; ind++) {
-                that.loadingList[ind] = true;
-                var th = this.headers[ind];
-                var child = $(th).next();
-                var distantion = 0;
-                switch (position) {
-                    case "left":
-                    case "right":
-                        distantion = child.outerWidth();
-                        $(th).css("top", ($(th).outerHeight() + 10) * ind);
-                        break;
-                    case "top":
-                    case "bottom":
-                        distantion = child.outerHeight();
-                        $(th).css("left", ($(th).outerWidth() + 10) * ind);
-                        break;
-                    case "center":
-                        that.headers.removeClass("accordion-expanded").addClass("accordion-collapsed");
-                        that.headers.next().hide();
-                        return;
-                }
-                that.headers.css("position", "absolute");
-                that.headers.css(position, 0);
-                child.css("position", "absolute");
-                child.css(position, -distantion);
-            }
-        },
-        _refresh: function () {
-            var maxHeight, options = this.options, parent = this.element.parent();
-            this.active = $();
-            this.active.next().addClass("ui-accordion-content-active");
-            var that = this;
-            this.headers.attr("role", "tab").each(function () {
-                var header = $(this), headerId = header.uniqueId().attr("id"), panel = header.next(), panelId = panel.uniqueId().attr("id");
-                header.attr("aria-controls", panelId);
-                panel.attr("aria-labelledby", headerId);
-            }).next().attr("role", "tabpanel");
-            this.headers.not(this.active).attr({
-                "aria-selected": "false",
-                "aria-expanded": "false",
-                tabIndex: -1
-            }).next().attr({
-                "aria-hidden": "true"
-            }).hide();
-            if (!this.active.length) {
-                this.headers.eq(0).attr("tabIndex", 0);
-            }
-            else {
-                this.active.attr({
-                    "aria-selected": "true",
-                    "aria-expanded": "true",
-                    tabIndex: 0
-                }).next().attr({
-                    "aria-hidden": "false"
-                });
-            }
-            this._setupEvents(options.event);
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         Randomise: function () {
             var rands = this.init.find("tr").not(":first-child").children("td:nth-child(2)");
@@ -10448,7 +9475,6 @@ var BMA;
                     }
                 this.createColumnContextMenu();
             }
-<<<<<<< HEAD
         },
         RefreshInit: function () {
             var that = this;
@@ -10503,77 +9529,6 @@ var BMA;
                         this.repeat = tds;
                     return i;
                 }
-=======
-            this._off(this.headers);
-            this._on(this.headers, events);
-            this._on(this.headers.next(), { keydown: "_panelKeyDown" });
-        },
-        eventHandler: function (event) {
-            var options = this.options, active = this.active, clicked = $(event.currentTarget).eq(0), clickedIsActive = clicked[0] === active[0], collapsing = clickedIsActive && options.collapsible, toShow = collapsing ? $() : clicked.next(), toHide = this.loadingList[this.headers.index(this.active)] ? active.next() : $(), eventData = {
-                oldHeader: active,
-                oldPanel: toHide,
-                newHeader: clicked,
-                newPanel: toShow
-            };
-            event.preventDefault();
-            if ((clickedIsActive && !options.collapsible) || (this._trigger("beforeActivate", event, eventData) === false)) {
-                return;
-            }
-            if (toShow.is(":hidden")) {
-                window.Commands.Execute(clicked.attr("data-command"), {});
-            }
-            eventData.newHeader.css("z-index", this.options.z_index + 2);
-            this.headers.not(eventData.newHeader).css("z-index", this.options.z_index);
-            this.active = clickedIsActive ? $() : clicked;
-            if (!this.loadingList[this.headers.index(clicked)]) {
-                eventData.newPanel = $();
-                if (!collapsing) {
-                    this._hideLoading(this.headers.not(clicked));
-                    this._toggle(eventData);
-                    this._showLoading(clicked);
-                }
-                else {
-                    this._hideLoading(clicked);
-                }
-                return;
-            }
-            this._toggle(eventData);
-            active.removeClass("ui-accordion-header-active ui-state-active");
-            if (!clickedIsActive) {
-                clicked.removeClass("ui-corner-all").addClass("ui-accordion-header-active  ui-corner-top");
-                clicked.addClass("ui-accordion-content-active");
-            }
-        },
-        _toggle: function (data) {
-            var toShow = data.newPanel, toHide = this.prevShow.length ? this.prevShow : data.oldPanel;
-            var that = this;
-            this.prevShow.add(this.prevHide).stop(true, true);
-            this.prevShow = toShow;
-            this.prevHide = toHide;
-            if (that.options.animate && that.options.position != "center") {
-                that._animate(toShow, toHide, data);
-            }
-            else {
-                toHide.hide();
-                toShow.show();
-                if (data.newHeader.next().is(":hidden")) {
-                    data.newHeader.removeClass("accordion-expanded").removeClass("accordion-shadow").addClass("accordion-collapsed");
-                }
-                else {
-                    data.newHeader.removeClass("accordion-collapsed").addClass("accordion-expanded").addClass("accordion-shadow");
-                }
-                that._toggleComplete(data);
-            }
-            toHide.attr({
-                "aria-hidden": "true"
-            });
-            toHide.prev().attr("aria-selected", "false");
-            if (toShow.length && toHide.length) {
-                toHide.prev().attr({
-                    "tabIndex": -1,
-                    "aria-expanded": "false"
-                });
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             }
             return undefined;
         },
@@ -10598,17 +9553,8 @@ var BMA;
             });
             return init;
         },
-<<<<<<< HEAD
         ClearData: function () {
             this.data.empty();
-=======
-        _showLoading: function (clicked) {
-            clicked.animate({ width: "+=60px" });
-            var snipper = $('<div class="spinner loading"></div>').appendTo(clicked);
-            for (var i = 1; i < 4; i++) {
-                $('<div></div>').addClass('bounce' + i).appendTo(snipper);
-            }
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         AddData: function (data) {
             var that = this;
@@ -10693,25 +9639,10 @@ var BMA;
                 //div.addClass('repeat');
             });
         },
-<<<<<<< HEAD
         GetRandomInt: function (min, max) {
             return Math.floor(Math.random() * (max - min + 1) + min);
         },
         createColumnContextMenu: function () {
-=======
-        _animate: function (toShow, toHide, data) {
-            var total, easing, duration, that = this, adjust = 0, down = toShow.length && (!toHide.length || (toShow.index() < toHide.index())), animate = this.options.animate || {}, options = down && animate.down || animate, complete = function () {
-                that._toggleComplete(data);
-            };
-            if (typeof options === "number") {
-                duration = options;
-            }
-            if (typeof options === "string") {
-                easing = options;
-            }
-            easing = easing || options.easing || animate.easing;
-            duration = duration || options.duration || animate.duration;
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             var that = this;
             if (this.options.columnContextMenuItems !== undefined && this.options.columnContextMenuItems.length != 0) {
                 this.data.contextmenu({
@@ -10734,7 +9665,6 @@ var BMA;
                     }
                 });
             }
-<<<<<<< HEAD
         },
         _destroy: function () {
             this.element.empty();
@@ -10773,28 +9703,6 @@ var BMA;
 //# sourceMappingURL=progressiontable.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-            toHide.css("z-index", that.options.z_index);
-            toShow.css("z-index", that.options.z_index + 1);
-            this._toggleComplete(data);
-        },
-        _toggleComplete: function (data) {
-            var toHide = data.oldPanel;
-            var toShow = data.newPanel;
-            data.newPanel.css("z-index", this.options.z_index + 1);
-            toHide.removeClass("ui-accordion-content-active").prev().removeClass("ui-corner-top").addClass("ui-corner-all");
-            toHide.hide();
-            toShow.show();
-            if (toHide.length) {
-                toHide.parent()[0].className = toHide.parent()[0].className;
-            }
-            this._trigger("activate", null, data);
-        }
-    });
-}(jQuery));
-
-///#source 1 1 /script/widgets/bmaslider.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 (function ($) {
     $.widget("BMA.proofresultviewer", {
         options: {
@@ -10805,7 +9713,6 @@ var BMA;
         },
         refreshSuccess: function () {
             var that = this;
-<<<<<<< HEAD
             var options = this.options;
             this.resultDiv.empty();
             switch (options.issucceeded) {
@@ -10862,31 +9769,6 @@ var BMA;
                         icon: "max",
                         tabid: "ProofPropagation"
                     });
-=======
-            this.element.addClass("zoomslider-container");
-            var command = this.element.attr("data-command");
-            var zoomplus = $('<img>').attr("id", "zoom-plus").attr("src", "images/zoomplus.svg").addClass("hoverable").appendTo(that.element);
-            this.zoomslider = $('<div></div>').appendTo(that.element);
-            var zoomminus = $('<img>').attr("id", "zoom-minus").attr("src", "images/zoomminus.svg").addClass("hoverable").appendTo(that.element);
-            this.zoomslider.slider({
-                min: that.options.min,
-                max: that.options.max,
-                value: that.options.value,
-                change: function (event, ui) {
-                    var val = that.zoomslider.slider("option", "value");
-                    var isExternal = val > that.options.max || val < that.options.min;
-                    if (!isExternal) {
-                        that.options.value = val;
-                    }
-                    else {
-                        var newval = val > that.options.max ? that.options.max : that.options.min;
-                        that.options.value = newval;
-                        that.zoomslider.slider("option", "value", newval);
-                    }
-                    if (command !== undefined && command !== "") {
-                        window.Commands.Execute(command, { value: val, isExternal: isExternal });
-                    }
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 }
             }
             else {
@@ -10940,11 +9822,6 @@ var BMA;
             this.refreshData();
         },
         _destroy: function () {
-<<<<<<< HEAD
-=======
-            var contents;
-            this.element.removeClass("zoomslider-container");
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             this.element.empty();
         },
         _setOption: function (key, value) {
@@ -10967,18 +9844,12 @@ var BMA;
         }
     });
 }(jQuery));
-<<<<<<< HEAD
 //# sourceMappingURL=proofresultviewer.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-
-///#source 1 1 /script/widgets/coloredtableviewer.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 (function ($) {
     $.widget("BMA.furthertesting", {
         options: {
-<<<<<<< HEAD
             header: "Further Testing",
             toggler: undefined,
             tabid: "FurtherTesting",
@@ -10986,15 +9857,6 @@ var BMA;
             tableHeaders: [],
             data: [],
             tabLabels: [],
-=======
-            header: [],
-            numericData: undefined,
-            colorData: undefined,
-            type: "standart"
-        },
-        _create: function () {
-            this.refresh();
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         ChangeMode: function () {
             var that = this;
@@ -11004,7 +9866,6 @@ var BMA;
                         .removeClass("waiting")
                         .text("Further Testing");
                     break;
-<<<<<<< HEAD
                 case "StandbyMode":
                     this.toggler
                         .addClass("waiting")
@@ -11012,22 +9873,6 @@ var BMA;
                     var snipper = $('<div class="spinner"></div>').appendTo(this.toggler);
                     for (var i = 1; i < 4; i++) {
                         $('<div></div>').addClass('bounce' + i).appendTo(snipper);
-=======
-                case "simulation-min":
-                    this.table.addClass("proof-propagation-overview");
-                    if (options.colorData !== undefined && options.colorData.length !== 0) {
-                        var that = this;
-                        var color = options.colorData;
-                        for (var i = 0; i < color.length; i++) {
-                            var tr = $('<tr></tr>').appendTo(that.table);
-                            for (var j = 0; j < color[i].length; j++) {
-                                var td = $('<td></td>').appendTo(tr);
-                                if (color[i][j]) {
-                                    td.addClass('change');
-                                }
-                            }
-                        }
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                     }
                     break;
             }
@@ -11124,14 +9969,9 @@ var BMA;
         }
     });
 }(jQuery));
-<<<<<<< HEAD
 //# sourceMappingURL=furthertestingviewer.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-
-///#source 1 1 /script/widgets/containernameeditor.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 (function ($) {
     $.widget("BMA.localstoragewidget", {
         options: {
@@ -11223,26 +10063,11 @@ var BMA;
         }
     });
 }(jQuery));
-<<<<<<< HEAD
 //# sourceMappingURL=localstoragewidget.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.resultswindowviewer", {
-=======
-
-///#source 1 1 /script/widgets/drawingsurface.js
-(function ($) {
-    $.widget("BMA.drawingsurface", {
-        _plot: null,
-        _gridLinesPlot: null,
-        _svgPlot: null,
-        _lightSvgPlot: null,
-        _rectsPlot: null,
-        _dragService: null,
-        _zoomObs: undefined,
-        _onlyZoomEnabled: false,
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         options: {
             isResizable: false,
             content: $(),
@@ -11456,7 +10281,6 @@ var BMA;
                     });
                 that.rectsPlot.draw({ rects: rects });
             }
-<<<<<<< HEAD
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 var index = 0;
                 while (true) {
@@ -11520,44 +10344,6 @@ var BMA;
                                     }
                                 }
                             }
-=======
-            var plotDiv = $("<div></div>").width(this.element.width()).height(this.element.height()).attr("data-idd-plot", "plot").appendTo(that.element);
-            var gridLinesPlotDiv = $("<div></div>").attr("data-idd-plot", "scalableGridLines").appendTo(plotDiv);
-            var rectsPlotDiv = $("<div></div>").attr("data-idd-plot", "rectsPlot").appendTo(plotDiv);
-            var svgPlotDiv = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
-            var svgPlotDiv2 = $("<div></div>").attr("data-idd-plot", "svgPlot").appendTo(plotDiv);
-            that._plot = InteractiveDataDisplay.asPlot(plotDiv);
-            this._plot.aspectRatio = 1;
-            var svgPlot = that._plot.get(svgPlotDiv[0]);
-            this._svgPlot = svgPlot;
-            var lightSvgPlot = that._plot.get(svgPlotDiv2[0]);
-            this._lightSvgPlot = lightSvgPlot;
-            this._rectsPlot = that._plot.get(rectsPlotDiv[0]);
-            if (this.options.svg !== undefined) {
-                if (svgPlot.svg === undefined) {
-                    svgPlot.host.on("svgLoaded", this._svgLoaded);
-                }
-                else {
-                    svgPlot.svg.clear();
-                    svgPlot.svg.add(this.options.svg);
-                }
-            }
-            if (lightSvgPlot.svg === undefined) {
-                lightSvgPlot.host.on("svgLoaded", this._lightSvgLoaded);
-            }
-            else {
-                lightSvgPlot.svg.clear();
-                if (this.options.lightSvg !== undefined)
-                    lightSvgPlot.svg.add(this.options.lightSvg);
-            }
-            plotDiv.droppable({
-                drop: function (event, ui) {
-                    if (that.options.isNavigationEnabled !== true) {
-                        var cs = svgPlot.getScreenToDataTransform();
-                        window.Commands.Execute("DrawingSurfaceClick", {
-                            x: cs.screenToDataX(event.pageX - plotDiv.offset().left),
-                            y: -cs.screenToDataY(event.pageY - plotDiv.offset().top)
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                         });
                     }
                     for (var i = 0; i < options.colors[0].Plot.length; i++) {
@@ -11567,7 +10353,6 @@ var BMA;
                         leftLabels[i] = i.toString();
                     }
                 }
-<<<<<<< HEAD
                 that._chart.removeDiv(this.bottomAxis[0]);
                 this.bottomAxis.remove();
                 this.bottomAxis = that._chart.addAxis("bottom", "labels", { labels: bottomLabels });
@@ -11668,121 +10453,6 @@ var BMA;
                     header: ["Graph", "Name", "Range"],
                     type: "graph-max",
                     numericData: that.options.variables
-=======
-            });
-            plotDiv.bind("click touchstart", function (arg) {
-                var cs = svgPlot.getScreenToDataTransform();
-                if (arg.originalEvent !== undefined) {
-                    arg = arg.originalEvent;
-                }
-                window.Commands.Execute("DrawingSurfaceClick", {
-                    x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
-                    y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top),
-                    screenX: arg.pageX - plotDiv.offset().left,
-                    screenY: arg.pageY - plotDiv.offset().top
-                });
-            });
-            plotDiv.dblclick(function (arg) {
-                var cs = svgPlot.getScreenToDataTransform();
-                if (arg.originalEvent !== undefined) {
-                    arg = arg.originalEvent;
-                }
-                window.Commands.Execute("DrawingSurfaceDoubleClick", {
-                    x: cs.screenToDataX(arg.pageX - plotDiv.offset().left),
-                    y: -cs.screenToDataY(arg.pageY - plotDiv.offset().top)
-                });
-            });
-            var createPanSubject = function (vc) {
-                var _doc = $(document);
-                var mouseDown = vc.onAsObservable("mousedown");
-                var mouseMove = vc.onAsObservable("mousemove");
-                var mouseUp = _doc.onAsObservable("mouseup");
-                var stopPanning = mouseUp;
-                var mouseDrags = mouseDown.selectMany(function (md) {
-                    var cs = svgPlot.getScreenToDataTransform();
-                    var x0 = cs.screenToDataX(md.pageX - plotDiv.offset().left);
-                    var y0 = -cs.screenToDataY(md.pageY - plotDiv.offset().top);
-                    return mouseMove.select(function (mm) {
-                        var x1 = cs.screenToDataX(mm.pageX - plotDiv.offset().left);
-                        var y1 = -cs.screenToDataY(mm.pageY - plotDiv.offset().top);
-                        return { x0: x0, y0: y0, x1: x1, y1: y1 };
-                    }).takeUntil(stopPanning);
-                });
-                var touchStart = vc.onAsObservable("touchstart");
-                var touchMove = vc.onAsObservable("touchmove");
-                var touchEnd = _doc.onAsObservable("touchend");
-                var touchCancel = _doc.onAsObservable("touchcancel");
-                var gestures = touchStart.selectMany(function (md) {
-                    var cs = svgPlot.getScreenToDataTransform();
-                    var x0 = cs.screenToDataX(md.originalEvent.pageX - plotDiv.offset().left);
-                    var y0 = -cs.screenToDataY(md.originalEvent.pageY - plotDiv.offset().top);
-                    return touchMove.takeUntil(touchEnd.merge(touchCancel)).select(function (tm) {
-                        var x1 = cs.screenToDataX(tm.originalEvent.pageX - plotDiv.offset().left);
-                        var y1 = -cs.screenToDataY(tm.originalEvent.pageY - plotDiv.offset().top);
-                        return { x0: x0, y0: y0, x1: x1, y1: y1 };
-                    });
-                });
-                return mouseDrags.merge(gestures);
-            };
-            var createDragStartSubject = function (vc) {
-                var _doc = $(document);
-                var mousedown = vc.onAsObservable("mousedown").where(function (md) {
-                    return md.button === 0;
-                });
-                var mouseMove = vc.onAsObservable("mousemove");
-                var mouseUp = _doc.onAsObservable("mouseup");
-                var stopPanning = mouseUp;
-                var dragStarts = mousedown.selectMany(function (md) {
-                    var cs = svgPlot.getScreenToDataTransform();
-                    var x0 = cs.screenToDataX(md.pageX - plotDiv.offset().left);
-                    var y0 = -cs.screenToDataY(md.pageY - plotDiv.offset().top);
-                    return mouseMove.select(function (mm) {
-                        return { x: x0, y: y0 };
-                    }).first().takeUntil(mouseUp);
-                });
-                var touchStart = vc.onAsObservable("touchstart");
-                var touchMove = vc.onAsObservable("touchmove");
-                var touchEnd = _doc.onAsObservable("touchend");
-                var touchCancel = _doc.onAsObservable("touchcancel");
-                var touchDragStarts = touchStart.selectMany(function (md) {
-                    var cs = svgPlot.getScreenToDataTransform();
-                    var x0 = cs.screenToDataX(md.originalEvent.pageX - plotDiv.offset().left);
-                    var y0 = -cs.screenToDataY(md.originalEvent.pageY - plotDiv.offset().top);
-                    return touchMove.select(function (mm) {
-                        return { x: x0, y: y0 };
-                    }).first().takeUntil(touchEnd.merge(touchCancel));
-                });
-                return dragStarts;
-            };
-            var createDragEndSubject = function (vc) {
-                var _doc = $(document);
-                var mousedown = that._plot.centralPart.onAsObservable("mousedown");
-                var mouseMove = vc.onAsObservable("mousemove");
-                var mouseUp = _doc.onAsObservable("mouseup");
-                var touchEnd = _doc.onAsObservable("touchend");
-                var touchCancel = _doc.onAsObservable("touchcancel");
-                var stopPanning = mouseUp.merge(touchEnd).merge(touchCancel);
-                var dragEndings = stopPanning;
-                return dragEndings;
-            };
-            this._dragService = {
-                dragStart: createDragStartSubject(that._plot.centralPart),
-                drag: createPanSubject(that._plot.centralPart),
-                dragEnd: createDragEndSubject(that._plot.centralPart)
-            };
-            this._gridLinesPlot = that._plot.get(gridLinesPlotDiv[0]);
-            var yDT = new InteractiveDataDisplay.DataTransform(function (x) {
-                return -x;
-            }, function (y) {
-                return -y;
-            }, undefined);
-            this._plot.yDataTransform = yDT;
-            var width = 1600;
-            that.options.zoom = width;
-            if (this.options.isNavigationEnabled) {
-                var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(that._plot.host).where(function (g) {
-                    return g.Type !== "Zoom" || g.scaleFactor > 1 && that._plot.visibleRect.width < that._plotSettings.MaxWidth || g.scaleFactor < 1 && that._plot.visibleRect.width > that._plotSettings.MinWidth;
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 });
                 if (options.interval !== undefined && options.interval.length !== 0) {
                     this.big_table.progressiontable({
@@ -11898,7 +10568,6 @@ var BMA;
                     this.options.num = value;
                     this.num.text('STEPS: ' + value);
                     break;
-<<<<<<< HEAD
                 case "variables":
                     this.options.variables = value;
                     this.small_table.coloredtableviewer({
@@ -11909,26 +10578,6 @@ var BMA;
                 case "interval":
                     this.options.interval = value;
                     this.big_table.progressiontable({ interval: value });
-=======
-                case "zoom":
-                    if (value !== undefined) {
-                        if (that._plot.visibleRect.width !== value) {
-                            var oldPlotRect = that._plot.visibleRect;
-                            var xCenter = oldPlotRect.x + oldPlotRect.width / 2;
-                            var yCenter = oldPlotRect.y + oldPlotRect.height / 2;
-                            var scale = oldPlotRect.width / value;
-                            var newHeight = oldPlotRect.height / scale;
-                            var newrect = {
-                                x: xCenter - value / 2,
-                                y: yCenter - newHeight / 2,
-                                width: value,
-                                height: newHeight
-                            };
-                            that._plot.navigation.setVisibleRect(newrect, false);
-                            that.options.zoom = value;
-                        }
-                    }
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                     break;
                 case "buttonMode":
                     this.options.buttonMode = value;
@@ -12074,14 +10723,9 @@ var BMA;
         }
     });
 }(jQuery));
-<<<<<<< HEAD
 //# sourceMappingURL=simulationviewer.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-
-///#source 1 1 /script/widgets/progressiontable.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 (function ($) {
     $.widget("BMA.userdialog", {
         options: {
@@ -12119,43 +10763,11 @@ var BMA;
         },
         _add_close_button: function () {
             var that = this;
-<<<<<<< HEAD
             var closediv = $('<div></div>').addClass("close-icon").appendTo(that.element);
             var closing = $('<img>').attr('src', '../../images/close.png').appendTo(closediv);
             closing.bind("click", function () {
                 that.element.hide();
             });
-=======
-            var options = this.options;
-            this.init.empty();
-            var table = $('<table></table>').addClass("variables-table").appendTo(that.init);
-            var tr0 = $('<tr></tr>').appendTo(table);
-            if (that.options.header !== undefined)
-                $('<td></td>').width(120).attr("colspan", "2").text(that.options.header).appendTo(tr0);
-            if (that.options.interval !== undefined) {
-                for (var i = 0; i < that.options.interval.length; i++) {
-                    var tr = $('<tr></tr>').appendTo(table);
-                    var td = $('<td></td>').appendTo(tr);
-                    var input = $('<input type="text">').width("100%").appendTo(td);
-                    var init = that.options.init !== undefined ? that.options.init[i] || that.options.interval[i] : that.options.interval[i];
-                    if (Array.isArray(init))
-                        input.val(init[0]);
-                    else
-                        input.val(init);
-                    var random = $('<td></td>').addClass("random-small bma-random-icon2 hoverable").appendTo(tr);
-                    random.bind("click", function () {
-                        var prev = parseInt($(this).prev().children("input").eq(0).val());
-                        var index = $(this).parent().index() - 1;
-                        var randomValue = that.GetRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
-                        $(this).prev().children("input").eq(0).val(randomValue);
-                        if (randomValue !== prev)
-                            $(this).parent().addClass('red');
-                        else
-                            $(this).parent().removeClass('red');
-                    });
-                }
-            }
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         _popup_position: function () {
             var my_popup = $('.dialog');
@@ -12167,69 +10779,12 @@ var BMA;
                 if (win_w < my_popup_w) {
                     my_popup.css({ 'left': 5, });
                 }
-<<<<<<< HEAD
                 if (win_h > my_popup_h) {
                     my_popup.css({ 'top': popup_half_h });
                 }
                 if (win_h < my_popup_h) {
                     my_popup.css({ 'top': 5 });
                 }
-=======
-                return true;
-            }
-        },
-        GetInit: function () {
-            var init = [];
-            var inputs = this.init.find("tr:not(:first-child)").children("td:first-child").children("input");
-            inputs.each(function (ind) {
-                init[ind] = parseInt($(this).val());
-            });
-            return init;
-        },
-        ClearData: function () {
-            this.data.empty();
-        },
-        AddData: function (data) {
-            var that = this;
-            if (data !== undefined) {
-                var trs = that.data.find("tr");
-                if (trs.length === 0) {
-                    that.repeat = undefined;
-                    var table = $('<table></table>').addClass("progression-table").appendTo(that.data);
-                    for (var i = 0; i < data.length; i++) {
-                        var tr = $('<tr></tr>').appendTo(table);
-                        var td = $('<td></td>').text(data[i]).appendTo(tr);
-                    }
-                }
-                else {
-                    trs.each(function (ind) {
-                        var td = $('<td></td>').text(data[ind]).appendTo($(this));
-                        if (td.text() !== td.prev().text())
-                            td.addClass('change');
-                    });
-                    var last = that.data.find("tr").children("td:last-child");
-                    if (that.repeat !== undefined) {
-                        if (that.IsClone(that.repeat, last))
-                            that.Highlight(that.data.find("tr:first-child").children("td").length - 1);
-                        else
-                            ;
-                    }
-                    else {
-                        var cloneInd = that.FindClone(last);
-                        if (cloneInd !== undefined) {
-                            that.Highlight(cloneInd);
-                            that.Highlight(that.data.find("tr:first-child").children("td").length - 1);
-                        }
-                    }
-                }
-            }
-        },
-        Highlight: function (ind) {
-            var that = this;
-            var tds = this.data.find("tr").children("td:nth-child(" + (ind + 1) + ")");
-            tds.each(function (ind) {
-                $(this).addClass('repeat');
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             });
         },
         //_bind_functions: function () {
@@ -12261,15 +10816,10 @@ var BMA;
         }
     });
 }(jQuery));
-<<<<<<< HEAD
 //# sourceMappingURL=userdialog.js.map
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 /// <reference path="..\functionsregistry.ts"/>
-=======
-
-///#source 1 1 /script/widgets/proofresultviewer.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 (function ($) {
     $.widget("BMA.bmaeditor", {
         options: {
@@ -12635,7 +11185,6 @@ jQuery.fn.extend({
         },
         _create: function () {
             var that = this;
-<<<<<<< HEAD
             this.list = this._getList();
             this.items = this.list.find("li");
             this.listOptions = [];
@@ -12715,17 +11264,6 @@ jQuery.fn.extend({
                     }
                 });
             });
-=======
-            var options = this.options;
-            this.resultDiv = $('<div></div>').addClass("proof-state").appendTo(that.element);
-            this.proofmessage = $('<p></p>').appendTo(that.element);
-            $('<br></br>').appendTo(that.element);
-            this.compactvariables = $('<div></div>').addClass('proof-variables').appendTo(that.element).resultswindowviewer();
-            this.proofPropagation = $('<div></div>').addClass('proof-propagation').appendTo(that.element).resultswindowviewer();
-            this.refreshSuccess();
-            this.refreshMessage();
-            this.refreshData();
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         changeButtonONOFFStyle: function (ind) {
             var button = this.listOptions[ind].toggleButton;
@@ -12761,14 +11299,9 @@ jQuery.fn.extend({
         }
     });
 }(jQuery));
-<<<<<<< HEAD
 //# sourceMappingURL=visibilitysettings.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-
-///#source 1 1 /script/widgets/furthertestingviewer.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 (function ($) {
     $.widget("BMA.keyframetable", {
         options: {
@@ -12933,36 +11466,11 @@ jQuery.fn.extend({
             a.attr('href', '#' + id);
             this._refresh();
         },
-<<<<<<< HEAD
     });
 }(jQuery));
 //# sourceMappingURL=ltlstatesviewer.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-        _setOption: function (key, value) {
-            var that = this;
-            switch (key) {
-                case "header":
-                    this.options.header = value;
-                    this.header.text(value);
-                    break;
-                case "data":
-                    this.options.data = value;
-                    this.refresh();
-                    break;
-                case "buttonMode":
-                    this.options.buttonMode = value;
-                    this.ChangeMode();
-                    break;
-            }
-            this._super(key, value);
-        }
-    });
-}(jQuery));
-
-///#source 1 1 /script/widgets/localstoragewidget.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 (function ($) {
     $.widget("BMA.ltlviewer", {
         options: {
@@ -12978,7 +11486,6 @@ jQuery.fn.extend({
                 if (that.options.openstateseditor !== undefined)
                     that.options.openstateseditor();
             });
-<<<<<<< HEAD
             this.key_div.resultswindowviewer({
                 header: "States",
                 icon: "max",
@@ -12990,54 +11497,6 @@ jQuery.fn.extend({
             this.temp_content.click(function () {
                 if (that.options.opentpeditor !== undefined) {
                     that.options.opentpeditor();
-=======
-            that.element.draggable({ containment: "parent", scroll: false });
-            this.message = $('<div></div>').appendTo(this.element);
-            this.repo = $('<div></div>').appendTo(this.element);
-            if (Silverlight.isInstalled()) {
-                var slWidget = $('<div></div>').appendTo(this.element);
-                var getSilverlightMethodCall = "javascript:Silverlight.getSilverlight(\"5.0.61118.0\");";
-                var installImageUrl = "http://go.microsoft.com/fwlink/?LinkId=161376";
-                var imageAltText = "Get Microsoft Silverlight";
-                var altHtml = "<a href='{1}' style='text-decoration: none;'>" + "<img src='{2}' alt='{3}' " + "style='border-style: none'/></a>";
-                altHtml = altHtml.replace('{1}', getSilverlightMethodCall);
-                altHtml = altHtml.replace('{2}', installImageUrl);
-                altHtml = altHtml.replace('{3}', imageAltText);
-                Silverlight.createObject("ClientBin/BioCheck.xap", slWidget[0], "slPlugin", {
-                    width: "250",
-                    height: "50",
-                    background: "white",
-                    alt: altHtml,
-                    version: "5.0.61118.0"
-                }, { onError: onSilverlightError }, "param1=value1,param2=value2", "row3");
-            }
-            this.refresh();
-        },
-        refresh: function () {
-            this._createHTML();
-        },
-        AddItem: function (item) {
-            this.options.items.push(item);
-            this.refresh();
-        },
-        _createHTML: function (items) {
-            var items = this.options.items;
-            this.repo.empty();
-            var that = this;
-            this.ol = $('<ol></ol>').appendTo(this.repo);
-            for (var i = 0; i < items.length; i++) {
-                var li = $('<li></li>').text(items[i]).appendTo(this.ol);
-                var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);
-                removeBtn.bind("click", function (event) {
-                    event.stopPropagation();
-                    window.Commands.Execute("LocalStorageRemoveModel", "user." + items[$(this).parent().index()]);
-                });
-            }
-            this.ol.selectable({
-                stop: function () {
-                    var ind = that.repo.find(".ui-selected").index();
-                    window.Commands.Execute("LocalStorageLoadModel", "user." + items[ind]);
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 }
             });
             this.temp_prop.resultswindowviewer({
@@ -13076,14 +11535,9 @@ jQuery.fn.extend({
         }
     });
 }(jQuery));
-<<<<<<< HEAD
 //# sourceMappingURL=ltlviewer.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-
-///#source 1 1 /script/widgets/resultswindowviewer.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 (function ($) {
     $.widget("BMA.ltlresultsviewer", {
         _plot: undefined,
@@ -13104,24 +11558,6 @@ jQuery.fn.extend({
         },
         _create: function () {
             var that = this;
-<<<<<<< HEAD
-=======
-            var options = this.options;
-            this.header = $('<div></div>').addClass('analysis-title').appendTo(this.element);
-            $('<span></span>').text(options.header).appendTo(this.header);
-            this.buttondiv = $('<div></div>').addClass("expand-collapse-bttn").appendTo(that.header);
-            this.content = $('<div></div>').appendTo(this.element);
-            this.reseticon();
-            this.refresh();
-        },
-        toggle: function () {
-            this.element.toggle(this.options.effects);
-        },
-        getbutton: function () {
-            return this.button;
-        },
-        _destroy: function () {
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             this.element.empty();
             this.element.addClass("ltlresultsviewer");
             var root = this.element;
@@ -13367,14 +11803,9 @@ jQuery.fn.extend({
         },
     });
 }(jQuery));
-<<<<<<< HEAD
 //# sourceMappingURL=ltlresultsviewer.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-
-///#source 1 1 /script/widgets/simulationplot.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 (function ($) {
     $.widget("BMA.stateseditor", {
         _stateToolbar: null,
@@ -13387,7 +11818,6 @@ jQuery.fn.extend({
         _ltlAddFormulaButton: null,
         _activeState: null,
         options: {
-<<<<<<< HEAD
             variables: [],
             states: [],
             minConst: 0,
@@ -13395,9 +11825,6 @@ jQuery.fn.extend({
             commands: undefined,
             onStatesUpdated: undefined,
             onComboBoxOpen: undefined,
-=======
-            colors: undefined,
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         _create: function () {
             var that = this;
@@ -13426,11 +11853,7 @@ jQuery.fn.extend({
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
         },
-<<<<<<< HEAD
         _initStates: function () {
-=======
-        refresh: function () {
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             var that = this;
             for (var i = this.options.states.length - 1; i >= 0; i--) {
                 var stateButton = $("<div>" + this.options.states[i].name + "</div>").attr("data-state-name", this.options.states[i].name)
@@ -13442,26 +11865,7 @@ jQuery.fn.extend({
                             break;
                         }
                     }
-<<<<<<< HEAD
                     that.refresh();
-=======
-                }
-                this.highlightPlot = that._chart.polyline("_hightlightPlot", undefined);
-                var bottomAxis = that._chart.addAxis("bottom", "labels", { labels: bottomLabels });
-                var leftAxis = that._chart.addAxis("left", "labels", { labels: leftLabels });
-                var bounds = that._chart.aggregateBounds();
-                bounds.bounds.height += 0.04;
-                bounds.bounds.y -= 0.02;
-                that._chart.navigation.setVisibleRect(bounds.bounds, false);
-                that._chart.centralPart.mousedown(function (e) {
-                    e.stopPropagation();
-                });
-                bottomAxis.mousedown(function (e) {
-                    e.stopPropagation();
-                });
-                leftAxis.mousedown(function (e) {
-                    e.stopPropagation();
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 });
             }
         },
@@ -13647,7 +12051,6 @@ jQuery.fn.extend({
             var removeIcon = $("<img>").attr("src", "../images/state-line-del.svg").appendTo(removeTd);
             table.insertBefore(this._ltlStates.children().last());
         },
-<<<<<<< HEAD
         createOperatorPicker: function (operatorTd, operatorValue, forRangeOp) {
             var that = this;
             var firstLeft = $(operatorTd).offset().left;
@@ -13719,18 +12122,6 @@ jQuery.fn.extend({
                     operatorSelector = undefined;
                 }
             });
-=======
-        ChangeVisibility: function (ind, check) {
-            var plotName = "plot" + ind;
-            var polyline = this._chart.get(plotName);
-            this.options.colors[ind].Seen = check;
-            polyline.isVisible = check;
-            var legenditem = this.element.find(".simulationplot-legend-legenditem[data-index=" + ind + "]");
-            if (check)
-                legenditem.show();
-            else
-                legenditem.hide();
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         updateOperatorPicker: function (position, setOperatorValue) {
             var that = this;
@@ -13760,7 +12151,6 @@ jQuery.fn.extend({
         },
         createVariablePicker: function (variableTd, variable) {
             var that = this;
-<<<<<<< HEAD
             var containerImg = $("<div></div>").addClass("state-container-image") /*attr("src", "../images/state-container.svg")*/.addClass("hidden").appendTo(variableTd);
             var selectedContainer = $("<div></div>").addClass("hidden").addClass("state-container-name").addClass("state-text").appendTo(variableTd);
             var variableImg = $("<div></div>").addClass("state-variable-image") /*attr("src", "../images/state-variable.svg")*/.appendTo(variableTd);
@@ -13824,31 +12214,6 @@ jQuery.fn.extend({
                     variablePicker = undefined;
                 }
             });
-=======
-            switch (key) {
-                case "colors":
-                    this.options.colors = value;
-                    break;
-            }
-            if (value !== null && value !== undefined)
-                this.refresh();
-            this._super(key, value);
-        }
-    });
-}(jQuery));
-
-///#source 1 1 /script/widgets/simulationexpanded.js
-(function ($) {
-    $.widget("BMA.simulationexpanded", {
-        options: {
-            data: undefined,
-            init: undefined,
-            interval: undefined,
-            variables: undefined,
-            num: 10,
-            buttonMode: "ActiveMode",
-            step: 10
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         updateVariablePicker: function (position, setSelectedValue, currSymbol) {
             var that = this;
@@ -13916,12 +12281,7 @@ jQuery.fn.extend({
                         variable.addClass("active");
                         setSelectedValue({ container: $(container).attr("data-container-id"), variable: variableName });
                     }
-<<<<<<< HEAD
                 }
-=======
-                    this.RunButton.unbind("click");
-                    break;
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             }
         },
         findContainer: function (variable) {
@@ -13996,17 +12356,10 @@ jQuery.fn.extend({
             var that = this;
             this._super(key, value);
             switch (key) {
-<<<<<<< HEAD
                 case "variables": {
                     this.options.variables = [];
                     for (var i = 0; i < value.length; i++) {
                         this.options.variables.push(value[i]);
-=======
-                case "data":
-                    this.options.data = value;
-                    if (options.interval !== undefined && options.interval.length !== 0) {
-                        this.big_table.progressiontable({ interval: options.interval, data: options.data });
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                     }
                     break;
                 }
@@ -14036,14 +12389,9 @@ jQuery.fn.extend({
         },
     });
 }(jQuery));
-<<<<<<< HEAD
 //# sourceMappingURL=stateseditor.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-
-///#source 1 1 /script/widgets/simulationviewer.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 (function ($) {
     $.widget("BMA.statescompact", {
         _stateButtons: null,
@@ -14116,7 +12464,6 @@ jQuery.fn.extend({
                 }
                 default: break;
             }
-<<<<<<< HEAD
         },
         _setOptions: function (options) {
             this._super(options);
@@ -14124,16 +12471,6 @@ jQuery.fn.extend({
         executeCommand: function (commandName, args) {
             if (this.options.commands) {
                 this.options.commands.Execute(commandName, args);
-=======
-            if (that.options.plot !== undefined && that.options.plot.length !== 0) {
-                that.plot = $('<div></div>').addClass('plot-min').simulationplot({ colors: that.options.plot });
-                that.plotDiv.resultswindowviewer({
-                    header: "Simulation Graph",
-                    content: that.plot,
-                    icon: "max",
-                    tabid: "SimulationPlot"
-                });
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             }
         },
         executeStatesEditorExpand: function () {
@@ -14321,14 +12658,9 @@ jQuery.fn.extend({
         },
     });
 }(jQuery));
-<<<<<<< HEAD
 //# sourceMappingURL=statetooltip.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
-=======
-
-///#source 1 1 /script/widgets/userdialog.js
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
 (function ($) {
     $.widget("BMA.compactltlresult", {
         options: {
@@ -14342,7 +12674,6 @@ jQuery.fn.extend({
             onshowresultsrequested: undefined,
         },
         _create: function () {
-<<<<<<< HEAD
             this.element.empty();
             this.maindiv = $("<div></div>").appendTo(this.element);
             this._createView();
@@ -14695,54 +13026,6 @@ jQuery.fn.extend({
                 default:
                     break;
             }
-=======
-            var that = this;
-            this.element.addClass("window dialog");
-            this.element.draggable({ containment: "parent", scroll: false });
-            this._add_close_button();
-            this.message = $('<div><div>').text(this.options.message).addClass('window-title').appendTo(that.element);
-            this.buttons = $('<div><div>').addClass("button-list").appendTo(that.element);
-            var actions = this.options.actions;
-            if (actions !== undefined) {
-                for (var i = 0; i < actions.length; i++) {
-                    var bttn = $('<button></button>').text(actions[i].button).appendTo(that.buttons);
-                    bttn.bind('click', actions[i].callback);
-                }
-            }
-            this._popup_position();
-        },
-        _add_close_button: function () {
-            var that = this;
-            var closediv = $('<div></div>').addClass("close-icon").appendTo(that.element);
-            var closing = $('<img>').attr('src', '../../images/close.png').appendTo(closediv);
-            closing.bind("click", function () {
-                that.element.hide();
-            });
-        },
-        _popup_position: function () {
-            var my_popup = $('.dialog');
-            my_popup.each(function () {
-                var my_popup_w = $(this).outerWidth(), my_popup_h = $(this).outerHeight(), win_w = $(window).outerWidth(), win_h = $(window).outerHeight(), popup_half_w = (win_w - my_popup_w) / 2, popup_half_h = (win_h - my_popup_h) / 2;
-                if (win_w > my_popup_w) {
-                    my_popup.css({ 'left': popup_half_w });
-                }
-                if (win_w < my_popup_w) {
-                    my_popup.css({ 'left': 5, });
-                }
-                if (win_h > my_popup_h) {
-                    my_popup.css({ 'top': popup_half_h });
-                }
-                if (win_h < my_popup_h) {
-                    my_popup.css({ 'top': 5 });
-                }
-            });
-        },
-        Show: function () {
-            this.element.show();
-        },
-        Hide: function () {
-            this.element.hide();
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         createWaitAnim: function () {
             /*
@@ -14778,88 +13061,12 @@ jQuery.fn.extend({
                     break;
             }
             this._super(key, value);
-<<<<<<< HEAD
             if (needRefreshStates) {
                 this._createView();
-=======
-        }
-    });
-}(jQuery));
-
-///#source 1 1 /script/widgets/variablesOptionsEditor.js
-(function ($) {
-    $.widget("BMA.bmaeditor", {
-        options: {
-            name: "name",
-            rangeFrom: 0,
-            rangeTo: 0,
-            functions: ["VAR", "CONST"],
-            operators1: ["+", "-", "*", "/"],
-            operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
-            inputs: [],
-            formula: "",
-            approved: undefined
-        },
-        resetElement: function () {
-            var that = this;
-            this.name.val(that.options.name);
-            this.rangeFrom.val(that.options.rangeFrom);
-            this.rangeTo.val(that.options.rangeTo);
-            this.listOfInputs.empty();
-            var inputs = this.options.inputs;
-            inputs.forEach(function (val, ind) {
-                var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
-                item.bind("click", function () {
-                    that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
-                    that.listOfInputs.hide();
-                });
-            });
-            this.formulaTextArea.val(that.options.formula);
-            window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: that._inputsArray() });
-        },
-        SetValidation: function (result, message) {
-            this.options.approved = result;
-            var that = this;
-            if (this.options.approved === undefined) {
-                that.element.removeClass('bmaeditor-expanded');
-                that.prooficon.removeClass("formula-failed-icon");
-                that.prooficon.removeClass("formula-validated-icon");
-                this.formulaTextArea.removeClass("formula-failed-textarea");
-                this.formulaTextArea.removeClass("formula-validated-textarea");
-            }
-            else {
-                if (this.options.approved === true) {
-                    that.prooficon.removeClass("formula-failed-icon").addClass("formula-validated-icon");
-                    this.formulaTextArea.removeClass("formula-failed-textarea").addClass("formula-validated-textarea");
-                    that.element.removeClass('bmaeditor-expanded');
-                }
-                else if (this.options.approved === false) {
-                    that.prooficon.removeClass("formula-validated-icon").addClass("formula-failed-icon");
-                    this.formulaTextArea.removeClass("formula-validated-textarea").addClass("formula-failed-textarea");
-                    that.element.addClass('bmaeditor-expanded');
-                }
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             }
         },
-<<<<<<< HEAD
         _setOptions: function (options) {
             this._super(options);
-=======
-        getCaretPos: function (jq) {
-            var obj = jq[0];
-            obj.focus();
-            if (obj.selectionStart)
-                return obj.selectionStart;
-            else if (document.selection) {
-                var sel = document.selection.createRange();
-                var clone = sel.duplicate();
-                sel.collapse(true);
-                clone.moveToElementText(obj);
-                clone.setEndPoint('EndToEnd', sel);
-                return clone.text.length;
-            }
-            return 0;
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         _destroy: function () {
             this.element.empty();
@@ -14979,7 +13186,6 @@ jQuery.fn.extend({
         },
         _create: function () {
             var that = this;
-<<<<<<< HEAD
             var root = this.element;
             //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
             var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
@@ -15024,24 +13230,6 @@ jQuery.fn.extend({
                     start: function (event, ui) {
                         that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
                     }
-=======
-            var inputsDiv = $('<div></div>').addClass('functions').appendTo(that.element);
-            $('<div></div>').addClass("window-title").text("Inputs").appendTo(inputsDiv);
-            var inpUl = $('<ul></ul>').appendTo(inputsDiv);
-            var operatorsDiv = $('<div></div>').addClass('operators').appendTo(that.element);
-            $('<div></div>').addClass("window-title").text("Operators").appendTo(operatorsDiv);
-            var opUl1 = $('<ul></ul>').appendTo(operatorsDiv);
-            var opUl2 = $('<ul></ul>').appendTo(operatorsDiv);
-            this.infoTextArea = $('<div></div>').addClass('operators-info').appendTo(operatorsDiv);
-            var functions = this.options.functions;
-            functions.forEach(function (val, ind) {
-                var item = $('<li></li>').appendTo(inpUl);
-                var span = $('<button></button>').text(val).appendTo(item);
-                item.hover(function () {
-                    that._OnHoverFunction($(this).children("button"), that.infoTextArea);
-                }, function () {
-                    that._OffHoverFunction($(this).children("button"), that.infoTextArea);
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                 });
             }
             //Adding drawing surface
@@ -15408,20 +13596,14 @@ jQuery.fn.extend({
                 default:
                     break;
             }
-<<<<<<< HEAD
             this._super(key, value);
             this.refresh();
-=======
-            $.Widget.prototype._setOption.apply(this, arguments);
-            this._super("_setOption", key, value);
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
         },
         destroy: function () {
             this.element.empty();
         },
     });
 }(jQuery));
-<<<<<<< HEAD
 //# sourceMappingURL=tpviewer.js.map
 var BMA;
 (function (BMA) {
@@ -15558,26 +13740,6 @@ var BMA;
                         _this.UpdateOperations(args.states);
                     }
                 });
-=======
-jQuery.fn.extend({
-    insertAtCaret: function (myValue) {
-        return this.each(function (i) {
-            if (document.selection) {
-                this.focus();
-                var sel = document.selection.createRange();
-                sel.text = myValue;
-                this.focus();
-            }
-            else if (this.selectionStart || this.selectionStart == '0') {
-                var startPos = this.selectionStart;
-                var endPos = this.selectionEnd;
-                var scrollTop = this.scrollTop;
-                this.value = this.value.substring(0, startPos) + myValue + this.value.substring(endPos, this.value.length);
-                this.focus();
-                this.selectionStart = startPos + myValue.length;
-                this.selectionEnd = startPos + myValue.length;
-                this.scrollTop = scrollTop;
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
             }
             LTLPresenter.prototype.UpdateOperations = function (states) {
                 var operations = this.appModel.Operations.slice(0);
@@ -15723,7 +13885,6 @@ var BMA;
                     _this.statesViewer.SetStates(appModel.States);
                 });
             }
-<<<<<<< HEAD
             StatesPresenter.prototype.GetStateByName = function (name) {
                 if (name === "truestate")
                     return new BMA.LTLOperations.TrueKeyframe();
@@ -16020,39 +14181,6 @@ var BMA;
                             var ind = _this.operations.indexOf(_this.contextElement.operationlayoutref);
                             _this.contextElement.operationlayoutref.IsVisible = false;
                             _this.operations.splice(ind, 1);
-=======
-        });
-    }
-});
-
-///#source 1 1 /script/widgets/visibilitysettings.js
-(function ($) {
-    $.widget("BMA.visibilitysettings", {
-        _getList: function () {
-            return this.list || this.element.find("ol,ul").eq(0);
-            ;
-        },
-        _create: function () {
-            var that = this;
-            this.list = this._getList();
-            this.items = this.list.find("li");
-            this.listOptions = [];
-            this.items.each(function (ind) {
-                var item = this;
-                that.listOptions[ind] = {};
-                var option = $(item).children(':first-child');
-                that.listOptions[ind].name = option.text();
-                var buttons = option.next();
-                var children = buttons.children();
-                children.each(function () {
-                    var child = this;
-                    var text = $(child).text();
-                    var behavior = $(child).attr("data-behavior");
-                    if (behavior !== undefined) {
-                        var command, value = undefined;
-                        try {
-                            command = $(child).attr("data-command");
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
                         }
                         _this.OnOperationsChanged();
                     }
@@ -16700,7 +14828,6 @@ var BMA;
                             }
                         }
                     }
-<<<<<<< HEAD
                     dom.updateLayout();
                 });
                 var bbox = operation.BoundingBox;
@@ -16777,16 +14904,3 @@ var BMA;
     })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=operatorsregistry.js.map
-=======
-                    break;
-            }
-            $.Widget.prototype._setOption.apply(this, arguments);
-            this._super("_setOption", key, value);
-        },
-        destroy: function () {
-            $.Widget.prototype.destroy.call(this);
-        }
-    });
-}(jQuery));
-
->>>>>>> a365fb6cdf25a2a155c501d440baea9af28d07c4
