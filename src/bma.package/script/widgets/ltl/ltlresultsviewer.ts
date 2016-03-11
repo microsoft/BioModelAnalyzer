@@ -49,7 +49,7 @@
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
-            this.loading = $("<div></div>").addClass("page-loading").css("top", "27").css("width", 500).css("height", 324).css("margin-top", 50).appendTo(this._plot);
+            this.loading = $("<div></div>").addClass("page-loading").css("position", "inherit").css("height", 300).appendTo(this._plot);
             var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
             var snipper = $('<div></div>').addClass('spinner').appendTo(loadingText);
             for (var i = 1; i < 4; i++) {
@@ -156,8 +156,8 @@
                     var variables = [];
                     if (this.options.ranges !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++) {
-                            that.options.variables[i][3] = that.options.ranges[i].min;
-                            that.options.variables[i][4] = that.options.ranges[i].max;
+                            that.options.variables[i][4] = that.options.ranges[i].min;
+                            that.options.variables[i][5] = that.options.ranges[i].max;
                         }
                         needUpdate = true;
                     }

@@ -4038,7 +4038,6 @@ ui-icon-arrowthickstop-1-n {
 .ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table .variables-table tr:last-child td:first-child {
   background-color: Window;
   border-left-color: transparent;
-  border-right-color: transparent;
   border-bottom-color: transparent;
 }
 .ltlresultsviewer .ltl-simplot-container .small-simulation-popout-table .variables-table td:nth-child(4) {

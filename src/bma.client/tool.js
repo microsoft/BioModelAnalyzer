@@ -5262,9 +5262,10 @@ var BMA;
                 if (op instanceof BMA.LTLOperations.KeyframeEquation) {
                     if (op.LeftOperand instanceof BMA.LTLOperations.NameOperand) {
                         var varName = op.LeftOperand.Name;
+                        var varId = op.LeftOperand.Id;
                         var ind;
                         for (var n = 0; n < variables.length; n++)
-                            if (variables[n].Name == varName) {
+                            if (variables[n].Name == varName && variables[n].Id == varId) {
                                 ind = n;
                                 break;
                             }
@@ -5320,6 +5321,8 @@ var BMA;
                         for (var j = 0; j < state.Operands.length; j++) {
                             var op = state.Operands[j];
                             result = result && that.CheckEquation(op, data[k], variables);
+                            if (!result)
+                                break;
                         }
                         if (state.Operands.length !== 0 && result)
                             tags[k].push(state.Name);
@@ -11578,7 +11581,7 @@ jQuery.fn.extend({
             this._variables.css("max-height", 322 - scrollBarSize.height);
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
-            this.loading = $("<div></div>").addClass("page-loading").css("top", "27").css("width", 500).css("height", 324).css("margin-top", 50).appendTo(this._plot);
+            this.loading = $("<div></div>").addClass("page-loading").css("position", "inherit").css("height", 300).appendTo(this._plot);
             var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
             var snipper = $('<div></div>').addClass('spinner').appendTo(loadingText);
             for (var i = 1; i < 4; i++) {
@@ -11674,8 +11677,8 @@ jQuery.fn.extend({
                     var variables = [];
                     if (this.options.ranges !== undefined && this.options.variables !== undefined) {
                         for (var i = 0; i < this.options.variables.length; i++) {
-                            that.options.variables[i][3] = that.options.ranges[i].min;
-                            that.options.variables[i][4] = that.options.ranges[i].max;
+                            that.options.variables[i][4] = that.options.ranges[i].min;
+                            that.options.variables[i][5] = that.options.ranges[i].max;
                         }
                         needUpdate = true;
                     }

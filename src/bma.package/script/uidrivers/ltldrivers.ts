@@ -726,9 +726,10 @@ module BMA {
                 if (op instanceof BMA.LTLOperations.KeyframeEquation) {
                     if (op.LeftOperand instanceof BMA.LTLOperations.NameOperand) {
                         var varName = (<BMA.LTLOperations.NameOperand>op.LeftOperand).Name;
+                        var varId = (<BMA.LTLOperations.NameOperand>op.LeftOperand).Id;
                         var ind;
                         for (var n = 0; n < variables.length; n++)
-                            if (variables[n].Name == varName) {
+                            if (variables[n].Name == varName && variables[n].Id == varId) {
                                 ind = n;
                                 break;
                             }
@@ -785,6 +786,7 @@ module BMA {
                         for (var j = 0; j < state.Operands.length; j++) {
                             var op = state.Operands[j];
                             result = result && that.CheckEquation(op, data[k], variables);
+                            if (!result) break;
                         }
                         if (state.Operands.length !== 0 && result)
                             tags[k].push(state.Name);
