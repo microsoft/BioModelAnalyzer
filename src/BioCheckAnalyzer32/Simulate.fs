@@ -57,4 +57,16 @@ let simulate_many qn v0 steps =
             else Some (env, (t+1,simulate qn env)))
         (1,v0)
 
+let simulate_up_to_loop (qn:QN.qn) (initial_value:Map<QN.var,int>) =
+    let rec create_loop state acc =
+        if (List.exists (fun elem -> elem = state) acc) then (state,acc)
+        else
+            let next_state = simulate qn state
+            create_loop next_state (List.append acc ([state]))
+
+    let (last_state, simulation) = create_loop  initial_value []
+
+    let loop_closure = List.findIndex (fun elem -> elem = last_state) simulation
+    (simulation, loop_closure)
+
 
