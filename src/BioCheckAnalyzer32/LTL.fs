@@ -306,13 +306,13 @@ let string_to_LTL_formula (s : string) (network) (varbyid : bool) =
         let analyze_two_operands (length_of_keyword : int) (s: string) (location : int list) =
             let substring = s.Substring((length_of_keyword + 1), (s.Length - length_of_keyword - 1))
             let (str_sub_formula1, str_sub_formula2) = partition_string_to_balanced_paren (substring)
-            let sub_formula1 = parse str_sub_formula1 (0::location)
-            let sub_formula2 = parse str_sub_formula2 (1::location)
+            let sub_formula1 = parse str_sub_formula1 (0::location) 
+            let sub_formula2 = parse str_sub_formula2 (1::location) 
             (sub_formula1, sub_formula2)
 
         let analyze_one_operand length_of_keyword (s: string) (location : int list) = 
             let str_sub_formula = s.Substring((length_of_keyword + 1),(s.Length - length_of_keyword - 1))
-            let sub_formula = parse str_sub_formula (0::location)
+            let sub_formula = parse str_sub_formula (0::location) 
             sub_formula
 
         if (not(s.StartsWith("(")) || not(s.EndsWith(")"))) then
@@ -331,7 +331,7 @@ let string_to_LTL_formula (s : string) (network) (varbyid : bool) =
         else
             let without_paren = s.Substring(1,s.Length - 2)
             if (IsUntil(without_paren)) then
-                let (sub_formula1, sub_formula2) = analyze_two_operands length_of_until without_paren location
+                let (sub_formula1, sub_formula2) = analyze_two_operands length_of_until without_paren location 
                 if (sub_formula1 = Error || sub_formula2 = Error) then
                     Error
                 else
@@ -445,7 +445,7 @@ let string_to_LTL_formula (s : string) (network) (varbyid : bool) =
             else
                 Error
                     
-    parse s []
+    parse s [] 
 
 let unable_to_parse_formula =
     ignore (Log.log_debug "Was not able to parse the LTL formula!")
