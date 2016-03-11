@@ -133,7 +133,7 @@ let change_to_right_length (simulation : Map<QN.var, int> list) (loop : int) (de
         ((get_suffix simulation (desired_length-simulation.Length)), (loop - desired_length + simulation.Length))
     elif desired_length > simulation.Length then // but desired length >= simulation.Length - loop
         let rec extend_length curr_simulation extend_by index =
-            if extend_by = 0 then simulation
+            if extend_by = 0 then curr_simulation
             else
                 extend_length (List.append curr_simulation ([ List.item index curr_simulation ])) (extend_by-1) (index+1)
         ((extend_length simulation (desired_length - simulation.Length) loop) , (loop + desired_length - simulation.Length))
@@ -160,7 +160,7 @@ let DoubleBoundedMCWithSim (ltl_formula : LTLFormulaType) network (paths : Map<Q
             else (false, (0,Map.empty))
         (res1, model1, res2, model2)
     else
-        let (res1, model1) = SingleSideBoundedMC ltl_formula network paths -1 false
+        let (res1, model1) = SingleSideBoundedMC ltl_formula network paths -1 true
         let (res2, model2) = (true, model)
         (res1, model1, res2, model2)
 

@@ -249,11 +249,11 @@ let runCAVEngine qn length_of_path formula model_check output_proof output_model
         let correct_length_paths = Paths.change_list_to_length paths length_of_path
     
         let (res1, model1, res2, model2) = 
-            BMC.DoubleBoundedMCWithSim ltl_formula qn correct_length_paths true
-
-//        // given the # of steps and the path, do BMC   
-//        let (res1,model1,res2,model2) =
-//            BMC.BoundedMC ltl_formula qn correct_length_paths false
+            if true then
+                BMC.DoubleBoundedMCWithSim ltl_formula qn correct_length_paths true
+            else
+                // given the # of steps and the path, do BMC   
+                BMC.BoundedMC ltl_formula qn correct_length_paths false
 
         BioCheckPlusZ3.check_model model1 res1 qn
 
