@@ -96,8 +96,8 @@
                         });
                         opbbox.width += t.getBBox().width + 10;
                     } else {
-                        this._createWaitAnimation(opbbox.width + 10, opLayout.Position.y);
-                        opbbox.width += 20;
+                        //this._createWaitAnimation(opbbox.width + 10, opLayout.Position.y);
+                        //opbbox.width += 20;
                     }
 
                     height += opbbox.height + this.options.padding.y;
