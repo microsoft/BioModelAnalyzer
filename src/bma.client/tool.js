@@ -4923,12 +4923,12 @@ var BMA;
                         if (f[0] && f[0].type == "variable" && f[0].value && f[0].value.variable && f[1] && f[1].value && f[2]) {
                             var operator = f[1].value;
                             var constant = parseFloat(f[2].value);
-                            var id;
+                            var varName;
                             for (var k = 0; k < that.model.Variables.length; k++)
-                                if (that.model.Variables[k].Name == f[0].value.variable) {
+                                if (that.model.Variables[k].Id == f[0].value.variable) {
                                     if ((f[0].value.container === undefined)
                                         || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
-                                        id = that.model.Variables[k].Id;
+                                        varName = that.model.Variables[k].Name;
                                         break;
                                     }
                                 }
@@ -4939,8 +4939,10 @@ var BMA;
                             //            break;
                             //        }
                             //}
-                            op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable, id), operator, new BMA.LTLOperations.ConstOperand(constant));
-                            ops.push(op);
+                            if (varName) {
+                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(varName, f[0].value.variable), operator, new BMA.LTLOperations.ConstOperand(constant));
+                                ops.push(op);
+                            }
                         }
                     }
                     if (formulas.length != 0 && ops.length != 0) {
@@ -4984,7 +4986,7 @@ var BMA;
                             var variable = that.model.GetVariableById(params.dropObject.id);
                             that.statesEditor.stateseditor("checkDroppedItem", {
                                 screenLocation: params.screenLocation,
-                                variable: { container: variable.ContainerId, variable: variable.Name }
+                                variable: { container: variable.ContainerId, variable: variable.Id }
                             });
                         }
                     });
@@ -5009,7 +5011,7 @@ var BMA;
                 };
                 for (var i = 0; i < model.Variables.length; i++) {
                     if (allGroup.vars.indexOf(model.Variables[i].Name) < 0)
-                        allGroup.vars.push(model.Variables[i].Name);
+                        allGroup.vars.push({ name: model.Variables[i].Name, id: model.Variables[i].Id });
                 }
                 var variables = [allGroup];
                 for (var i = 0; i < layout.Containers.length; i++) {
@@ -5018,7 +5020,7 @@ var BMA;
                         continue;
                     for (var j = 0; j < model.Variables.length; j++) {
                         if (layout.Containers[i].Id == model.Variables[j].ContainerId)
-                            vars.push(model.Variables[j].Name);
+                            vars.push({ name: model.Variables[j].Name, id: model.Variables[j].Id });
                     }
                     variables.push({
                         name: layout.Containers[i].Name,
@@ -5048,7 +5050,7 @@ var BMA;
                         var formulaPart = [];
                         var op = {
                             type: opnd.LeftOperand.Name === undefined ? "const" : "variable",
-                            value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : { variable: opnd.LeftOperand.Name }
+                            value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : { variable: opnd.LeftOperand.Id }
                         };
                         formulaPart.push(op);
                         if (opnd.MiddleOperand !== undefined) {
@@ -5060,7 +5062,7 @@ var BMA;
                             var middle = opnd.MiddleOperand;
                             formulaPart.push({
                                 type: middle.Name === undefined ? "const" : "variable",
-                                value: middle.Name === undefined ? middle.Value : { variable: middle.Name }
+                                value: middle.Name === undefined ? middle.Value : { variable: middle.Id }
                             });
                             var rightop = opnd.RightOperator;
                             formulaPart.push({
@@ -5076,7 +5078,7 @@ var BMA;
                         }
                         formulaPart.push({
                             type: opnd.RightOperand.Name === undefined ? "const" : "variable",
-                            value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : { variable: opnd.RightOperand.Name }
+                            value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : { variable: opnd.RightOperand.Id }
                         });
                         ws.formula.push(formulaPart);
                     }
@@ -12166,14 +12168,21 @@ jQuery.fn.extend({
                     value.container = that.findContainer(value.variable);
                 }
                 var containerName;
+                var variableName;
                 for (var i = 0; i < that.options.variables.length; i++)
                     if (that.options.variables[i].id == value.container) {
                         containerName = that.options.variables[i].name;
+                        for (var j = 0; j < that.options.variables[i].vars.length; j++) {
+                            if (that.options.variables[i].vars[j].id == value.variable) {
+                                variableName = that.options.variables[i].vars[j].name;
+                                break;
+                            }
+                        }
                         break;
                     }
                 containerName = containerName ? containerName : "ALL";
                 $(selectedContainer).text(containerName);
-                $(selectedVariable).text(value.variable);
+                $(selectedVariable).text(variableName);
                 selectedVariable.removeClass("not-selected");
                 if (variablePicker) {
                     variablePicker.remove();
@@ -12265,24 +12274,24 @@ jQuery.fn.extend({
                 }
             $(container).addClass("active");
             for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
-                var variableName = that.options.variables[idx].vars[j];
-                if (that.options.variables[idx].vars[j]) {
-                    var variable = $("<a>" + variableName + "</a>").attr("data-variable-name", that.options.variables[idx].vars[j])
+                var variableName = that.options.variables[idx].vars[j].name;
+                if (variableName && that.options.variables[idx].vars[j].id !== undefined) {
+                    var variable = $("<a>" + variableName + "</a>").attr("data-variable-id", that.options.variables[idx].vars[j].id)
                         .appendTo(divVariables).click(function () {
                         divVariables.find(".active").removeClass("active");
                         $(this).addClass("active");
                         var containerId = $(container).attr("data-container-id");
-                        var variablesName = $(this).attr("data-variable-name");
+                        var variablesId = $(this).attr("data-variable-id");
                         if (containerId == "0")
-                            containerId = that.findContainer(variablesName);
-                        currSymbol.value = { container: containerId, variable: variablesName };
-                        setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable ? currSymbol.value.variable : "Unnamed" });
+                            containerId = that.findContainer(variablesId);
+                        currSymbol.value = { container: containerId, variable: variablesId };
+                        setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable });
                         that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                     });
                     if (currSymbol.value != 0 && currSymbol.value.container == $(container).attr("data-container-id")
-                        && currSymbol.value.variable == that.options.variables[idx].vars[j]) {
+                        && currSymbol.value.variable == that.options.variables[idx].vars[j].id) {
                         variable.addClass("active");
-                        setSelectedValue({ container: $(container).attr("data-container-id"), variable: variableName });
+                        setSelectedValue({ container: $(container).attr("data-container-id"), variable: that.options.variables[idx].vars[j].id });
                     }
                 }
             }
@@ -12290,11 +12299,14 @@ jQuery.fn.extend({
         findContainer: function (variable) {
             var that = this;
             var container = 0;
-            for (var i = 1; i < this.options.variables.length; i++)
-                if (that.options.variables[i].vars.indexOf(variable) >= 0) {
-                    container = that.options.variables[i].id;
-                    break;
+            for (var i = 1; i < this.options.variables.length; i++) {
+                for (var j = 0; j < this.options.variables[i].vars.length; j++) {
+                    if (this.options.variables[i].vars[j].id == variable) {
+                        container = that.options.variables[i].id;
+                        break;
+                    }
                 }
+            }
             return container;
         },
         isInsideVariableField: function (location) {
@@ -12403,6 +12415,7 @@ jQuery.fn.extend({
         _stateOptionsWindow: null,
         options: {
             states: [],
+            variables: [],
             commands: undefined,
             statesEditorExpand: undefined,
         },
