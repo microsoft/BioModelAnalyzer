@@ -426,7 +426,7 @@ module BMA {
                 };
 
                 for (var i = 0; i < model.Variables.length; i++) {
-                    if (allGroup.vars.indexOf(model.Variables[i].Name) < 0)
+                    //if (allGroup.vars.indexOf(model.Variables[i].Name) < 0)
                         allGroup.vars.push({ name: model.Variables[i].Name, id: model.Variables[i].Id });
                 }
 

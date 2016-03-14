@@ -5010,8 +5010,8 @@ var BMA;
                     vars: []
                 };
                 for (var i = 0; i < model.Variables.length; i++) {
-                    if (allGroup.vars.indexOf(model.Variables[i].Name) < 0)
-                        allGroup.vars.push({ name: model.Variables[i].Name, id: model.Variables[i].Id });
+                    //if (allGroup.vars.indexOf(model.Variables[i].Name) < 0)
+                    allGroup.vars.push({ name: model.Variables[i].Name, id: model.Variables[i].Id });
                 }
                 var variables = [allGroup];
                 for (var i = 0; i < layout.Containers.length; i++) {
@@ -12415,7 +12415,6 @@ jQuery.fn.extend({
         _stateOptionsWindow: null,
         options: {
             states: [],
-            variables: [],
             commands: undefined,
             statesEditorExpand: undefined,
         },
@@ -13580,8 +13579,6 @@ jQuery.fn.extend({
                         opbbox.width += t.getBBox().width + 10;
                     }
                     else {
-                        this._createWaitAnimation(opbbox.width + 10, opLayout.Position.y);
-                        opbbox.width += 20;
                     }
                     height += opbbox.height + this.options.padding.y;
                     width = Math.max(width, opbbox.width);
