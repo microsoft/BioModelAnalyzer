@@ -138,6 +138,8 @@ module BMA {
             public TurnNavigation(isOn: boolean) { this.ison = isOn; }
             public SetZoom(zoom: number) { this.zoom = zoom; }
             public SetCenter(x: number, y: number) { this.center = { x: x, y: y }; }
+            public MoveDraggableOnTop() { }
+            public MoveDraggableOnBottom() { }
 
             public GetNavigationSurface() {
                 return undefined;

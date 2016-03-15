@@ -12,6 +12,12 @@ module BMA {
                 this.svgPlotDiv = svgPlotDiv;
             }
 
+            public MoveDraggableOnTop() {
+            }
+
+            public MoveDraggableOnBottom() {
+            }
+
             public Draw(svg: SVGElement) {
                 this.svgPlotDiv.drawingsurface({ svg: svg });
             }

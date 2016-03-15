@@ -29,6 +29,8 @@ module BMA {
             TurnNavigation(isOn: boolean);
             SetZoom(zoom: number);
             SetCenter(x: number, y: number);
+            MoveDraggableOnTop();
+            MoveDraggableOnBottom();
         }
 
         export interface IServiceDriver {
