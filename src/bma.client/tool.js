@@ -10043,6 +10043,7 @@ var BMA;
             this.message = $('<div></div>')
                 .appendTo(this.element);
             this.repo = $('<div></div>')
+                .addClass("localstorage-repo")
                 .appendTo(this.element);
             if (Silverlight.isInstalled()) {
                 var slWidget = $('<div></div>').appendTo(this.element);
