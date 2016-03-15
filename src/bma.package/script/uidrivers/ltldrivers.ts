@@ -553,6 +553,7 @@ module BMA {
             private ltlrequested;
             private expandedcallback;
             private showresultcallback;
+            private onstepschangedcallback;
 
             constructor(compactltlresult: JQuery) {
                 var that = this;
@@ -568,6 +569,9 @@ module BMA {
                     },
                     onstepschanged: function (steps) {
                         that.steps = steps;
+                        if (that.onstepschangedcallback !== undefined) {
+                            that.onstepschangedcallback();
+                        }
                     },
                     onexpanded: function () {
                         if (that.expandedcallback !== undefined) {
@@ -633,6 +637,10 @@ module BMA {
                 this.showresultcallback = callback;
             }
 
+            public SetOnStepsChangedCallback(callback) {
+                this.onstepschangedcallback = callback;
+            }
+
             public Destroy() {
                 this.compactltlresult.compactltlresult({
                     ontestrequested: undefined,
@@ -644,6 +652,7 @@ module BMA {
                 this.ltlrequested = undefined;
                 this.expandedcallback = undefined;
                 this.showresultcallback = undefined;
+                this.onstepschangedcallback = undefined;
 
                 this.compactltlresult.compactltlresult("destroy");
                 this.compactltlresult.empty();

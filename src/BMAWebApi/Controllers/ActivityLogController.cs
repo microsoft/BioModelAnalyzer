@@ -50,6 +50,10 @@ namespace bma.client.Controllers
 
         public Int32 FurtherTestingErrorCount { get; set; }
 
+        public Int32 AnalyzeLTLCount { get; set; }
+
+        public Int32 AnalyzeLTLErrorCount { get; set; }
+
         public string ClientVersion { get; set; }
     }
 
@@ -71,7 +75,9 @@ namespace bma.client.Controllers
                 SaveModelCount = record.SaveModelCount,
                 ProofErrorCount = record.ProofErrorCount,
                 SimulationErrorCount = record.SimulationErrorCount,
-                FurtherTestingErrorCount = record.FurtherTestingErrorCount
+                FurtherTestingErrorCount = record.FurtherTestingErrorCount,
+                AnalyzeLTLCount = record.AnalyzeLTLCount,
+                AnalyzeLTLErrorCount = record.AnalyzeLTLErrorCount
             };
 
             ActivityAzureLogger logger = new ActivityAzureLogger(

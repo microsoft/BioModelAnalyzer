@@ -2405,6 +2405,9 @@ var BMA;
                     var imported = BMA.Model.ImportModelAndLayout(parsed);
                     this.model = imported.Model;
                     this.layout = imported.Layout;
+                    this.states = [];
+                    this.operations = [];
+                    this.operationAppearances = [];
                     if (parsed.ltl !== undefined) {
                         var ltl = BMA.Model.ImportLTLContents(parsed.ltl);
                         if (ltl.states !== undefined) {
@@ -2421,17 +2424,10 @@ var BMA;
                             this.operations = [];
                         }
                     }
-                    else {
-                        this.states = [];
-                        this.operations = [];
-                    }
                     if (parsed.ltllayout !== undefined) {
                         if (parsed.ltllayout.operationAppearances !== undefined) {
                             this.operationAppearances = parsed.ltllayout.operationAppearances;
                         }
-                    }
-                    else {
-                        this.operationAppearances = [];
                     }
                 }
                 else {
@@ -3349,6 +3345,7 @@ var BMA;
                 this.status = "nottested";
                 this.tag = undefined;
                 this.useMask = false;
+                this.mask = "url(#mask-stripe)";
                 this.renderGroup = undefined;
                 this.majorRect = undefined;
                 this.svg = svg;
@@ -3407,7 +3404,7 @@ var BMA;
                             if (this.majorRect !== undefined) {
                                 //mask: url(#mask-stripe)
                                 this.svg.change(this.majorRect, {
-                                    mask: "url(#mask-stripe)"
+                                    mask: this.mask
                                 });
                             }
                             break;
@@ -3428,6 +3425,23 @@ var BMA;
                 },
                 set: function (value) {
                     this.tag = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(OperationLayout.prototype, "MaskUrl", {
+                get: function () {
+                    return this.mask;
+                },
+                set: function (value) {
+                    if (this.mask !== value) {
+                        this.mask = value;
+                        if (this.majorRect !== undefined && this.status === "partialsuccess") {
+                            this.svg.change(this.majorRect, {
+                                mask: this.mask
+                            });
+                        }
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -3852,7 +3866,7 @@ var BMA;
                 };
                 this.majorRect = svg.rect(this.renderGroup, -halfWidth, -height / 2, halfWidth * 2, height, height / 2, height / 2, {
                     fill: this.fill === undefined ? "white" : this.fill,
-                    mask: this.useMask ? "url(#mask-stripe)" : undefined,
+                    mask: this.useMask ? this.mask : undefined,
                 });
                 this.RenderLayoutPart(svg, { x: 0, y: 0 }, this.layout, {
                     stroke: "rgb(96,96,96)",
@@ -5132,6 +5146,9 @@ var BMA;
                     },
                     onstepschanged: function (steps) {
                         that.steps = steps;
+                        if (that.onstepschangedcallback !== undefined) {
+                            that.onstepschangedcallback();
+                        }
                     },
                     onexpanded: function () {
                         if (that.expandedcallback !== undefined) {
@@ -5186,6 +5203,9 @@ var BMA;
             LTLResultsCompactViewer.prototype.SetShowResultsCallback = function (callback) {
                 this.showresultcallback = callback;
             };
+            LTLResultsCompactViewer.prototype.SetOnStepsChangedCallback = function (callback) {
+                this.onstepschangedcallback = callback;
+            };
             LTLResultsCompactViewer.prototype.Destroy = function () {
                 this.compactltlresult.compactltlresult({
                     ontestrequested: undefined,
@@ -5196,6 +5216,7 @@ var BMA;
                 this.ltlrequested = undefined;
                 this.expandedcallback = undefined;
                 this.showresultcallback = undefined;
+                this.onstepschangedcallback = undefined;
                 this.compactltlresult.compactltlresult("destroy");
                 this.compactltlresult.empty();
             };
@@ -13514,6 +13535,7 @@ jQuery.fn.extend({
     $.widget("BMA.temporalpropertiesviewer", {
         _svg: undefined,
         _pixelOffset: 10,
+        _anims: [],
         options: {
             operations: [],
             padding: { x: 3, y: 5 }
@@ -13521,7 +13543,7 @@ jQuery.fn.extend({
         _create: function () {
             var that = this;
             var root = this.element;
-            root.css("overflow-y", "auto").css("overflow-x", "auto");
+            root.css("overflow-y", "auto").css("overflow-x", "auto").css("position", "relative");
             this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
             $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
             $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
@@ -13546,8 +13568,8 @@ jQuery.fn.extend({
             if (this._svg !== undefined) {
                 this._svg.clear();
                 var svg = this._svg;
-                var defs = svg.defs("bmaDefs");
-                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
+                var defs = svg.defs("ltlCompactBmaDefs");
+                var pattern = svg.pattern(defs, "pattern-stripe1", 0, 0, 8, 4, {
                     patternUnits: "userSpaceOnUse",
                     patternTransform: "rotate(45)"
                 });
@@ -13555,17 +13577,22 @@ jQuery.fn.extend({
                     transform: "translate(0,0)",
                     fill: "white"
                 });
-                var mask = svg.mask(defs, "mask-stripe");
+                var mask = svg.mask(defs, "mask-stripe1");
                 svg.rect(mask, "-50%", "-50%", "100%", "100%", {
-                    fill: "url(#pattern-stripe)"
+                    fill: "url(#pattern-stripe1)"
                 });
                 var maxHeight = 25 * 4;
                 var operations = this.options.operations;
                 var currentPos = { x: 0, y: 0 };
                 var height = this.options.padding.y;
                 var width = 0;
+                for (var i = 0; i < this._anims.length; i++) {
+                    this._anims[i].remove();
+                }
+                this._anims = [];
                 for (var i = 0; i < operations.length; i++) {
                     var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i].operation, { x: 0, y: 0 });
+                    opLayout.MaskUrl = "url(#mask-stripe1)";
                     opLayout.AnalysisStatus = operations[i].status;
                     var opbbox = opLayout.BoundingBox;
                     if (opbbox.height > maxHeight) {
@@ -13584,7 +13611,10 @@ jQuery.fn.extend({
                         });
                         opbbox.width += t.getBBox().width + 10;
                     }
-                    else {
+                    else if (operations[i].status === "processing") {
+                        var anim = this._createWaitAnimation(opbbox.width + 10, opLayout.Position.y - 7);
+                        this._anims.push(anim);
+                        opbbox.width += 30;
                     }
                     height += opbbox.height + this.options.padding.y;
                     width = Math.max(width, opbbox.width);
@@ -13601,6 +13631,16 @@ jQuery.fn.extend({
             }
         },
         _createWaitAnimation: function (x, y) {
+            var snipperCnt = $('<div></div>').width(30).css("position", "absolute").css("top", y).css("left", x).appendTo(this.element);
+            var snipper = $('<div></div>').css("display", "inline-block").addClass('spinner').appendTo(snipperCnt);
+            for (var i = 1; i < 4; i++) {
+                $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+            }
+            return snipper;
+        },
+        /*
+        _createWaitAnimation: function (x, y) {
+
             var x0 = x;
             var myrect = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
             var animate = function () {
@@ -13609,8 +13649,9 @@ jQuery.fn.extend({
                         animate();
                     });
                 });
-            };
+            }
             animate();
+
             x0 += 13;
             var myrect2 = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
             var animate2 = function () {
@@ -13619,8 +13660,9 @@ jQuery.fn.extend({
                         animate2();
                     });
                 });
-            };
+            }
             animate2();
+
             x0 += 13;
             var myrect3 = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
             var animate3 = function () {
@@ -13629,9 +13671,10 @@ jQuery.fn.extend({
                         animate3();
                     });
                 });
-            };
+            }
             animate3();
         },
+        */
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
@@ -14860,6 +14903,7 @@ var BMA;
                 var dom = this.navigationDriver.GetNavigationSurface();
                 driver.SetLTLRequestedCallback(function () {
                     that.PerformLTL(operation);
+                    that.OnOperationsChanged(false, false);
                 });
                 driver.SetOnExpandedCallback(function () {
                     dom.updateLayout();
@@ -14885,6 +14929,12 @@ var BMA;
                     }
                     dom.updateLayout();
                 });
+                driver.SetOnStepsChangedCallback(function () {
+                    if (operation.AnalysisStatus !== "nottested") {
+                        operation.AnalysisStatus = "nottested";
+                        that.OnOperationsChanged(false, false);
+                    }
+                });
                 var bbox = operation.BoundingBox;
                 dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -operation.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);
                 operation.Tag = {
@@ -14903,6 +14953,7 @@ var BMA;
                         that.PerformLTL(op);
                     }
                 }
+                that.OnOperationsChanged(false, false);
             };
             return TemporalPropertiesPresenter;
         })();

@@ -684,7 +684,7 @@ module BMA {
 
             private CreateSvgHeaders() {
                 var svg = this.driver.GetSVGRef();
-                var defs = svg.defs("bmaDefs");
+                var defs = svg.defs("ltlBmaDefs");
 
                 var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
                     patternUnits: "userSpaceOnUse",
@@ -1077,6 +1077,7 @@ module BMA {
 
                 driver.SetLTLRequestedCallback(() => {
                     that.PerformLTL(operation);
+                    that.OnOperationsChanged(false, false);
                 });
 
                 driver.SetOnExpandedCallback(() => {
@@ -1106,6 +1107,13 @@ module BMA {
                     (<any>dom).updateLayout();
                 });
 
+                driver.SetOnStepsChangedCallback(() => {
+                    if (operation.AnalysisStatus !== "nottested") {
+                        operation.AnalysisStatus = "nottested";
+                        that.OnOperationsChanged(false, false);
+                    }
+                });
+
                 var bbox = operation.BoundingBox;
                 (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -operation.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);
 
@@ -1126,6 +1134,7 @@ module BMA {
                         that.PerformLTL(op);
                     }
                 }
+                that.OnOperationsChanged(false, false);
             }
         }
     }
