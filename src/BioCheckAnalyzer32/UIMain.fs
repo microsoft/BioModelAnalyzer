@@ -95,12 +95,11 @@ type Analyzer () =
                     // SI: right now, we're just dumping res,model back to the UI.
                     // We should structure the data that res,model,model_checked are.
                     //let (res,model) = BMC.BoundedMC formula network range padded_paths
-                    let (res1,model1,negative) = BMC.BoundedMC formula network padded_paths true
-                    let model_checked = BioCheckPlusZ3.check_model model1 res1 network
-//                    let string_model = BioCheckPlusZ3.print_model_to_string model res network true
-//                    Marshal.xml_of_ltl_string_result res string_model
-//                    Marshal.xml_of_ltl_result res model
-                    Marshal.ltl_result_full res1 model1 negative
+                    let (res1,model1,res2,model2) = BMC.DoubleBoundedMCWithSim formula network padded_paths true
+                    let model1_checked = BioCheckPlusZ3.check_model model1 res1 network
+                    let model2_checked = BioCheckPlusZ3.check_model model2 res2 network 
+
+                    Marshal.ltl_result_full res1 model1 (Some(res2,model2))
 
             with Marshal.MarshalInFailed(id,msg) -> Marshal.LTLAnalysisResultDTO_of_error id msg
 ////
