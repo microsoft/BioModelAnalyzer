@@ -2996,7 +2996,7 @@ var BMA;
                 configurable: true
             });
             NameOperand.prototype.GetFormula = function () {
-                return this.name;
+                return this.id; //this.name;
             };
             NameOperand.prototype.Clone = function () {
                 return new NameOperand(this.name, this.id);
@@ -14572,7 +14572,7 @@ var BMA;
             };
             TemporalPropertiesPresenter.prototype.CreateSvgHeaders = function () {
                 var svg = this.driver.GetSVGRef();
-                var defs = svg.defs("bmaDefs");
+                var defs = svg.defs("ltlBmaDefs");
                 var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
                     patternUnits: "userSpaceOnUse",
                     patternTransform: "rotate(45)"
