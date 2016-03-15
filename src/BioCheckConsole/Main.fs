@@ -259,6 +259,7 @@ let runCAVEngine qn length_of_path formula model_check output_proof output_model
 
         LTL.print_in_order ltl_formula
         BioCheckPlusZ3.print_model model1 res1 qn output_model
+        BioCheckPlusZ3.print_model model2 res2 qn output_model
 
 let runPATHEngine qnX modelsdir other_model_name start_state dest_state =
     Log.log_debug "Running path search"
