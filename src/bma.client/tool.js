@@ -2405,6 +2405,9 @@ var BMA;
                     var imported = BMA.Model.ImportModelAndLayout(parsed);
                     this.model = imported.Model;
                     this.layout = imported.Layout;
+                    this.states = [];
+                    this.operations = [];
+                    this.operationAppearances = [];
                     if (parsed.ltl !== undefined) {
                         var ltl = BMA.Model.ImportLTLContents(parsed.ltl);
                         if (ltl.states !== undefined) {
@@ -2421,17 +2424,10 @@ var BMA;
                             this.operations = [];
                         }
                     }
-                    else {
-                        this.states = [];
-                        this.operations = [];
-                    }
                     if (parsed.ltllayout !== undefined) {
                         if (parsed.ltllayout.operationAppearances !== undefined) {
                             this.operationAppearances = parsed.ltllayout.operationAppearances;
                         }
-                    }
-                    else {
-                        this.operationAppearances = [];
                     }
                 }
                 else {
