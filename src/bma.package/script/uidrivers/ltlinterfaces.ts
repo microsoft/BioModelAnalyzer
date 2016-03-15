@@ -76,6 +76,7 @@ module BMA {
             SetLTLRequestedCallback(callback: Function);
             SetOnExpandedCallback(callback: Function);
             SetShowResultsCallback(callback: Function);
+            SetOnStepsChangedCallback(callback: Function);
             Destroy();
         }
 

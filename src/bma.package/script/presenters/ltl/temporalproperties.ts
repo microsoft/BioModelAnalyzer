@@ -1107,6 +1107,13 @@ module BMA {
                     (<any>dom).updateLayout();
                 });
 
+                driver.SetOnStepsChangedCallback(() => {
+                    if (operation.AnalysisStatus !== "nottested") {
+                        operation.AnalysisStatus = "nottested";
+                        that.OnOperationsChanged(false, false);
+                    }
+                });
+
                 var bbox = operation.BoundingBox;
                 (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -operation.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);
 

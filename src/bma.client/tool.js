@@ -5150,6 +5150,9 @@ var BMA;
                     },
                     onstepschanged: function (steps) {
                         that.steps = steps;
+                        if (that.onstepschangedcallback !== undefined) {
+                            that.onstepschangedcallback();
+                        }
                     },
                     onexpanded: function () {
                         if (that.expandedcallback !== undefined) {
@@ -5204,6 +5207,9 @@ var BMA;
             LTLResultsCompactViewer.prototype.SetShowResultsCallback = function (callback) {
                 this.showresultcallback = callback;
             };
+            LTLResultsCompactViewer.prototype.SetOnStepsChangedCallback = function (callback) {
+                this.onstepschangedcallback = callback;
+            };
             LTLResultsCompactViewer.prototype.Destroy = function () {
                 this.compactltlresult.compactltlresult({
                     ontestrequested: undefined,
@@ -5214,6 +5220,7 @@ var BMA;
                 this.ltlrequested = undefined;
                 this.expandedcallback = undefined;
                 this.showresultcallback = undefined;
+                this.onstepschangedcallback = undefined;
                 this.compactltlresult.compactltlresult("destroy");
                 this.compactltlresult.empty();
             };
@@ -14919,6 +14926,12 @@ var BMA;
                         }
                     }
                     dom.updateLayout();
+                });
+                driver.SetOnStepsChangedCallback(function () {
+                    if (operation.AnalysisStatus !== "nottested") {
+                        operation.AnalysisStatus = "nottested";
+                        that.OnOperationsChanged(false, false);
+                    }
                 });
                 var bbox = operation.BoundingBox;
                 dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -operation.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);
