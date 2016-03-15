@@ -8,6 +8,7 @@ open Microsoft.WindowsAzure
 open FSharp.Charting
 open System.Windows.Forms
 open System.Drawing
+open System.Configuration
 
 type Row = { PartitionKey : string;
              RowKey : string;
@@ -36,7 +37,11 @@ let stylize (c : ChartTypes.GenericChart) =
 let main argv = 
     printfn "Reading data from Azure..."
 
-    let creds = new StorageCredentialsAccountAndKey("biomodelanalyzer2", "***REMOVED***");
+    let aps = AppSettingsReader()
+    let accountName = aps.GetValue("AzureAccountName", typeof<string>).ToString()
+    let accountKey = aps.GetValue("AzureAccountKey", typeof<string>).ToString()
+
+    let creds = new StorageCredentialsAccountAndKey(accountName, accountKey);
     let account = new CloudStorageAccount(creds, false)
     let caTable = DataTable.New.ReadAzureTableLazy(account ,"ClientActivity")
     let rows = caTable.Rows |> Seq.map(fun r -> { LogInTime = DateTime.Parse(r.["LogInTime"]);
@@ -64,7 +69,28 @@ let main argv =
     printfn "Total sessions: %d" totalCount
     printfn "Unique users: %d" unique
 
-    printfn "Writing data to file..."
+    printfn "Writing all data to bma.csv..."
+    use writer = new StreamWriter("bma.csv")
+    writer.WriteLine("ClientID,SessionID,LogInTime,LogOutTime,FurtherTestingCount,RunProofCount,RunSimulationCount,ProofErrorCount,SimulationErrorCount,FurtherTestingErrorCount,ImportModelCount,NewModelCount,SaveModelCount")
+    let writeRow r = sprintf "%s,%s,\"%s\",\"%s\",%d,%d,%d,%d,%d,%d,%d,%d,%d"
+                             r.PartitionKey
+                             r.RowKey
+                             (r.LogInTime.ToString())
+                             (r.LogOutTime.ToString())
+                             r.FurtherTestingCount
+                             r.RunProofCount
+                             r.RunSimulationCount
+                             r.ProofErrorCount
+                             r.SimulationErrorCount
+                             r.FurtherTestingErrorCount
+                             r.ImportModelCount
+                             r.NewModelCount
+                             r.SaveModelCount
+                      |> writer.WriteLine
+    rows |> Seq.iter writeRow
+    writer.Flush() 
+
+    printfn "Writing weekly averages to file..."
     let mutable start = start.Subtract(TimeSpan.FromDays(float(start.DayOfWeek)))
     start <- DateTime(start.Year, start.Month, start.Day) // Align to the beginning of week
     use writer = new StreamWriter("bma_weekly.csv")
