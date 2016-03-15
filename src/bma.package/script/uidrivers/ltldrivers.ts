@@ -321,12 +321,12 @@ module BMA {
                         if (f[0] && f[0].type == "variable" && f[0].value && f[0].value.variable && f[1] && f[1].value && f[2]) {
                             var operator = f[1].value;
                             var constant = parseFloat(f[2].value);
-                            var id;
+                            var varName;
                             for (var k = 0; k < that.model.Variables.length; k++)
-                                if (that.model.Variables[k].Name == f[0].value.variable) {
+                                if (that.model.Variables[k].Id == f[0].value.variable) {
                                     if ((f[0].value.container === undefined)
                                         || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
-                                        id = that.model.Variables[k].Id;
+                                        varName = that.model.Variables[k].Name;
                                         break;
                                     } 
                                 }
@@ -338,9 +338,11 @@ module BMA {
                             //        }
                             //}
 
-                            op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable, id),
-                                operator, new BMA.LTLOperations.ConstOperand(constant));
-                            ops.push(op);
+                            if (varName) {
+                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(varName, f[0].value.variable),
+                                    operator, new BMA.LTLOperations.ConstOperand(constant));
+                                ops.push(op);
+                            }
                         }
 
                         //if (op === undefined)
@@ -393,7 +395,7 @@ module BMA {
                             var variable = that.model.GetVariableById(params.dropObject.id);
                             that.statesEditor.stateseditor("checkDroppedItem", {
                                 screenLocation: params.screenLocation,
-                                variable: { container: variable.ContainerId, variable: variable.Name }
+                                variable: { container: variable.ContainerId, variable: variable.Id }
                             });
                         }
                     });
@@ -424,8 +426,8 @@ module BMA {
                 };
 
                 for (var i = 0; i < model.Variables.length; i++) {
-                    if (allGroup.vars.indexOf(model.Variables[i].Name) < 0)
-                        allGroup.vars.push(model.Variables[i].Name);
+                    //if (allGroup.vars.indexOf(model.Variables[i].Name) < 0)
+                        allGroup.vars.push({ name: model.Variables[i].Name, id: model.Variables[i].Id });
                 }
 
                 var variables = [allGroup];
@@ -438,7 +440,7 @@ module BMA {
 
                     for (var j = 0; j < model.Variables.length; j++) {
                         if (layout.Containers[i].Id == model.Variables[j].ContainerId)
-                            vars.push(model.Variables[j].Name);
+                            vars.push({ name: model.Variables[j].Name, id: model.Variables[j].Id });
                     }
 
                     variables.push({
@@ -471,7 +473,7 @@ module BMA {
 
                         var op = {
                             type: (<any>opnd).LeftOperand.Name === undefined ? "const" : "variable",
-                            value: (<any>opnd).LeftOperand.Name === undefined ? (<any>opnd).LeftOperand.Value : { variable: (<any>opnd).LeftOperand.Name }
+                            value: (<any>opnd).LeftOperand.Name === undefined ? (<any>opnd).LeftOperand.Value : { variable: (<any>opnd).LeftOperand.Id }
                         }
 
                         formulaPart.push(op);
@@ -486,7 +488,7 @@ module BMA {
                             var middle = (<any>opnd).MiddleOperand;
                             formulaPart.push({
                                 type: middle.Name === undefined ? "const" : "variable",
-                                value: middle.Name === undefined ? middle.Value : { variable: middle.Name }
+                                value: middle.Name === undefined ? middle.Value : { variable: middle.Id }
                             });
 
                             var rightop = (<any>opnd).RightOperator;
@@ -504,7 +506,7 @@ module BMA {
 
                         formulaPart.push({
                             type: (<any>opnd).RightOperand.Name === undefined ? "const" : "variable",
-                            value: (<any>opnd).RightOperand.Name === undefined ? (<any>opnd).RightOperand.Value : { variable: (<any>opnd).RightOperand.Name }
+                            value: (<any>opnd).RightOperand.Name === undefined ? (<any>opnd).RightOperand.Value : { variable: (<any>opnd).RightOperand.Id }
                         });
 
                         ws.formula.push(formulaPart);
@@ -551,6 +553,7 @@ module BMA {
             private ltlrequested;
             private expandedcallback;
             private showresultcallback;
+            private onstepschangedcallback;
 
             constructor(compactltlresult: JQuery) {
                 var that = this;
@@ -566,6 +569,9 @@ module BMA {
                     },
                     onstepschanged: function (steps) {
                         that.steps = steps;
+                        if (that.onstepschangedcallback !== undefined) {
+                            that.onstepschangedcallback();
+                        }
                     },
                     onexpanded: function () {
                         if (that.expandedcallback !== undefined) {
@@ -631,6 +637,10 @@ module BMA {
                 this.showresultcallback = callback;
             }
 
+            public SetOnStepsChangedCallback(callback) {
+                this.onstepschangedcallback = callback;
+            }
+
             public Destroy() {
                 this.compactltlresult.compactltlresult({
                     ontestrequested: undefined,
@@ -642,6 +652,7 @@ module BMA {
                 this.ltlrequested = undefined;
                 this.expandedcallback = undefined;
                 this.showresultcallback = undefined;
+                this.onstepschangedcallback = undefined;
 
                 this.compactltlresult.compactltlresult("destroy");
                 this.compactltlresult.empty();

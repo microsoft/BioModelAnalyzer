@@ -3384,7 +3384,8 @@ textarea:focus {
   line-height: 30px;
   font-size: 30px;
   font-size: 40px;
-  line-height: 5px;
+  line-height: 40px;
+  vertical-align: top;
   border: 1px solid #EDEDED;
   color: #EDEDED;
 }
@@ -4572,6 +4573,7 @@ ui-icon-arrowthickstop-1-n {
   display: block;
   vertical-align: middle;
   margin-bottom: 3px;
+  font-size: 12px;
 }
 .ui-menu-icons .ui-menu-item {
   padding-left: 30px;

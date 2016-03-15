@@ -2405,6 +2405,9 @@ var BMA;
                     var imported = BMA.Model.ImportModelAndLayout(parsed);
                     this.model = imported.Model;
                     this.layout = imported.Layout;
+                    this.states = [];
+                    this.operations = [];
+                    this.operationAppearances = [];
                     if (parsed.ltl !== undefined) {
                         var ltl = BMA.Model.ImportLTLContents(parsed.ltl);
                         if (ltl.states !== undefined) {
@@ -2421,17 +2424,10 @@ var BMA;
                             this.operations = [];
                         }
                     }
-                    else {
-                        this.states = [];
-                        this.operations = [];
-                    }
                     if (parsed.ltllayout !== undefined) {
                         if (parsed.ltllayout.operationAppearances !== undefined) {
                             this.operationAppearances = parsed.ltllayout.operationAppearances;
                         }
-                    }
-                    else {
-                        this.operationAppearances = [];
                     }
                 }
                 else {
@@ -3349,6 +3345,7 @@ var BMA;
                 this.status = "nottested";
                 this.tag = undefined;
                 this.useMask = false;
+                this.mask = "url(#mask-stripe)";
                 this.renderGroup = undefined;
                 this.majorRect = undefined;
                 this.svg = svg;
@@ -3407,7 +3404,7 @@ var BMA;
                             if (this.majorRect !== undefined) {
                                 //mask: url(#mask-stripe)
                                 this.svg.change(this.majorRect, {
-                                    mask: "url(#mask-stripe)"
+                                    mask: this.mask
                                 });
                             }
                             break;
@@ -3428,6 +3425,23 @@ var BMA;
                 },
                 set: function (value) {
                     this.tag = value;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(OperationLayout.prototype, "MaskUrl", {
+                get: function () {
+                    return this.mask;
+                },
+                set: function (value) {
+                    if (this.mask !== value) {
+                        this.mask = value;
+                        if (this.majorRect !== undefined && this.status === "partialsuccess") {
+                            this.svg.change(this.majorRect, {
+                                mask: this.mask
+                            });
+                        }
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -3852,7 +3866,7 @@ var BMA;
                 };
                 this.majorRect = svg.rect(this.renderGroup, -halfWidth, -height / 2, halfWidth * 2, height, height / 2, height / 2, {
                     fill: this.fill === undefined ? "white" : this.fill,
-                    mask: this.useMask ? "url(#mask-stripe)" : undefined,
+                    mask: this.useMask ? this.mask : undefined,
                 });
                 this.RenderLayoutPart(svg, { x: 0, y: 0 }, this.layout, {
                     stroke: "rgb(96,96,96)",
@@ -4923,12 +4937,12 @@ var BMA;
                         if (f[0] && f[0].type == "variable" && f[0].value && f[0].value.variable && f[1] && f[1].value && f[2]) {
                             var operator = f[1].value;
                             var constant = parseFloat(f[2].value);
-                            var id;
+                            var varName;
                             for (var k = 0; k < that.model.Variables.length; k++)
-                                if (that.model.Variables[k].Name == f[0].value.variable) {
+                                if (that.model.Variables[k].Id == f[0].value.variable) {
                                     if ((f[0].value.container === undefined)
                                         || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
-                                        id = that.model.Variables[k].Id;
+                                        varName = that.model.Variables[k].Name;
                                         break;
                                     }
                                 }
@@ -4939,8 +4953,10 @@ var BMA;
                             //            break;
                             //        }
                             //}
-                            op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(f[0].value.variable, id), operator, new BMA.LTLOperations.ConstOperand(constant));
-                            ops.push(op);
+                            if (varName) {
+                                op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(varName, f[0].value.variable), operator, new BMA.LTLOperations.ConstOperand(constant));
+                                ops.push(op);
+                            }
                         }
                     }
                     if (formulas.length != 0 && ops.length != 0) {
@@ -4984,7 +5000,7 @@ var BMA;
                             var variable = that.model.GetVariableById(params.dropObject.id);
                             that.statesEditor.stateseditor("checkDroppedItem", {
                                 screenLocation: params.screenLocation,
-                                variable: { container: variable.ContainerId, variable: variable.Name }
+                                variable: { container: variable.ContainerId, variable: variable.Id }
                             });
                         }
                     });
@@ -5008,8 +5024,8 @@ var BMA;
                     vars: []
                 };
                 for (var i = 0; i < model.Variables.length; i++) {
-                    if (allGroup.vars.indexOf(model.Variables[i].Name) < 0)
-                        allGroup.vars.push(model.Variables[i].Name);
+                    //if (allGroup.vars.indexOf(model.Variables[i].Name) < 0)
+                    allGroup.vars.push({ name: model.Variables[i].Name, id: model.Variables[i].Id });
                 }
                 var variables = [allGroup];
                 for (var i = 0; i < layout.Containers.length; i++) {
@@ -5018,7 +5034,7 @@ var BMA;
                         continue;
                     for (var j = 0; j < model.Variables.length; j++) {
                         if (layout.Containers[i].Id == model.Variables[j].ContainerId)
-                            vars.push(model.Variables[j].Name);
+                            vars.push({ name: model.Variables[j].Name, id: model.Variables[j].Id });
                     }
                     variables.push({
                         name: layout.Containers[i].Name,
@@ -5048,7 +5064,7 @@ var BMA;
                         var formulaPart = [];
                         var op = {
                             type: opnd.LeftOperand.Name === undefined ? "const" : "variable",
-                            value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : { variable: opnd.LeftOperand.Name }
+                            value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : { variable: opnd.LeftOperand.Id }
                         };
                         formulaPart.push(op);
                         if (opnd.MiddleOperand !== undefined) {
@@ -5060,7 +5076,7 @@ var BMA;
                             var middle = opnd.MiddleOperand;
                             formulaPart.push({
                                 type: middle.Name === undefined ? "const" : "variable",
-                                value: middle.Name === undefined ? middle.Value : { variable: middle.Name }
+                                value: middle.Name === undefined ? middle.Value : { variable: middle.Id }
                             });
                             var rightop = opnd.RightOperator;
                             formulaPart.push({
@@ -5076,7 +5092,7 @@ var BMA;
                         }
                         formulaPart.push({
                             type: opnd.RightOperand.Name === undefined ? "const" : "variable",
-                            value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : { variable: opnd.RightOperand.Name }
+                            value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : { variable: opnd.RightOperand.Id }
                         });
                         ws.formula.push(formulaPart);
                     }
@@ -5130,6 +5146,9 @@ var BMA;
                     },
                     onstepschanged: function (steps) {
                         that.steps = steps;
+                        if (that.onstepschangedcallback !== undefined) {
+                            that.onstepschangedcallback();
+                        }
                     },
                     onexpanded: function () {
                         if (that.expandedcallback !== undefined) {
@@ -5184,6 +5203,9 @@ var BMA;
             LTLResultsCompactViewer.prototype.SetShowResultsCallback = function (callback) {
                 this.showresultcallback = callback;
             };
+            LTLResultsCompactViewer.prototype.SetOnStepsChangedCallback = function (callback) {
+                this.onstepschangedcallback = callback;
+            };
             LTLResultsCompactViewer.prototype.Destroy = function () {
                 this.compactltlresult.compactltlresult({
                     ontestrequested: undefined,
@@ -5194,6 +5216,7 @@ var BMA;
                 this.ltlrequested = undefined;
                 this.expandedcallback = undefined;
                 this.showresultcallback = undefined;
+                this.onstepschangedcallback = undefined;
                 this.compactltlresult.compactltlresult("destroy");
                 this.compactltlresult.empty();
             };
@@ -11879,7 +11902,7 @@ jQuery.fn.extend({
                 autoFocus: true,
                 preventContextMenuForPopup: true,
                 preventSelect: true,
-                menu: [{ title: "Delete State", cmd: "DeleteState" }],
+                menu: [{ title: "Delete", cmd: "DeleteState", uiIcon: "ui-icon-trash" }],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);
                 },
@@ -12166,14 +12189,21 @@ jQuery.fn.extend({
                     value.container = that.findContainer(value.variable);
                 }
                 var containerName;
+                var variableName;
                 for (var i = 0; i < that.options.variables.length; i++)
                     if (that.options.variables[i].id == value.container) {
                         containerName = that.options.variables[i].name;
+                        for (var j = 0; j < that.options.variables[i].vars.length; j++) {
+                            if (that.options.variables[i].vars[j].id == value.variable) {
+                                variableName = that.options.variables[i].vars[j].name;
+                                break;
+                            }
+                        }
                         break;
                     }
                 containerName = containerName ? containerName : "ALL";
                 $(selectedContainer).text(containerName);
-                $(selectedVariable).text(value.variable);
+                $(selectedVariable).text(variableName);
                 selectedVariable.removeClass("not-selected");
                 if (variablePicker) {
                     variablePicker.remove();
@@ -12265,24 +12295,24 @@ jQuery.fn.extend({
                 }
             $(container).addClass("active");
             for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
-                var variableName = that.options.variables[idx].vars[j];
-                if (that.options.variables[idx].vars[j]) {
-                    var variable = $("<a>" + variableName + "</a>").attr("data-variable-name", that.options.variables[idx].vars[j])
+                var variableName = that.options.variables[idx].vars[j].name;
+                if (variableName && that.options.variables[idx].vars[j].id !== undefined) {
+                    var variable = $("<a>" + variableName + "</a>").attr("data-variable-id", that.options.variables[idx].vars[j].id)
                         .appendTo(divVariables).click(function () {
                         divVariables.find(".active").removeClass("active");
                         $(this).addClass("active");
                         var containerId = $(container).attr("data-container-id");
-                        var variablesName = $(this).attr("data-variable-name");
+                        var variablesId = $(this).attr("data-variable-id");
                         if (containerId == "0")
-                            containerId = that.findContainer(variablesName);
-                        currSymbol.value = { container: containerId, variable: variablesName };
-                        setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable ? currSymbol.value.variable : "Unnamed" });
+                            containerId = that.findContainer(variablesId);
+                        currSymbol.value = { container: containerId, variable: variablesId };
+                        setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable });
                         that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                     });
                     if (currSymbol.value != 0 && currSymbol.value.container == $(container).attr("data-container-id")
-                        && currSymbol.value.variable == that.options.variables[idx].vars[j]) {
+                        && currSymbol.value.variable == that.options.variables[idx].vars[j].id) {
                         variable.addClass("active");
-                        setSelectedValue({ container: $(container).attr("data-container-id"), variable: variableName });
+                        setSelectedValue({ container: $(container).attr("data-container-id"), variable: that.options.variables[idx].vars[j].id });
                     }
                 }
             }
@@ -12290,11 +12320,14 @@ jQuery.fn.extend({
         findContainer: function (variable) {
             var that = this;
             var container = 0;
-            for (var i = 1; i < this.options.variables.length; i++)
-                if (that.options.variables[i].vars.indexOf(variable) >= 0) {
-                    container = that.options.variables[i].id;
-                    break;
+            for (var i = 1; i < this.options.variables.length; i++) {
+                for (var j = 0; j < this.options.variables[i].vars.length; j++) {
+                    if (this.options.variables[i].vars[j].id == variable) {
+                        container = that.options.variables[i].id;
+                        break;
+                    }
                 }
+            }
             return container;
         },
         isInsideVariableField: function (location) {
@@ -13496,6 +13529,7 @@ jQuery.fn.extend({
     $.widget("BMA.temporalpropertiesviewer", {
         _svg: undefined,
         _pixelOffset: 10,
+        _anims: [],
         options: {
             operations: [],
             padding: { x: 3, y: 5 }
@@ -13503,7 +13537,7 @@ jQuery.fn.extend({
         _create: function () {
             var that = this;
             var root = this.element;
-            root.css("overflow-y", "auto").css("overflow-x", "auto");
+            root.css("overflow-y", "auto").css("overflow-x", "auto").css("position", "relative");
             this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
             $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
             $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
@@ -13528,8 +13562,8 @@ jQuery.fn.extend({
             if (this._svg !== undefined) {
                 this._svg.clear();
                 var svg = this._svg;
-                var defs = svg.defs("bmaDefs");
-                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
+                var defs = svg.defs("ltlCompactBmaDefs");
+                var pattern = svg.pattern(defs, "pattern-stripe1", 0, 0, 8, 4, {
                     patternUnits: "userSpaceOnUse",
                     patternTransform: "rotate(45)"
                 });
@@ -13537,17 +13571,22 @@ jQuery.fn.extend({
                     transform: "translate(0,0)",
                     fill: "white"
                 });
-                var mask = svg.mask(defs, "mask-stripe");
+                var mask = svg.mask(defs, "mask-stripe1");
                 svg.rect(mask, "-50%", "-50%", "100%", "100%", {
-                    fill: "url(#pattern-stripe)"
+                    fill: "url(#pattern-stripe1)"
                 });
                 var maxHeight = 25 * 4;
                 var operations = this.options.operations;
                 var currentPos = { x: 0, y: 0 };
                 var height = this.options.padding.y;
                 var width = 0;
+                for (var i = 0; i < this._anims.length; i++) {
+                    this._anims[i].remove();
+                }
+                this._anims = [];
                 for (var i = 0; i < operations.length; i++) {
                     var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i].operation, { x: 0, y: 0 });
+                    opLayout.MaskUrl = "url(#mask-stripe1)";
                     opLayout.AnalysisStatus = operations[i].status;
                     var opbbox = opLayout.BoundingBox;
                     if (opbbox.height > maxHeight) {
@@ -13566,9 +13605,10 @@ jQuery.fn.extend({
                         });
                         opbbox.width += t.getBBox().width + 10;
                     }
-                    else {
-                        this._createWaitAnimation(opbbox.width + 10, opLayout.Position.y);
-                        opbbox.width += 20;
+                    else if (operations[i].status === "processing") {
+                        var anim = this._createWaitAnimation(opbbox.width + 10, opLayout.Position.y - 7);
+                        this._anims.push(anim);
+                        opbbox.width += 30;
                     }
                     height += opbbox.height + this.options.padding.y;
                     width = Math.max(width, opbbox.width);
@@ -13585,6 +13625,16 @@ jQuery.fn.extend({
             }
         },
         _createWaitAnimation: function (x, y) {
+            var snipperCnt = $('<div></div>').width(30).css("position", "absolute").css("top", y).css("left", x).appendTo(this.element);
+            var snipper = $('<div></div>').css("display", "inline-block").addClass('spinner').appendTo(snipperCnt);
+            for (var i = 1; i < 4; i++) {
+                $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+            }
+            return snipper;
+        },
+        /*
+        _createWaitAnimation: function (x, y) {
+
             var x0 = x;
             var myrect = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
             var animate = function () {
@@ -13593,8 +13643,9 @@ jQuery.fn.extend({
                         animate();
                     });
                 });
-            };
+            }
             animate();
+
             x0 += 13;
             var myrect2 = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
             var animate2 = function () {
@@ -13603,8 +13654,9 @@ jQuery.fn.extend({
                         animate2();
                     });
                 });
-            };
+            }
             animate2();
+
             x0 += 13;
             var myrect3 = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
             var animate3 = function () {
@@ -13613,9 +13665,10 @@ jQuery.fn.extend({
                         animate3();
                     });
                 });
-            };
+            }
             animate3();
         },
+        */
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
@@ -14844,6 +14897,7 @@ var BMA;
                 var dom = this.navigationDriver.GetNavigationSurface();
                 driver.SetLTLRequestedCallback(function () {
                     that.PerformLTL(operation);
+                    that.OnOperationsChanged(false, false);
                 });
                 driver.SetOnExpandedCallback(function () {
                     dom.updateLayout();
@@ -14869,6 +14923,12 @@ var BMA;
                     }
                     dom.updateLayout();
                 });
+                driver.SetOnStepsChangedCallback(function () {
+                    if (operation.AnalysisStatus !== "nottested") {
+                        operation.AnalysisStatus = "nottested";
+                        that.OnOperationsChanged(false, false);
+                    }
+                });
                 var bbox = operation.BoundingBox;
                 dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -operation.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);
                 operation.Tag = {
@@ -14887,6 +14947,7 @@ var BMA;
                         that.PerformLTL(op);
                     }
                 }
+                that.OnOperationsChanged(false, false);
             };
             return TemporalPropertiesPresenter;
         })();

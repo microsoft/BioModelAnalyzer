@@ -85,7 +85,7 @@
                 autoFocus: true,
                 preventContextMenuForPopup: true,
                 preventSelect: true,
-                menu: [{ title: "Delete State", cmd: "DeleteState" }],
+                menu: [{ title: "Delete", cmd: "DeleteState", uiIcon: "ui-icon-trash" }],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);
                     
@@ -426,16 +426,23 @@
                 }
 
                 var containerName;
+                var variableName;
                 for (var i = 0; i < that.options.variables.length; i++) 
                     if (that.options.variables[i].id == value.container) {
                         containerName = that.options.variables[i].name;
+                        for (var j = 0; j < that.options.variables[i].vars.length; j++) {
+                            if (that.options.variables[i].vars[j].id == value.variable) {
+                                variableName = that.options.variables[i].vars[j].name;
+                                break;
+                            }
+                        }
                         break;
                     }
                 
                 containerName = containerName ? containerName : "ALL";
-
+                
                 $(selectedContainer).text(containerName);
-                $(selectedVariable).text(value.variable);
+                $(selectedVariable).text(variableName);
                 selectedVariable.removeClass("not-selected");
 
                 if (variablePicker) {
@@ -555,29 +562,29 @@
 
             for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
 
-                var variableName = that.options.variables[idx].vars[j];
-                if (that.options.variables[idx].vars[j]) {
+                var variableName = that.options.variables[idx].vars[j].name;
+                if (variableName && that.options.variables[idx].vars[j].id !== undefined) {
 
-                    var variable = $("<a>" + variableName + "</a>").attr("data-variable-name", that.options.variables[idx].vars[j])
+                    var variable = $("<a>" + variableName + "</a>").attr("data-variable-id", that.options.variables[idx].vars[j].id)
                         .appendTo(divVariables).click(function () {
                             divVariables.find(".active").removeClass("active");
                             $(this).addClass("active");
 
                             var containerId = $(container).attr("data-container-id");
-                            var variablesName = $(this).attr("data-variable-name");
+                            var variablesId = $(this).attr("data-variable-id");
                             if (containerId == "0")
-                                containerId = that.findContainer(variablesName);
+                                containerId = that.findContainer(variablesId);
 
-                            currSymbol.value = { container: containerId, variable: variablesName };
-                            setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable ? currSymbol.value.variable : "Unnamed" });
+                            currSymbol.value = { container: containerId, variable: variablesId };
+                            setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable });
 
                             that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                         });
 
                     if (currSymbol.value != 0 && currSymbol.value.container == $(container).attr("data-container-id")
-                        && currSymbol.value.variable == that.options.variables[idx].vars[j]) {
+                        && currSymbol.value.variable == that.options.variables[idx].vars[j].id) {
                         variable.addClass("active");
-                        setSelectedValue({ container: $(container).attr("data-container-id"), variable: variableName });
+                        setSelectedValue({ container: $(container).attr("data-container-id"), variable: that.options.variables[idx].vars[j].id});
                     }
                 }
             }
@@ -586,11 +593,14 @@
         findContainer: function (variable) {
             var that = this;
             var container = 0;
-            for (var i = 1; i < this.options.variables.length; i++)
-                if (that.options.variables[i].vars.indexOf(variable) >= 0) {
-                    container = that.options.variables[i].id;
-                    break;
+            for (var i = 1; i < this.options.variables.length; i++) {
+                for (var j = 0; j < this.options.variables[i].vars.length; j++) {
+                    if (this.options.variables[i].vars[j].id == variable) {
+                        container = that.options.variables[i].id;
+                        break;
+                    }
                 }
+            }
             return container;
         },
 
