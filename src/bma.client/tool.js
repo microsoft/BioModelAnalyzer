@@ -11881,7 +11881,7 @@ jQuery.fn.extend({
                 autoFocus: true,
                 preventContextMenuForPopup: true,
                 preventSelect: true,
-                menu: [{ title: "Delete State", cmd: "DeleteState" }],
+                menu: [{ title: "Delete", cmd: "DeleteState", uiIcon: "ui-icon-trash" }],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);
                 },
