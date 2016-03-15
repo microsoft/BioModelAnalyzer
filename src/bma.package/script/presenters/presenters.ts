@@ -628,6 +628,7 @@ module BMA {
 
                 dragSubject.dragStart.subscribe(
                     (gesture) => {
+                        navigationDriver.MoveDraggableOnTop();
 
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
                             var id = that.GetVariableAtPosition(gesture.x, gesture.y);
@@ -688,6 +689,8 @@ module BMA {
 
                 dragSubject.dragEnd.subscribe(
                     (gesture) => {
+                        navigationDriver.MoveDraggableOnBottom();
+
                         that.driver.DrawLayer2(undefined);
 
                         if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined && that.stagingLine.x1 !== undefined) {

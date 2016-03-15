@@ -4142,6 +4142,12 @@ var BMA;
             SVGPlotDriver.prototype.SetConstraintFunc = function (f) {
                 this.svgPlotDiv.drawingsurface("setConstraint", f);
             };
+            SVGPlotDriver.prototype.MoveDraggableOnTop = function () {
+                this.svgPlotDiv.drawingsurface("moveDraggableSvgOnTop");
+            };
+            SVGPlotDriver.prototype.MoveDraggableOnBottom = function () {
+                this.svgPlotDiv.drawingsurface("moveDraggableSvgOnBottom");
+            };
             return SVGPlotDriver;
         })();
         UIDrivers.SVGPlotDriver = SVGPlotDriver;
@@ -5436,8 +5442,11 @@ var BMA;
                 var init = tableData.init;
                 var data = tableData.data;
                 var tags = that.PrepareTableTags(data, states, vars);
-                var labelsHeight = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
-                    - Math.min.apply(Math, ranges.map(function (s) { return s.min; }));
+                var labelsHeight = Math.max.apply(Math, data.map(function (s) {
+                    return Math.max.apply(Math, s);
+                })) - Math.min.apply(Math, data.map(function (s) {
+                    return Math.min.apply(Math, s);
+                }));
                 var labels = that.PreparePlotLabels(tags, labelsHeight);
                 var interval = this.CreateInterval(vars);
                 var options = {
@@ -5504,8 +5513,11 @@ var BMA;
                     });
                 }
                 var tags = this.PrepareTableTags(that.currentData.data, states, vars);
-                var labelsHeight = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
-                    - Math.min.apply(Math, ranges.map(function (s) { return s.min; }));
+                var labelsHeight = Math.max.apply(Math, that.currentData.data.map(function (s) {
+                    return Math.max.apply(Math, s);
+                })) - Math.min.apply(Math, that.currentData.data.map(function (s) {
+                    return Math.min.apply(Math, s);
+                }));
                 var labels = this.PreparePlotLabels(tags, labelsHeight);
                 that.currentData.tags = tags;
                 that.currentData.labels = labels;
@@ -6090,6 +6102,7 @@ var BMA;
                     }
                 });
                 dragSubject.dragStart.subscribe(function (gesture) {
+                    navigationDriver.MoveDraggableOnTop();
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
                         var id = that.GetVariableAtPosition(gesture.x, gesture.y);
                         if (id !== undefined) {
@@ -6143,6 +6156,7 @@ var BMA;
                     }
                 });
                 dragSubject.dragEnd.subscribe(function (gesture) {
+                    navigationDriver.MoveDraggableOnBottom();
                     that.driver.DrawLayer2(undefined);
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined && that.stagingLine.x1 !== undefined) {
                         that.TryAddStagingLineAsLink();
@@ -9226,12 +9240,15 @@ var BMA;
                 drag: createPanSubject(that._plot.centralPart),
                 dragEnd: createDragEndSubject(that._plot.centralPart)
             };
+            /*
             this._dragService.dragStart.subscribe(function () {
                 svgPlotDiv2.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 10);
             });
+
             this._dragService.dragEnd.subscribe(function () {
                 svgPlotDiv2.css("z-index", '');
             });
+            */
             this._mouseMoves = Rx.Observable.fromEvent(that._plot.centralPart, "mousemove").select(function (mm) {
                 var cs = svgPlot.getScreenToDataTransform();
                 var x0 = cs.screenToDataX(mm.originalEvent.pageX - plotDiv.offset().left);
@@ -9457,7 +9474,13 @@ var BMA;
         },
         setConstraint: function (constraint) {
             this._plot.visibleRectConstraint = constraint;
-        }
+        },
+        moveDraggableSvgOnTop: function () {
+            this._lightSvgPlot.host.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 10);
+        },
+        moveDraggableSvgOnBottom: function () {
+            this._lightSvgPlot.host.css("z-index", '');
+        },
     });
 }(jQuery));
 //# sourceMappingURL=drawingsurface.js.map
@@ -10020,6 +10043,7 @@ var BMA;
             this.message = $('<div></div>')
                 .appendTo(this.element);
             this.repo = $('<div></div>')
+                .addClass("localstorage-repo")
                 .appendTo(this.element);
             if (Silverlight.isInstalled()) {
                 var slWidget = $('<div></div>').appendTo(this.element);
@@ -11598,9 +11622,9 @@ jQuery.fn.extend({
             this._table.on('scroll', function () {
                 that._variables.scrollTop($(this).scrollTop());
             });
-            this._variables.on('scroll', function () {
-                that._table.scrollTop($(this).scrollTop());
-            });
+            //this._variables.on('scroll', function () {
+            //    that._table.scrollTop($(this).scrollTop());
+            //});
             this._variables.css("max-height", 322 - scrollBarSize.height);
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
@@ -14382,6 +14406,7 @@ var BMA;
                                 //staginOp.AnalysisStatus = "nottested";
                                 //staginOp.Tag = undefined;
                                 //}
+                                that.navigationDriver.MoveDraggableOnTop();
                                 that.navigationDriver.TurnNavigation(false);
                                 //Can't drag parts of processing operations
                                 var picked = staginOp.PickOperation(gesture.x, gesture.y);
@@ -14437,6 +14462,7 @@ var BMA;
                         }
                     });
                     dragSubject.dragEnd.subscribe(function (gesture) {
+                        that.navigationDriver.MoveDraggableOnBottom();
                         if (_this.stagingOperation !== undefined) {
                             that.navigationDriver.TurnNavigation(true);
                             _this.stagingOperation.operation.IsVisible = false;

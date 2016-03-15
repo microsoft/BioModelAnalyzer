@@ -277,6 +277,7 @@ declare var InteractiveDataDisplay: any;
                 dragEnd: createDragEndSubject(that._plot.centralPart)
             };
 
+            /*
             this._dragService.dragStart.subscribe(function () {
                 svgPlotDiv2.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 10);
             });
@@ -284,7 +285,7 @@ declare var InteractiveDataDisplay: any;
             this._dragService.dragEnd.subscribe(function () {
                 svgPlotDiv2.css("z-index", '');
             });
-
+            */
 
             this._mouseMoves = Rx.Observable.fromEvent<any>(that._plot.centralPart, "mousemove").select(function (mm) {
 
@@ -552,7 +553,15 @@ declare var InteractiveDataDisplay: any;
 
         setConstraint: function (constraint) {
             this._plot.visibleRectConstraint = constraint;
-        }
+        },
+
+        moveDraggableSvgOnTop: function () {
+            this._lightSvgPlot.host.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 10);
+        },
+
+        moveDraggableSvgOnBottom: function () {
+            this._lightSvgPlot.host.css("z-index", '');
+        },
 
     });
 } (jQuery));

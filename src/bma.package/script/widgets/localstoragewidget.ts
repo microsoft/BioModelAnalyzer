@@ -29,6 +29,7 @@
                 .appendTo(this.element);
 
             this.repo = $('<div></div>')
+                .addClass("localstorage-repo")
                 //.addClass('localstorage-widget')
                 .appendTo(this.element);   
 

@@ -902,9 +902,12 @@ module BMA {
                 var init = tableData.init;
                 var data = tableData.data;
                 var tags = that.PrepareTableTags(data, states, vars);
-
-                var labelsHeight = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
-                    - Math.min.apply(Math, ranges.map(function (s) { return s.min; }));
+                
+                var labelsHeight = Math.max.apply(Math, data.map(function (s) {
+                    return Math.max.apply(Math, s);
+                })) - Math.min.apply(Math, data.map(function (s) {
+                    return Math.min.apply(Math, s);
+                }));
                 var labels = that.PreparePlotLabels(tags, labelsHeight);
                 
                 var interval = this.CreateInterval(vars);
@@ -980,8 +983,12 @@ module BMA {
                 }
 
                 var tags = this.PrepareTableTags(that.currentData.data, states, vars);
-                var labelsHeight = Math.max.apply(Math, ranges.map(function (s) { return s.max; }))
-                    - Math.min.apply(Math, ranges.map(function (s) { return s.min; }));
+
+                var labelsHeight = Math.max.apply(Math, that.currentData.data.map(function (s) {
+                    return Math.max.apply(Math, s);
+                })) - Math.min.apply(Math, that.currentData.data.map(function (s) {
+                    return Math.min.apply(Math, s);
+                }));
                 var labels = this.PreparePlotLabels(tags, labelsHeight);
 
                 that.currentData.tags = tags;

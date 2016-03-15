@@ -99,6 +99,14 @@ module BMA {
             public SetConstraintFunc(f: Function) {
                 this.svgPlotDiv.drawingsurface("setConstraint", f);
             }
+
+            public MoveDraggableOnTop() {
+                this.svgPlotDiv.drawingsurface("moveDraggableSvgOnTop");
+            }
+
+            public MoveDraggableOnBottom() {
+                this.svgPlotDiv.drawingsurface("moveDraggableSvgOnBottom");
+            }
         }
 
         export class TurnableButtonDriver implements ITurnableButton {

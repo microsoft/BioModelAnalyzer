@@ -3701,9 +3701,15 @@ ui-icon-arrowthickstop-1-n {
   padding-left: 10px;
   padding-right: 10px;
 }
-.model-repository ol {
+.model-repository .localstorage-repo {
+  margin-top: 13px;
+  margin-bottom: 13px;
   max-height: 200px;
   overflow-y: auto;
+}
+.model-repository .localstorage-repo ol {
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 /*.state-toolbar {
     margin-top: 5px;
