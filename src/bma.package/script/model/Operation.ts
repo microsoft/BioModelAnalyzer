@@ -28,7 +28,7 @@
             }
 
             public GetFormula() {
-                return this.name;
+                return this.id; //this.name;
             }
 
             public Clone() {
