@@ -3384,7 +3384,8 @@ textarea:focus {
   line-height: 30px;
   font-size: 30px;
   font-size: 40px;
-  line-height: 5px;
+  line-height: 40px;
+  vertical-align: top;
   border: 1px solid #EDEDED;
   color: #EDEDED;
 }
