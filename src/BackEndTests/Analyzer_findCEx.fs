@@ -38,7 +38,6 @@ type VMCAIFurtherTestingTests() =
         Assert.AreEqual(var3_0.Fix2, 1)
 
 
-
     [<TestMethod>]
     [<DeploymentItem("Race.json")>]
     member x.``Race model cycles`` () = 
@@ -141,7 +140,35 @@ type VMCAIFurtherTestingTests() =
         let resultC = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExCycles(model, result)
         Assert.AreNotEqual(resultC, null)
 
-        
+    [<TestMethod>]
+    [<DeploymentItem("ToyModelUnstable.json")>]
+    member x.``LTL check`` () = 
+        let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelUnstable.json"))
+
+        // Extract model from json
+        let model = (jobj.["Model"] :?> JObject).ToObject<Model>()
+
+        // Create analyzer. 
+        // Have to static cast to get IAnalyzer functions.   
+        let analyzer = UIMain.Analyzer () 
+        let result =  (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).checkLTL(model, "(< var(2) 1)", "10")
+        Assert.AreEqual(result.Status, StatusType.True)
+
+        let tick0 = result.Ticks.[0]
+        let vara = tick0.Variables.[0]
+        Assert.AreEqual(vara.Id, 1)
+        Assert.AreEqual(vara.Hi, 2)
+        Assert.AreEqual(vara.Lo, 2)
+
+        let varb = tick0.Variables.[1]
+        Assert.AreEqual(varb.Id, 2)
+        Assert.AreEqual(varb.Hi, 0)
+        Assert.AreEqual(varb.Lo, 0)
+
+        let varc = tick0.Variables.[2]
+        Assert.AreEqual(varc.Id, 3)
+        Assert.AreEqual(varc.Hi, 1)
+        Assert.AreEqual(varc.Lo, 1)
 
 
 

@@ -49,6 +49,10 @@ namespace BMAWebApi
         public int FurtherTestingErrorCount { get; set; }
 
         public int ProofErrorCount { get; set; }
+
+        public int AnalyzeLTLCount { get; set; }
+
+        public int AnalyzeLTLErrorCount { get; set; }
     }
 
     public class ActivityAzureLogger
@@ -61,11 +65,21 @@ namespace BMAWebApi
             tableClient = account.CreateCloudTableClient();
             activityTable = tableClient.GetTableReference("ClientActivity");
             activityTable.CreateIfNotExists();
+
+            
         }
 
         public void Add(ActivityEntity entity)
         {
             activityTable.Execute(TableOperation.Insert(entity));
         }
+
+        //public async ActivityEntity[] GetEntities() 
+        //{
+            //activityTable.r
+            //activityTable. Cloud
+           // activityTable.Execute(TableOperation..Retrieve<ActivityEntity>)
+           //return null;
+        //}
     }
 }

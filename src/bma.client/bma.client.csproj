@@ -20,9 +20,11 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.7</TypeScriptToolsVersion>
     <SilverlightApplicationList>{68041FBC-F127-4770-93D3-DCA3AE200A64}|..\LegacyModelsImporter\LegacyModelsImporter.csproj|ClientBin|False</SilverlightApplicationList>
     <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,8 +57,17 @@
   <ItemGroup>
     <Content Include="about.html" />
     <Content Include="app.css" />
+    <Content Include="app.js" />
     <Content Include="ClientBin\BioCheck.xap" />
-    <Content Include="Content\themes\base\images\animated-overlay.gif" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -70,66 +81,24 @@
     <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
     <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
     <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
-    <Content Include="Content\themes\base\jquery-ui.css" />
-    <Content Include="Content\themes\base\jquery.ui.accordion.css" />
-    <Content Include="Content\themes\base\jquery.ui.all.css" />
-    <Content Include="Content\themes\base\jquery.ui.autocomplete.css" />
-    <Content Include="Content\themes\base\jquery.ui.base.css" />
-    <Content Include="Content\themes\base\jquery.ui.button.css" />
-    <Content Include="Content\themes\base\jquery.ui.core.css" />
-    <Content Include="Content\themes\base\jquery.ui.datepicker.css" />
-    <Content Include="Content\themes\base\jquery.ui.dialog.css" />
-    <Content Include="Content\themes\base\jquery.ui.menu.css" />
-    <Content Include="Content\themes\base\jquery.ui.progressbar.css" />
-    <Content Include="Content\themes\base\jquery.ui.resizable.css" />
-    <Content Include="Content\themes\base\jquery.ui.selectable.css" />
-    <Content Include="Content\themes\base\jquery.ui.slider.css" />
-    <Content Include="Content\themes\base\jquery.ui.spinner.css" />
-    <Content Include="Content\themes\base\jquery.ui.tabs.css" />
-    <Content Include="Content\themes\base\jquery.ui.theme.css" />
-    <Content Include="Content\themes\base\jquery.ui.tooltip.css" />
-    <Content Include="Content\themes\base\minified\images\animated-overlay.gif" />
-    <Content Include="Content\themes\base\minified\images\ui-bg_flat_0_aaaaaa_40x100.png" />
-    <Content Include="Content\themes\base\minified\images\ui-bg_flat_75_ffffff_40x100.png" />
-    <Content Include="Content\themes\base\minified\images\ui-bg_glass_55_fbf9ee_1x400.png" />
-    <Content Include="Content\themes\base\minified\images\ui-bg_glass_65_ffffff_1x400.png" />
-    <Content Include="Content\themes\base\minified\images\ui-bg_glass_75_dadada_1x400.png" />
-    <Content Include="Content\themes\base\minified\images\ui-bg_glass_75_e6e6e6_1x400.png" />
-    <Content Include="Content\themes\base\minified\images\ui-bg_glass_95_fef1ec_1x400.png" />
-    <Content Include="Content\themes\base\minified\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
-    <Content Include="Content\themes\base\minified\images\ui-icons_222222_256x240.png" />
-    <Content Include="Content\themes\base\minified\images\ui-icons_2e83ff_256x240.png" />
-    <Content Include="Content\themes\base\minified\images\ui-icons_454545_256x240.png" />
-    <Content Include="Content\themes\base\minified\images\ui-icons_888888_256x240.png" />
-    <Content Include="Content\themes\base\minified\images\ui-icons_cd0a0a_256x240.png" />
-    <Content Include="Content\themes\base\minified\jquery-ui.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.accordion.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.autocomplete.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.button.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.core.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.datepicker.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.dialog.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.menu.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.progressbar.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.resizable.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.selectable.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.slider.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.spinner.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
-    <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="css\BMA-Styles.css">
       <DependentUpon>BMA-Styles.less</DependentUpon>
     </Content>
     <Content Include="css\BMA-Styles.min.css">
       <DependentUpon>BMA-Styles.css</DependentUpon>
     </Content>
-    <Content Include="css\BMA_less.css">
-      <DependentUpon>BMA_less.less</DependentUpon>
-    </Content>
-    <Content Include="css\BMA_less.min.css">
-      <DependentUpon>BMA_less.css</DependentUpon>
-    </Content>
+    <Content Include="css\bma.css" />
     <Content Include="css\fonts.css">
       <DependentUpon>fonts.less</DependentUpon>
     </Content>
@@ -140,14 +109,7 @@
     <Content Include="css\fonts\segoeuib-webfont.svg" />
     <Content Include="css\fonts\segoeuii-webfont.svg" />
     <Content Include="css\idd.css" />
-    <Content Include="css\jasmine.css" />
     <Content Include="css\jquery.svg.css" />
-    <Content Include="css\StyleSheet.css">
-      <DependentUpon>StyleSheet.less</DependentUpon>
-    </Content>
-    <Content Include="css\StyleSheet.min.css">
-      <DependentUpon>StyleSheet.css</DependentUpon>
-    </Content>
     <Content Include="css\fonts\segoeuil.svg" />
     <Content Include="css\website.css">
       <DependentUpon>website.less</DependentUpon>
@@ -158,10 +120,17 @@
     <Content Include="error.html" />
     <Content Include="Global.asax" />
     <Content Include="help.html" />
+    <Content Include="html\BandPlotSample.html" />
     <Content Include="html\callback.html" />
     <Content Include="html\chartSample.html" />
     <Content Include="html\LayoutSample.html" />
+    <Content Include="html\LTLFormulaViewSample.html" />
+    <Content Include="html\LTLResultsCompactViewerSample.html" />
+    <Content Include="html\MemoryLeakTestPage.html" />
     <Content Include="html\OneDriveSample.html" />
+    <Content Include="html\StatesEditorSample.html" />
+    <Content Include="html\LTLResultsViewerSample.html" />
+    <Content Include="html\StateTooltipSample.html" />
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
     <Content Include="images\1x1.svg" />
@@ -212,6 +181,8 @@
     <Content Include="images\icon-cut.svg" />
     <Content Include="images\icon-delete.svg" />
     <Content Include="images\icon-edit.svg" />
+    <Content Include="images\icon-export-LTL.svg" />
+    <Content Include="images\icon-import-LTL.svg" />
     <Content Include="images\icon-paste.svg" />
     <Content Include="images\icon-size.svg" />
     <Content Include="images\inhibit-ON.png" />
@@ -225,6 +196,20 @@
     <Content Include="images\local.png" />
     <Content Include="images\local.svg" />
     <Content Include="images\logo-crop.png" />
+    <Content Include="images\LTL-copy.svg" />
+    <Content Include="images\LTL-delete.svg" />
+    <Content Include="images\ltl-icon.png" />
+    <Content Include="images\ltlimgs\123.png" />
+    <Content Include="images\ltlimgs\eq.png" />
+    <Content Include="images\ltlimgs\mo.png" />
+    <Content Include="images\ltlimgs\le.png" />
+    <Content Include="images\ltlimgs\leeq.png" />
+    <Content Include="images\ltlimgs\moeq.png" />
+    <Content Include="images\ltlimgs\noeq.png" />
+    <Content Include="images\ltlimgs\remove.png" />
+    <Content Include="images\ltlimgs\var.png" />
+    <Content Include="images\ltl_fail.png" />
+    <Content Include="images\ltl_success.png" />
     <Content Include="images\maximize.png" />
     <Content Include="images\minimize.png" />
     <Content Include="images\MSR-logo.png" />
@@ -233,9 +218,11 @@
     <Content Include="images\new.svg" />
     <Content Include="images\open.png" />
     <Content Include="images\open.svg" />
+    <Content Include="images\oscillation-state.svg" />
     <Content Include="images\oscillations-ON.svg" />
     <Content Include="images\oscillations.png" />
     <Content Include="images\oscillations.svg" />
+    <Content Include="images\plus.png" />
     <Content Include="images\pointer ON.png" />
     <Content Include="images\pointer ON.svg" />
     <Content Include="images\pointer-ON.png" />
@@ -246,6 +233,7 @@
     <Content Include="images\random1.svg" />
     <Content Include="images\random2.png" />
     <Content Include="images\random2.svg" />
+    <Content Include="images\range.png" />
     <Content Include="images\receptor-ON.png" />
     <Content Include="images\receptor-ON.svg" />
     <Content Include="images\receptor.png" />
@@ -259,11 +247,20 @@
     <Content Include="images\saveicon.png" />
     <Content Include="images\savelocally.png" />
     <Content Include="images\savelocally.svg" />
+    <Content Include="images\screen-fit.svg" />
+    <Content Include="images\selfloop-state.svg" />
+    <Content Include="images\small-cross.svg" />
+    <Content Include="images\small-tick.svg" />
+    <Content Include="images\state-container.svg" />
+    <Content Include="images\state-line-del.svg" />
+    <Content Include="images\state-variable.svg" />
     <Content Include="images\succeeded.png" />
     <Content Include="images\succeeded.svg" />
     <Content Include="images\svgtest.txt" />
+    <Content Include="images\tabicon-LTL.svg" />
     <Content Include="images\tick-128.png" />
     <Content Include="images\title-TOU.png" />
+    <Content Include="images\true-state.svg" />
     <Content Include="images\undo.png" />
     <Content Include="images\undo.svg" />
     <Content Include="images\validation-failed.svg" />
@@ -284,6 +281,24 @@
     <Content Include="images\zoomplus.png" />
     <Content Include="images\zoomplus.svg" />
     <Content Include="index.html" />
+    <None Include="Scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="js\jquery.svganim.js" />
+    <Content Include="js\jquery.svganim.min.js" />
+    <Content Include="Scripts\jquery-2.1.4.js" />
+    <Content Include="Scripts\jquery-2.1.4.min.js" />
+    <Content Include="Scripts\jquery-ui-1.11.4.js" />
+    <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\rx.aggregates.min.js" />
+    <Content Include="Scripts\rx.compat.js" />
+    <Content Include="Scripts\rx.compat.min.js" />
+    <Content Include="Scripts\rx.js" />
+    <Content Include="Scripts\rx.lite.compat.js" />
+    <Content Include="Scripts\rx.lite.compat.min.js" />
+    <Content Include="Scripts\rx.lite.extras.js" />
+    <Content Include="Scripts\rx.lite.extras.min.js" />
+    <Content Include="Scripts\rx.lite.js" />
+    <Content Include="Scripts\rx.lite.min.js" />
+    <Content Include="Scripts\rx.min.js" />
     <Content Include="tool.html" />
     <Content Include="js\idd.js" />
     <Content Include="js\jquery.cookie.js" />
@@ -296,18 +311,10 @@
     <Content Include="preloaded\ToyModelStable.json" />
     <Content Include="preloaded\ToyModelUnstable.json" />
     <Content Include="preloaded\SkinModel.json" />
-    <Content Include="css\BMA_less.less" />
-    <Content Include="css\BMA_less.css.map">
-      <DependentUpon>BMA_less.css</DependentUpon>
-    </Content>
     <Content Include="css\fonts.less" />
     <Content Include="css\BMA-Styles.less" />
     <Content Include="css\BMA-Styles.css.map">
       <DependentUpon>BMA-Styles.css</DependentUpon>
-    </Content>
-    <Content Include="css\StyleSheet.less" />
-    <Content Include="css\StyleSheet.css.map">
-      <DependentUpon>StyleSheet.css</DependentUpon>
     </Content>
     <Content Include="css\fonts.css.map">
       <DependentUpon>fonts.css</DependentUpon>
@@ -326,6 +333,7 @@
     <Content Include="css\fonts\segoeuil.otf" />
     <Content Include="css\fonts\segoeuil.ttf" />
     <Content Include="css\fonts\segoeuil.woff" />
+    <Content Include="css\BMA-Styles-LTL.less" />
     <Content Include="css\website.less" />
     <Content Include="css\website.css.map">
       <DependentUpon>website.css</DependentUpon>
@@ -338,186 +346,86 @@
     <None Include="Properties\PublishProfiles\bmaclienttest2 - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest2 - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\bmaclienttest2.pubxml" />
-    <None Include="Scripts\jquery-2.1.1.intellisense.js" />
-    <Content Include="Scripts\jasmine-html.js" />
-    <Content Include="Scripts\jasmine.js" />
-    <Content Include="Scripts\jquery-2.1.1.js" />
-    <Content Include="Scripts\jquery-2.1.1.min.js" />
-    <Content Include="Scripts\jquery-ui-1.10.4.js" />
-    <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
-    <TypeScriptCompile Include="script\changeschecker.ts" />
-    <TypeScriptCompile Include="script\localRepository.ts" />
-    <TypeScriptCompile Include="script\ModelHelper.ts" />
-    <TypeScriptCompile Include="script\model\exportimport.ts" />
-    <TypeScriptCompile Include="script\model\visualsettings.ts" />
-    <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
-    <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
-    <TypeScriptCompile Include="script\presenters\localstoragepresenter.ts" />
-    <TypeScriptCompile Include="script\presenters\modelstoragepresenter.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
-    <TypeScriptCompile Include="script\commands.ts" />
-    <TypeScriptCompile Include="script\model\analytics.ts" />
-    <TypeScriptCompile Include="script\model\model.ts" />
-    <TypeScriptCompile Include="script\presenters\proofpresenter.ts" />
-    <TypeScriptCompile Include="script\presenters\simulationpresenter.ts" />
-    <TypeScriptCompile Include="script\presenters\undoredopresenter.ts" />
-    <TypeScriptCompile Include="script\SVGHelper.ts" />
-    <TypeScriptCompile Include="script\UserLog.ts" />
-    <TypeScriptCompile Include="script\widgets\bmaslider.ts" />
-    <TypeScriptCompile Include="script\widgets\coloredtableviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\containernameeditor.ts" />
-    <TypeScriptCompile Include="script\widgets\drawingsurface.ts" />
-    <TypeScriptCompile Include="script\widgets\accordeon.ts" />
-    <Content Include="Scripts\rx.aggregates.js" />
-    <Content Include="Scripts\rx.aggregates.min.js" />
-    <Content Include="Scripts\rx.binding.js" />
-    <Content Include="Scripts\rx.binding.min.js" />
-    <Content Include="Scripts\rx.coincidence.js" />
-    <Content Include="Scripts\rx.coincidence.min.js" />
-    <Content Include="Scripts\rx.compat.js" />
-    <Content Include="Scripts\rx.experimental.js" />
-    <Content Include="Scripts\rx.experimental.min.js" />
-    <Content Include="Scripts\rx.joinpatterns.js" />
-    <Content Include="Scripts\rx.joinpatterns.min.js" />
-    <Content Include="Scripts\rx.jquery.js" />
-    <Content Include="Scripts\rx.jquery.min.js" />
-    <Content Include="Scripts\rx.js" />
-    <Content Include="Scripts\rx.lite.compat.js" />
-    <Content Include="Scripts\rx.lite.compat.min.js" />
-    <Content Include="Scripts\rx.lite.js" />
-    <Content Include="Scripts\rx.lite.min.js" />
-    <Content Include="Scripts\rx.testing.js" />
-    <Content Include="Scripts\rx.testing.min.js" />
-    <Content Include="Scripts\rx.time.js" />
-    <Content Include="Scripts\rx.time.min.js" />
-    <Content Include="Scripts\rx.virtualtime.js" />
-    <Content Include="Scripts\rx.virtualtime.min.js" />
-    <Content Include="Scripts\x.compat.min.js" />
-    <Content Include="Scripts\x.min.js" />
     <Content Include="js\FileSaver.js" />
     <Content Include="js\idd.heatmapworker.js" />
     <Content Include="js\jquery.browser.min.js" />
     <Content Include="js\jquery.svg.js" />
     <Content Include="js\jquery.svg.min.js" />
     <Content Include="js\jquery.svgdom.min.js" />
-    <TypeScriptCompile Include="script\functionsregistry.ts" />
-    <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
-    <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
-    <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\simulationplot.ts" />
-    <TypeScriptCompile Include="script\widgets\simulationexpanded.ts" />
-    <TypeScriptCompile Include="script\widgets\simulationviewer.ts" />
-    <TypeScriptCompile Include="script\widgets\userdialog.ts" />
-    <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
-    <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
-    <Content Include="js\rx.jQuery.js" />
-    <Content Include="js\rx.js" />
-    <Content Include="js\scalablegridlinesplot.js" />
-    <Content Include="js\svgplot.js" />
-    <TypeScriptCompile Include="script\widgets\visibilitysettings.ts" />
-    <TypeScriptCompile Include="script\elementsregistry.ts" />
-    <TypeScriptCompile Include="script\presenters\presenters.ts" />
-    <TypeScriptCompile Include="script\uidrivers.interfaces.ts" />
-    <TypeScriptCompile Include="script\uidrivers.ts" />
-    <TypeScriptCompile Include="script\XmlModelParser.ts" />
-    <TypeScriptCompile Include="test\AccordionTest.ts" />
-    <TypeScriptCompile Include="test\AnalyticsTest.ts" />
-    <TypeScriptCompile Include="test\ExportImportTest.ts" />
-    <TypeScriptCompile Include="test\BiomodelTest.ts" />
-    <TypeScriptCompile Include="test\LocalStoragePresenterTest.ts" />
-    <TypeScriptCompile Include="test\LocalStorageWidgetTest.ts" />
-    <TypeScriptCompile Include="test\ModelHelperTests.ts" />
-    <TypeScriptCompile Include="test\TestComponents\BMA.TestComponents.ts" />
-    <TypeScriptCompile Include="test\TestComponents\BMATestDrivers.ts" />
-    <TypeScriptCompile Include="test\BMASliderTest.ts" />
-    <TypeScriptCompile Include="test\ColoredTableViewerTest.ts" />
-    <TypeScriptCompile Include="test\CommandTests.ts" />
-    <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
-    <TypeScriptCompile Include="test\ElementRegistryTest.ts" />
-    <TypeScriptCompile Include="test\FormulaValidationPresenterTest.ts" />
-    <TypeScriptCompile Include="test\FurtherTestingTest.ts" />
-    <TypeScriptCompile Include="test\DrawingSurfacePresenterTests.ts" />
-    <TypeScriptCompile Include="test\ModelTest.ts" />
-    <TypeScriptCompile Include="test\ProgressionTableTest.ts" />
-    <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
-    <TypeScriptCompile Include="test\ResultWindowViewerTest.ts" />
-    <TypeScriptCompile Include="test\SimulationPlotViewerTest.ts" />
-    <TypeScriptCompile Include="test\SimulationExpandedTest.ts" />
-    <TypeScriptCompile Include="test\SimulationViewerTest.ts" />
-    <TypeScriptCompile Include="test\UserDialogTest.ts" />
-    <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
-    <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
-    <TypeScriptCompile Include="test\XmlParserTests.ts" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="Scripts\rx.aggregates.d.ts" />
+    <TypeScriptCompile Include="Scripts\rx.lite.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
-    <TypeScriptCompile Include="script\model\biomodel.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Scripts\jquery-2.1.1.min.map" />
-    <Content Include="Chutzpah.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\FSharp 4.3.1.0\FSharp.Core.dll</HintPath>
+    <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\FSharp 4.4.0.0\FSharp.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\nuget\Microsoft.Data.Edm.5.6.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    <Reference Include="Microsoft.Data.Edm, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Microsoft.Data.Edm.5.7.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Data.OData, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\nuget\Microsoft.Data.OData.5.6.2\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    <Reference Include="Microsoft.Data.OData, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Microsoft.Data.OData.5.7.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\nuget\Microsoft.Data.Services.Client.5.6.2\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Microsoft.Data.Services.Client.5.7.0\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Practices.Unity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\nuget\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\nuget\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\nuget\Unity.3.5.1404.0\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+    <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\nuget\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Diagnostics, Version=2.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Microsoft.WindowsAzure.ConfigurationManager.3.1.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Diagnostics, Version=2.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=2.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Storage, Version=4.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\nuget\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=6.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\WindowsAzure.Storage.6.1.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\ext\nuget\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
+    <Reference Include="System.Globalization" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\nuget\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\nuget\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
+    <Reference Include="System.Spatial, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\System.Spatial.5.7.0\lib\net40\System.Spatial.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -528,13 +436,13 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Web.Http, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\nuget\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.Http.WebHost, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\nuget\Microsoft.AspNet.WebApi.WebHost.5.2.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
@@ -543,31 +451,20 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Unity.ServiceLocator, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\nuget\Unity.ServiceLocator.2.0.0\lib\net45\Unity.ServiceLocator.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Scripts\jquery-2.1.1.intellisense.js" />
-    <Content Include="Scripts\jquery-2.1.1.js" />
-    <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Silverlight.js" />
-    <Content Include="tool.js">
-      <DependentUpon>tool.js.bundle</DependentUpon>
-    </Content>
-    <Content Include="tool.min.js">
-      <DependentUpon>tool.js</DependentUpon>
-    </Content>
+    <Content Include="tool.js" />
     <Content Include="version.txt" />
-    <Content Include="videos\BMA-trailer.mp4" />
-    <Content Include="videos\BMA.mp4" />
     <Content Include="xmlParserTestPage.html" />
     <Content Include="serviceTestPage.html" />
-    <Content Include="test\data\2var_unstable.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Scripts\jquery-2.1.1.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -577,13 +474,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="videos\.QT-0d4a-d0f6841e-bffff608-00" />
-    <Content Include="tool.js.bundle">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="tool.min.js.map">
-      <DependentUpon>tool.min.js</DependentUpon>
-    </Content>
+    <Content Include="Scripts\jquery-2.1.4.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -595,24 +486,21 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Choose>
-    <When Condition="'$(Platform)'=='x64'">
-      <ItemGroup>
-        <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
-          <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
-          <Name>BioCheckAnalyzer64</Name>
-        </ProjectReference>
-      </ItemGroup>
-    </When>
-    <Otherwise>
+    <When Condition="'$(Platform)'=='x86'">
       <ItemGroup>
         <ProjectReference Include="..\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj">
           <Project>{27fcee47-ced8-4629-9989-7e9a490b090e}</Project>
           <Name>BioCheckAnalyzer32</Name>
         </ProjectReference>
       </ItemGroup>
-    </Otherwise>
+    </When>
+    <Otherwise />
   </Choose>
   <ItemGroup>
+    <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
+      <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
+      <Name>BioCheckAnalyzer64</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
       <Name>BioCheckAnalyzerCommon</Name>
@@ -632,6 +520,18 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptModuleKind>None</TypeScriptModuleKind>
+    <TypeScriptOutFile />
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+  </PropertyGroup>
   <Import Project="$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
@@ -653,6 +553,9 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>IF EXIST "$(TargetDir)stdole.dll" DEL "$(TargetDir)stdole.dll"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

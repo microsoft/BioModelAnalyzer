@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>LTL Results Viewer Sample</title>
+    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
+    <link rel="stylesheet" href="../Content/themes/base/jquery.ui.all.css" type="text/css" />
+    <link rel="stylesheet" href="../Content/themes/base/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
+    <link rel="stylesheet" href="../css/BMA_less.css" />
+    <link rel="stylesheet" href="../css/bma.css" />
+    <link rel="stylesheet" href="../css/LTLStates.css" />
+    <script src="../Scripts/jquery-2.1.4.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.11.4.min.js"></script>
+    <script src="js/jquery.svg.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../Scripts/rx.aggregates.min.js"></script>
+    <script src="../js/rx.jQuery.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../tool.js"></script>
+    <script src="../js/jquery.ui-contextmenu.js"></script>
+    <script src="../script/widgets/ltl/ltlresultsviewer.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            window.Commands = new BMA.CommandRegistry();
+
+            var GetRandomInt = function (min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            };
+
+            var getRandomColor = function () {
+                var r = GetRandomInt(0, 255);
+                var g = GetRandomInt(0, 255);
+                var b = GetRandomInt(0, 255);
+                return "rgb(" + r + ", " + g + ", " + b + ")";
+            };
+
+            var init = [];
+            var data = [];
+            var interval = [];
+            var vars = [];
+            var pData = [];
+
+            for (var j = 0; j < 30; j++) {
+                data.push([]);
+            }
+
+            for (var i = 0; i < 20; i++) {
+
+                init.push(i);
+                interval.push([0, 1]);
+
+                var plotData = [];
+                for (var j = 0; j < 30; j++) {
+                    var d = Math.floor(Math.random() * 5);
+                    plotData.push(d);
+                    data[j].push(d);
+                }
+                var color = getRandomColor();
+                pData.push({
+                    Id: i,
+                    Color: color,
+                    Seen: true,
+                    Plot: plotData,
+                    Init: i,
+                    Name: "var" + i,
+                });
+
+                vars.push([color, true, "var" + i, 0, 1]);
+            }
+
+            pData[5].Seen = false;
+            vars[5][1] = false;
+
+            //$("#ltlresultsviewer").ltlresultsviewer();
+
+            $("#ltlresultsviewer").ltlresultsviewer({
+                interval: interval,
+                data: data,
+                init: init,
+                variables: vars,
+                //colors: pData,
+            });
+
+            //$("#coloredTable").coloredtableviewer({
+            //    header: ["Graph", "Name", "Range"],
+            //    type: "graph-max",
+            //    numericData: vars
+            //});
+            //$("#progressionTable").progressiontable({
+            //    data: data,
+            //    init: init,
+            //    interval: interval,
+            //    canEditInitialValue: false
+            //});
+
+            //$("#simulationPlot").simulationplot({
+            //    colors: pData
+            //});
+        });
+
+    </script>
+</head>
+<body style="background-color: white;">
+
+    <div id="ltlresultsviewer" >
+        <!--<div id="coloredTable" class="small-simulation-popout-table"></div>
+        <div id="progressionTable" class="big-simulation-popout-table simulation-progression-table-container"></div>
+        <div class="ltl-simplot-container">
+            <div id="simulationPlot" class="ltl-results"></div>
+        </div>-->
+    </div>
+</body>
+</html>

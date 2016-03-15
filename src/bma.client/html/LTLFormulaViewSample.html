@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>LTL Formula View Sample</title>
+
+    <link rel="stylesheet" href="../Content/themes/base/jquery.ui.all.css" type="text/css" />
+    <link rel="stylesheet" href="../Content/themes/base/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="../css/jquery.svg.css" type="text/css" />
+    <link rel="stylesheet" href="../css/idd.css" type="text/css" />
+    <link rel="stylesheet" href="../css/BMA_less.min.css" type="text/css" />
+    <link rel="stylesheet" href="../css/StyleSheet.min.css" type="text/css" />
+    <link rel="stylesheet" href="../css/LTL_less.min.css" type="text/css" />
+    <link rel="stylesheet" href="../css/fonts.min.css" type="text/css" />
+    <script src="../Scripts/jquery-2.1.1.min.js"></script>
+    <script src="../js/jquery.browser.min.js"></script>
+    <script src="../js/jquery.cookie.js"></script>
+    <script src="../Scripts/jquery-ui-1.10.4.min.js"></script>
+    <script src="../js/jquery.svg.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../Scripts/rx.aggregates.min.js"></script>
+    <script src="../js/rx.jQuery.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../js/taphold.js"></script>
+    <script src="../tool.js"></script>
+    <script src="../js/jquery.ui-contextmenu.js"></script>
+    <!--<script src="../app.js"></script>-->
+
+    <script>
+
+        $(document).ready(function () {
+            //Creating CommandRegistry
+            window.Commands = new BMA.CommandRegistry();
+
+            //Loading widgets
+            $("#tpeditor").temporalpropertieseditor();
+            $("#tpviewer").temporalpropertiesviewer();
+
+            //Loading Drivers
+            var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver($("#tpeditor").temporalpropertieseditor("getDrawingSurface"));
+            var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#tpeditor").temporalpropertieseditor("getContextMenuPanel"));
+
+            //Loading Presenters
+            var statesPresenter = new BMA.LTL.StatesPresenter();
+            var tpPresenter = new BMA.LTL.TemporalPropertiesPresenter(window.Commands, svgPlotDriver, svgPlotDriver, svgPlotDriver, contextMenuDriver, statesPresenter);
+
+            window.Commands.On("TemporalPropertiesOperationsChanged", function (args) {
+                $("#tpviewer").temporalpropertiesviewer({ operations: args.operations });
+            });
+        });
+    </script>
+</head>
+<body style="margin: 0;">
+    <div id="tpeditor" style="width: 800px; height: 600px; overflow: hidden;"></div>
+    <div id="tpviewer"></div>
+</body>
+</html>

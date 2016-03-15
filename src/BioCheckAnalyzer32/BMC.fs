@@ -135,7 +135,7 @@ let change_to_right_length (simulation : Map<QN.var, int> list) (loop : int) (de
         let rec extend_length curr_simulation extend_by index =
             if extend_by = 0 then curr_simulation
             else
-                extend_length (List.append curr_simulation ([ List.item index curr_simulation ])) (extend_by-1) (index+1)
+                extend_length (List.append curr_simulation ([ List.nth curr_simulation index ])) (extend_by-1) (index+1)
         ((extend_length simulation (desired_length - simulation.Length) loop) , (loop + desired_length - simulation.Length))
     else // desired_length = simulation.Length
         (simulation, loop)
@@ -229,7 +229,9 @@ let BoundedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int lis
 
     ctx.Push()
     // 6. Model check negative
-    let (the_result2,the_model2) = 
+    
+
+    let negative = //(the_model2,the_result2) = 
         if (check_both) then 
             EncodingForFormula.assert_top_most_formula ltl_formula ctx list_of_maps.Head false
             let start_time2 = System.DateTime.Now
@@ -245,13 +247,13 @@ let BoundedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int lis
                     (false, (0,Map.empty))
 
             if (!model2) <> null then (!model2).Dispose()
-            (in_result2, in_model2)
+            Some(in_result2, in_model2)
         else 
-            (false,(0,Map.empty))
+            None//(false,(0,Map.empty))
     ctx.Pop()
 
     ctx.Pop()
     ctx.Dispose()
     cfg.Dispose()
 
-    (the_result1,the_model1,the_result2,the_model2)
+    (the_result1,the_model1,negative)

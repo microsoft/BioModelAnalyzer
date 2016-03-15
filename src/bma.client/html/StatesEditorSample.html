@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>States Editor Sample</title>
+    <link rel="stylesheet" href="../Content/themes/base/jquery.ui.all.css" type="text/css" />
+    <link rel="stylesheet" href="../Content/themes/base/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
+    <link rel="stylesheet" href="../css/LTLStates.css" />
+    <script src="../Scripts/jquery-2.1.4.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.11.4.min.js"></script>
+    <script src="js/jquery.svg.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../Scripts/rx.aggregates.min.js"></script>
+    <script src="../js/rx.jQuery.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../tool.js"></script>
+    <script src="../js/jquery.ui-contextmenu.js"></script>
+    <script src="C:/Users/Sveta/Source/Repos/biomodelanalyzer/src/bma.package/script/widgets/ltl/stateseditor2.js"></script>
+    <!--<style>
+        h2 {
+            margin: 30px 0 0 0;
+        }
+
+        fieldset {
+            border: 0;
+        }
+
+        label {
+            display: block;
+        }
+
+        select {
+            width: 200px;
+        }
+
+
+
+        /* select with custom icons */
+
+        .ui-selectmenu-menu .ui-menu.customicons .ui-menu-item {
+            padding: 0.5em 0 0.5em 3em;
+        }
+
+            .ui-selectmenu-menu .ui-menu.customicons .ui-menu-item .ui-icon {
+                height: 24px;
+                width: 24px;
+                top: 0.1em;
+            }
+
+        .ui-icon.video {
+            background: url("images/24-video-square.png") 0 0 no-repeat;
+        }
+
+        .ui-icon.podcast {
+            background: url("images/24-podcast-square.png") 0 0 no-repeat;
+        }
+
+        .ui-icon.rss {
+            background: url("images/24-rss-square.png") 0 0 no-repeat;
+        }
+
+
+
+        /* select with CSS avatar icons */
+
+        option.avatar {
+            background-repeat: no-repeat !important;
+            padding-left: 20px;
+        }
+
+        .avatar .ui-icon {
+            background-position: left top;
+        }
+    </style>-->
+
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            
+                //$.widget("custom.iconselectmenu", $.ui.selectmenu, {
+
+                //    _renderItem: function (ul, item) {
+                //        var li = $("<li>", { text: item.label });
+
+                //        if (item.disabled) {
+                //            li.addClass("ui-state-disabled");
+                //        }
+
+                //        $("<span>", {
+                //            style: item.element.attr("data-style"),
+                //            "class": "ui-icon " + item.element.attr("data-class")
+                //        }).appendTo(li);
+
+                //        return li.appendTo(ul);
+                //    },
+                    
+                //    _renderMenu: function (ul, item) {
+
+                //    }
+                //});
+
+            window.Commands = new BMA.CommandRegistry();
+            window.KeyframesRegistry = new BMA.Keyframes.KeyframesRegistry("../images");
+
+            $("#LTL_states").stateseditor2();
+            //$("#speed").iconselectmenu();
+        });
+
+    </script>
+</head>
+<body>
+    <div id="LTL_states"></div>
+    <!--<form action="#">
+
+        <h2>Selectmenu with framework icons</h2>
+
+        <fieldset>
+
+            <label for="filesA">Select a File:</label>
+
+            <select name="filesA" id="filesA">
+
+                <option value="jquery" data-class="ui-icon-script">jQuery.js</option>
+
+                <option value="jquerylogo" data-class="ui-icon-image">jQuery Logo</option>
+
+                <option value="jqueryui" data-class="ui-icon-script">ui.jQuery.js</option>
+
+                <option value="jqueryuilogo" selected="selected" data-class="ui-icon-image">jQuery UI Logo</option>
+
+                <option value="somefile" disabled="disabled" data-class="ui-icon-help">Some unknown file</option>
+
+            </select>
+
+        </fieldset>
+
+     </form>-->
+
+</body>
+</html>

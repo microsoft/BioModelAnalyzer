@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
+    <script src="../Scripts/jquery-2.1.4.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.11.4.js"></script>
+    <script src="../js/jquery.svg.min.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../tool.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var element = $("#content");
+
+            //var initIDD = function () {
+            //    element.empty();
+
+            //    var chartdiv = $('<div id="chart"></div>')
+            //        .attr("data-idd-plot", "figure")
+            //        .width("70%")
+            //        .height('100%')
+            //        .css("float", "left")
+            //        .appendTo(element);
+            //    var legendDiv = $('<div></div>').addClass("simulationplot-legend-legendcontainer").appendTo(element);
+
+            //    var gridLinesPlotDiv = $("<div></div>")
+            //        .attr("id", "glPlot")
+            //        .attr("data-idd-plot", "scalableGridLines")
+            //        .appendTo(chartdiv);
+
+
+            //        var rectsPlotDiv = $("<div></div>")
+            //            .attr("id", "rectsPlot")
+            //            .attr("data-idd-plot", "rectsPlot")
+            //            .appendTo(chartdiv);
+
+            //    var _chart = InteractiveDataDisplay.asPlot(chartdiv);
+
+            //    /*
+            //    //states markers on plot
+            //    if (that.options.labels !== undefined && that.options.labels !== null) {
+            //        that.rectsPlot = that._chart.get("rectsPlot");
+            //        var rects = [];
+            //        for (var i = 0; i < that.options.labels.length; i++)
+            //            rects.push({
+            //                x: that.options.labels[i].x, y: that.options.labels[i].y,
+            //                width: that.options.labels[i].width, height: that.options.labels[i].height,
+            //                fill: i % 2 == 0 ? "gray" : "lightgray",
+            //                opacity: 0.5,
+            //                labels: that.options.labels[i].text
+            //            });
+            //        that.rectsPlot.draw({ rects: rects });
+            //    }
+            //    */
+
+            //    var colors = [];
+
+            //        for (var i = 0; i < colors.length; i++) {
+            //            var plotName = "plot" + i;
+            //            _chart.polyline(plotName, undefined);
+            //        }
+
+            //        _chart.isAutoFitEnabled = true;
+            //        var _gridLinesPlot = _chart.get(gridLinesPlotDiv[0]);
+            //        _gridLinesPlot.x0 = 0;
+            //        _gridLinesPlot.y0 = 0;
+            //        _gridLinesPlot.xStep = 1;
+            //        _gridLinesPlot.yStep = 1;
+            //        var bottomLabels = [];
+            //        var leftLabels = [];
+            //        var max = 0;
+
+            //        /*
+            //        if (options.colors !== undefined) {
+            //            for (var i = 0; i < options.colors.length; i++) {
+            //                var y = options.colors[i].Plot;
+            //                var m = that.Max(y);
+            //                if (m > max) max = m;
+            //                var plotName = "plot" + i;
+            //                var polyline = that._chart.get(plotName);
+            //                if (polyline !== undefined) {
+            //                    polyline.stroke = options.colors[i].Color;
+            //                    polyline.isVisible = options.colors[i].Seen;
+            //                    polyline.draw({ y: y, thickness: 4, lineJoin: 'round' });
+            //                }
+
+
+            //                var legendItem = $("<div></div>").addClass("simulationplot-legend-legenditem").attr("data-index", i).appendTo(legendDiv);
+            //                if (!options.colors[i].Seen) legendItem.hide();
+            //                var colorBoxContainer = $("<div></div>").addClass("simulationplot-legend-colorboxcontainer").appendTo(legendItem);
+            //                var colorBox = $("<div></div>").addClass("simulationplot-legend-colorbox").css("background-color", options.colors[i].Color).appendTo(colorBoxContainer);
+            //                var nameBox = $("<div></div>").text(options.colors[i].Name).addClass("simulationplot-legend-namebox").appendTo(legendItem);
+
+            //                legendItem.hover(
+            //                    function () {
+            //                        var index = parseInt($(this).attr("data-index"));
+            //                        var p = that.highlightPlot;
+            //                        if (p !== undefined) {
+            //                            p.stroke = options.colors[index].Color;
+            //                            p.isVisible = true;
+            //                            p.draw({ y: options.colors[index].Plot, thickness: 8, lineJoin: 'round' });
+
+            //                            for (var i = 0; i < options.colors.length; i++) {
+            //                                var plotName = "plot" + i;
+            //                                var polyline = that._chart.get(plotName);
+            //                                if (polyline !== undefined) {
+            //                                    polyline.stroke = "lightgray";
+            //                                }
+            //                            }
+            //                        }
+            //                    },
+            //                    function () {
+            //                        var p = that.highlightPlot;
+            //                        if (p !== undefined) {
+            //                            p.isVisible = false;
+
+            //                            for (var i = 0; i < options.colors.length; i++) {
+            //                                var plotName = "plot" + i;
+            //                                var polyline = that._chart.get(plotName);
+            //                                if (polyline !== undefined) {
+            //                                    polyline.stroke = options.colors[i].Color;
+            //                                }
+            //                            }
+            //                        }
+            //                    });
+
+            //            }
+            //            for (var i = 0; i < options.colors[0].Plot.length; i++) {
+            //                bottomLabels[i] = i.toString();
+            //            }
+            //            for (var i = 0; i < max + 1; i++) {
+            //                leftLabels[i] = i.toString();
+            //            }
+            //        }
+            //        */
+
+            //        this.highlightPlot = _chart.polyline("_hightlightPlot", undefined);
+
+            //        var bottomAxis = _chart.addAxis("bottom", "labels", { labels: bottomLabels });
+            //        var leftAxis = _chart.addAxis("left", "labels", { labels: leftLabels });
+            //        var bounds = _chart.aggregateBounds();
+            //        bounds.bounds.height += 0.04; // padding
+            //        bounds.bounds.y -= 0.02;      // padding
+            //        _chart.navigation.setVisibleRect(bounds.bounds, false);
+
+            //        _chart.centralPart.mousedown(function (e) {
+            //            e.stopPropagation();
+            //        });
+
+            //        bottomAxis.mousedown(function (e) {
+            //            e.stopPropagation();
+            //        });
+
+            //        leftAxis.mousedown(function (e) {
+            //            e.stopPropagation();
+            //        });
+
+            //        var gestureSource = InteractiveDataDisplay.Gestures.getGesturesStream(_chart.centralPart);
+            //        var bottomAxisGestures = InteractiveDataDisplay.Gestures.applyHorizontalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(bottomAxis));
+            //        var leftAxisGestures = InteractiveDataDisplay.Gestures.applyVerticalBehavior(InteractiveDataDisplay.Gestures.getGesturesStream(leftAxis));
+            //        _chart.navigation.gestureSource = gestureSource.merge(bottomAxisGestures.merge(leftAxisGestures));
+
+            //}
+
+            //initIDD();
+
+            var refresh = function () {
+                var colors = [];
+                for (var i = 0; i < 10; i++) {
+                    var data = [];
+                    for (var j = 0; j < 10; j++) {
+                        data.push(Math.random() * 10 + 1);
+                    }
+
+                    colors.push({
+                        Color: "blue",
+                        Seen: true,
+                        Plot: data
+                    });
+                }
+
+                element.simulationplot({ colors: colors });
+
+            }
+
+            refresh();
+
+            $("#refresh").click(function () {
+                refresh();
+            });
+
+            var stop = false;
+
+            $("#start").click(function () {
+                stop = true;
+
+                var stepFunc = function () {
+                    setTimeout(function () {
+                        refresh();
+                        if (stop)
+                            stepFunc();
+                    }, 400);
+                }
+
+                while (stop) {
+                    refresh();
+                }
+            });
+
+            $("#stop").click(function () {
+                stop = false;
+            });
+        });
+    </script>
+
+</head>
+<body>
+    <div id="content" style="width:800px;height:600px;"></div>
+    <button id="refresh">REFRESH</button>
+    <button id="start">START</button>
+    <button id="stop">STOP</button>
+</body>
+</html>

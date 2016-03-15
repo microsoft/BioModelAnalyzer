@@ -13,6 +13,10 @@ open Interface
 open System.Xml.Linq
 open System.Runtime.Serialization.Formatters.Binary
 
+open BioModelAnalyzer
+open Newtonsoft.Json
+open Newtonsoft.Json.Linq
+
 (*
 'Spherical E. coli' particle
 Particle('E',{x=0.<um>;y=0.<um>;z=0.<um>},{x=0.<um/second>;y=0.<um/second>;z=0.<um/second>},{x=1.;y=0.;z=0.}, 0.000000005<second>, 1.,  0.7<um>, 1.3<pg um^-3>, false)
@@ -567,6 +571,39 @@ let xmlTopRead (filename: string) =
     //let interfaceTopology = (machName,regions,responses)
     let intTop = {name=machName;regions=regions;clocks=clocks;responses=responses;randomMotors=motors}
     (pTypes,nbTypes,(machName,machI0),intTop,(sOrigin,maxMove),rp,rng)
+
+let addVariableNames (model : Model) (layout : Model) =
+    let findVariableName id (model : Model) =
+        let vars = model.Variables
+        let v = Array.find (fun (v : Model.Variable) -> v.Id = id) vars
+        v.Name
+
+    let addNameToVariable (var : Model.Variable) (name : string) =
+        let mutable copy = var
+        copy.Name <- name
+        copy
+
+    let addNameToVariables (vars : Model.Variable []) =
+        Array.map (fun (var : Model.Variable) -> addNameToVariable var (findVariableName var.Id layout)) vars
+
+    let mutable copy = model
+    copy.Variables <- addNameToVariables model.Variables
+    copy
+
+//
+// QN parsing and printing
+//
+let bmaRead model_fname = 
+    // Read file
+    let jobj = JObject.Parse(System.IO.File.ReadAllText(model_fname))
+    // Extract model from json
+    let model = (jobj.["Model"] :?> JObject).ToObject<Model>()
+    let layout = (jobj.["Layout"] :?> JObject).ToObject<Model>()  
+             
+    let model = addVariableNames model layout
+    // model to QN
+    let qn = Marshal.QN_of_Model model
+    qn
     
-let bmaRead (filename:string) = 
-    Marshal.model_of_xml (XDocument.Load filename)
+//let bmaRead (filename:string) = 
+//    Marshal.model_of_xml (XDocument.Load filename)

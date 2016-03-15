@@ -177,7 +177,7 @@ let print_in_order(formula : LTLFormulaType) =
     Log.log_debug string_res
 
 // parsers
-let string_to_LTL_formula (s : string) (network) (varbyid : bool) = 
+let string_to_LTL_formula (s : string) (network : QN.node list) (varbyid : bool) = 
     let until = "Until"
     let wuntil = "Weakuntil"
     let release = "Release"
@@ -281,27 +281,22 @@ let string_to_LTL_formula (s : string) (network) (varbyid : bool) =
             let first_space = substring.IndexOf(" ")
             // Strips out antideath in (> antideath 2)
             let var_name_str = substring.Substring(0, first_space)
-            let var_number = 
+            let var_number =
                 match System.Int32.TryParse var_name_str with
                 | true, n -> n
-                | failse, _ -> -1
-            // Variable names are matched to QN node names: Loop through all variable names and check against the formula variable name
-            let match_name_function (n : QN.node) = n.name = var_name_str
-            let match_id_function (n : QN.node) = n.number = var_number
+                | false, _ -> -1
             // Strips out 2 in (> antideath 2) 
             let value_string = substring.Substring(first_space + 1, substring.Length - first_space - 1)
-            if (not varbyid && ((List.exists match_name_function network) &&  
-               (value_string.IndexOfAny(non_digit.ToCharArray()) <= 0))) then
-                let var = List.find match_name_function network 
-                let value = (int) value_string
-                (var,value)
-            elif (varbyid && ((List.exists match_id_function network) && 
-                (value_string.IndexOfAny(non_digit.ToCharArray()) <= 0))) then
-                let var = List.find match_id_function network
-                let value = (int) value_string
-                (var, value)
-            else
-                (network.Head , -1)
+            let notFound = (network.Head , -1)
+            let findVar = match varbyid with
+                          | true -> fun (n : QN.node) -> n.var = var_number
+                          | false -> fun (n : QN.node) -> n.name = var_name_str
+            match System.Int32.TryParse value_string with
+            | true, value -> 
+                match List.tryFind findVar network with
+                | Some(var) -> (var,value)
+                | None -> notFound
+            | false, _ -> notFound
                              
         let analyze_two_operands (length_of_keyword : int) (s: string) (location : int list) =
             let substring = s.Substring((length_of_keyword + 1), (s.Length - length_of_keyword - 1))

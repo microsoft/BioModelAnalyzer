@@ -1427,132 +1427,6 @@
 			}
 		}
 
-	// LTL windows
-		// LTL States Editor
-		.window.LTL-states{
-			width:340px;
-			padding:0px 0px 10px 0px;
-			.window-title{
-				padding: 10px 0px 0px 10px;
-			}
-		}
-
-		.state-description{
-			margin: 10px 0px 0px 10px;
-			width:80%;
-		}
-
-		.state-buttons{
-			margin-left: 5px;
-			.state-button{
-				display:inline-block;
-				margin:5px 0px 10px 5px;
-				font-family: 'Segoe-UI-Light';
-				font-size: 20px;
-				line-height:25px;
-				width:30px;
-				height:30px;
-				text-align: center;
-				border-radius: 100px;
-				background-color: white;
-				color: @darkgrey;
-				border: 1px solid @darkgrey;
-				&.new{
-					color: @lightgrey;
-					border: 1px solid @lightgrey;
-					&:hover{
-						color: @midgrey;
-						border: 1px solid @midgrey;
-						cursor: pointer;
-					}
-				}
-			}
-		}
-		
-		.state-toolbar{
-			background-color: @midgrey;
-			padding: 5px 5px 0px 10px;
-
-			.state-tool{
-				display: inline-block;
-				width:30px;
-				height: 30px;
-				background-color: white;
-				margin: 0px 5px 0px 0px;
-				img{
-					padding:0px;
-					margin:0px;
-				}
-			}
-		}
-
-		.LTL-states{
-			padding:0px;
-			margin:0px;
-			background-color:white;
-			table{
-				border-collapse: collapse;
-				font-family: 'Segoe-UI-Light';
-				font-size: 40px;
-				margin:10px;
-
-				tr{
-					margin:0px;
-					td{
-						border: 1px solid @midgrey;
-						text-align: center;
-						margin:0px;
-						padding:0px 5px;
-						.default-cell(){
-							width: 55px;
-							height: 55px;
-							padding: 0px;
-
-							}
-						
-						&.variable{
-							.default-text();
-							max-width:70px;
-							padding: 0px 5px;
-							text-align: left;
-							white-space: nowrap;
-							overflow: hidden;
-							text-overflow: ellipsis;
-							img{
-								height: 35px;
-							}
-						}
-						
-						&:empty{
-							.default-cell();
-							padding:0px;
-						}
-						&.LTL-line-del{
-							.default-cell();
-							border: none;
-							img{
-								max-width: 25px;
-							}
-							&:hover{
-								cursor: pointer;
-							}
-						}
-						&.LTL-line-new{
-							.default-cell();
-							line-height: 47px;
-							padding-bottom: 8px;
-							border: 1px solid @lightgrey;
-							color: @lightgrey;
-							&:hover{
-								color: @midgrey;
-								border: 1px solid @midgrey;
-								cursor: pointer;
-							}
-						}
-					}
-				}
-			}
-		}
 
 /* File I/O Tab */
 /* 
@@ -1667,7 +1541,7 @@
 /* Footer */  // THIS CAN BE NESTED: bma-footer > bma-logo + link-container + msr-logo
 
 	@footer-height: 40px;
-	@width: 300px; // Link Container width
+	@width: 300px; // Link Container width 
 
 	.bma-footer {
 	    height: @footer-height;

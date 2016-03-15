@@ -28,7 +28,7 @@
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>x64</PlatformTarget>
     <DocumentationFile>bin\Debug\BioCheckConsole.XML</DocumentationFile>
-    <StartArguments>-model Skin1D.json  -engine VMCAI -log</StartArguments>
+    <StartArguments>-model model8.json -engine VMCAI -prove model8output.json</StartArguments>
     <StartWorkingDirectory>
     </StartWorkingDirectory>
   </PropertyGroup>
@@ -39,7 +39,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Release\BioCheckConsole.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
@@ -54,7 +54,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\BioCheckConsole.XML</DocumentationFile>
-    <StartArguments>-model Skin1D.json  -engine VMCAI -log</StartArguments>
+    <StartArguments>-model model8.json -engine VMCAI -prove model8output.json</StartArguments>
     <StartWorkingDirectory />
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
@@ -94,7 +94,7 @@
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\ext\nuget\Newtonsoft.Json.6.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\ext\nuget\Newtonsoft.Json.8.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

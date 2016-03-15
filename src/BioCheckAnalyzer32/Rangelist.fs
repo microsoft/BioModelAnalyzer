@@ -7,7 +7,7 @@ open Expr
 // Assign the constants fixed value instead of [0, N]
 let nuRange network = List.fold (fun range (x:QN.node) -> 
                                     match x.f with 
-                                    | Const c -> Map.add x.var (c, c) range
+                                    //| Const c -> Map.add x.var (c, c) range
                                     | _ -> Map.add x.var x.range range) Map.empty network
 
 // Also treat the possible values of each variable as a list instead of a pair
@@ -17,7 +17,7 @@ let nuRange network = List.fold (fun range (x:QN.node) ->
 // at time t+1, if its possible values become [0, 2], then we cannot describe it as a pair anymore.
 let nuRangel network = List.fold (fun range (x:QN.node) -> 
                                     match x.f with 
-                                    | Const c -> Map.add x.var [c .. c] range
+                                    //| Const c -> Map.add x.var [c .. c] range
                                     | _ -> 
                                         let min,max = x.range
                                         Map.add x.var [min .. max] range) Map.empty network

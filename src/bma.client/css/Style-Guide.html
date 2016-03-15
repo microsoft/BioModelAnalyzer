@@ -4,6 +4,7 @@
 		<meta charset="utf-8"/>
 		<link href="partials/X-rayHTML.css" rel="stylesheet">
 		<link rel="stylesheet" href="BMA-Styles.css">
+		<link rel="stylesheet" href="BMA-Styles-LTL.css">
 		<link href="partials/prism.css" rel="stylesheet" />
 		
 	</head>
@@ -34,6 +35,7 @@
 		<ul>
 			<li><a href="#proof-analysis">Proof Analysis</a></li>
 			<li><a href="#simulation">Simulation Analysis</a></li>
+			<li><a href="#LTL">LTL</a></li>
 		</ul>
 </div>
 
@@ -3250,63 +3252,30 @@ Variables Table</p>
 <div class="snippet">
 <div class="window LTL-states">
 <div class="window-title">LTL States</div>
-	<div class="state-buttons">
+	
+	<div class="state-toolbar">
+		<div class="state-buttons">
 		<div class="state-button">A</div>
 		<div class="state-button active">B</div>
 		<div class="state-button new">+</div>
 	</div>
-	<div class="state-toolbar">
-		<div class="state-tool">
-			<img src="../images/LTL-state-tool-var.svg" alt="">
-		</div>
-		<div class="state-tool">
-			<img src="../images/LTL-state-tool-num.svg" alt="">
-		</div>
-		<div class="state-tool">
-			<img src="../images/LTL-state-tool-equ.svg" alt="">
-		</div>
-		<div class="state-tool">
-			<img src="../images/LTL-state-tool-gre.svg" alt="">
-		</div>
-		<div class="state-tool">
-			<img src="../images/LTL-state-tool-les.svg" alt="">
-		</div>
-		<div class="state-tool">
-			<img src="../images/LTL-state-tool-greq.svg" alt="">
-		</div>
-		<div class="state-tool">
-			<img src="../images/LTL-state-tool-lesq.svg" alt="">
-		</div>
+
 	</div>
 	<input class="state-description" type="text" size="15" placeholder="Description">
-	<div class="LTL-states">
+	<div class="LTL-state">
 			<table class="state-condition">
 				<tr>
-					<td class="variable"><img src="../images/state-variable.svg"/><br/>SEM 5</td>
-					<td>≤</td>
-					<td>5</td>
-					<td></td>
+					<td class="variable"><img src="../images/state-variable.svg"/><div class="arrow-down"></div></td>
+					<td>=<div class="arrow-down"></td>
 					<td></td>
 					<td class="LTL-line-del"><img src="../images/state-line-del.svg"/></td>
 				</tr>
 			</table>
 			<table class="state-condition">
 				<tr>
-					<td class="variable"><img src="../images/state-variable.svg"/><br/>NotchIC</td>
-					<td>&gt;</td>
+					<td class="variable"><img src="../images/state-container.svg"/> C1 <img src="../images/state-variable.svg"/> NotchIC <div class="arrow-down"></td>
+					<td>&gt;<div class="arrow-down"></td>
 					<td>2</td>
-					<td></td>
-					<td></td>
-					<td class="LTL-line-del"><img src="../images/state-line-del.svg"/></td>
-				</tr>
-			</table>
-			<table class="state-condition">
-				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
 					<td class="LTL-line-del"><img src="../images/state-line-del.svg"/></td>
 				</tr>
 			</table>
@@ -3322,6 +3291,421 @@ Variables Table</p>
 </div>
 </div>
 
+<p class="guide-text">Variable Editor</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="variable-picker">
+<table>
+	<tr>
+		<td><img src="../images/container.svg" alt=""></td>
+		<td><img src="../images/variable.svg" alt=""></td>
+	</tr>
+	<tr>
+		<td class="container list">
+		<div class="scrollable">
+		<a href="">ALL</a>
+		<a href="">C1</a>
+		<a href="" class="active">C2</a>
+		<a href="">C3</a>
+		<a href="">C4</a>
+		<a href="">C5</a>
+		<a href="">C6</a>
+		</div>
+		</td>
+		<td class="variable list">
+		<div class="scrollable">
+		<a href="">ALL</a>
+		<a href="">DSH</a>
+		<a href="" >Axin</a>
+		<a href="" class="active">Cask1a</a>
+		<a href="">Wnt</a>
+		<a href="">BCat exp</a>
+		<a href="">P21</a>
+		<a href="">NotchIC</a>
+		<a href="">GT1</a>
+		<a href="">GT2</a>
+		<a href="">Jagged</a>
+		</div>
+		</td>
+	</tr>
+</table>
+	
+</div>
+</div>
+</div>
+
+<p class="guide-text">State Tooltip</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="state-tooltip">
+Description text<br>
+<table>
+<tr>
+<td class="variable-name"><img src="../images/state-variable.svg"/><br/>SEM 5</td>
+<td>≤</td>
+<td>2</td>
+</tr>
+<tr>
+<td class="variable-name"><img src="../images/state-variable.svg"/><br/>Notch</td>
+<td>></td>
+<td>1</td>
+</tr>
+
+</table>
+	
+</div>
+</div>
+</div>
+
+<p class="guide-text">Temporal Properties Editor</p>
+<p class="bug-note">Please note the drop-zones at the bottom should appear only when the user is dragging a formula</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="window temporal-properties">
+<div class="window-title">Temporal Properties
+<div class="popout-icon">
+	<img src="../images/minimize.png">
+	</div></div>	
+
+<div class="temporal-toolbar">
+		
+			<div class="state-buttons">
+				States<br>
+				<div class="state-button">A</div>
+				<div class="state-button">B</div>
+				<div class="state-button">F</div>
+				<div class="state-button new">+</div>
+			</div>
+
+			<div class="state-buttons">
+			&nbsp;<br>
+				<div class="state-button"><img src="../images/oscillation-state.svg"></div>
+				<div class="state-button"><img src="../images/selfloop-state.svg"></div>
+				<div class="state-button"><img src="../images/true-state.svg"></div>
+			</div>
+
+			<div class="temporal-operators">
+				Operators<br>
+			<div class="operators">
+				<div class="operator">
+					<div class="hole"></div> 
+					<div class="label">UNTIL</div> 
+					<div class="hole"></div>
+				</div>
+				<div class="operator">
+					<div class="hole"></div>
+					<div class="label">AND</div>
+					<div class="hole"></div>
+				</div>
+				<div class="operator">
+					<div class="hole"></div>
+					<div class="label">OR</div>
+					<div class="hole"></div>
+				</div>
+				<div class="operator">
+					<div class="hole"></div>
+					<div class="label">NEXT</div>
+					<div class="hole"></div>
+				</div>
+				<br>
+				<div class="operator">
+					<div class="label">&nbsp;&nbsp;EVENTUALLY</div>
+					<div class="hole"></div>
+				</div>
+				<div class="operator">
+					<div class="label">&nbsp;&nbsp;ALWAYS</div>
+					<div class="hole"></div>
+				</div>
+				<div class="operator">
+					<div class="label">&nbsp;&nbsp;NOT</div>
+					<div class="hole"></div>
+				</div>
+				
+			</div>
+			</div>
+</div>
+<div class="fit-screen">
+	<img src="../images/screen-fit.svg">
+</div>
+
+<div class="temporal-dropzones">
+	<DIV class="dropzone copy">
+		<img src="../images/LTL-copy.svg" alt="">
+	</DIV>
+	<div class="dropzone delete">
+			<img src="../images/LTL-delete.svg" alt="">
+	</div>
+	
+</div>
+<div class="resize-grabber">
+	<img src="../images/resize-grabber.svg">
+</div>
+</div>
+
+
+</div>
+</div>
+
+<p class="guide-text">Basic Formula</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state"></div>
+ </div>
+</div>
+<ul class="button-list LTL-test">
+		<li class="action-button-small grey"><button>TEST</button></li>
+	</ul>
+
+</div>
+</div>
+
+<p class="guide-text">Basic Formula expanded</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state">
+   C 
+  </div>
+ </div>
+</div>
+<div class="LTL-test-results default">
+10 Steps
+<div class="pill-button-box">
+	<div class="pill-button"><button>-</button></div>
+	<div class="pill-button"><button>+</button></div>
+</div>
+<ul class="button-list">
+		<li class="action-button-small grey"><button>TEST</button></li>
+	</ul>
+</div>
+
+</div>
+</div>
+
+<p class="guide-text">ALL Simulations Found</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+
+<div class="pill true">
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   D
+  </div>
+ </div>
+</div>
+<div class="LTL-test-results true">
+	True for all traces<br>
+	12 steps <div class="pill-button-box">
+	<div class="pill-button"><button>-</button></div>
+	<div class="pill-button"><button>+</button></div>
+</div><br>
+	<ul class="button-list">
+		<li><button class="LTL-sim-true"><img src="../images/small-tick.svg"> example</button></li>
+	</ul>
+</div>
+</div>
+
+
+</div>
+
+<p class="guide-text">ALL Simulations Found Collapsed</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill true">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state">C</div>
+ </div>
+</div>
+<div class="closed-results true">
+12 steps<br>
+<ul class="button-list LTL-test">
+	<li class="action-button-small green"><button>TEST</button></li>
+</ul>
+</div>
+</div>
+</div>
+
+<p class="guide-text">NO Simulation Found</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+
+<div class="pill false">
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   D
+  </div>
+ </div>
+</div>
+<div class="LTL-test-results false">
+	No trace found<br>
+	12 steps <div class="pill-button-box">
+	<div class="pill-button"><button>-</button></div>
+	<div class="pill-button"><button>+</button></div>
+</div><br>
+	<ul class="button-list">
+		<li><button class="LTL-sim-false"><img src="../images/small-cross.svg"> example</button></li>
+	</ul>
+</div>
+</div>
+</div>
+
+<p class="guide-text">NO Simulation Found Collapsed</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill false">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state">D</div>
+ </div>
+</div>
+<div class="closed-results false">
+12 steps<br>
+	<ul class="button-list LTL-test">
+			<li class="action-button-small red"><button>TEST</button></li>
+		</ul>
+</div>
+</div>
+</div>
+
+<p class="guide-text">SOME Simulations Found</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+
+<div class="pill some">
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   D
+  </div>
+ </div>
+</div>
+<div class="LTL-test-results true">
+	True for some traces<br>
+	12 steps <div class="pill-button-box">
+	<div class="pill-button"><button>-</button></div>
+	<div class="pill-button"><button>+</button></div>
+</div><br>
+	<ul class="button-list">
+		<li><button class="LTL-sim-true"><img src="../images/small-tick.svg"> example</button></li>
+		<li><button class="LTL-sim-false"><img src="../images/small-cross.svg"> example</button></li>
+	</ul>
+</div>
+</div>
+</div>
+
+<p class="guide-text">SOME Simulations Found Collapsed</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+
+<div class="pill some">
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   D
+  </div>
+ </div>
+</div>
+<div class="closed-results true">
+12 steps<br>
+	<ul class="button-list LTL-test">
+			<li class="action-button-small green"><button>TEST</button></li>
+		</ul>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
 
 		
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>

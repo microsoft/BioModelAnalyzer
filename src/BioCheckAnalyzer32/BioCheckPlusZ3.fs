@@ -179,12 +179,12 @@ let constraint_for_valuation_of_vars_is_equivalent (range1 : VariableRange) time
         if range.Length = 1 then
             z.MkTrue()
         elif index=0 then
-            make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.item 0 range)) z
+            make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.nth range 0)) z
         elif index = (range.Length - 1) then
-            z.MkNot(make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.item prev_index range)) z)
+            z.MkNot(make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.nth range prev_index)) z)
         else
-            let z3_var = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.item index range)) z
-            let z3_var_prev = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.item prev_index range)) z
+            let z3_var = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.nth range index)) z
+            let z3_var_prev = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.nth range prev_index)) z
             z.MkAnd (z.MkNot(z3_var_prev), z3_var)
 
     let value_of_var_at_time_is_not_val varname time (range : int list) index prev_index = 
@@ -201,8 +201,8 @@ let constraint_for_valuation_of_vars_is_equivalent (range1 : VariableRange) time
         let mutable i2=0
         let mutable constraint_list = []
         while (i1<range1.Length && i2<range2.Length) do
-            let val1 = List.item i1 range1
-            let val2 = List.item i2 range2
+            let val1 = List.nth range1 i1
+            let val2 = List.nth range2 i2
             let new_constraint = 
                 if val1<val2 then
                     value_of_var_at_time_is_not_val varname time1 range1 i1 prev1

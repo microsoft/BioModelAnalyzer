@@ -14,6 +14,17 @@
             },
         });
 
+
+        this.computeLocalBounds = function () {
+            var _bbox = undefined;
+            if (_svg === undefined)
+                return undefined;
+            else {
+
+                return _bbox;
+            }
+        };
+
         var svgLoaded = function (svg) {
             _svg = svg;
 
@@ -161,7 +172,6 @@
             this.invalidateLocalBounds();
             InteractiveDataDisplay.RectsPlot.prototype.onDataTransformChanged.call(this, arg);
         };
-
 
     }
 

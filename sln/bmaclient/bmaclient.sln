@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F7B5A3D7-B82D-4906-940C-DED019A886BC}"
 	ProjectSection(SolutionItems) = preProject
@@ -11,6 +11,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{491D2994-4833-439D-8426-B0AA75EE0F08}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bma.client", "..\..\src\bma.client\bma.client.csproj", "{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{68A7F32F-0860-4688-8C82-C55196461E48} = {68A7F32F-0860-4688-8C82-C55196461E48}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioCheckAnalyzerCommon", "..\..\src\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj", "{61E37D4E-172B-45DD-9289-5C874A8320F0}"
 EndProject
@@ -32,6 +35,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BMAWebApi", "..\..\src\BMAW
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheckAnalyzer32", "..\..\src\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj", "{27FCEE47-CED8-4629-9989-7E9A490B090E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bma.package", "..\..\src\bma.package\bma.package.csproj", "{68A7F32F-0860-4688-8C82-C55196461E48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiServer", "..\..\src\ApiServer\ApiServer.csproj", "{8F8EE772-02FA-4623-B407-006FB7B9A314}"
+EndProject
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "ApiService", "..\..\src\ApiService\ApiService.ccproj", "{B955AFFF-9F2E-49E2-8E0F-11115A744A80}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,16 +53,13 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.Debug|x64.ActiveCfg = Debug|x64
-		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.Debug|x64.Build.0 = Debug|x64
+		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.nuget|Any CPU.ActiveCfg = Release|Any CPU
 		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.nuget|Any CPU.Build.0 = Release|Any CPU
-		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.nuget|x64.ActiveCfg = Release|x64
-		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.nuget|x64.Build.0 = Release|x64
+		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.nuget|x64.ActiveCfg = Release|Any CPU
 		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.Release|x64.ActiveCfg = Release|x64
-		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.Release|x64.Build.0 = Release|x64
+		{A314F5C8-D91B-4AC0-A9CE-22BD7696DBFF}.Release|x64.ActiveCfg = Release|Any CPU
 		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61E37D4E-172B-45DD-9289-5C874A8320F0}.Debug|x64.ActiveCfg = Debug|x64
@@ -172,6 +178,36 @@ Global
 		{27FCEE47-CED8-4629-9989-7E9A490B090E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{27FCEE47-CED8-4629-9989-7E9A490B090E}.Release|x64.ActiveCfg = Release|x64
 		{27FCEE47-CED8-4629-9989-7E9A490B090E}.Release|x64.Build.0 = Release|x64
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Debug|x64.Build.0 = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.nuget|Any CPU.ActiveCfg = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.nuget|Any CPU.Build.0 = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.nuget|x64.ActiveCfg = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.nuget|x64.Build.0 = Debug|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Release|x64.ActiveCfg = Release|Any CPU
+		{68A7F32F-0860-4688-8C82-C55196461E48}.Release|x64.Build.0 = Release|Any CPU
+		{8F8EE772-02FA-4623-B407-006FB7B9A314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F8EE772-02FA-4623-B407-006FB7B9A314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F8EE772-02FA-4623-B407-006FB7B9A314}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8F8EE772-02FA-4623-B407-006FB7B9A314}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{8F8EE772-02FA-4623-B407-006FB7B9A314}.nuget|Any CPU.Build.0 = Release|Any CPU
+		{8F8EE772-02FA-4623-B407-006FB7B9A314}.nuget|x64.ActiveCfg = Release|Any CPU
+		{8F8EE772-02FA-4623-B407-006FB7B9A314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F8EE772-02FA-4623-B407-006FB7B9A314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F8EE772-02FA-4623-B407-006FB7B9A314}.Release|x64.ActiveCfg = Release|Any CPU
+		{B955AFFF-9F2E-49E2-8E0F-11115A744A80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B955AFFF-9F2E-49E2-8E0F-11115A744A80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B955AFFF-9F2E-49E2-8E0F-11115A744A80}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B955AFFF-9F2E-49E2-8E0F-11115A744A80}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{B955AFFF-9F2E-49E2-8E0F-11115A744A80}.nuget|Any CPU.Build.0 = Release|Any CPU
+		{B955AFFF-9F2E-49E2-8E0F-11115A744A80}.nuget|x64.ActiveCfg = Release|Any CPU
+		{B955AFFF-9F2E-49E2-8E0F-11115A744A80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B955AFFF-9F2E-49E2-8E0F-11115A744A80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B955AFFF-9F2E-49E2-8E0F-11115A744A80}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
