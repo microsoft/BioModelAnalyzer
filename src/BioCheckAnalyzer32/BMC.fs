@@ -171,17 +171,6 @@ let DoubleBoundedMCWithSim (ltl_formula : LTLFormulaType) network (paths : Map<Q
     else
         (res, model, false, (0,Map.empty))
 
-//    if res then
-//        let (res1, model1) = (res, model)
-//        let (res2, model2) =
-//            if check_both then SingleSideBoundedMC ltl_formula network paths -1 false
-//           else (false, (0,Map.empty))
-//        (res1, model1, res2, model2)
-//    else
-//        let (res1, model1) = SingleSideBoundedMC ltl_formula network paths -1 true
-//        let (res2, model2) = (true, model)
-//        (res1, model1, res2, model2)
-
 let BoundedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int list> list) check_both =
     
     let cfg = new Config()

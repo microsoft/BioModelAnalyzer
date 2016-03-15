@@ -175,60 +175,53 @@ let constraint_for_valuation_of_vars_is_equivalent (range1 : VariableRange) time
         let r2 = Map.find variable range2
         (r1, r2)
 
-    let value_of_var_at_time_is_val varname time (range : int list) index prev_index = 
-        if range.Length = 1 then
-            z.MkTrue()
-        elif index=0 then
-            make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.nth range 0)) z
-        elif index = (range.Length - 1) then
-            z.MkNot(make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.nth range prev_index)) z)
-        else
-            let z3_var = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.nth range index)) z
-            let z3_var_prev = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time (List.nth range prev_index)) z
-            z.MkAnd (z.MkNot(z3_var_prev), z3_var)
+    let value_of_var_at_time_is_val varname time prev curr last = 
+        match prev with
+        | -1 -> if curr = last then z.MkTrue() 
+                else make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time curr) z
+        | _ -> if curr = last then z.MkNot(make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time prev) z)
+               else
+                    let z3_var = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time curr) z
+                    let z3_var_prev = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time prev) z
+                    z.MkAnd( z.MkNot(z3_var_prev), z3_var)
 
-    let value_of_var_at_time_is_not_val varname time (range : int list) index prev_index = 
-        z.MkNot(value_of_var_at_time_is_val varname time range index prev_index)
+    let value_of_var_at_time_is_not_val varname time prev curr last = 
+        z.MkNot(value_of_var_at_time_is_val varname time prev curr last)
 
-    let value_of_var_at_time_and_time_is_same varname time1 time2 range1 range2 index1 index2 prev_index1 prev_index2 =
-        z.MkIff((value_of_var_at_time_is_val varname time1 range1 index1 prev_index1), 
-                (value_of_var_at_time_is_val varname time2 range2 index2 prev_index2))
+    let value_of_var_at_time_and_time_is_same varname time1 time2 prev1 prev2 curr1 curr2 last1 last2 = 
+        z.MkIff((value_of_var_at_time_is_val varname time1 prev1 curr1 last1),
+                (value_of_var_at_time_is_val varname time2 prev2 curr2 last2))
 
     let pair_of_ranges_to_constraint_list (varname : var) ((range1 : int list), (range2 : int list)) =
-        let mutable prev1=0
-        let mutable prev2=0
-        let mutable i1=0
-        let mutable i2=0
-        let mutable constraint_list = []
-        while (i1<range1.Length && i2<range2.Length) do
-            let val1 = List.nth range1 i1
-            let val2 = List.nth range2 i2
-            let new_constraint = 
-                if val1<val2 then
-                    value_of_var_at_time_is_not_val varname time1 range1 i1 prev1
-                elif val2<val1 then
-                    value_of_var_at_time_is_not_val varname time2 range2 i2 prev2
-                else // val1=val2
-                    value_of_var_at_time_and_time_is_same varname time1 time2 range1 range2 i1 i2 prev1 prev2
-            constraint_list <- new_constraint::constraint_list
+        let rec annotate_with_prev list prev = 
+            match list with
+            | [] -> []
+            | x::xs -> (prev,x)::(annotate_with_prev xs x)
+        let range1wp = annotate_with_prev range1 -1
+        let range2wp = annotate_with_prev range2 -1
+        let last1 = List.nth range1 (range1.Length-1)
+        let last2 = List.nth range2 (range2.Length-1)
 
-            if (val1 <= val2 && i1 < range1.Length - 1) || 
-               (i2 = range2.Length - 1) then 
-                prev1 <- i1
-                i1 <- i1+1
-            
-            if (val2 <= val1 && i2 < range2.Length - 1) || 
-               (i1 = range1. Length - 1) then   
-                prev2 <- i2
-                i2 <- i2+1
-
-        constraint_list
+        let rec create_constraint_list list1 list2 = 
+            match list1 with
+            | [] -> List.map (fun (prev2,curr2) -> value_of_var_at_time_is_not_val varname time2 prev2 curr2 last2) list2
+            | (prev1,curr1)::xs -> match list2 with
+                                   | [] -> List.map (fun (prev1,curr1)-> value_of_var_at_time_is_not_val varname time1 prev1 curr1 last1) list1
+                                   | (prev2,curr2)::ys ->
+                                        if curr1<curr2 then 
+                                           let new_constraint = value_of_var_at_time_is_not_val varname time1 prev1 curr1 last1
+                                           (new_constraint::(create_constraint_list xs list2))
+                                        elif curr2<curr1 then 
+                                            let new_constraint = value_of_var_at_time_is_not_val varname time2 prev2 curr2 last2
+                                            (new_constraint::(create_constraint_list list1 ys))
+                                        else 
+                                            let new_constraint = value_of_var_at_time_and_time_is_same varname time1 time2 prev1 prev2 curr1 curr2 last1 last2 
+                                            (new_constraint::(create_constraint_list xs ys))
+        create_constraint_list range1wp range2wp
 
     let variables = List.map (fun (name, range) -> name) (Map.toList range1)
     let variable_ranges = List.map (fun name -> (var_ranges name)) variables
 
-    let add_list_to_list target_list source_list =
-        List.append target_list source_list
     let constraints_list_list = List.map2 (pair_of_ranges_to_constraint_list) variables variable_ranges
     let constraints_list = List.fold (fun target_list source_list -> List.append target_list source_list) ([]) constraints_list_list
     let final_constraint = List.fold (fun (t1 : Term) (t2 : Term) -> z.MkAnd(t1, t2)) (z.MkTrue()) constraints_list
