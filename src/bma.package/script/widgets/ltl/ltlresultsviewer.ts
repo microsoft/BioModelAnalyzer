@@ -41,9 +41,9 @@
                 that._variables.scrollTop($(this).scrollTop());
             });
 
-            this._variables.on('scroll', function () {
-                that._table.scrollTop($(this).scrollTop());
-            });
+            //this._variables.on('scroll', function () {
+            //    that._table.scrollTop($(this).scrollTop());
+            //});
 
             this._variables.css("max-height", 322 - scrollBarSize.height);
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
