@@ -465,6 +465,7 @@ module BMA {
                                     //staginOp.Tag = undefined;
                                     //}
 
+                                    that.navigationDriver.MoveDraggableOnTop();
                                     that.navigationDriver.TurnNavigation(false);
 
 
@@ -535,6 +536,8 @@ module BMA {
 
                     dragSubject.dragEnd.subscribe(
                         (gesture) => {
+                            that.navigationDriver.MoveDraggableOnBottom();
+
                             if (this.stagingOperation !== undefined) {
                                 that.navigationDriver.TurnNavigation(true);
                                 this.stagingOperation.operation.IsVisible = false;

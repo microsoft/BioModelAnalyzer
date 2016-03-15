@@ -4142,6 +4142,12 @@ var BMA;
             SVGPlotDriver.prototype.SetConstraintFunc = function (f) {
                 this.svgPlotDiv.drawingsurface("setConstraint", f);
             };
+            SVGPlotDriver.prototype.MoveDraggableOnTop = function () {
+                this.svgPlotDiv.drawingsurface("moveDraggableSvgOnTop");
+            };
+            SVGPlotDriver.prototype.MoveDraggableOnBottom = function () {
+                this.svgPlotDiv.drawingsurface("moveDraggableSvgOnBottom");
+            };
             return SVGPlotDriver;
         })();
         UIDrivers.SVGPlotDriver = SVGPlotDriver;
@@ -6096,6 +6102,7 @@ var BMA;
                     }
                 });
                 dragSubject.dragStart.subscribe(function (gesture) {
+                    navigationDriver.MoveDraggableOnTop();
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
                         var id = that.GetVariableAtPosition(gesture.x, gesture.y);
                         if (id !== undefined) {
@@ -6149,6 +6156,7 @@ var BMA;
                     }
                 });
                 dragSubject.dragEnd.subscribe(function (gesture) {
+                    navigationDriver.MoveDraggableOnBottom();
                     that.driver.DrawLayer2(undefined);
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor") && that.stagingLine !== undefined && that.stagingLine.x1 !== undefined) {
                         that.TryAddStagingLineAsLink();
@@ -9232,12 +9240,15 @@ var BMA;
                 drag: createPanSubject(that._plot.centralPart),
                 dragEnd: createDragEndSubject(that._plot.centralPart)
             };
+            /*
             this._dragService.dragStart.subscribe(function () {
                 svgPlotDiv2.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 10);
             });
+
             this._dragService.dragEnd.subscribe(function () {
                 svgPlotDiv2.css("z-index", '');
             });
+            */
             this._mouseMoves = Rx.Observable.fromEvent(that._plot.centralPart, "mousemove").select(function (mm) {
                 var cs = svgPlot.getScreenToDataTransform();
                 var x0 = cs.screenToDataX(mm.originalEvent.pageX - plotDiv.offset().left);
@@ -9463,7 +9474,13 @@ var BMA;
         },
         setConstraint: function (constraint) {
             this._plot.visibleRectConstraint = constraint;
-        }
+        },
+        moveDraggableSvgOnTop: function () {
+            this._lightSvgPlot.host.css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 10);
+        },
+        moveDraggableSvgOnBottom: function () {
+            this._lightSvgPlot.host.css("z-index", '');
+        },
     });
 }(jQuery));
 //# sourceMappingURL=drawingsurface.js.map
@@ -14388,6 +14405,7 @@ var BMA;
                                 //staginOp.AnalysisStatus = "nottested";
                                 //staginOp.Tag = undefined;
                                 //}
+                                that.navigationDriver.MoveDraggableOnTop();
                                 that.navigationDriver.TurnNavigation(false);
                                 //Can't drag parts of processing operations
                                 var picked = staginOp.PickOperation(gesture.x, gesture.y);
@@ -14443,6 +14461,7 @@ var BMA;
                         }
                     });
                     dragSubject.dragEnd.subscribe(function (gesture) {
+                        that.navigationDriver.MoveDraggableOnBottom();
                         if (_this.stagingOperation !== undefined) {
                             that.navigationDriver.TurnNavigation(true);
                             _this.stagingOperation.operation.IsVisible = false;
