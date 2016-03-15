@@ -49,6 +49,10 @@ namespace BMAWebApi
         public int FurtherTestingErrorCount { get; set; }
 
         public int ProofErrorCount { get; set; }
+
+        public int AnalyzeLTLCount { get; set; }
+
+        public int AnalyzeLTLErrorCount { get; set; }
     }
 
     public class ActivityAzureLogger
