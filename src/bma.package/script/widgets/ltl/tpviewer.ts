@@ -2,6 +2,7 @@
     $.widget("BMA.temporalpropertiesviewer", {
         _svg: undefined,
         _pixelOffset: 10,
+        _anims: [],
 
         options: {
             operations: [],
@@ -12,7 +13,7 @@
             var that = this;
             var root = this.element;
 
-            root.css("overflow-y", "auto").css("overflow-x", "auto");
+            root.css("overflow-y", "auto").css("overflow-x", "auto").css("position", "relative");
 
             this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
             $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
@@ -49,9 +50,9 @@
                 this._svg.clear();
 
                 var svg = this._svg;
-                var defs = svg.defs("bmaDefs");
+                var defs = svg.defs("ltlCompactBmaDefs");
 
-                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
+                var pattern = svg.pattern(defs, "pattern-stripe1", 0, 0, 8, 4, {
                     patternUnits: "userSpaceOnUse",
                     patternTransform: "rotate(45)"
                 });
@@ -60,9 +61,9 @@
                     fill: "white"
                 });
 
-                var mask = svg.mask(defs, "mask-stripe");
+                var mask = svg.mask(defs, "mask-stripe1");
                 svg.rect(mask, "-50%", "-50%", "100%", "100%", {
-                    fill: "url(#pattern-stripe)"
+                    fill: "url(#pattern-stripe1)"
                 });
 
                 var maxHeight = 25 * 4;
@@ -72,9 +73,15 @@
                 var height = this.options.padding.y;
                 var width = 0;
 
+                for (var i = 0; i < this._anims.length; i++) {
+                    this._anims[i].remove();
+                }
+                this._anims = [];
+
 
                 for (var i = 0; i < operations.length; i++) {
                     var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i].operation, { x: 0, y: 0 });
+                    opLayout.MaskUrl = "url(#mask-stripe1)";
                     opLayout.AnalysisStatus = operations[i].status;
                     var opbbox = opLayout.BoundingBox;
 
@@ -95,9 +102,10 @@
                             "fill": opLayout.AnalysisStatus === "fail" ? "rgb(254, 172, 158)" : "green"
                         });
                         opbbox.width += t.getBBox().width + 10;
-                    } else {
-                        //this._createWaitAnimation(opbbox.width + 10, opLayout.Position.y);
-                        //opbbox.width += 20;
+                    } else if (operations[i].status === "processing") {
+                        var anim = this._createWaitAnimation(opbbox.width + 10, opLayout.Position.y - 7);
+                        this._anims.push(anim);
+                        opbbox.width += 30;
                     }
 
                     height += opbbox.height + this.options.padding.y;
@@ -120,6 +128,16 @@
             }
         },
 
+        _createWaitAnimation: function (x, y) {
+            var snipperCnt = $('<div></div>').width(30).css("position", "absolute").css("top", y).css("left", x).appendTo(this.element);
+            var snipper = $('<div></div>').css("display", "inline-block").addClass('spinner').appendTo(snipperCnt);
+            for (var i = 1; i < 4; i++) {
+                $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+            }
+            return snipper;
+        },
+
+        /*
         _createWaitAnimation: function (x, y) {
 
             var x0 = x;
@@ -155,7 +173,7 @@
             }
             animate3();
         },
-
+        */
 
         _setOption: function (key, value) {
             var that = this;

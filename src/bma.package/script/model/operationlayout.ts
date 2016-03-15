@@ -15,6 +15,7 @@
             private status: string = "nottested";
             private tag: any = undefined;
             private useMask = false;
+            private mask = "url(#mask-stripe)";
 
             constructor(svg: any, operation: IOperand, position: { x: number; y: number }) {
                 this.svg = svg;
@@ -80,7 +81,7 @@
                         if (this.majorRect !== undefined) {
                             //mask: url(#mask-stripe)
                             this.svg.change(this.majorRect, {
-                                mask: "url(#mask-stripe)"
+                                mask: this.mask
                             });
                         }
 
@@ -101,6 +102,22 @@
 
             public set Tag(value: any) {
                 this.tag = value;
+            }
+
+            public get MaskUrl(): string {
+                return this.mask;
+            }
+
+            public set MaskUrl(value: string) {
+                if (this.mask !== value) {
+                    this.mask = value;
+
+                    if (this.majorRect !== undefined && this.status === "partialsuccess") {
+                        this.svg.change(this.majorRect, {
+                            mask: this.mask
+                        });
+                    }
+                }
             }
 
             public get IsOperation(): boolean {
@@ -555,7 +572,7 @@
 
                 this.majorRect = svg.rect(this.renderGroup, - halfWidth, - height / 2, halfWidth * 2, height, height / 2, height / 2, {
                     fill: this.fill === undefined ? "white" : this.fill,
-                    mask: this.useMask ? "url(#mask-stripe)" : undefined,
+                    mask: this.useMask ? this.mask : undefined,
                 });
 
                 this.RenderLayoutPart(svg, { x: 0, y: 0 }, this.layout, {

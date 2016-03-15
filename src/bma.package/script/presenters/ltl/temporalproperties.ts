@@ -1077,6 +1077,7 @@ module BMA {
 
                 driver.SetLTLRequestedCallback(() => {
                     that.PerformLTL(operation);
+                    that.OnOperationsChanged(false, false);
                 });
 
                 driver.SetOnExpandedCallback(() => {
@@ -1126,6 +1127,7 @@ module BMA {
                         that.PerformLTL(op);
                     }
                 }
+                that.OnOperationsChanged(false, false);
             }
         }
     }
