@@ -893,6 +893,7 @@ module BMA {
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
                             if (res.Ticks == null) {
+                                that.log.LogLTLError();
                                 driver.SetStatus("nottested", "Timed out");
                                 operation.AnalysisStatus = "nottested";
                                 operation.Tag.data = undefined;
@@ -962,6 +963,7 @@ module BMA {
                             }
                         })
                         .fail(function (xhr, textStatus, errorThrown) {
+                            that.log.LogLTLError();
                             driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
                             operation.AnalysisStatus = "nottested";
                             operation.Tag.data = undefined;

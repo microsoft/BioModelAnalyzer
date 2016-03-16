@@ -554,15 +554,16 @@ function loadScript(version) {
             SimulationErrorCount: log.SimulationErrorCount,
             FurtherTestingErrorCount: log.FurtherTestingErrorCount,
             AnalyzeLTLCount: log.LTLRequestCount,
+            AnalyzeLTLErrorCount: log.LTLErrors,
             ClientVersion: "BMA HTML5 " + version.major + '.' + version.minor + '.' + version.build
         });
         var sendBeacon = navigator['sendBeacon'];
         if (sendBeacon) {
-            sendBeacon('/api/ActivityLog', data);
+            sendBeacon('http://bmamath.cloudapp.net/api/ActivityLog', data);
         }
         else {
             var xhr = new XMLHttpRequest();
-            xhr.open('post', '/api/ActivityLog', false);
+            xhr.open('post', 'http://bmamath.cloudapp.net/api/ActivityLog', false);
             xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
             xhr.setRequestHeader("Content-length", data.length.toString());
             xhr.setRequestHeader("Connection", "close");

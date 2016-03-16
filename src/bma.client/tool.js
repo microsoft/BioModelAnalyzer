@@ -4588,7 +4588,7 @@ var BMA;
                         this.currentActiveRequestCount++;
                         $.ajax({
                             type: "POST",
-                            url: "api/AnalyzeLTL",
+                            url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
                             data: JSON.stringify(request.data),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json"
@@ -8075,6 +8075,7 @@ var BMA;
             this.saveModelCount = 0;
             this.importModelCount = 0;
             this.ltlRequestCount = 0;
+            this.ltlErrors = 0;
             this.proofErrorCount = this.furtherTestingErrorCount = this.simulationErrorCount = 0;
         }
         SessionLog.prototype.LogProofError = function () {
@@ -8094,6 +8095,9 @@ var BMA;
         };
         SessionLog.prototype.LogLTLRequest = function () {
             this.ltlRequestCount++;
+        };
+        SessionLog.prototype.LogLTLError = function () {
+            this.ltlErrors++;
         };
         SessionLog.prototype.LogFurtherTestingRun = function () {
             this.furtherTestingCount++;
@@ -8123,7 +8127,8 @@ var BMA;
                 ProofErrorCount: this.proofErrorCount,
                 SimulationErrorCount: this.simulationErrorCount,
                 FurtherTestingErrorCount: this.furtherTestingErrorCount,
-                LTLRequestCount: this.ltlRequestCount
+                LTLRequestCount: this.ltlRequestCount,
+                LTLErrors: this.ltlErrors
             };
         };
         return SessionLog;
@@ -14767,6 +14772,7 @@ var BMA;
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
                         if (res.Ticks == null) {
+                            that.log.LogLTLError();
                             driver.SetStatus("nottested", "Timed out");
                             operation.AnalysisStatus = "nottested";
                             operation.Tag.data = undefined;
@@ -14819,6 +14825,7 @@ var BMA;
                         }
                     })
                         .fail(function (xhr, textStatus, errorThrown) {
+                        that.log.LogLTLError();
                         driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
                         operation.AnalysisStatus = "nottested";
                         operation.Tag.data = undefined;
