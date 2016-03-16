@@ -8074,6 +8074,7 @@ var BMA;
             this.newModelCount = 0;
             this.saveModelCount = 0;
             this.importModelCount = 0;
+            this.ltlRequestCount = 0;
             this.proofErrorCount = this.furtherTestingErrorCount = this.simulationErrorCount = 0;
         }
         SessionLog.prototype.LogProofError = function () {
@@ -8090,6 +8091,9 @@ var BMA;
         };
         SessionLog.prototype.LogSimulationRun = function () {
             this.simulationCount++;
+        };
+        SessionLog.prototype.LogLTLRequest = function () {
+            this.ltlRequestCount++;
         };
         SessionLog.prototype.LogFurtherTestingRun = function () {
             this.furtherTestingCount++;
@@ -8118,7 +8122,8 @@ var BMA;
                 SessionID: this.sessionId,
                 ProofErrorCount: this.proofErrorCount,
                 SimulationErrorCount: this.simulationErrorCount,
-                FurtherTestingErrorCount: this.furtherTestingErrorCount
+                FurtherTestingErrorCount: this.furtherTestingErrorCount,
+                LTLRequestCount: this.ltlRequestCount
             };
         };
         return SessionLog;
@@ -13726,7 +13731,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var LTLPresenter = (function () {
-            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ltlresultsviewer, ajax, popupViewer, exportService, fileLoaderDriver) {
+            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ltlresultsviewer, ajax, popupViewer, exportService, fileLoaderDriver, logService) {
                 var _this = this;
                 var that = this;
                 this.appModel = appModel;
@@ -13736,7 +13741,7 @@ var BMA;
                 ltlviewer.SetOnTabExpandedCallback(function () {
                     if (_this.tppresenter === undefined) {
                         temporlapropertieseditor.Show();
-                        _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, _this.statespresenter);
+                        _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, _this.statespresenter, logService);
                         temporlapropertieseditor.Hide();
                     }
                 });
@@ -13759,7 +13764,7 @@ var BMA;
                             temporlapropertieseditor.Show();
                             commands.Execute("TemporalPropertiesEditorExpanded", {});
                             if (_this.tppresenter === undefined) {
-                                _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, _this.statespresenter);
+                                _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, _this.statespresenter, logService);
                             }
                             break;
                         default:
@@ -14051,7 +14056,7 @@ var BMA;
     var LTL;
     (function (LTL) {
         var TemporalPropertiesPresenter = (function () {
-            function TemporalPropertiesPresenter(commands, appModel, ajax, tpEditorDriver, statesPresenter) {
+            function TemporalPropertiesPresenter(commands, appModel, ajax, tpEditorDriver, statesPresenter, logService) {
                 var _this = this;
                 this.controlPanelPadding = 3;
                 this.isUpdateControlRequested = false;
@@ -14079,6 +14084,7 @@ var BMA;
                 this.ltlcompactviewfactory = new BMA.UIDrivers.LTLResultsViewerFactory();
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
                 this.operations = [];
+                this.log = logService;
                 var contextMenu = tpEditorDriver.GetContextMenuDriver();
                 tpEditorDriver.SetCopyZoneVisibility(false);
                 tpEditorDriver.SetDeleteZoneVisibility(false);
@@ -14745,6 +14751,7 @@ var BMA;
                 }
                 var driver = operation.Tag.driver;
                 if (operation.IsCompleted) {
+                    this.log.LogLTLRequest();
                     operation.AnalysisStatus = "processing";
                     driver.SetStatus("processing");
                     domplot.updateLayout();

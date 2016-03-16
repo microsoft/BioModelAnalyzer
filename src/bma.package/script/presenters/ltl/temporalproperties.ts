@@ -63,12 +63,15 @@ module BMA {
                 maxHeight: Number.POSITIVE_INFINITY
             };
 
+            private log: ISessionLog;
+
             constructor(
                 commands: BMA.CommandRegistry,
                 appModel: BMA.Model.AppModel,
                 ajax: BMA.UIDrivers.IServiceDriver,
                 tpEditorDriver: BMA.UIDrivers.ITemporalPropertiesEditor,
-                statesPresenter: BMA.LTL.StatesPresenter) {
+                statesPresenter: BMA.LTL.StatesPresenter,
+                logService: ISessionLog) {
 
                 var that = this;
                 this.appModel = appModel;
@@ -83,6 +86,8 @@ module BMA {
 
                 this.operatorRegistry = new BMA.LTLOperations.OperatorsRegistry();
                 this.operations = [];
+
+                this.log = logService;
 
                 var contextMenu = tpEditorDriver.GetContextMenuDriver();
 
@@ -867,6 +872,9 @@ module BMA {
 
                 var driver = operation.Tag.driver;
                 if (operation.IsCompleted) {
+
+                    this.log.LogLTLRequest();
+
                     operation.AnalysisStatus = "processing";
                     driver.SetStatus("processing");
                     domplot.updateLayout();

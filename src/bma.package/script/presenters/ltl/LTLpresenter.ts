@@ -21,7 +21,8 @@
                 ajax: BMA.UIDrivers.IServiceDriver,
                 popupViewer: BMA.UIDrivers.IPopup,
                 exportService: BMA.UIDrivers.IExportService,
-                fileLoaderDriver: BMA.UIDrivers.IFileLoader
+                fileLoaderDriver: BMA.UIDrivers.IFileLoader,
+                logService: ISessionLog
                 ) {
 
                 var that = this;
@@ -39,7 +40,8 @@
                             appModel,
                             ajax,
                             temporlapropertieseditor,
-                            this.statespresenter);
+                            this.statespresenter,
+                            logService);
                         temporlapropertieseditor.Hide();
                     }
                 });
@@ -72,7 +74,8 @@
                                     appModel,
                                     ajax,
                                     temporlapropertieseditor,
-                                    this.statespresenter);
+                                    this.statespresenter,
+                                    logService);
                             }
 
                             break;

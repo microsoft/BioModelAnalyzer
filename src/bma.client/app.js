@@ -492,7 +492,7 @@ function loadScript(version) {
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
     //LTL Presenters
-    var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlService, popupDriver, exportService, fileLoaderDriver);
+    var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlService, popupDriver, exportService, fileLoaderDriver, logService);
     //Loading model from URL
     var reserved_key = "InitialModel";
     var params = getSearchParameters();
@@ -553,6 +553,7 @@ function loadScript(version) {
             ProofErrorCount: log.ProofErrorCount,
             SimulationErrorCount: log.SimulationErrorCount,
             FurtherTestingErrorCount: log.FurtherTestingErrorCount,
+            AnalyzeLTLCount: log.LTLRequestCount,
             ClientVersion: "BMA HTML5 " + version.major + '.' + version.minor + '.' + version.build
         });
         var sendBeacon = navigator['sendBeacon'];
