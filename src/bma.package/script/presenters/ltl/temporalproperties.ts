@@ -894,12 +894,18 @@ module BMA {
                         .done(function (res) {
                             if (res.Ticks == null) {
                                 that.log.LogLTLError();
-                                driver.SetStatus("nottested", "Timed out");
+
+                                if (res.Status === "Error" && res.Error.indexOf("Operation is not completed in") > -1)
+                                    driver.SetStatus("nottested", "Timed out");
+                                else
+                                    driver.SetStatus("nottested", "Server error");
+
                                 operation.AnalysisStatus = "nottested";
                                 operation.Tag.data = undefined;
                                 operation.Tag.negdata = undefined;
                                 operation.Tag.steps = driver.GetSteps();
                                 domplot.updateLayout();
+                                that.OnOperationsChanged(false);
                             }
                             else {
                                 if (res.Status === "True") {
@@ -970,6 +976,7 @@ module BMA {
                             operation.Tag.negdata = undefined;
                             operation.Tag.steps = driver.GetSteps();
                             domplot.updateLayout();
+                            that.OnOperationsChanged(false);
                         })
 
 
