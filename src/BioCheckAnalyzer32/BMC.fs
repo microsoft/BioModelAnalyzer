@@ -130,7 +130,7 @@ let change_to_right_length (simulation : Map<QN.var, int> list) (loop : int) (de
         let rec get_suffix current_simulation items_to_remove =
             if items_to_remove = 0 then current_simulation
             else get_suffix (List.tail current_simulation) (items_to_remove-1)
-        ((get_suffix simulation (desired_length-simulation.Length)), (loop - desired_length + simulation.Length))
+        ((get_suffix simulation (simulation.Length - desired_length)), (loop - (simulation.Length - desired_length)))
     elif desired_length > simulation.Length then // but desired length >= simulation.Length - loop
         let rec extend_length curr_simulation extend_by index =
             if extend_by = 0 then curr_simulation
