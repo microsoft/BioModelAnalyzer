@@ -312,7 +312,7 @@
                         continue;
 
                     if (op instanceof Operation) {
-                        wasUpdated = wasUpdated || this.RefreshStatesInOperation(operands[i], states);
+                        wasUpdated = this.RefreshStatesInOperation(operands[i], states) || wasUpdated;
                     } else {
                         if (op instanceof Keyframe) {
                             var name = (<Keyframe>op).Name;
@@ -320,7 +320,7 @@
                                 var updated = false;
                                 for (var j = 0; j < states.length; j++) {
                                     if (states[j].Name === name) {
-                                        wasUpdated = wasUpdated || operands[i].GetFormula() !== states[j].GetFormula();
+                                        wasUpdated = operands[i].GetFormula() !== states[j].GetFormula() || wasUpdated;
                                         operands[i] = states[j];
                                         updated = true;
                                         break;

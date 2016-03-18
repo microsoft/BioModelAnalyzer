@@ -749,10 +749,10 @@ var BMA;
                             var id = model.GetIdByName(variable.Name);
                             if (id.length == 0) {
                                 isActual = false;
-                                isChanged = true;
                                 break;
                             }
                             variableId = parseFloat(id[0]);
+                            isChanged = true;
                         }
                         var variableInModel = model.GetVariableById(variableId);
                         if (variableInModel === undefined || !variableInModel.Name) {
@@ -2410,14 +2410,22 @@ var BMA;
                     this.operationAppearances = [];
                     if (parsed.ltl !== undefined) {
                         var ltl = BMA.Model.ImportLTLContents(parsed.ltl);
+                        var statesAreChanged = false;
                         if (ltl.states !== undefined) {
                             var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, ltl.states);
                             this.states = statesChanged.states;
+                            statesAreChanged = statesChanged.isChanged;
                         }
                         else {
                             this.states = [];
                         }
                         if (ltl.operations !== undefined) {
+                            if (statesAreChanged) {
+                                for (var i = 0; i < ltl.operations.length; i++) {
+                                    var op = ltl.operations[i];
+                                    BMA.LTLOperations.RefreshStatesInOperation(op, this.states);
+                                }
+                            }
                             this.operations = ltl.operations;
                         }
                         else {
@@ -2921,7 +2929,7 @@ var BMA;
                             if (state && state.Name === obj.name)
                                 return state.Clone();
                         }
-                        alert(obj.Name);
+                        alert(obj.name);
                         throw "No suitable states found"; //TODO: replace this by editing empty operation
                     }
                     else {
@@ -3298,7 +3306,7 @@ var BMA;
                     if (op === undefined)
                         continue;
                     if (op instanceof Operation) {
-                        wasUpdated = wasUpdated || this.RefreshStatesInOperation(operands[i], states);
+                        wasUpdated = this.RefreshStatesInOperation(operands[i], states) || wasUpdated;
                     }
                     else {
                         if (op instanceof Keyframe) {
@@ -3307,7 +3315,7 @@ var BMA;
                                 var updated = false;
                                 for (var j = 0; j < states.length; j++) {
                                     if (states[j].Name === name) {
-                                        wasUpdated = wasUpdated || operands[i].GetFormula() !== states[j].GetFormula();
+                                        wasUpdated = operands[i].GetFormula() !== states[j].GetFormula() || wasUpdated;
                                         operands[i] = states[j];
                                         updated = true;
                                         break;
@@ -5004,10 +5012,12 @@ var BMA;
                             && (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h)
                             && (params.dropObject.type == "variable")) {
                             var variable = that.model.GetVariableById(params.dropObject.id);
-                            that.statesEditor.stateseditor("checkDroppedItem", {
-                                screenLocation: params.screenLocation,
-                                variable: { container: variable.ContainerId, variable: variable.Id }
-                            });
+                            if (variable && variable.Name && variable.Id && variable.ContainerId) {
+                                that.statesEditor.stateseditor("checkDroppedItem", {
+                                    screenLocation: params.screenLocation,
+                                    variable: { container: variable.ContainerId, variable: variable.Id }
+                                });
+                            }
                         }
                     });
                     if (this.variablesToSet !== undefined) {

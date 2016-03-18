@@ -393,10 +393,12 @@ module BMA {
                             && (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h)
                             && (params.dropObject.type == "variable")) {
                             var variable = that.model.GetVariableById(params.dropObject.id);
-                            that.statesEditor.stateseditor("checkDroppedItem", {
-                                screenLocation: params.screenLocation,
-                                variable: { container: variable.ContainerId, variable: variable.Id }
-                            });
+                            if (variable && variable.Name && variable.Id && variable.ContainerId) {
+                                that.statesEditor.stateseditor("checkDroppedItem", {
+                                    screenLocation: params.screenLocation,
+                                    variable: { container: variable.ContainerId, variable: variable.Id }
+                                });
+                            }
                         }
                     });
 

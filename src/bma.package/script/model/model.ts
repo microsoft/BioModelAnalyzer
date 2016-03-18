@@ -160,14 +160,22 @@ module BMA {
 
                     if (parsed.ltl !== undefined) {
                         var ltl = BMA.Model.ImportLTLContents(parsed.ltl);
+                        var statesAreChanged = false;
                         if (ltl.states !== undefined) {
                             var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, ltl.states);
                             this.states = statesChanged.states;
+                            statesAreChanged = statesChanged.isChanged;
                         } else {
                             this.states = [];
                         }
 
                         if (ltl.operations !== undefined) {
+                            if (statesAreChanged) {
+                                for (var i = 0; i < ltl.operations.length; i++) {
+                                    var op = ltl.operations[i];
+                                    BMA.LTLOperations.RefreshStatesInOperation(op, this.states);
+                                }
+                            }
                             this.operations = ltl.operations;
                         } else {
                             this.operations = [];
