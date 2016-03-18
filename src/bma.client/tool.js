@@ -2996,7 +2996,7 @@ var BMA;
                 configurable: true
             });
             NameOperand.prototype.GetFormula = function () {
-                return this.name;
+                return this.id; //this.name;
             };
             NameOperand.prototype.Clone = function () {
                 return new NameOperand(this.name, this.id);
