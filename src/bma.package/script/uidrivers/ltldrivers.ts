@@ -393,7 +393,7 @@ module BMA {
                             && (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h)
                             && (params.dropObject.type == "variable")) {
                             var variable = that.model.GetVariableById(params.dropObject.id);
-                            if (variable && variable.Name && variable.Id && variable.ContainerId) {
+                            if (variable && variable.Name && variable.Id !== undefined && variable.ContainerId !== undefined) {
                                 that.statesEditor.stateseditor("checkDroppedItem", {
                                     screenLocation: params.screenLocation,
                                     variable: { container: variable.ContainerId, variable: variable.Id }
@@ -686,7 +686,6 @@ module BMA {
                 }
 
                 this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min", isResizable: false, paddingOn: true });
-                popup_position();
                 this.popupWindow.show();
 
                 if (shouldInit) {
@@ -707,6 +706,8 @@ module BMA {
                         this.createStateRequested = undefined;
                     }
                 }
+
+                popup_position();
             }
 
             public Hide() {

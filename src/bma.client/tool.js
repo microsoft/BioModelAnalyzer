@@ -967,6 +967,7 @@ var BMA;
                             var id = model.GetIdByName(variable.Name);
                             if (id.length == 0) {
                                 isActual = false;
+                                isChanged = true;
                                 break;
                             }
                             variableId = parseFloat(id[0]);
@@ -5161,7 +5162,7 @@ var BMA;
                             && (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h)
                             && (params.dropObject.type == "variable")) {
                             var variable = that.model.GetVariableById(params.dropObject.id);
-                            if (variable && variable.Name && variable.Id && variable.ContainerId) {
+                            if (variable && variable.Name && variable.Id !== undefined && variable.ContainerId !== undefined) {
                                 that.statesEditor.stateseditor("checkDroppedItem", {
                                     screenLocation: params.screenLocation,
                                     variable: { container: variable.ContainerId, variable: variable.Id }
@@ -5404,7 +5405,6 @@ var BMA;
                     this.ltlResultsViewer = $("<div></div>");
                 }
                 this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min", isResizable: false, paddingOn: true });
-                popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
                     if (this.dataToSet !== undefined) {
@@ -5423,6 +5423,7 @@ var BMA;
                         this.createStateRequested = undefined;
                     }
                 }
+                popup_position();
             };
             LTLResultsViewer.prototype.Hide = function () {
                 this.popupWindow.hide();
@@ -6498,6 +6499,9 @@ var BMA;
                         }
                     }
                     var newmodel = new BMA.Model.BioModel(model.Name, newV, newRels);
+                    for (var i = 0; i < removed.length; i++) {
+                        newmodel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(removed[i], model, newmodel);
+                    }
                     var newlayout = new BMA.Model.Layout(newCnt, newVL);
                     this.undoRedoPresenter.Dup(newmodel, newlayout);
                 }
@@ -11712,7 +11716,7 @@ jQuery.fn.extend({
                 tabid: "LTLStates"
             });
             this.temp_prop = $('<div></div>').appendTo(elem);
-            this.temp_content = $('<div></div>').width(400).height(150).temporalpropertiesviewer();
+            this.temp_content = $('<div></div>').width(400).css("min-height", 155).css("max-height", 485).temporalpropertiesviewer();
             this.temp_content.click(function () {
                 if (that.options.opentpeditor !== undefined) {
                     that.options.opentpeditor();

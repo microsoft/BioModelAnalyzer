@@ -908,6 +908,9 @@ module BMA {
                     }
 
                     var newmodel = new BMA.Model.BioModel(model.Name, newV, newRels);
+                    for (var i = 0; i < removed.length; i++) {
+                        newmodel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(removed[i], model, newmodel);
+                    }
                     var newlayout = new BMA.Model.Layout(newCnt, newVL);
                     this.undoRedoPresenter.Dup(newmodel, newlayout);
                 }
