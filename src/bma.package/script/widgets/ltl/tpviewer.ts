@@ -147,7 +147,7 @@
                     var canvas = <HTMLCanvasElement>(this._canvas[0]);
                     var context = canvas.getContext("2d");
                     var gradient = context.createLinearGradient(-width / 2, 0, width, height);
-                    var n = 10;
+                    var n = 20;
                     for (var i = 0; i < n; i++) {
                         gradient.addColorStop(i / n, "rgb(217,255,182)");
                         gradient.addColorStop((2 * i + 1) / (2 * n), "white");
