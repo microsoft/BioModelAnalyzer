@@ -964,14 +964,9 @@ var BMA;
                     if (variable instanceof BMA.LTLOperations.NameOperand) {
                         var variableId = variable.Id;
                         if (variableId === undefined || !model.GetVariableById(variableId)) {
-                            var id = model.GetIdByName(variable.Name);
-                            if (id.length == 0) {
-                                isActual = false;
-                                isChanged = true;
-                                break;
-                            }
-                            variableId = parseFloat(id[0]);
+                            isActual = false;
                             isChanged = true;
+                            break;
                         }
                         var variableInModel = model.GetVariableById(variableId);
                         if (variableInModel === undefined || !variableInModel.Name) {
