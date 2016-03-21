@@ -461,7 +461,7 @@ function loadScript(version) {
         .appendTo('body')
         .hide()
         .resultswindowviewer({ icon: "min" });
-    popup.draggable({ scroll: false });
+    popup.draggable({ handle: ".analysis-title", scroll: false });
 
     var expandedSimulation = $('<div></div>').simulationexpanded();
     
