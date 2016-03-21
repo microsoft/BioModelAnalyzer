@@ -19,7 +19,7 @@
             $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
             $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
             
-
+            /*
             var svgdiv = $("<div></div>").appendTo(root);
 
             this.svgdiv = svgdiv;
@@ -41,92 +41,125 @@
             });
 
             svgdiv.hide();
-
+            */
+            that.canvasDiv = $("<div></div>").appendTo(root);
+            that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).appendTo(that.canvasDiv);
+            that.refresh();
         },
 
         refresh: function () {
-            if (this._svg !== undefined) {
+            var that = this;
+            var canvas = <HTMLCanvasElement>(this._canvas[0]);
+            var keyFrameSize = 25;
+            var padding = { x: 5, y: 10 };
+            var maxHeight = 25 * 4;
+            var context = canvas.getContext("2d");
 
-                this._svg.clear();
+            var operations = this.options.operations;
+            var currentPos = { x: 0, y: 0 };
+            var height = this.options.padding.y;
+            var width = 0;
 
-                var svg = this._svg;
-                var defs = svg.defs("ltlCompactBmaDefs");
+            for (var i = 0; i < this._anims.length; i++) {
+                this._anims[i].remove();
+            }
+            this._anims = [];
 
-                var pattern = svg.pattern(defs, "pattern-stripe1", 0, 0, 8, 4, {
-                    patternUnits: "userSpaceOnUse",
-                    patternTransform: "rotate(45)"
-                });
-                svg.rect(pattern, 0, 0, 4, 4, {
-                    transform: "translate(0,0)",
-                    fill: "white"
-                });
-
-                var mask = svg.mask(defs, "mask-stripe1");
-                svg.rect(mask, "-50%", "-50%", "100%", "100%", {
-                    fill: "url(#pattern-stripe1)"
-                });
-
-                var maxHeight = 25 * 4;
-
-                var operations = this.options.operations;
-                var currentPos = { x: 0, y: 0 };
-                var height = this.options.padding.y;
-                var width = 0;
-
-                for (var i = 0; i < this._anims.length; i++) {
-                    this._anims[i].remove();
+            var sizes: {
+                size: {
+                    width: number;
+                    height: number
+                };
+                scale: {
+                    x: number;
+                    y: number
                 }
-                this._anims = [];
+            }[] = [];
 
+            for (var i = 0; i < operations.length; i++) {
+                var op = operations[i].operation;
+                var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, op, padding, keyFrameSize);
+                var scale = { x: 1, y: 1 };
 
-                for (var i = 0; i < operations.length; i++) {
-                    var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i].operation, { x: 0, y: 0 });
-                    opLayout.MaskUrl = "url(#mask-stripe1)";
-                    opLayout.AnalysisStatus = operations[i].status;
-                    var opbbox = opLayout.BoundingBox;
-
-                    if (opbbox.height > maxHeight) {
-                        opLayout.Scale = {
-                            x: maxHeight / opbbox.height,
-                            y: maxHeight / opbbox.height
-                        }
-                        opbbox.width *= maxHeight / opbbox.height;
-                        opbbox.height *= maxHeight / opbbox.height;
+                if (opSize.height > maxHeight) {
+                    scale = {
+                        x: maxHeight / opSize.height,
+                        y: maxHeight / opSize.height
                     }
-
-                    opLayout.Position = { x: opbbox.width / 2 + this.options.padding.x, y: height + opbbox.height / 2 };
-
-                    if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
-                        var t = svg.text(opbbox.width + 10, opLayout.Position.y + 5, operations[i].steps + " steps", {
-                            "font-size": 14,
-                            "fill": opLayout.AnalysisStatus === "fail" ? "rgb(254, 172, 158)" : "green"
-                        });
-                        opbbox.width += t.getBBox().width + 10;
-                    } else if (operations[i].status === "processing") {
-                        var anim = this._createWaitAnimation(opbbox.width + 10, opLayout.Position.y - 7);
-                        this._anims.push(anim);
-                        opbbox.width += 30;
-                    }
-
-                    height += opbbox.height + this.options.padding.y;
-                    width = Math.max(width, opbbox.width);
+                    opSize.width *= maxHeight / opSize.height;
+                    opSize.height = maxHeight;
                 }
 
-                width += 2 * this.options.padding.x;
-                height += this.options.padding.y;
+                sizes.push({ size: opSize, scale: scale });
+                height += opSize.height + this.options.padding.y;
+                width = Math.max(width, opSize.width);
+            }
+            canvas.height = height;
+            canvas.width = width;
 
-                
+            width = 0;
+            height = this.options.padding.y;
+            for (var i = 0; i < operations.length; i++) {
+                var op = operations[i].operation;
+                var opSize = sizes[i].size;
+                var opPosition = { x: opSize.width / 2 + this.options.padding.x, y: height + opSize.height / 2 };
 
-                this.svgdiv.width(width);
-                this.svgdiv.height(height);
-                this._svg.configure({
-                    width: width, // - this._pixelOffset,
-                    height: height, // - this._pixelOffset,
-                    viewBox: "0 0 " + width + " " + height
-                }, true);
+                BMA.LTLOperations.RenderOperation(canvas, op, opPosition, sizes[i].scale, {
+                    padding: padding,
+                    keyFrameSize: keyFrameSize,
+                    stroke: "black",
+                    fill: that._getOperationColor(operations[i].status),
+                    isRoot: true,
+                    strokeWidth: 1,
+                    borderThickness: 1
+                });
+
+
+                if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
+                    context.font = "14px Segoe-UI";
+                    context.textBaseline = "middle";
+                    context.fillStyle = operations[i].status === "fail" ? "rgb(254, 172, 158)" : "green"
+                    var text = operations[i].steps + " steps";
+                    var textW = context.measureText(text);
+                    context.fillText(text, opSize.width + 10, opPosition.y);
+                    opSize.width += textW.width + 10;
+                } else if (operations[i].status === "processing") {
+                    var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7);
+                    this._anims.push(anim);
+                    opSize.width += 30;
+                }
+
+                height += opSize.height + this.options.padding.y;
 
             }
+
         },
+
+        _getOperationColor: function (status): any {
+            switch (status) {
+                case "nottested":
+                    return "white";
+                case "processing":
+                    return "white";
+                case "success":
+                    return "rgb(217,255,182)";
+                case "partialsuccess":
+                    var canvas = <HTMLCanvasElement>(this._canvas[0]);
+                    var context = canvas.getContext("2d");
+                    var gradient = context.createLinearGradient(0, 0, 10, 10);
+                    for (var i = 0; i < 1; i++) {
+                        gradient.addColorStop(2 * i , "rgb(217,255,182)");
+                        gradient.addColorStop(2 * i + 1, "white");
+                    }
+                    return gradient;
+                    //return "rgb(217,255,182)";
+                case "fail":
+                    return "rgb(254, 172, 158)";
+                default:
+                    throw "Invalid status!";
+            }
+        },
+
 
         _createWaitAnimation: function (x, y) {
             var snipperCnt = $('<div></div>').width(30).css("position", "absolute").css("top", y).css("left", x).appendTo(this.element);
@@ -134,56 +167,18 @@
             for (var i = 1; i < 4; i++) {
                 $('<div></div>').addClass('bounce' + i).appendTo(snipper);
             }
-            return snipper;
+            return snipperCnt;
         },
-
-        /*
-        _createWaitAnimation: function (x, y) {
-
-            var x0 = x;
-            var myrect = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
-            var animate = function () {
-                $(myrect).animate({ svgR: "+=5" }, 500, function () {
-                    $(myrect).animate({ svgR: "-=5" }, 500, function () {
-                        animate();
-                    });
-                });
-            }
-            animate();
-
-            x0 += 13;
-            var myrect2 = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
-            var animate2 = function () {
-                $(myrect2).animate({ svgR: "+=5" }, 500, function () {
-                    $(myrect2).animate({ svgR: "-=5" }, 500, function () {
-                        animate2();
-                    });
-                });
-            }
-            animate2();
-
-            x0 += 13;
-            var myrect3 = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
-            var animate3 = function () {
-                $(myrect3).animate({ svgR: "+=5" }, 500, function () {
-                    $(myrect3).animate({ svgR: "-=5" }, 500, function () {
-                        animate3();
-                    });
-                });
-            }
-            animate3();
-        },
-        */
 
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
                 case "operations":
                     if (value !== undefined && value.length > 0) {
-                        that.svgdiv.show();
+                        that.canvasDiv.show();
                         that.attentionDiv.hide();
                     } else {
-                        that.svgdiv.hide();
+                        that.canvasDiv.hide();
                         that.attentionDiv.show();
                     }
                     break;

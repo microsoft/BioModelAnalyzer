@@ -1,5 +1,8 @@
 ﻿module BMA {
     export module LTLOperations {
+        export interface IOperationLayout {
+        }
+
         export class OperationLayout {
             private operation: IOperand;
             private layout: any;
@@ -268,69 +271,7 @@
                 }
             }
 
-            private CreateLayout(svg, operation): any {
-                var that = this;
-                var layout: any = {};
-                layout.operation = operation;
-
-                var paddingX = this.padding.x;
-
-                var op = operation;
-                var operator = (<any>op).Operator;
-                if (operator !== undefined) {
-                    layout.operands = [];
-                    layout.operator = operator.Name;
-
-                    var operands = (<BMA.LTLOperations.Operation>op).Operands;
-                    var layer = 0;
-                    var width = (this.GetOperatorWidth(svg, operator.Name, 10)).width;
-
-
-                    layout.operatorWidth = width;
-                    if (operands.length === 1) {
-                        width += paddingX;
-                    }
-
-                    for (var i = 0; i < operands.length; i++) {
-                        var operand = operands[i];
-
-                        if (operand !== undefined) {
-                            var calcLW = that.CreateLayout(svg, operand);
-                            calcLW.parentoperationindex = i;
-                            calcLW.parentoperation = operation;
-                            layer = Math.max(layer, calcLW.layer);
-                            layout.operands.push(calcLW);
-                            width += (calcLW.width + paddingX * 2);
-                        } else {
-                            layout.operands.push({ isEmpty: true, width: this.keyFrameSize, operationRef: op, indexRef: i });
-                            width += (this.keyFrameSize + 2 * paddingX);
-
-                        }
-                    }
-
-                    layout.layer = layer + 1;
-                    layout.width = width;
-                    return layout;
-                } else {
-                    var w = this.keyFrameSize;
-                    layout.layer = 0;
-                    layout.width = w;
-
-                    if (operation instanceof TrueKeyframe) {
-                        layout.type = "truekeyframe";
-                    } else if (operation instanceof OscillationKeyframe) {
-                        layout.type = "oscillationkeyframe";
-                    } else if (operation instanceof SelfLoopKeyframe) {
-                        layout.type = "selfloopkeyframe";
-                    } else if (operation instanceof Keyframe) {
-                        layout.type = "keyframe";
-                        layout.name = operation.name;
-                    } else
-                        throw "Unknown Keyframe type";
-
-                    return layout;
-                }
-            }
+            
 
             private SetPositionOffsets(layout, position) {
                 var padding = this.padding;
@@ -518,7 +459,7 @@
                                 transform: "scale(" + scale + ", " + scale + ") translate(" + -bbox.width / 2 + ", " + bbox.height / 4 + ")"
                             });
                         } else {
-                            var img = svg.image(stateGroup, - this.keyFrameSize / 2, - this.keyFrameSize / 2, this.keyFrameSize, this.keyFrameSize, this.GetKeyframeImagePath(layoutPart.type));
+                            var img = svg.image(stateGroup, - this.keyFrameSize / 2, - this.keyFrameSize / 2, this.keyFrameSize, this.keyFrameSize, GetKeyframeImagePath(layoutPart.type, '..'));
                         }
 
                         layoutPart.svgref = stateGroup;
@@ -526,22 +467,10 @@
                 }
             }
 
-            private GetKeyframeImagePath(keyframetype: string) {
-                switch (keyframetype) {
-                    case "oscillationkeyframe":
-                        return "../images/oscillation-state.svg";
-                    case "truekeyframe":
-                        return "../images/true-state.svg";
-                    case "selfloopkeyframe":
-                        return "../images/selfloop-state.svg";
-                    default:
-                        throw "Unknown keyframe type";
-                }
-            }
-
             private renderGroup = undefined;
             private majorRect = undefined;
             private Render() {
+                var that = this;
                 var position = this.position;
                 var svg = this.svg;
 
@@ -553,7 +482,7 @@
                     svg.remove(this.renderGroup);
                 }
 
-                this.layout = this.CreateLayout(svg, this.operation);
+                this.layout = CreateLayout(this.operation, (name, fontSize) => { return that.GetOperatorWidth(that.svg, name, fontSize).width; }, this.padding, this.keyFrameSize); //this.CreateLayout(svg, this.operation);
                 this.position = position;
                 this.SetPositionOffsets(this.layout, position);
 
