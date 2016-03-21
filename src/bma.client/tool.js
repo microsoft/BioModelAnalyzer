@@ -1188,7 +1188,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=Commands.js.map
+//# sourceMappingURL=commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13804,12 +13804,13 @@ jQuery.fn.extend({
             for (var i = 0; i < operations.length; i++) {
                 var op = operations[i].operation;
                 var opSize = sizes[i].size;
+                var scale = sizes[i].scale;
                 var opPosition = { x: opSize.width / 2 + this.options.padding.x, y: height + opSize.height / 2 };
-                BMA.LTLOperations.RenderOperation(canvas, op, opPosition, sizes[i].scale, {
+                BMA.LTLOperations.RenderOperation(canvas, op, opPosition, scale, {
                     padding: padding,
                     keyFrameSize: keyFrameSize,
                     stroke: "black",
-                    fill: that._getOperationColor(operations[i].status, opSize.width, opSize.height),
+                    fill: that._getOperationColor(operations[i].status, opSize.width / scale.x, opSize.height / scale.y),
                     isRoot: true,
                     strokeWidth: 1,
                     borderThickness: 1
