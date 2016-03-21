@@ -12671,6 +12671,7 @@ jQuery.fn.extend({
                             this.options.states.push(value[i]);
                             var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name)
                                 .addClass("state-button").appendTo(this._stateButtons);
+                            stateButton.statetooltip({ state: that.convertForTooltip(value[i]) });
                         }
                     }
                     if (this.options.states.length == 0) {
@@ -12828,12 +12829,7 @@ jQuery.fn.extend({
                 },
                 show: null,
                 hide: false,
-                items: "div.state-button",
-                //open: function (event, ui) {
-                //},
-                close: function (event, ui) {
-                    that.element.tooltip("destroy");
-                }
+                items: "div.state-button"
             });
             //}
             this.refresh();
