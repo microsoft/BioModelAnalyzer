@@ -1188,7 +1188,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=commands.js.map
+//# sourceMappingURL=Commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13809,7 +13809,7 @@ jQuery.fn.extend({
                     padding: padding,
                     keyFrameSize: keyFrameSize,
                     stroke: "black",
-                    fill: that._getOperationColor(operations[i].status),
+                    fill: that._getOperationColor(operations[i].status, opSize.width, opSize.height),
                     isRoot: true,
                     strokeWidth: 1,
                     borderThickness: 1
@@ -13831,7 +13831,7 @@ jQuery.fn.extend({
                 height += opSize.height + this.options.padding.y;
             }
         },
-        _getOperationColor: function (status) {
+        _getOperationColor: function (status, width, height) {
             switch (status) {
                 case "nottested":
                     return "white";
@@ -13842,10 +13842,11 @@ jQuery.fn.extend({
                 case "partialsuccess":
                     var canvas = (this._canvas[0]);
                     var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(0, 0, 10, 10);
-                    for (var i = 0; i < 1; i++) {
-                        gradient.addColorStop(2 * i, "rgb(217,255,182)");
-                        gradient.addColorStop(2 * i + 1, "white");
+                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                    var n = 10;
+                    for (var i = 0; i < n; i++) {
+                        gradient.addColorStop(i / n, "rgb(217,255,182)");
+                        gradient.addColorStop((2 * i + 1) / (2 * n), "white");
                     }
                     return gradient;
                 //return "rgb(217,255,182)";

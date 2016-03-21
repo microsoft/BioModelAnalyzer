@@ -108,7 +108,7 @@
                     padding: padding,
                     keyFrameSize: keyFrameSize,
                     stroke: "black",
-                    fill: that._getOperationColor(operations[i].status),
+                    fill: that._getOperationColor(operations[i].status, opSize.width, opSize.height),
                     isRoot: true,
                     strokeWidth: 1,
                     borderThickness: 1
@@ -135,7 +135,7 @@
 
         },
 
-        _getOperationColor: function (status): any {
+        _getOperationColor: function (status, width, height): any {
             switch (status) {
                 case "nottested":
                     return "white";
@@ -146,13 +146,14 @@
                 case "partialsuccess":
                     var canvas = <HTMLCanvasElement>(this._canvas[0]);
                     var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(0, 0, 10, 10);
-                    for (var i = 0; i < 1; i++) {
-                        gradient.addColorStop(2 * i , "rgb(217,255,182)");
-                        gradient.addColorStop(2 * i + 1, "white");
+                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                    var n = 10;
+                    for (var i = 0; i < n; i++) {
+                        gradient.addColorStop(i / n, "rgb(217,255,182)");
+                        gradient.addColorStop((2 * i + 1) / (2 * n), "white");
                     }
                     return gradient;
-                    //return "rgb(217,255,182)";
+                //return "rgb(217,255,182)";
                 case "fail":
                     return "rgb(254, 172, 158)";
                 default:
