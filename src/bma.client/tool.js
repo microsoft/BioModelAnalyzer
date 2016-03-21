@@ -749,6 +749,7 @@ var BMA;
                             var id = model.GetIdByName(variable.Name);
                             if (id.length == 0) {
                                 isActual = false;
+                                isChanged = true;
                                 break;
                             }
                             variableId = parseFloat(id[0]);
@@ -6349,6 +6350,9 @@ var BMA;
                         }
                     }
                     var newmodel = new BMA.Model.BioModel(model.Name, newV, newRels);
+                    for (var i = 0; i < removed.length; i++) {
+                        newmodel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(removed[i], model, newmodel);
+                    }
                     var newlayout = new BMA.Model.Layout(newCnt, newVL);
                     this.undoRedoPresenter.Dup(newmodel, newlayout);
                 }
@@ -11563,7 +11567,7 @@ jQuery.fn.extend({
                 tabid: "LTLStates"
             });
             this.temp_prop = $('<div></div>').appendTo(elem);
-            this.temp_content = $('<div></div>').width(400).height(150).temporalpropertiesviewer();
+            this.temp_content = $('<div></div>').width(400).css("min-height", 155).css("max-height", 485).temporalpropertiesviewer();
             this.temp_content.click(function () {
                 if (that.options.opentpeditor !== undefined) {
                     that.options.opentpeditor();

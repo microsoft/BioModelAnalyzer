@@ -225,6 +225,7 @@
                             var id = model.GetIdByName(variable.Name);
                             if (id.length == 0) {
                                 isActual = false;
+                                isChanged = true;
                                 break;
                             }
                             variableId = parseFloat(id[0]);
