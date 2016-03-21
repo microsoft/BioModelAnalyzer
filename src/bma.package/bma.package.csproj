@@ -136,6 +136,7 @@
     <TypeScriptCompile Include="script\jqextensions.ts" />
     <TypeScriptCompile Include="script\keyframesregistry.ts" />
     <TypeScriptCompile Include="script\localRepository.ts" />
+    <TypeScriptCompile Include="script\LTLHelper.ts" />
     <TypeScriptCompile Include="script\ModelHelper.ts" />
     <TypeScriptCompile Include="script\model\analytics.ts" />
     <TypeScriptCompile Include="script\model\biomodel.ts" />

@@ -562,6 +562,224 @@ var BMA;
 //# sourceMappingURL=SVGHelper.js.map
 var BMA;
 (function (BMA) {
+    var LTLOperations;
+    (function (LTLOperations) {
+        function GetKeyframeImagePath(keyframetype, root) {
+            switch (keyframetype) {
+                case "oscillationkeyframe":
+                    return root + "/images/oscillation-state.svg";
+                case "truekeyframe":
+                    return root + "/images/true-state.svg";
+                case "selfloopkeyframe":
+                    return root + "/images/selfloop-state.svg";
+                default:
+                    throw "Unknown keyframe type";
+            }
+        }
+        LTLOperations.GetKeyframeImagePath = GetKeyframeImagePath;
+        function RoundRect(ctx, x, y, w, h, r) {
+            if (w < 2 * r)
+                r = w / 2;
+            if (h < 2 * r)
+                r = h / 2;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+        LTLOperations.RoundRect = RoundRect;
+        function RenderOperation(canvas, operation, position, scale, operationAppearance) {
+            var context = canvas.getContext("2d");
+            var layout = CreateLayout(operation, function (name, fontSize) {
+                context.font = fontSize + "px Segoe-UI";
+                return context.measureText(name).width;
+            }, operationAppearance.padding, operationAppearance.keyFrameSize);
+            var renderLayoutPart = function (layoutPart, pos, options) {
+                var paddingX = operationAppearance.padding.x;
+                var paddingY = operationAppearance.padding.y;
+                if (layoutPart.isEmpty) {
+                    context.strokeStyle = "rgb(96,96,96)";
+                    context.fillStyle = "rgb(96,96,96)";
+                    context.beginPath();
+                    context.arc(pos.x, pos.y, operationAppearance.keyFrameSize / 2, 0, 2 * Math.PI, false);
+                    context.closePath();
+                    context.stroke();
+                    context.fill();
+                }
+                else {
+                    var operator = layoutPart.operator;
+                    if (operator !== undefined) {
+                        var operation = layoutPart;
+                        var halfWidth = layoutPart.width / 2;
+                        var height = operationAppearance.keyFrameSize + paddingY * layoutPart.layer;
+                        var fill = options && options.fill ? options.fill : "transparent";
+                        var stroke = options && options.stroke ? options.stroke : "rgb(96,96,96)";
+                        var strokeWidth = 1;
+                        if (options !== undefined) {
+                            if (options.isRoot) {
+                                strokeWidth = operationAppearance.borderThickness;
+                            }
+                            else if (options.strokeWidth) {
+                                strokeWidth = options.strokeWidth;
+                            }
+                        }
+                        context.strokeStyle = "rgb(96,96,96)";
+                        context.fillStyle = options !== undefined && options.isRoot && operationAppearance.fill !== undefined ? operationAppearance.fill : "transparent";
+                        RoundRect(context, pos.x - halfWidth, pos.y - height / 2, halfWidth * 2, height, height / 2);
+                        context.stroke();
+                        context.fill();
+                        var operands = operation.operands;
+                        switch (operands.length) {
+                            case 1:
+                                renderLayoutPart(operands[0], {
+                                    x: pos.x + halfWidth - operands[0].width / 2 - paddingX,
+                                    y: pos.y
+                                }, undefined);
+                                context.font = "10px Segoe-UI";
+                                context.fillStyle = "rgb(96,96,96)";
+                                context.fillText(operation.operator, pos.x - halfWidth + paddingX, pos.y);
+                                //context.fill();
+                                break;
+                            case 2:
+                                renderLayoutPart(operands[0], {
+                                    x: pos.x - halfWidth + operands[0].width / 2 + paddingX,
+                                    y: pos.y
+                                }, undefined);
+                                renderLayoutPart(operands[1], {
+                                    x: pos.x + halfWidth - operands[1].width / 2 - paddingX,
+                                    y: pos.y
+                                }, undefined);
+                                context.font = "10px Segoe-UI";
+                                context.fillStyle = "rgb(96,96,96)";
+                                context.fillText(operation.operator, pos.x - halfWidth + operands[0].width + 2 * paddingX, pos.y);
+                                //context.fill();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else {
+                        var hks = operationAppearance.keyFrameSize / 2;
+                        context.strokeStyle = "rgb(96,96,96)";
+                        context.fillStyle = "rgb(238,238,238)";
+                        context.beginPath();
+                        context.arc(pos.x, pos.y, hks, 0, 2 * Math.PI, false);
+                        context.closePath();
+                        context.stroke();
+                        context.fill();
+                        if (layoutPart.type === "keyframe") {
+                            var name = layoutPart.name;
+                            var fs = 16;
+                            context.font = "16px Segoe-UI";
+                            var width = context.measureText(name).width;
+                            if (width > hks) {
+                                fs = hks / width;
+                                context.font = fs + "px Segoe-UI";
+                            }
+                            context.fillStyle = "rgb(96,96,96)";
+                            context.fillText(name, pos.x - width / 2, pos.y);
+                        }
+                        else {
+                            var img = new Image();
+                            img.src = GetKeyframeImagePath(layoutPart.type, "..");
+                            img.onload = function () {
+                                context.save();
+                                context.transform(scale.x, 0, 0, scale.y, position.x, position.y);
+                                context.drawImage(img, pos.x - hks, pos.y - hks, hks * 2, hks * 2);
+                                context.restore();
+                            };
+                        }
+                    }
+                }
+            };
+            context.save();
+            context.transform(scale.x, 0, 0, scale.y, position.x, position.y);
+            context.textBaseline = "middle";
+            renderLayoutPart(layout, { x: 0, y: 0 }, operationAppearance);
+            context.restore();
+            return { width: layout.width, height: operationAppearance.keyFrameSize + operationAppearance.padding.y * layout.layer };
+        }
+        LTLOperations.RenderOperation = RenderOperation;
+        function CalcOperationSize(operation, getOperatorWidth, padding, keyFrameSize) {
+            var layout = CreateLayout(operation, getOperatorWidth, padding, keyFrameSize);
+            return { width: layout.width, height: keyFrameSize + padding.y * layout.layer };
+        }
+        LTLOperations.CalcOperationSize = CalcOperationSize;
+        function CalcOperationSizeOnCanvas(canvas, operation, padding, keyFrameSize) {
+            var context = canvas.getContext("2d");
+            var getOpWidth = function (name, fontSize) {
+                context.font = fontSize + "px Segoe-UI";
+                return context.measureText(name).width;
+            };
+            return CalcOperationSize(operation, getOpWidth, padding, keyFrameSize);
+        }
+        LTLOperations.CalcOperationSizeOnCanvas = CalcOperationSizeOnCanvas;
+        function CreateLayout(operation, getOperatorWidth, padding, keyFrameSize) {
+            var layout = {};
+            layout.operation = operation;
+            var paddingX = padding.x;
+            var op = operation;
+            var operator = op.Operator;
+            if (operator !== undefined) {
+                layout.operands = [];
+                layout.operator = operator.Name;
+                var operands = op.Operands;
+                var layer = 0;
+                var width = getOperatorWidth(operator.Name, 10);
+                layout.operatorWidth = width;
+                if (operands.length === 1) {
+                    width += paddingX;
+                }
+                for (var i = 0; i < operands.length; i++) {
+                    var operand = operands[i];
+                    if (operand !== undefined) {
+                        var calcLW = CreateLayout(operand, getOperatorWidth, padding, keyFrameSize);
+                        calcLW.parentoperationindex = i;
+                        calcLW.parentoperation = operation;
+                        layer = Math.max(layer, calcLW.layer);
+                        layout.operands.push(calcLW);
+                        width += (calcLW.width + paddingX * 2);
+                    }
+                    else {
+                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i });
+                        width += (keyFrameSize + 2 * paddingX);
+                    }
+                }
+                layout.layer = layer + 1;
+                layout.width = width;
+                return layout;
+            }
+            else {
+                var w = keyFrameSize;
+                layout.layer = 0;
+                layout.width = w;
+                if (operation instanceof LTLOperations.TrueKeyframe) {
+                    layout.type = "truekeyframe";
+                }
+                else if (operation instanceof LTLOperations.OscillationKeyframe) {
+                    layout.type = "oscillationkeyframe";
+                }
+                else if (operation instanceof LTLOperations.SelfLoopKeyframe) {
+                    layout.type = "selfloopkeyframe";
+                }
+                else if (operation instanceof LTLOperations.Keyframe) {
+                    layout.type = "keyframe";
+                    layout.name = operation.Name;
+                }
+                else
+                    throw "Unknown Keyframe type";
+                return layout;
+            }
+        }
+        LTLOperations.CreateLayout = CreateLayout;
+    })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
+})(BMA || (BMA = {}));
+//# sourceMappingURL=LTLHelper.js.map
+var BMA;
+(function (BMA) {
     var ModelHelper;
     (function (ModelHelper) {
         function CreateClipboardContent(model, layout, contextElement) {
@@ -3625,64 +3843,6 @@ var BMA;
                     }
                 }
             };
-            OperationLayout.prototype.CreateLayout = function (svg, operation) {
-                var that = this;
-                var layout = {};
-                layout.operation = operation;
-                var paddingX = this.padding.x;
-                var op = operation;
-                var operator = op.Operator;
-                if (operator !== undefined) {
-                    layout.operands = [];
-                    layout.operator = operator.Name;
-                    var operands = op.Operands;
-                    var layer = 0;
-                    var width = (this.GetOperatorWidth(svg, operator.Name, 10)).width;
-                    layout.operatorWidth = width;
-                    if (operands.length === 1) {
-                        width += paddingX;
-                    }
-                    for (var i = 0; i < operands.length; i++) {
-                        var operand = operands[i];
-                        if (operand !== undefined) {
-                            var calcLW = that.CreateLayout(svg, operand);
-                            calcLW.parentoperationindex = i;
-                            calcLW.parentoperation = operation;
-                            layer = Math.max(layer, calcLW.layer);
-                            layout.operands.push(calcLW);
-                            width += (calcLW.width + paddingX * 2);
-                        }
-                        else {
-                            layout.operands.push({ isEmpty: true, width: this.keyFrameSize, operationRef: op, indexRef: i });
-                            width += (this.keyFrameSize + 2 * paddingX);
-                        }
-                    }
-                    layout.layer = layer + 1;
-                    layout.width = width;
-                    return layout;
-                }
-                else {
-                    var w = this.keyFrameSize;
-                    layout.layer = 0;
-                    layout.width = w;
-                    if (operation instanceof LTLOperations.TrueKeyframe) {
-                        layout.type = "truekeyframe";
-                    }
-                    else if (operation instanceof LTLOperations.OscillationKeyframe) {
-                        layout.type = "oscillationkeyframe";
-                    }
-                    else if (operation instanceof LTLOperations.SelfLoopKeyframe) {
-                        layout.type = "selfloopkeyframe";
-                    }
-                    else if (operation instanceof LTLOperations.Keyframe) {
-                        layout.type = "keyframe";
-                        layout.name = operation.name;
-                    }
-                    else
-                        throw "Unknown Keyframe type";
-                    return layout;
-                }
-            };
             OperationLayout.prototype.SetPositionOffsets = function (layout, position) {
                 var padding = this.padding;
                 layout.position = position;
@@ -3832,25 +3992,14 @@ var BMA;
                             });
                         }
                         else {
-                            var img = svg.image(stateGroup, -this.keyFrameSize / 2, -this.keyFrameSize / 2, this.keyFrameSize, this.keyFrameSize, this.GetKeyframeImagePath(layoutPart.type));
+                            var img = svg.image(stateGroup, -this.keyFrameSize / 2, -this.keyFrameSize / 2, this.keyFrameSize, this.keyFrameSize, LTLOperations.GetKeyframeImagePath(layoutPart.type, '..'));
                         }
                         layoutPart.svgref = stateGroup;
                     }
                 }
             };
-            OperationLayout.prototype.GetKeyframeImagePath = function (keyframetype) {
-                switch (keyframetype) {
-                    case "oscillationkeyframe":
-                        return "../images/oscillation-state.svg";
-                    case "truekeyframe":
-                        return "../images/true-state.svg";
-                    case "selfloopkeyframe":
-                        return "../images/selfloop-state.svg";
-                    default:
-                        throw "Unknown keyframe type";
-                }
-            };
             OperationLayout.prototype.Render = function () {
+                var that = this;
                 var position = this.position;
                 var svg = this.svg;
                 if (this.majorRect !== undefined) {
@@ -3859,7 +4008,7 @@ var BMA;
                 if (this.renderGroup !== undefined) {
                     svg.remove(this.renderGroup);
                 }
-                this.layout = this.CreateLayout(svg, this.operation);
+                this.layout = LTLOperations.CreateLayout(this.operation, function (name, fontSize) { return that.GetOperatorWidth(that.svg, name, fontSize).width; }, this.padding, this.keyFrameSize); //this.CreateLayout(svg, this.operation);
                 this.position = position;
                 this.SetPositionOffsets(this.layout, position);
                 this.renderGroup = svg.group({
@@ -13593,87 +13742,123 @@ jQuery.fn.extend({
             this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
             $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
             $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
+            /*
             var svgdiv = $("<div></div>").appendTo(root);
+
             this.svgdiv = svgdiv;
+
             var pixofs = this._pixelOffset;
             svgdiv.svg({
                 onLoad: function (svg) {
                     that._svg = svg;
+
                     svg.configure({
                         width: root.width() - pixofs,
                         height: root.height() - pixofs,
                         viewBox: "0 0 " + (root.width() - pixofs) + " " + (root.height() - pixofs),
                         preserveAspectRatio: "none meet"
                     }, true);
+
                     that.refresh();
                 }
             });
+
             svgdiv.hide();
+            */
+            that.canvasDiv = $("<div></div>").appendTo(root);
+            that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).appendTo(that.canvasDiv);
+            that.refresh();
         },
         refresh: function () {
-            if (this._svg !== undefined) {
-                this._svg.clear();
-                var svg = this._svg;
-                var defs = svg.defs("ltlCompactBmaDefs");
-                var pattern = svg.pattern(defs, "pattern-stripe1", 0, 0, 8, 4, {
-                    patternUnits: "userSpaceOnUse",
-                    patternTransform: "rotate(45)"
-                });
-                svg.rect(pattern, 0, 0, 4, 4, {
-                    transform: "translate(0,0)",
-                    fill: "white"
-                });
-                var mask = svg.mask(defs, "mask-stripe1");
-                svg.rect(mask, "-50%", "-50%", "100%", "100%", {
-                    fill: "url(#pattern-stripe1)"
-                });
-                var maxHeight = 25 * 4;
-                var operations = this.options.operations;
-                var currentPos = { x: 0, y: 0 };
-                var height = this.options.padding.y;
-                var width = 0;
-                for (var i = 0; i < this._anims.length; i++) {
-                    this._anims[i].remove();
+            var that = this;
+            var canvas = (this._canvas[0]);
+            var keyFrameSize = 25;
+            var padding = { x: 5, y: 10 };
+            var maxHeight = 25 * 4;
+            var context = canvas.getContext("2d");
+            var operations = this.options.operations;
+            var currentPos = { x: 0, y: 0 };
+            var height = this.options.padding.y;
+            var width = 0;
+            for (var i = 0; i < this._anims.length; i++) {
+                this._anims[i].remove();
+            }
+            this._anims = [];
+            var sizes = [];
+            for (var i = 0; i < operations.length; i++) {
+                var op = operations[i].operation;
+                var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, op, padding, keyFrameSize);
+                var scale = { x: 1, y: 1 };
+                if (opSize.height > maxHeight) {
+                    scale = {
+                        x: maxHeight / opSize.height,
+                        y: maxHeight / opSize.height
+                    };
+                    opSize.width *= maxHeight / opSize.height;
+                    opSize.height = maxHeight;
                 }
-                this._anims = [];
-                for (var i = 0; i < operations.length; i++) {
-                    var opLayout = new BMA.LTLOperations.OperationLayout(this._svg, operations[i].operation, { x: 0, y: 0 });
-                    opLayout.MaskUrl = "url(#mask-stripe1)";
-                    opLayout.AnalysisStatus = operations[i].status;
-                    var opbbox = opLayout.BoundingBox;
-                    if (opbbox.height > maxHeight) {
-                        opLayout.Scale = {
-                            x: maxHeight / opbbox.height,
-                            y: maxHeight / opbbox.height
-                        };
-                        opbbox.width *= maxHeight / opbbox.height;
-                        opbbox.height *= maxHeight / opbbox.height;
-                    }
-                    opLayout.Position = { x: opbbox.width / 2 + this.options.padding.x, y: height + opbbox.height / 2 };
-                    if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
-                        var t = svg.text(opbbox.width + 10, opLayout.Position.y + 5, operations[i].steps + " steps", {
-                            "font-size": 14,
-                            "fill": opLayout.AnalysisStatus === "fail" ? "rgb(254, 172, 158)" : "green"
-                        });
-                        opbbox.width += t.getBBox().width + 10;
-                    }
-                    else if (operations[i].status === "processing") {
-                        var anim = this._createWaitAnimation(opbbox.width + 10, opLayout.Position.y - 7);
-                        this._anims.push(anim);
-                        opbbox.width += 30;
-                    }
-                    height += opbbox.height + this.options.padding.y;
-                    width = Math.max(width, opbbox.width);
+                sizes.push({ size: opSize, scale: scale });
+                height += opSize.height + this.options.padding.y;
+                width = Math.max(width, opSize.width);
+            }
+            canvas.height = height;
+            canvas.width = width;
+            width = 0;
+            height = this.options.padding.y;
+            for (var i = 0; i < operations.length; i++) {
+                var op = operations[i].operation;
+                var opSize = sizes[i].size;
+                var scale = sizes[i].scale;
+                var opPosition = { x: opSize.width / 2 + this.options.padding.x, y: height + opSize.height / 2 };
+                BMA.LTLOperations.RenderOperation(canvas, op, opPosition, scale, {
+                    padding: padding,
+                    keyFrameSize: keyFrameSize,
+                    stroke: "black",
+                    fill: that._getOperationColor(operations[i].status, opSize.width / scale.x, opSize.height / scale.y),
+                    isRoot: true,
+                    strokeWidth: 1,
+                    borderThickness: 1
+                });
+                if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
+                    context.font = "14px Segoe-UI";
+                    context.textBaseline = "middle";
+                    context.fillStyle = operations[i].status === "fail" ? "rgb(254, 172, 158)" : "green";
+                    var text = operations[i].steps + " steps";
+                    var textW = context.measureText(text);
+                    context.fillText(text, opSize.width + 10, opPosition.y);
+                    opSize.width += textW.width + 10;
                 }
-                width += 2 * this.options.padding.x;
-                height += this.options.padding.y;
-                this.svgdiv.width(width);
-                this.svgdiv.height(height);
-                this._svg.configure({
-                    width: width,
-                    height: height,
-                    viewBox: "0 0 " + width + " " + height
-                }, true);
+                else if (operations[i].status === "processing") {
+                    var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7);
+                    this._anims.push(anim);
+                    opSize.width += 30;
+                }
+                height += opSize.height + this.options.padding.y;
+            }
+        },
+        _getOperationColor: function (status, width, height) {
+            switch (status) {
+                case "nottested":
+                    return "white";
+                case "processing":
+                    return "white";
+                case "success":
+                    return "rgb(217,255,182)";
+                case "partialsuccess":
+                    var canvas = (this._canvas[0]);
+                    var context = canvas.getContext("2d");
+                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                    var n = 20;
+                    for (var i = 0; i < n; i++) {
+                        gradient.addColorStop(i / n, "rgb(217,255,182)");
+                        gradient.addColorStop((2 * i + 1) / (2 * n), "white");
+                    }
+                    return gradient;
+                //return "rgb(217,255,182)";
+                case "fail":
+                    return "rgb(254, 172, 158)";
+                default:
+                    throw "Invalid status!";
             }
         },
         _createWaitAnimation: function (x, y) {
@@ -13682,55 +13867,18 @@ jQuery.fn.extend({
             for (var i = 1; i < 4; i++) {
                 $('<div></div>').addClass('bounce' + i).appendTo(snipper);
             }
-            return snipper;
+            return snipperCnt;
         },
-        /*
-        _createWaitAnimation: function (x, y) {
-
-            var x0 = x;
-            var myrect = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
-            var animate = function () {
-                $(myrect).animate({ svgR: "+=5" }, 500, function () {
-                    $(myrect).animate({ svgR: "-=5" }, 500, function () {
-                        animate();
-                    });
-                });
-            }
-            animate();
-
-            x0 += 13;
-            var myrect2 = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
-            var animate2 = function () {
-                $(myrect2).animate({ svgR: "+=5" }, 500, function () {
-                    $(myrect2).animate({ svgR: "-=5" }, 500, function () {
-                        animate2();
-                    });
-                });
-            }
-            animate2();
-
-            x0 += 13;
-            var myrect3 = this._svg.circle(x0, y, 2, { stroke: "gray", fill: "gray" });
-            var animate3 = function () {
-                $(myrect3).animate({ svgR: "+=5" }, 500, function () {
-                    $(myrect3).animate({ svgR: "-=5" }, 500, function () {
-                        animate3();
-                    });
-                });
-            }
-            animate3();
-        },
-        */
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
                 case "operations":
                     if (value !== undefined && value.length > 0) {
-                        that.svgdiv.show();
+                        that.canvasDiv.show();
                         that.attentionDiv.hide();
                     }
                     else {
-                        that.svgdiv.hide();
+                        that.canvasDiv.hide();
                         that.attentionDiv.show();
                     }
                     break;

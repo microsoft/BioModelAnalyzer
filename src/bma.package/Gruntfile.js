@@ -20,6 +20,7 @@ module.exports = function (grunt) {
                     "js/scalablegridlinesplot.js",
                     "script/XmlModelParser.js" ,
                     "script/SVGHelper.js",
+                    "script/LTLHelper.js",
                     "script/ModelHelper.js",
                     "script/commands.js",
                     "script/elementsregistry.js",
