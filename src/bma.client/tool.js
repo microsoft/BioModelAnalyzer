@@ -11567,7 +11567,7 @@ jQuery.fn.extend({
                 tabid: "LTLStates"
             });
             this.temp_prop = $('<div></div>').appendTo(elem);
-            this.temp_content = $('<div></div>').width(400).css("min-height", 155).css("max-height", 485).temporalpropertiesviewer();
+            this.temp_content = $('<div></div>').width(400).css("min-height", 155).css("max-height", 440).temporalpropertiesviewer();
             this.temp_content.click(function () {
                 if (that.options.opentpeditor !== undefined) {
                     that.options.opentpeditor();
@@ -12522,7 +12522,6 @@ jQuery.fn.extend({
                             this.options.states.push(value[i]);
                             var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name)
                                 .addClass("state-button").appendTo(this._stateButtons);
-                            stateButton.statetooltip({ state: that.convertForTooltip(value[i]) });
                         }
                     }
                     if (this.options.states.length == 0) {
@@ -12680,7 +12679,12 @@ jQuery.fn.extend({
                 },
                 show: null,
                 hide: false,
-                items: "div.state-button"
+                items: "div.state-button",
+                //open: function (event, ui) {
+                //},
+                close: function (event, ui) {
+                    that.element.tooltip("destroy");
+                }
             });
             //}
             this.refresh();
