@@ -686,7 +686,6 @@ module BMA {
                 }
 
                 this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min", isResizable: false, paddingOn: true });
-                popup_position();
                 this.popupWindow.show();
 
                 if (shouldInit) {
@@ -707,6 +706,8 @@ module BMA {
                         this.createStateRequested = undefined;
                     }
                 }
+
+                popup_position();
             }
 
             public Hide() {

@@ -5256,7 +5256,6 @@ var BMA;
                     this.ltlResultsViewer = $("<div></div>");
                 }
                 this.popupWindow.resultswindowviewer({ header: "LTL Simulation", tabid: "", content: this.ltlResultsViewer, icon: "min", isResizable: false, paddingOn: true });
-                popup_position();
                 this.popupWindow.show();
                 if (shouldInit) {
                     if (this.dataToSet !== undefined) {
@@ -5275,6 +5274,7 @@ var BMA;
                         this.createStateRequested = undefined;
                     }
                 }
+                popup_position();
             };
             LTLResultsViewer.prototype.Hide = function () {
                 this.popupWindow.hide();
