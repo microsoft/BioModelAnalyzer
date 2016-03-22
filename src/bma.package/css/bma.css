@@ -3693,6 +3693,9 @@ ui-icon-arrowthickstop-1-n {
   overflow-y: auto;
   height: 64px;
 }
+.ltl-results-tab {
+  overflow-y: hidden;
+}
 .popup-window.no-frames {
   padding-left: 0px;
   padding-right: 0px;
