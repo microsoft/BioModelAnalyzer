@@ -1183,7 +1183,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=Commands.js.map
+//# sourceMappingURL=commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13729,7 +13729,7 @@ jQuery.fn.extend({
         _create: function () {
             var that = this;
             var root = this.element;
-            root.css("overflow-y", "auto").css("overflow-x", "auto").css("position", "relative");
+            root.css("overflow-y", "auto").css("overflow-x", "hidden").css("position", "relative");
             this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
             $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
             $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
@@ -13744,10 +13744,11 @@ jQuery.fn.extend({
             var padding = { x: 5, y: 10 };
             var maxHeight = 25 * 4;
             var context = canvas.getContext("2d");
+            canvas.height = canvas.height;
             var operations = this.options.operations;
             var currentPos = { x: 0, y: 0 };
             var height = this.options.padding.y;
-            var width = 0;
+            var width = that.canvasDiv.width() - this.options.padding.x;
             for (var i = 0; i < this._anims.length; i++) {
                 this._anims[i].remove();
             }
@@ -13757,33 +13758,31 @@ jQuery.fn.extend({
                 var op = operations[i].operation;
                 var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, op, padding, keyFrameSize);
                 var scale = { x: 1, y: 1 };
-                if (opSize.height > maxHeight) {
-                    scale = {
-                        x: maxHeight / opSize.height,
-                        y: maxHeight / opSize.height
-                    };
-                    opSize.width *= maxHeight / opSize.height;
-                    opSize.height = maxHeight;
-                }
-                var w = opSize.width;
+                var offset = 80;
+                var w = opSize.width + offset;
+                /*
                 if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
                     context.font = "14px Segoe-UI";
-                    context.textBaseline = "middle";
-                    context.fillStyle = operations[i].status === "fail" ? "rgb(254, 172, 158)" : "green";
                     var text = operations[i].steps + " steps";
                     var textW = context.measureText(text);
-                    w += textW.width + 10;
+                    offset = Math.max(textW.width + 10, offset);
+                    w += offset;
+                } else if (operations[i].status === "processing") {
+                    w += offset;
                 }
-                else if (operations[i].status === "processing") {
-                    w += 30;
+                */
+                if (w > width) {
+                    scale = {
+                        x: (width - offset) / opSize.width,
+                        y: (width - offset) / opSize.width
+                    };
+                    opSize.width = width - offset;
+                    opSize.height = scale.y * opSize.height;
                 }
-                sizes.push({ size: opSize, scale: scale });
+                sizes.push({ size: opSize, offset: offset, scale: scale });
                 height += opSize.height + this.options.padding.y;
-                width = Math.max(width, w);
             }
             canvas.height = height;
-            canvas.width = width;
-            that.canvasDiv.width(width);
             height = this.options.padding.y;
             for (var i = 0; i < operations.length; i++) {
                 var op = operations[i].operation;
@@ -13804,14 +13803,11 @@ jQuery.fn.extend({
                     context.textBaseline = "middle";
                     context.fillStyle = operations[i].status === "fail" ? "rgb(254, 172, 158)" : "green";
                     var text = operations[i].steps + " steps";
-                    var textW = context.measureText(text);
                     context.fillText(text, opSize.width + 10, opPosition.y);
-                    opSize.width += textW.width + 10;
                 }
                 else if (operations[i].status === "processing") {
                     var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7);
                     this._anims.push(anim);
-                    opSize.width += 30;
                 }
                 height += opSize.height + this.options.padding.y;
             }
