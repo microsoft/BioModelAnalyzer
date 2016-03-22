@@ -7162,9 +7162,16 @@ var BMA;
                         that.Snapshot();
                     })
                         .fail(function (XMLHttpRequest, textStatus, errorThrown) {
-                        console.log("Proof Service Failed: " + errorThrown);
-                        that.messagebox.Show("Proof Service Failed: " + errorThrown);
-                        proofResultViewer.OnProofFailed();
+                        appModel.ProofResult = new BMA.Model.ProofResult(false, null, null);
+                        proofResultViewer.SetData({
+                            issucceeded: undefined,
+                            message: "Server error",
+                            data: undefined
+                        });
+                        proofResultViewer.ShowResult(appModel.ProofResult);
+                        //console.log("Proof Service Failed: " + errorThrown);
+                        //that.messagebox.Show("Proof Service Failed: " + errorThrown);
+                        //proofResultViewer.OnProofFailed();
                     });
                 });
                 window.Commands.On("ProofRequested", function (args) {
@@ -9082,6 +9089,7 @@ var BMA;
             this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("plot-check");
             var tdall1 = $('<td></td>').appendTo(alltr);
             this.alldiv = $('<div></div>').attr("checked", that.checkAllButtons()).text("ALL").appendTo(tdall1);
+            var tdall2 = $('<td></td>').attr("colspan", array[0].length - 3).appendTo(alltr);
             tdall1.css("border-left", "none");
             this.allcheck.bind("click", function () {
                 that.alldiv.attr("checked", !that.alldiv.attr("checked"));
