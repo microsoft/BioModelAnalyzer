@@ -141,7 +141,7 @@
                             appModel.ProofResult = new BMA.Model.ProofResult(false, null, null);
                             proofResultViewer.SetData({
                                 issucceeded: undefined,
-                                message: "Server error",
+                                message: errorThrown,
                                 data: undefined
                             })
                             proofResultViewer.ShowResult(appModel.ProofResult);
