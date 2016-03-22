@@ -4077,12 +4077,6 @@ ui-icon-arrowthickstop-1-n {
   width: 90px;
   table-layout: auto;
 }
-.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table td:nth-child(1) {
-  border-right: none;
-}
-.ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table td:nth-child(2) {
-  border-left: none;
-}
 .ltlresultsviewer .ltl-simplot-container .big-simulation-popout-table .variables-table tr.red {
   background-color: #FEB6B2;
 }
