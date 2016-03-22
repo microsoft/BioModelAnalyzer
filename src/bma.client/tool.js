@@ -1188,7 +1188,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=commands.js.map
+//# sourceMappingURL=Commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13738,30 +13738,7 @@ jQuery.fn.extend({
             this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
             $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
             $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
-            /*
-            var svgdiv = $("<div></div>").appendTo(root);
-
-            this.svgdiv = svgdiv;
-
-            var pixofs = this._pixelOffset;
-            svgdiv.svg({
-                onLoad: function (svg) {
-                    that._svg = svg;
-
-                    svg.configure({
-                        width: root.width() - pixofs,
-                        height: root.height() - pixofs,
-                        viewBox: "0 0 " + (root.width() - pixofs) + " " + (root.height() - pixofs),
-                        preserveAspectRatio: "none meet"
-                    }, true);
-
-                    that.refresh();
-                }
-            });
-
-            svgdiv.hide();
-            */
-            that.canvasDiv = $("<div></div>").appendTo(root);
+            that.canvasDiv = $("<div></div>").width(root.width()).appendTo(root);
             that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).appendTo(that.canvasDiv);
             that.refresh();
         },
@@ -13793,13 +13770,25 @@ jQuery.fn.extend({
                     opSize.width *= maxHeight / opSize.height;
                     opSize.height = maxHeight;
                 }
+                var w = opSize.width;
+                if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
+                    context.font = "14px Segoe-UI";
+                    context.textBaseline = "middle";
+                    context.fillStyle = operations[i].status === "fail" ? "rgb(254, 172, 158)" : "green";
+                    var text = operations[i].steps + " steps";
+                    var textW = context.measureText(text);
+                    w += textW.width + 10;
+                }
+                else if (operations[i].status === "processing") {
+                    w += 30;
+                }
                 sizes.push({ size: opSize, scale: scale });
                 height += opSize.height + this.options.padding.y;
-                width = Math.max(width, opSize.width);
+                width = Math.max(width, w);
             }
             canvas.height = height;
             canvas.width = width;
-            width = 0;
+            that.canvasDiv.width(width);
             height = this.options.padding.y;
             for (var i = 0; i < operations.length; i++) {
                 var op = operations[i].operation;

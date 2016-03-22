@@ -19,30 +19,7 @@
             $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
             $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
             
-            /*
-            var svgdiv = $("<div></div>").appendTo(root);
-
-            this.svgdiv = svgdiv;
-
-            var pixofs = this._pixelOffset;
-            svgdiv.svg({
-                onLoad: function (svg) {
-                    that._svg = svg;
-
-                    svg.configure({
-                        width: root.width() - pixofs,
-                        height: root.height() - pixofs,
-                        viewBox: "0 0 " + (root.width() - pixofs) + " " + (root.height() - pixofs),
-                        preserveAspectRatio: "none meet"
-                    }, true);
-
-                    that.refresh();
-                }
-            });
-
-            svgdiv.hide();
-            */
-            that.canvasDiv = $("<div></div>").appendTo(root);
+            that.canvasDiv = $("<div></div>").width(root.width()).appendTo(root);
             that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).appendTo(that.canvasDiv);
             that.refresh();
         },
@@ -90,14 +67,24 @@
                     opSize.height = maxHeight;
                 }
 
+                var w = opSize.width;
+                if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
+                    context.font = "14px Segoe-UI";
+                    var text = operations[i].steps + " steps";
+                    var textW = context.measureText(text);
+                    w += textW.width + 10;
+                } else if (operations[i].status === "processing") {
+                    w += 30;
+                }
+
                 sizes.push({ size: opSize, scale: scale });
                 height += opSize.height + this.options.padding.y;
-                width = Math.max(width, opSize.width);
+                width = Math.max(width, w);
             }
             canvas.height = height;
             canvas.width = width;
+            that.canvasDiv.width(width);
 
-            width = 0;
             height = this.options.padding.y;
             for (var i = 0; i < operations.length; i++) {
                 var op = operations[i].operation;
@@ -131,9 +118,7 @@
                 }
 
                 height += opSize.height + this.options.padding.y;
-
             }
-
         },
 
         _getOperationColor: function (status, width, height): any {
