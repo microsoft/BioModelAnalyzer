@@ -964,9 +964,14 @@ var BMA;
                     if (variable instanceof BMA.LTLOperations.NameOperand) {
                         var variableId = variable.Id;
                         if (variableId === undefined || !model.GetVariableById(variableId)) {
-                            isActual = false;
+                            var id = model.GetIdByName(variable.Name);
+                            if (id.length != 1) {
+                                isActual = false;
+                                isChanged = true;
+                                break;
+                            }
+                            variableId = parseFloat(id[0]);
                             isChanged = true;
-                            break;
                         }
                         var variableInModel = model.GetVariableById(variableId);
                         if (variableInModel === undefined || !variableInModel.Name) {
@@ -11711,7 +11716,7 @@ jQuery.fn.extend({
                 tabid: "LTLStates"
             });
             this.temp_prop = $('<div></div>').appendTo(elem);
-            this.temp_content = $('<div></div>').width(400).css("min-height", 155).css("max-height", 440).temporalpropertiesviewer();
+            this.temp_content = $('<div></div>').width(400).css("min-height", 155).css("max-height", 365).temporalpropertiesviewer();
             this.temp_content.click(function () {
                 if (that.options.opentpeditor !== undefined) {
                     that.options.opentpeditor();
