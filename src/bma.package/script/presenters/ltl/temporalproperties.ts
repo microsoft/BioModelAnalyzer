@@ -881,7 +881,22 @@ module BMA {
 
                     var formula = operation.Operation.GetFormula();
 
-                    var model = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                    var model;
+                    try {
+                        model = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                    }
+                    catch (exc) {
+                        driver.SetStatus("nottested", "Incorrect Model: " + exc);
+                        operation.AnalysisStatus = "nottested";
+                        operation.Tag.data = undefined;
+                        operation.Tag.negdata = undefined;
+                        operation.Tag.steps = driver.GetSteps();
+                        domplot.updateLayout();
+                        that.OnOperationsChanged(false);
+
+                        return;
+                    }
+
                     var proofInput = {
                         "Name": model.Name,
                         "Relationships": model.Relationships,
