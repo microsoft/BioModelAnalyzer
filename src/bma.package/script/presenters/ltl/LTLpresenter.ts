@@ -23,7 +23,7 @@
                 exportService: BMA.UIDrivers.IExportService,
                 fileLoaderDriver: BMA.UIDrivers.IFileLoader,
                 logService: ISessionLog
-                ) {
+            ) {
 
                 var that = this;
                 this.appModel = appModel;
@@ -32,22 +32,35 @@
 
                 temporlapropertieseditor.SetStates(appModel.States);
 
-                ltlviewer.SetOnTabExpandedCallback(() => {
+                window.Commands.On("LTLTabExpand", (args) => {
+                    ltlviewer.ShowTabWaitIcon();
+                    
                     if (this.tppresenter === undefined) {
-                        temporlapropertieseditor.Show();
-                        this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(
-                            commands,
-                            appModel,
-                            ajax,
-                            temporlapropertieseditor,
-                            this.statespresenter,
-                            logService);
-                        temporlapropertieseditor.Hide();
+
+                        //For faster reaction time
+                        setTimeout(() => {
+                            temporlapropertieseditor.Show();
+                            this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(
+                                commands,
+                                appModel,
+                                ajax,
+                                temporlapropertieseditor,
+                                that.statespresenter,
+                                logService);
+                            temporlapropertieseditor.Hide();
+                            ltlviewer.GetTemporalPropertiesViewer().Refresh();
+                            ltlviewer.HideTabWaitIcon();
+                        }, 1000);
+
+                    } else {
+                        ltlviewer.GetTemporalPropertiesViewer().Refresh();
+                        ltlviewer.HideTabWaitIcon();
                     }
+
                 });
 
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
-                window.Commands.On("AppModelChanged",(args) => {
+                window.Commands.On("AppModelChanged", (args) => {
                     statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
                     statesEditorDriver.SetStates(appModel.States);
                     ltlviewer.GetStatesViewer().SetStates(appModel.States);
@@ -57,7 +70,7 @@
                     }
                 });
 
-                window.Commands.On("Expand",(param) => {
+                window.Commands.On("Expand", (param) => {
                     switch (param) {
                         case "LTLStates":
                             statesEditorDriver.Show();
@@ -85,14 +98,14 @@
                     }
                 });
 
-                window.Commands.On("Collapse",(param) => {
+                window.Commands.On("Collapse", (param) => {
                     temporlapropertieseditor.Hide();
                     statesEditorDriver.Hide();
                     ltlresultsviewer.Hide();
                     popupViewer.Hide();
                 });
 
-                window.Commands.On("ModelReset",(args) => {
+                window.Commands.On("ModelReset", (args) => {
                     var ops = [];
                     for (var i = 0; i < appModel.Operations.length; i++) {
                         ops.push({
@@ -108,12 +121,12 @@
                 //    ltlviewer.GetTemporalPropertiesViewer().Refresh();
                 //});
 
-                commands.On("TemporalPropertiesOperationsChanged",(args) => {
+                commands.On("TemporalPropertiesOperationsChanged", (args) => {
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(args);
                 });
 
                 var ltlDataToExport = undefined;
-                commands.On("ShowLTLResults",(args) => {
+                commands.On("ShowLTLResults", (args) => {
                     ltlDataToExport = {
                         ticks: args.ticks,
                         model: appModel.BioModel.Clone(),
@@ -150,13 +163,13 @@
                     }
                 });
 
-                commands.On("ExportLTLFormula",(args) => {
+                commands.On("ExportLTLFormula", (args) => {
                     if (args.operation !== undefined) {
                         exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "txt");
                     }
                 });
 
-                commands.On("ImportLTLFormula",(args) => {
+                commands.On("ImportLTLFormula", (args) => {
                     fileLoaderDriver.OpenFileDialog().done(function (fileName) {
                         var fileReader: any = new FileReader();
                         fileReader.onload = function () {
@@ -224,7 +237,7 @@
                 }
             }
 
-            private GetStates(operation: BMA.LTLOperations.Operation): BMA.LTLOperations.Keyframe[]{
+            private GetStates(operation: BMA.LTLOperations.Operation): BMA.LTLOperations.Keyframe[] {
                 var that = this;
                 var result = [];
 
@@ -266,7 +279,7 @@
                     if (!exist) {
                         var addedState = newState.Clone();
                         addedState.Name = BMA.ModelHelper.GenerateStateName(currentStates, newState);//String.fromCharCode(65 + result.states.length);
-                        result.states.push(addedState); 
+                        result.states.push(addedState);
                         result.map[newState.Name] = addedState.Name;
                     }
                 }
@@ -319,7 +332,7 @@
 
                 return csv;
             }
-            
+
         }
     }
 } 

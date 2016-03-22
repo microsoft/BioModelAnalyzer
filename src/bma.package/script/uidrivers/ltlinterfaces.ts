@@ -11,6 +11,8 @@ module BMA {
             GetTemporalPropertiesViewer(): BMA.UIDrivers.ITemporalPropertiesViewer;
             GetStatesViewer(): BMA.UIDrivers.IStatesViewer;
             SetOnTabExpandedCallback(callback);
+            ShowTabWaitIcon();
+            HideTabWaitIcon();
         }
 
         export interface IKeyframesList {

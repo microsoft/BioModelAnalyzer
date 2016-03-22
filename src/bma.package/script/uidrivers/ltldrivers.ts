@@ -45,6 +45,7 @@ module BMA {
                     }
                 });
 
+                /*
                 accordion.bmaaccordion({
                     onactivetabchanged: (args) => {
                         if (this.ltlviewer.attr("aria-hidden") === "false") {
@@ -55,6 +56,7 @@ module BMA {
                         }
                     }
                 });
+                */
             }
 
             public AddState(items) {
@@ -104,6 +106,15 @@ module BMA {
             SetOnTabExpandedCallback(callback) {
                 this.onTabEcpandedCallback = callback;
             }
+
+            public ShowTabWaitIcon() {
+                this.accordion.bmaaccordion({ contentLoaded: { ind: "#icon3", val: false } });
+            }
+
+            public HideTabWaitIcon() {
+                this.accordion.bmaaccordion({ contentLoaded: { ind: "#icon3", val: true } });
+            }
+
         }
 
         export class TemporalPropertiesEditorDriver implements ITemporalPropertiesEditor {

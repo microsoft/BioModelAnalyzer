@@ -4862,7 +4862,6 @@ var BMA;
         UIDrivers.KeyframesExpandedViewer = KeyframesExpandedViewer;
         var LTLViewer = (function () {
             function LTLViewer(accordion, ltlviewer) {
-                var _this = this;
                 this.onTabEcpandedCallback = undefined;
                 this.ltlviewer = ltlviewer;
                 this.accordion = accordion;
@@ -4874,16 +4873,18 @@ var BMA;
                         window.Commands.Execute("Expand", "LTLStates");
                     }
                 });
+                /*
                 accordion.bmaaccordion({
-                    onactivetabchanged: function (args) {
-                        if (_this.ltlviewer.attr("aria-hidden") === "false") {
-                            _this.ltlviewer.ltlviewer("GetTPViewer").temporalpropertiesviewer("refresh");
-                            if (_this.onTabEcpandedCallback !== undefined) {
-                                _this.onTabEcpandedCallback();
+                    onactivetabchanged: (args) => {
+                        if (this.ltlviewer.attr("aria-hidden") === "false") {
+                            this.ltlviewer.ltlviewer("GetTPViewer").temporalpropertiesviewer("refresh");
+                            if (this.onTabEcpandedCallback !== undefined) {
+                                this.onTabEcpandedCallback();
                             }
                         }
                     }
                 });
+                */
             }
             LTLViewer.prototype.AddState = function (items) {
                 var resdiv = this.ltlviewer.ltlviewer('Get', 'LTLStates');
@@ -4924,6 +4925,12 @@ var BMA;
             };
             LTLViewer.prototype.SetOnTabExpandedCallback = function (callback) {
                 this.onTabEcpandedCallback = callback;
+            };
+            LTLViewer.prototype.ShowTabWaitIcon = function () {
+                this.accordion.bmaaccordion({ contentLoaded: { ind: "#icon3", val: false } });
+            };
+            LTLViewer.prototype.HideTabWaitIcon = function () {
+                this.accordion.bmaaccordion({ contentLoaded: { ind: "#icon3", val: true } });
             };
             return LTLViewer;
         })();
@@ -13885,11 +13892,21 @@ var BMA;
                 this.ltlviewer = ltlviewer;
                 this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer());
                 temporlapropertieseditor.SetStates(appModel.States);
-                ltlviewer.SetOnTabExpandedCallback(function () {
+                window.Commands.On("LTLTabExpand", function (args) {
+                    ltlviewer.ShowTabWaitIcon();
                     if (_this.tppresenter === undefined) {
-                        temporlapropertieseditor.Show();
-                        _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, _this.statespresenter, logService);
-                        temporlapropertieseditor.Hide();
+                        //For faster reaction time
+                        setTimeout(function () {
+                            temporlapropertieseditor.Show();
+                            _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, that.statespresenter, logService);
+                            temporlapropertieseditor.Hide();
+                            ltlviewer.GetTemporalPropertiesViewer().Refresh();
+                            ltlviewer.HideTabWaitIcon();
+                        }, 1000);
+                    }
+                    else {
+                        ltlviewer.GetTemporalPropertiesViewer().Refresh();
+                        ltlviewer.HideTabWaitIcon();
                     }
                 });
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
