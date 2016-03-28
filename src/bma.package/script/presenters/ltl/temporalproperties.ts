@@ -1145,12 +1145,12 @@ module BMA {
                 });
 
                 driver.SetOnStepsChangedCallback(() => {
+                    operation.Tag.steps = driver.GetSteps();
                     if (operation.AnalysisStatus !== "nottested") {
-                        //if (operation.AnalysisStatus !== "partialsuccess")
                         (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.5);
                         operation.AnalysisStatus = "nottested";
-                        that.OnOperationsChanged(false, false);
                     }
+                    that.OnOperationsChanged(false, false);
                 });
 
                 var bbox = operation.BoundingBox;
