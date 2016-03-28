@@ -41,7 +41,7 @@
                             var errorMessage = $("<div>" + that.options.error + "</div>").addClass("red").appendTo(ltltestdiv);
                         }
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(ltltestdiv);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -109,7 +109,7 @@
 
                         var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(ltltestdiv);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -151,7 +151,7 @@
 
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(sr);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -238,7 +238,7 @@
 
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(sr);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -337,7 +337,7 @@
                         var fr = $("<div>No trace found</div>").appendTo(ltlresdiv);
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(sr);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
