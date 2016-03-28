@@ -1135,8 +1135,9 @@ module BMA {
                                 driverToCheck.Collapse();
                             } else {
                                 driverToCheck.MoveToTop();
-                                if (operation.AnalysisStatus !== "nottested" && operation.AnalysisStatus !=="partialsuccess")
-                                    (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.65);
+                                if (operation.AnalysisStatus !== "nottested" && operation.AnalysisStatus !== "partialsuccess") {
+                                    (<any>dom).set(opDiv[0], operation.BoundingBox.x + operation.BoundingBox.width + that.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.65);
+                                }
                             }
                         }
                     }
@@ -1147,7 +1148,7 @@ module BMA {
                 driver.SetOnStepsChangedCallback(() => {
                     operation.Tag.steps = driver.GetSteps();
                     if (operation.AnalysisStatus !== "nottested") {
-                        (<any>dom).add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.5);
+                        (<any>dom).set(opDiv[0], operation.BoundingBox.x + operation.BoundingBox.width + that.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.5);
                         operation.AnalysisStatus = "nottested";
                     }
                     that.OnOperationsChanged(false, false);
