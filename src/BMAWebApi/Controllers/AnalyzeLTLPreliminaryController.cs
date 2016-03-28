@@ -17,38 +17,11 @@ using System.Xml.Serialization;
 
 namespace bma.client.Controllers
 {
-    public class AnalysisOutputDTO : AnalysisResult
-    {
-        public int Time { get; set; }
-
-        public string[] ErrorMessages { get; set; }
-
-        public string[] DebugMessages { get; set; }
-
-        public int Loop { get; set; }
-    }
-
-    public class LTLAnalysisOutputDTO : AnalysisOutputDTO
-    {
-        [XmlElement("Tick", Type = typeof(Tick))]
-        public Tick[] NegTicks { get; set; }
-    }
-
-    public class AnalysisInputDTO : Model
-    {
-        [XmlIgnore]
-        public bool EnableLogging { get; set; }
-        public string Formula { get; set; }
-
-        public string Number_of_steps { get; set; }
-
-    }
-
-    public class AnalyzeLTLController : ApiController
+    public class AnalyzeLTLPreliminaryController : ApiController
     {
         private readonly IFailureLogger faultLogger;
 
-        public AnalyzeLTLController(IFailureLogger logger)
+        public AnalyzeLTLPreliminaryController(IFailureLogger logger)
         {
             this.faultLogger = logger;
         }
@@ -81,7 +54,7 @@ namespace bma.client.Controllers
 
                 var model = (Model)input;
                 //var result = analyzer.checkLTL((Model)input, formula, num_of_steps); 
-                var result = Utilities.RunWithTimeLimit(() => analyzer.checkLTL((Model)input, formula, num_of_steps), TimeSpan.FromMinutes(1));//, Utilities.GetTimeLimitFromConfig());
+                var result = Utilities.RunWithTimeLimit(() => analyzer.checkLTLPreliminary((Model)input, formula, num_of_steps), TimeSpan.FromMinutes(1));//, Utilities.GetTimeLimitFromConfig());
 
                 // Log the output XML each time it's run
                 // DEBUG: Sam - to check why the output is returning is null

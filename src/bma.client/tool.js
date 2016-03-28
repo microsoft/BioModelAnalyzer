@@ -1188,7 +1188,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=commands.js.map
+//# sourceMappingURL=Commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -4746,7 +4746,7 @@ var BMA;
                         this.currentActiveRequestCount++;
                         $.ajax({
                             type: "POST",
-                            url: "api/AnalyzeLTL",
+                            url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
                             data: JSON.stringify(request.data),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json"
@@ -15165,7 +15165,6 @@ var BMA;
                 driver.SetOnStepsChangedCallback(function () {
                     operation.Tag.steps = driver.GetSteps();
                     if (operation.AnalysisStatus !== "nottested") {
-                        //if (operation.AnalysisStatus !== "partialsuccess")
                         dom.add(opDiv, "none", bbox.x + bbox.width + _this.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.5);
                         operation.AnalysisStatus = "nottested";
                     }
