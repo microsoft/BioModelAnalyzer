@@ -12949,7 +12949,7 @@ jQuery.fn.extend({
                         var errorMessage = $("<div>" + that.options.error + "</div>").addClass("red").appendTo(ltltestdiv);
                     }
                     var d = $("<div>" + that.options.steps + " steps</div>")
-                        .css("display", "inline-block")
+                        .css("display", "inline-block").css("width", 55)
                         .appendTo(ltltestdiv);
                     var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
                     var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -13011,7 +13011,7 @@ jQuery.fn.extend({
                     if (this.options.isexpanded) {
                         var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(ltltestdiv);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -13050,7 +13050,7 @@ jQuery.fn.extend({
                         ltlresdiv.html("True for all traces<br>");
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(sr);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -13089,7 +13089,7 @@ jQuery.fn.extend({
                             minusd.removeClass("testing");
                             minusb.removeClass("testing");
                         });
-                        var ul = $("<ul></ul>").addClass("button-list").css("margin", "10px 0 5px 0").appendTo(ltlresdiv);
+                        var ul = $("<ul></ul>").addClass("button-list").css("margin", "5px 0 5px 0").appendTo(ltlresdiv);
                         var li = $("<li></li>").appendTo(ul);
                         var btn = $("<button><img src='../images/small-tick.svg'> example </button>").addClass("LTL-sim-true").appendTo(li);
                         btn.click(function () {
@@ -13127,7 +13127,7 @@ jQuery.fn.extend({
                         ltlresdiv.html("True for some traces<br>");
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(sr);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -13215,7 +13215,7 @@ jQuery.fn.extend({
                         var fr = $("<div>No trace found</div>").appendTo(ltlresdiv);
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(sr);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -15050,7 +15050,7 @@ var BMA;
                     var driver = op.Tag.driver;
                     driver.SetStatus(op.AnalysisStatus);
                     driver.SetSteps(op.Tag.steps);
-                    dom.set(op.Tag.dommarker[0], bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0, 0, 0.5 /*40 * 57.28 / 27, 40*/);
+                    dom.set(op.Tag.dommarker[0], bbox.x + bbox.width + this.controlPanelPadding, -op.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/);
                     op.Tag.dommarker.show();
                 }
             };
@@ -15155,8 +15155,8 @@ var BMA;
                             }
                             else {
                                 driverToCheck.MoveToTop();
-                                if (operation.AnalysisStatus !== "nottested")
-                                    dom.add(opDiv, "none", bbox.x + bbox.width + _this.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.5);
+                                if (operation.AnalysisStatus !== "nottested" && operation.AnalysisStatus !== "partialsuccess")
+                                    dom.add(opDiv, "none", bbox.x + bbox.width + _this.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.65);
                             }
                         }
                     }
@@ -15164,8 +15164,8 @@ var BMA;
                 });
                 driver.SetOnStepsChangedCallback(function () {
                     if (operation.AnalysisStatus !== "nottested") {
-                        if (operation.AnalysisStatus !== "partialsuccess")
-                            dom.add(opDiv, "none", bbox.x + bbox.width + _this.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.3);
+                        //if (operation.AnalysisStatus !== "partialsuccess")
+                        dom.add(opDiv, "none", bbox.x + bbox.width + _this.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.5);
                         operation.AnalysisStatus = "nottested";
                         that.OnOperationsChanged(false, false);
                     }

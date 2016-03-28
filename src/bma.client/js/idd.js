@@ -2817,8 +2817,8 @@ function IDD($, Rx) {;/**
                         myEl._height = height;
                 }
 
-                myEl._originX = ox || 0;
-                myEl._originY = oy || 0;
+                myEl._originX = ox || myEl._originX;
+                myEl._originY = oy || myEl._originY;
 
                 this.invalidateLocalBounds();
                 this.requestUpdateLayout();
