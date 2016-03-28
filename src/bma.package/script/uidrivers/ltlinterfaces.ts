@@ -70,7 +70,8 @@ module BMA {
         }
 
         export interface ICompactLTLResultsViewer {
-            SetStatus(status: string, message?:string);
+            SetStatus(status: string, message?: string);
+            SetMessage(message: string);
             Collapse();
             Expand();
             SetSteps(steps: number);

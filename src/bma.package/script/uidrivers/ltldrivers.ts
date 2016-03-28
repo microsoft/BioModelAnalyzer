@@ -627,6 +627,10 @@ module BMA {
                 this.compactltlresult.compactltlresult(options);
             }
 
+            public SetMessage(message: string) {
+                this.compactltlresult.compactltlresult({ "error": message });
+            }
+
             public SetSteps(steps: number) {
                 if (steps && steps > 0)
                     this.compactltlresult.compactltlresult({

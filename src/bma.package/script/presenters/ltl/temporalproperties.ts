@@ -876,7 +876,7 @@ module BMA {
                     this.log.LogLTLRequest();
 
                     operation.AnalysisStatus = "processing";
-                    driver.SetStatus("processing");
+                    driver.SetStatus("processing", undefined);
                     domplot.updateLayout();
 
                     var formula = operation.Operation.GetFormula();
@@ -1150,6 +1150,7 @@ module BMA {
                     if (operation.AnalysisStatus !== "nottested") {
                         (<any>dom).set(opDiv[0], operation.BoundingBox.x + operation.BoundingBox.width + that.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.5);
                         operation.AnalysisStatus = "nottested";
+                        driver.SetMessage(undefined);
                     }
                     that.OnOperationsChanged(false, false);
                 });

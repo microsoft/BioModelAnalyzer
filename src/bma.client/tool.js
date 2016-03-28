@@ -5358,6 +5358,9 @@ var BMA;
                     options.error = message;
                 this.compactltlresult.compactltlresult(options);
             };
+            LTLResultsCompactViewer.prototype.SetMessage = function (message) {
+                this.compactltlresult.compactltlresult({ "error": message });
+            };
             LTLResultsCompactViewer.prototype.SetSteps = function (steps) {
                 if (steps && steps > 0)
                     this.compactltlresult.compactltlresult({
@@ -14937,7 +14940,7 @@ var BMA;
                 if (operation.IsCompleted) {
                     this.log.LogLTLRequest();
                     operation.AnalysisStatus = "processing";
-                    driver.SetStatus("processing");
+                    driver.SetStatus("processing", undefined);
                     domplot.updateLayout();
                     var formula = operation.Operation.GetFormula();
                     var model;
@@ -15168,6 +15171,7 @@ var BMA;
                     if (operation.AnalysisStatus !== "nottested") {
                         dom.set(opDiv[0], operation.BoundingBox.x + operation.BoundingBox.width + that.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.5);
                         operation.AnalysisStatus = "nottested";
+                        driver.SetMessage(undefined);
                     }
                     that.OnOperationsChanged(false, false);
                 });
