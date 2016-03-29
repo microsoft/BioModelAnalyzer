@@ -163,6 +163,18 @@ let PolarityBoundedMC ltl_formula network paths previous_res previous_model =
         let (res2, model2) = (true, previous_model)
         (res1, model1, res2, model2)
 
+//Method duplicates previous but with more clear output
+//let PolarityBoundedMC2 ltl_formula network paths previous_res =
+//    if previous_res then
+//        //let (res1, model1) = (previous_res, previous_model)
+//        let (res2, model2) =
+//            SingleSideBoundedMC ltl_formula network paths -1 false
+//        (res1, model1, res2, model2)
+//    else
+//        let (res1, model1) = SingleSideBoundedMC ltl_formula network paths -1 true
+//        //let (res2, model2) = (true, previous_model)
+//        (res1, model1, res2, model2)
+
     
 let DoubleBoundedMCWithSim (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int list> list) check_both =
     let (res,model) = SimulationBasedMC ltl_formula network paths

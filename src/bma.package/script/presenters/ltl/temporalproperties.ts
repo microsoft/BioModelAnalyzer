@@ -274,9 +274,8 @@ module BMA {
 
                 commands.On("TemporalPropertiesEditorCut", (args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
-                        this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
-
-                        //this.ClearOperationTag(this.contextElement.operationlayoutref, false);
+                        this.ResetOperation(this.contextElement.operationlayoutref);
+                        //this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
 
                         var unpinned = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
@@ -334,7 +333,8 @@ module BMA {
 
                 commands.On("TemporalPropertiesEditorDelete", (args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
-                        this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
+                        this.ResetOperation(this.contextElement.operationlayoutref);
+                        //this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
                         //this.ClearOperationTag(this.contextElement.operationlayoutref);
 
                         var op = this.contextElement.operationlayoutref.UnpinOperation(this.contextElement.x, this.contextElement.y);
@@ -355,6 +355,9 @@ module BMA {
                         for (var i = 0; i < this.operations.length; i++) {
                             var op = this.operations[i];
                             op.RefreshStates(args.states);
+
+                            if (op.AnalysisStatus === "nottested")
+                                this.ResetOperation(op);
                         }
 
                         this.FitToView();
@@ -396,7 +399,8 @@ module BMA {
                             var op = this.operations[i];
                             op.RefreshStates(appModel.States);
                             if (args.isMajorChange) {
-                                op.AnalysisStatus = "nottested";
+                                this.ResetOperation(op);
+                                //op.AnalysisStatus = "nottested";
                             }
                         }
 
@@ -480,7 +484,8 @@ module BMA {
                                         this.stagingOperation = undefined;
                                     } else {
                                         if (!picked.isRoot) {
-                                            staginOp.AnalysisStatus = "nottested";
+                                            this.ResetOperation(staginOp);
+                                            //staginOp.AnalysisStatus = "nottested";
                                             //this.ClearOperationTag(staginOp);
                                             //staginOp.Tag = undefined;
                                         }
@@ -638,7 +643,8 @@ module BMA {
                                                     //emptyCell.opLayout = operation;
                                                     emptyCell.operation.Operands[emptyCell.operandIndex] = this.stagingOperation.operation.Operation.Clone();
                                                     operation.Refresh();
-                                                    operation.AnalysisStatus = "nottested";
+                                                    this.ResetOperation(operation);
+                                                    //operation.AnalysisStatus = "nottested";
                                                     //this.ClearOperationTag(operation);
                                                     //operation.Tag = undefined;
 
@@ -687,6 +693,14 @@ module BMA {
 
 
                     this.isInitialized = true;
+                }
+            }
+
+            private ResetOperation(operation: BMA.LTLOperations.OperationLayout) {
+                operation.AnalysisStatus = "nottested";
+                if (operation.Tag !== undefined && operation.Tag.driver !== undefined) {
+                    operation.Tag.driver.SetStatus("nottested");
+                    operation.Tag.driver.SetMessage(undefined);
                 }
             }
 
@@ -876,12 +890,27 @@ module BMA {
                     this.log.LogLTLRequest();
 
                     operation.AnalysisStatus = "processing";
-                    driver.SetStatus("processing");
+                    driver.SetStatus("processing", undefined);
                     domplot.updateLayout();
 
                     var formula = operation.Operation.GetFormula();
 
-                    var model = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                    var model;
+                    try {
+                        model = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                    }
+                    catch (exc) {
+                        driver.SetStatus("nottested", "Incorrect Model: " + exc);
+                        operation.AnalysisStatus = "nottested";
+                        operation.Tag.data = undefined;
+                        operation.Tag.negdata = undefined;
+                        operation.Tag.steps = driver.GetSteps();
+                        domplot.updateLayout();
+                        that.OnOperationsChanged(false);
+
+                        return;
+                    }
+
                     var proofInput = {
                         "Name": model.Name,
                         "Relationships": model.Relationships,
@@ -892,6 +921,9 @@ module BMA {
 
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
+                            if (operation.AnalysisStatus !== "processing")
+                                return;
+
                             if (res.Ticks == null) {
                                 that.log.LogLTLError();
 
@@ -969,6 +1001,9 @@ module BMA {
                             }
                         })
                         .fail(function (xhr, textStatus, errorThrown) {
+                            if (operation.AnalysisStatus !== "processing")
+                                return;
+
                             that.log.LogLTLError();
                             driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
                             operation.AnalysisStatus = "nottested";
@@ -1120,6 +1155,9 @@ module BMA {
                                 driverToCheck.Collapse();
                             } else {
                                 driverToCheck.MoveToTop();
+                                if (operation.AnalysisStatus !== "nottested" && operation.AnalysisStatus !== "partialsuccess") {
+                                    (<any>dom).set(opDiv[0], operation.BoundingBox.x + operation.BoundingBox.width + that.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.65);
+                                }
                             }
                         }
                     }
@@ -1128,10 +1166,13 @@ module BMA {
                 });
 
                 driver.SetOnStepsChangedCallback(() => {
+                    operation.Tag.steps = driver.GetSteps();
                     if (operation.AnalysisStatus !== "nottested") {
+                        (<any>dom).set(opDiv[0], operation.BoundingBox.x + operation.BoundingBox.width + that.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.5);
                         operation.AnalysisStatus = "nottested";
-                        that.OnOperationsChanged(false, false);
+                        driver.SetMessage(undefined);
                     }
+                    that.OnOperationsChanged(false, false);
                 });
 
                 var bbox = operation.BoundingBox;

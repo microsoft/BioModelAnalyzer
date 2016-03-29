@@ -11,6 +11,8 @@ module BMA {
             GetTemporalPropertiesViewer(): BMA.UIDrivers.ITemporalPropertiesViewer;
             GetStatesViewer(): BMA.UIDrivers.IStatesViewer;
             SetOnTabExpandedCallback(callback);
+            ShowTabWaitIcon();
+            HideTabWaitIcon();
         }
 
         export interface IKeyframesList {
@@ -68,7 +70,8 @@ module BMA {
         }
 
         export interface ICompactLTLResultsViewer {
-            SetStatus(status: string, message?:string);
+            SetStatus(status: string, message?: string);
+            SetMessage(message: string);
             Collapse();
             Expand();
             SetSteps(steps: number);

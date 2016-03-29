@@ -197,6 +197,7 @@
             this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("plot-check");
             var tdall1 = $('<td></td>').appendTo(alltr);
             this.alldiv = $('<div></div>').attr("checked", that.checkAllButtons()).text("ALL").appendTo(tdall1);
+            var tdall2 = $('<td></td>').attr("colspan", array[0].length - 3).appendTo(alltr);
 
             tdall1.css("border-left", "none");
 

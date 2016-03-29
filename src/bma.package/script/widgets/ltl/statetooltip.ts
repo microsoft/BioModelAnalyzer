@@ -13,41 +13,49 @@
            // if (this.options.state && this.options.state.formula && this.options.state.formula.lenght !== 0) {
                 this.element.tooltip({
                     tooltipClass: "state-tooltip",
-                    content: function () {
-                        var stateTooltip = $("<div></div>");
-                        var description = $("<div>" + that.options.state.description + "</div>").appendTo(stateTooltip);
-                        if (that.options.state.description)
-                            description.show();
-                        else
-                            description.hide();
-                        if (that.options.state && that.options.state.formula && that.options.state.formula.lenght !== 0) {
-                            var table = $("<table></table>").appendTo(stateTooltip);
-                            var tbody = $("<tbody></tbody>").appendTo(table);
-                            var k = that.options.state.formula.length;
-                            for (var j = 0; j < k && j < 3; j++) {
-                                var tr = that.getFormula(that.options.state.formula[j]);
-                                tr.appendTo(tbody);
-                            }
-                            var message = "and " + (k - 3) + " more condition" + ((k - 3) > 1 ? "s" : "");
-                            var tooMuchStates = $("<div>" + message + "</div>").appendTo(stateTooltip);
-                            if (k > 3)
-                                tooMuchStates.show();
-                            else
-                                tooMuchStates.hide();
-                        }
-                        return stateTooltip;
-                    },
                     position: {
                         at: "left-48px bottom",
                         collision: 'none',
                     },
+                    content: function() {
+                        return that.createContent();
+                    },
                     show: null,
                     hide: false,
-                    items: "div.state-button"
+                    items: "div.state-button",
+                    close: function (event, ui) {
+                        that.element.data("ui-tooltip").liveRegion.children().remove();
+                    },
                 });
             //}
 
             this.refresh();
+        },
+
+        createContent: function () {
+            var that = this;
+            var stateTooltip = $("<div></div>");
+            var description = $("<div>" + that.options.state.description + "</div>").appendTo(stateTooltip);
+            if (that.options.state.description)
+                description.show();
+            else
+                description.hide();
+            if (that.options.state && that.options.state.formula && that.options.state.formula.lenght !== 0) {
+                var table = $("<table></table>").appendTo(stateTooltip);
+                var tbody = $("<tbody></tbody>").appendTo(table);
+                var k = that.options.state.formula.length;
+                for (var j = 0; j < k && j < 3; j++) {
+                    var tr = that.getFormula(that.options.state.formula[j]);
+                    tr.appendTo(tbody);
+                }
+                var message = "and " + (k - 3) + " more condition" + ((k - 3) > 1 ? "s" : "");
+                var tooMuchStates = $("<div>" + message + "</div>").appendTo(stateTooltip);
+                if (k > 3)
+                    tooMuchStates.show();
+                else
+                    tooMuchStates.hide();
+            }
+            return stateTooltip;
         },
 
         getFormula: function (formula) {

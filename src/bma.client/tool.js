@@ -964,9 +964,14 @@ var BMA;
                     if (variable instanceof BMA.LTLOperations.NameOperand) {
                         var variableId = variable.Id;
                         if (variableId === undefined || !model.GetVariableById(variableId)) {
-                            isActual = false;
+                            var id = model.GetIdByName(variable.Name);
+                            if (id.length != 1) {
+                                isActual = false;
+                                isChanged = true;
+                                break;
+                            }
+                            variableId = parseFloat(id[0]);
                             isChanged = true;
-                            break;
                         }
                         var variableInModel = model.GetVariableById(variableId);
                         if (variableInModel === undefined || !variableInModel.Name) {
@@ -4741,7 +4746,7 @@ var BMA;
                         this.currentActiveRequestCount++;
                         $.ajax({
                             type: "POST",
-                            url: "api/AnalyzeLTL",
+                            url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
                             data: JSON.stringify(request.data),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json"
@@ -4862,7 +4867,6 @@ var BMA;
         UIDrivers.KeyframesExpandedViewer = KeyframesExpandedViewer;
         var LTLViewer = (function () {
             function LTLViewer(accordion, ltlviewer) {
-                var _this = this;
                 this.onTabEcpandedCallback = undefined;
                 this.ltlviewer = ltlviewer;
                 this.accordion = accordion;
@@ -4874,16 +4878,18 @@ var BMA;
                         window.Commands.Execute("Expand", "LTLStates");
                     }
                 });
+                /*
                 accordion.bmaaccordion({
-                    onactivetabchanged: function (args) {
-                        if (_this.ltlviewer.attr("aria-hidden") === "false") {
-                            _this.ltlviewer.ltlviewer("GetTPViewer").temporalpropertiesviewer("refresh");
-                            if (_this.onTabEcpandedCallback !== undefined) {
-                                _this.onTabEcpandedCallback();
+                    onactivetabchanged: (args) => {
+                        if (this.ltlviewer.attr("aria-hidden") === "false") {
+                            this.ltlviewer.ltlviewer("GetTPViewer").temporalpropertiesviewer("refresh");
+                            if (this.onTabEcpandedCallback !== undefined) {
+                                this.onTabEcpandedCallback();
                             }
                         }
                     }
                 });
+                */
             }
             LTLViewer.prototype.AddState = function (items) {
                 var resdiv = this.ltlviewer.ltlviewer('Get', 'LTLStates');
@@ -4924,6 +4930,12 @@ var BMA;
             };
             LTLViewer.prototype.SetOnTabExpandedCallback = function (callback) {
                 this.onTabEcpandedCallback = callback;
+            };
+            LTLViewer.prototype.ShowTabWaitIcon = function () {
+                this.accordion.bmaaccordion({ contentLoaded: { ind: "#icon3", val: false } });
+            };
+            LTLViewer.prototype.HideTabWaitIcon = function () {
+                this.accordion.bmaaccordion({ contentLoaded: { ind: "#icon3", val: true } });
             };
             return LTLViewer;
         })();
@@ -5345,6 +5357,9 @@ var BMA;
                 if (message)
                     options.error = message;
                 this.compactltlresult.compactltlresult(options);
+            };
+            LTLResultsCompactViewer.prototype.SetMessage = function (message) {
+                this.compactltlresult.compactltlresult({ "error": message });
             };
             LTLResultsCompactViewer.prototype.SetSteps = function (steps) {
                 if (steps && steps > 0)
@@ -6058,7 +6073,7 @@ var BMA;
                             var variableLayouts = layout.Variables.slice(0);
                             var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
                             var container = that.GetContainerFromGridCell(gridCell);
-                            variables.push(new BMA.Model.Variable(that.variableIndex, container.Id, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
+                            variables.push(new BMA.Model.Variable(that.variableIndex, container && container.Id ? container.Id : 0, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
                             variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle));
                             var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
@@ -7150,9 +7165,16 @@ var BMA;
                         that.Snapshot();
                     })
                         .fail(function (XMLHttpRequest, textStatus, errorThrown) {
-                        console.log("Proof Service Failed: " + errorThrown);
-                        that.messagebox.Show("Proof Service Failed: " + errorThrown);
-                        proofResultViewer.OnProofFailed();
+                        appModel.ProofResult = new BMA.Model.ProofResult(false, null, null);
+                        proofResultViewer.SetData({
+                            issucceeded: undefined,
+                            message: errorThrown,
+                            data: undefined
+                        });
+                        proofResultViewer.ShowResult(appModel.ProofResult);
+                        //console.log("Proof Service Failed: " + errorThrown);
+                        //that.messagebox.Show("Proof Service Failed: " + errorThrown);
+                        //proofResultViewer.OnProofFailed();
                     });
                 });
                 window.Commands.On("ProofRequested", function (args) {
@@ -9070,6 +9092,7 @@ var BMA;
             this.allcheck = $('<td id="allcheck"></td>').appendTo(alltr).addClass("plot-check");
             var tdall1 = $('<td></td>').appendTo(alltr);
             this.alldiv = $('<div></div>').attr("checked", that.checkAllButtons()).text("ALL").appendTo(tdall1);
+            var tdall2 = $('<td></td>').attr("colspan", array[0].length - 3).appendTo(alltr);
             tdall1.css("border-left", "none");
             this.allcheck.bind("click", function () {
                 that.alldiv.attr("checked", !that.alldiv.attr("checked"));
@@ -11711,7 +11734,7 @@ jQuery.fn.extend({
                 tabid: "LTLStates"
             });
             this.temp_prop = $('<div></div>').appendTo(elem);
-            this.temp_content = $('<div></div>').width(400).css("min-height", 155).css("max-height", 440).temporalpropertiesviewer();
+            this.temp_content = $('<div></div>').width(400).css("min-height", 155).css("max-height", 365).temporalpropertiesviewer();
             this.temp_content.click(function () {
                 if (that.options.opentpeditor !== undefined) {
                     that.options.opentpeditor();
@@ -12794,40 +12817,47 @@ jQuery.fn.extend({
             // if (this.options.state && this.options.state.formula && this.options.state.formula.lenght !== 0) {
             this.element.tooltip({
                 tooltipClass: "state-tooltip",
-                content: function () {
-                    var stateTooltip = $("<div></div>");
-                    var description = $("<div>" + that.options.state.description + "</div>").appendTo(stateTooltip);
-                    if (that.options.state.description)
-                        description.show();
-                    else
-                        description.hide();
-                    if (that.options.state && that.options.state.formula && that.options.state.formula.lenght !== 0) {
-                        var table = $("<table></table>").appendTo(stateTooltip);
-                        var tbody = $("<tbody></tbody>").appendTo(table);
-                        var k = that.options.state.formula.length;
-                        for (var j = 0; j < k && j < 3; j++) {
-                            var tr = that.getFormula(that.options.state.formula[j]);
-                            tr.appendTo(tbody);
-                        }
-                        var message = "and " + (k - 3) + " more condition" + ((k - 3) > 1 ? "s" : "");
-                        var tooMuchStates = $("<div>" + message + "</div>").appendTo(stateTooltip);
-                        if (k > 3)
-                            tooMuchStates.show();
-                        else
-                            tooMuchStates.hide();
-                    }
-                    return stateTooltip;
-                },
                 position: {
                     at: "left-48px bottom",
                     collision: 'none',
                 },
+                content: function () {
+                    return that.createContent();
+                },
                 show: null,
                 hide: false,
-                items: "div.state-button"
+                items: "div.state-button",
+                close: function (event, ui) {
+                    that.element.data("ui-tooltip").liveRegion.children().remove();
+                },
             });
             //}
             this.refresh();
+        },
+        createContent: function () {
+            var that = this;
+            var stateTooltip = $("<div></div>");
+            var description = $("<div>" + that.options.state.description + "</div>").appendTo(stateTooltip);
+            if (that.options.state.description)
+                description.show();
+            else
+                description.hide();
+            if (that.options.state && that.options.state.formula && that.options.state.formula.lenght !== 0) {
+                var table = $("<table></table>").appendTo(stateTooltip);
+                var tbody = $("<tbody></tbody>").appendTo(table);
+                var k = that.options.state.formula.length;
+                for (var j = 0; j < k && j < 3; j++) {
+                    var tr = that.getFormula(that.options.state.formula[j]);
+                    tr.appendTo(tbody);
+                }
+                var message = "and " + (k - 3) + " more condition" + ((k - 3) > 1 ? "s" : "");
+                var tooMuchStates = $("<div>" + message + "</div>").appendTo(stateTooltip);
+                if (k > 3)
+                    tooMuchStates.show();
+                else
+                    tooMuchStates.hide();
+            }
+            return stateTooltip;
         },
         getFormula: function (formula) {
             var tr = $("<tr></tr>");
@@ -12922,7 +12952,7 @@ jQuery.fn.extend({
                         var errorMessage = $("<div>" + that.options.error + "</div>").addClass("red").appendTo(ltltestdiv);
                     }
                     var d = $("<div>" + that.options.steps + " steps</div>")
-                        .css("display", "inline-block")
+                        .css("display", "inline-block").css("width", 55)
                         .appendTo(ltltestdiv);
                     var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
                     var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -12984,7 +13014,7 @@ jQuery.fn.extend({
                     if (this.options.isexpanded) {
                         var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(ltltestdiv);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -13023,7 +13053,7 @@ jQuery.fn.extend({
                         ltlresdiv.html("True for all traces<br>");
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(sr);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -13100,7 +13130,7 @@ jQuery.fn.extend({
                         ltlresdiv.html("True for some traces<br>");
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(sr);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -13188,7 +13218,7 @@ jQuery.fn.extend({
                         var fr = $("<div>No trace found</div>").appendTo(ltlresdiv);
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block")
+                            .css("display", "inline-block").css("width", 55)
                             .appendTo(sr);
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
@@ -13729,34 +13759,11 @@ jQuery.fn.extend({
         _create: function () {
             var that = this;
             var root = this.element;
-            root.css("overflow-y", "auto").css("overflow-x", "auto").css("position", "relative");
+            root.css("overflow-y", "auto").css("overflow-x", "hidden").css("position", "relative");
             this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
             $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
             $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
-            /*
-            var svgdiv = $("<div></div>").appendTo(root);
-
-            this.svgdiv = svgdiv;
-
-            var pixofs = this._pixelOffset;
-            svgdiv.svg({
-                onLoad: function (svg) {
-                    that._svg = svg;
-
-                    svg.configure({
-                        width: root.width() - pixofs,
-                        height: root.height() - pixofs,
-                        viewBox: "0 0 " + (root.width() - pixofs) + " " + (root.height() - pixofs),
-                        preserveAspectRatio: "none meet"
-                    }, true);
-
-                    that.refresh();
-                }
-            });
-
-            svgdiv.hide();
-            */
-            that.canvasDiv = $("<div></div>").appendTo(root);
+            that.canvasDiv = $("<div></div>").width(root.width()).appendTo(root);
             that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).appendTo(that.canvasDiv);
             that.refresh();
         },
@@ -13767,10 +13774,11 @@ jQuery.fn.extend({
             var padding = { x: 5, y: 10 };
             var maxHeight = 25 * 4;
             var context = canvas.getContext("2d");
+            canvas.height = canvas.height;
             var operations = this.options.operations;
             var currentPos = { x: 0, y: 0 };
             var height = this.options.padding.y;
-            var width = 0;
+            var width = that.canvasDiv.width() - this.options.padding.x;
             for (var i = 0; i < this._anims.length; i++) {
                 this._anims[i].remove();
             }
@@ -13780,21 +13788,31 @@ jQuery.fn.extend({
                 var op = operations[i].operation;
                 var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, op, padding, keyFrameSize);
                 var scale = { x: 1, y: 1 };
-                if (opSize.height > maxHeight) {
-                    scale = {
-                        x: maxHeight / opSize.height,
-                        y: maxHeight / opSize.height
-                    };
-                    opSize.width *= maxHeight / opSize.height;
-                    opSize.height = maxHeight;
+                var offset = 80;
+                var w = opSize.width + offset;
+                /*
+                if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
+                    context.font = "14px Segoe-UI";
+                    var text = operations[i].steps + " steps";
+                    var textW = context.measureText(text);
+                    offset = Math.max(textW.width + 10, offset);
+                    w += offset;
+                } else if (operations[i].status === "processing") {
+                    w += offset;
                 }
-                sizes.push({ size: opSize, scale: scale });
+                */
+                if (w > width) {
+                    scale = {
+                        x: (width - offset) / opSize.width,
+                        y: (width - offset) / opSize.width
+                    };
+                    opSize.width = width - offset;
+                    opSize.height = scale.y * opSize.height;
+                }
+                sizes.push({ size: opSize, offset: offset, scale: scale });
                 height += opSize.height + this.options.padding.y;
-                width = Math.max(width, opSize.width);
             }
             canvas.height = height;
-            canvas.width = width;
-            width = 0;
             height = this.options.padding.y;
             for (var i = 0; i < operations.length; i++) {
                 var op = operations[i].operation;
@@ -13815,14 +13833,11 @@ jQuery.fn.extend({
                     context.textBaseline = "middle";
                     context.fillStyle = operations[i].status === "fail" ? "rgb(254, 172, 158)" : "green";
                     var text = operations[i].steps + " steps";
-                    var textW = context.measureText(text);
                     context.fillText(text, opSize.width + 10, opPosition.y);
-                    opSize.width += textW.width + 10;
                 }
                 else if (operations[i].status === "processing") {
                     var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7);
                     this._anims.push(anim);
-                    opSize.width += 30;
                 }
                 height += opSize.height + this.options.padding.y;
             }
@@ -13900,11 +13915,21 @@ var BMA;
                 this.ltlviewer = ltlviewer;
                 this.statespresenter = new BMA.LTL.StatesPresenter(commands, this.appModel, statesEditorDriver, ltlviewer.GetStatesViewer());
                 temporlapropertieseditor.SetStates(appModel.States);
-                ltlviewer.SetOnTabExpandedCallback(function () {
+                window.Commands.On("LTLTabExpand", function (args) {
+                    ltlviewer.ShowTabWaitIcon();
                     if (_this.tppresenter === undefined) {
-                        temporlapropertieseditor.Show();
-                        _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, _this.statespresenter, logService);
-                        temporlapropertieseditor.Hide();
+                        //For faster reaction time
+                        setTimeout(function () {
+                            temporlapropertieseditor.Show();
+                            _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, that.statespresenter, logService);
+                            temporlapropertieseditor.Hide();
+                            ltlviewer.GetTemporalPropertiesViewer().Refresh();
+                            ltlviewer.HideTabWaitIcon();
+                        }, 1000);
+                    }
+                    else {
+                        ltlviewer.GetTemporalPropertiesViewer().Refresh();
+                        ltlviewer.HideTabWaitIcon();
                     }
                 });
                 statesEditorDriver.SetModel(appModel.BioModel, appModel.Layout);
@@ -14407,8 +14432,8 @@ var BMA;
                 });
                 commands.On("TemporalPropertiesEditorCut", function (args) {
                     if (_this.contextElement !== undefined) {
-                        _this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
-                        //this.ClearOperationTag(this.contextElement.operationlayoutref, false);
+                        _this.ResetOperation(_this.contextElement.operationlayoutref);
+                        //this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
                         var unpinned = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
                         _this.clipboard = {
@@ -14457,7 +14482,8 @@ var BMA;
                 });
                 commands.On("TemporalPropertiesEditorDelete", function (args) {
                     if (_this.contextElement !== undefined) {
-                        _this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
+                        _this.ResetOperation(_this.contextElement.operationlayoutref);
+                        //this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
                         //this.ClearOperationTag(this.contextElement.operationlayoutref);
                         var op = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         if (op.isRoot) {
@@ -14476,6 +14502,8 @@ var BMA;
                         for (var i = 0; i < _this.operations.length; i++) {
                             var op = _this.operations[i];
                             op.RefreshStates(args.states);
+                            if (op.AnalysisStatus === "nottested")
+                                _this.ResetOperation(op);
                         }
                         _this.FitToView();
                         _this.OnOperationsChanged(true, true);
@@ -14511,7 +14539,7 @@ var BMA;
                             var op = _this.operations[i];
                             op.RefreshStates(appModel.States);
                             if (args.isMajorChange) {
-                                op.AnalysisStatus = "nottested";
+                                _this.ResetOperation(op);
                             }
                         }
                         _this.FitToView();
@@ -14583,7 +14611,7 @@ var BMA;
                                 }
                                 else {
                                     if (!picked.isRoot) {
-                                        staginOp.AnalysisStatus = "nottested";
+                                        _this.ResetOperation(staginOp);
                                     }
                                     tpEditorDriver.SetCopyZoneVisibility(true);
                                     tpEditorDriver.SetDeleteZoneVisibility(true);
@@ -14717,7 +14745,8 @@ var BMA;
                                                 //emptyCell.opLayout = operation;
                                                 emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation.Clone();
                                                 operation.Refresh();
-                                                operation.AnalysisStatus = "nottested";
+                                                _this.ResetOperation(operation);
+                                                //operation.AnalysisStatus = "nottested";
                                                 //this.ClearOperationTag(operation);
                                                 //operation.Tag = undefined;
                                                 if (_this.stagingOperation.isRoot) {
@@ -14762,6 +14791,12 @@ var BMA;
                         }
                     });
                     this.isInitialized = true;
+                }
+            };
+            TemporalPropertiesPresenter.prototype.ResetOperation = function (operation) {
+                operation.AnalysisStatus = "nottested";
+                if (operation.Tag !== undefined && operation.Tag.driver !== undefined) {
+                    operation.Tag.driver.SetStatus("nottested", undefined);
                 }
             };
             TemporalPropertiesPresenter.prototype.CreateSvgHeaders = function () {
@@ -14915,10 +14950,23 @@ var BMA;
                 if (operation.IsCompleted) {
                     this.log.LogLTLRequest();
                     operation.AnalysisStatus = "processing";
-                    driver.SetStatus("processing");
+                    driver.SetStatus("processing", undefined);
                     domplot.updateLayout();
                     var formula = operation.Operation.GetFormula();
-                    var model = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                    var model;
+                    try {
+                        model = BMA.Model.ExportBioModel(that.appModel.BioModel);
+                    }
+                    catch (exc) {
+                        driver.SetStatus("nottested", "Incorrect Model: " + exc);
+                        operation.AnalysisStatus = "nottested";
+                        operation.Tag.data = undefined;
+                        operation.Tag.negdata = undefined;
+                        operation.Tag.steps = driver.GetSteps();
+                        domplot.updateLayout();
+                        that.OnOperationsChanged(false);
+                        return;
+                    }
                     var proofInput = {
                         "Name": model.Name,
                         "Relationships": model.Relationships,
@@ -14928,6 +14976,8 @@ var BMA;
                     };
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
+                        if (operation.AnalysisStatus !== "processing")
+                            return;
                         if (res.Ticks == null) {
                             that.log.LogLTLError();
                             if (res.Status === "Error" && res.Error.indexOf("Operation is not completed in") > -1)
@@ -14986,6 +15036,8 @@ var BMA;
                         }
                     })
                         .fail(function (xhr, textStatus, errorThrown) {
+                        if (operation.AnalysisStatus !== "processing")
+                            return;
                         that.log.LogLTLError();
                         driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
                         operation.AnalysisStatus = "nottested";
@@ -15120,16 +15172,22 @@ var BMA;
                             }
                             else {
                                 driverToCheck.MoveToTop();
+                                if (operation.AnalysisStatus !== "nottested" && operation.AnalysisStatus !== "partialsuccess") {
+                                    dom.set(opDiv[0], operation.BoundingBox.x + operation.BoundingBox.width + that.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.65);
+                                }
                             }
                         }
                     }
                     dom.updateLayout();
                 });
                 driver.SetOnStepsChangedCallback(function () {
+                    operation.Tag.steps = driver.GetSteps();
                     if (operation.AnalysisStatus !== "nottested") {
+                        dom.set(opDiv[0], operation.BoundingBox.x + operation.BoundingBox.width + that.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.5);
                         operation.AnalysisStatus = "nottested";
-                        that.OnOperationsChanged(false, false);
+                        driver.SetMessage(undefined);
                     }
+                    that.OnOperationsChanged(false, false);
                 });
                 var bbox = operation.BoundingBox;
                 dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -operation.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);

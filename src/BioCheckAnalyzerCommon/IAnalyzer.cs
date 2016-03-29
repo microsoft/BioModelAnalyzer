@@ -90,6 +90,7 @@ namespace BioCheckAnalyzerCommon
 
         // 2. CAV interface
         LTLAnalysisResultDTO checkLTL(Model input_model, string formula, string num_of_steps);
+        LTLAnalysisResultDTO checkLTLPreliminary(Model input_model, string formula, string num_of_steps);
 
         ////// 3. SYN interface
         ////XDocument checkSynth(Model input_model);

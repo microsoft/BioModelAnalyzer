@@ -3693,6 +3693,14 @@ ui-icon-arrowthickstop-1-n {
   overflow-y: auto;
   height: 64px;
 }
+.ltl-results-tab {
+  overflow-y: hidden;
+}
+.small-simulation-popout-table .variables-table tr:last-child td:last-child {
+  background-color: Window;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+}
 .popup-window.no-frames {
   padding-left: 0px;
   padding-right: 0px;

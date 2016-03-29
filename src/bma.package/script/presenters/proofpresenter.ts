@@ -138,9 +138,16 @@
                         that.Snapshot();
                     })
                         .fail(function (XMLHttpRequest, textStatus, errorThrown) {
-                        console.log("Proof Service Failed: " + errorThrown);
-                        that.messagebox.Show("Proof Service Failed: " + errorThrown);
-                        proofResultViewer.OnProofFailed();
+                            appModel.ProofResult = new BMA.Model.ProofResult(false, null, null);
+                            proofResultViewer.SetData({
+                                issucceeded: undefined,
+                                message: errorThrown,
+                                data: undefined
+                            })
+                            proofResultViewer.ShowResult(appModel.ProofResult);
+                        //console.log("Proof Service Failed: " + errorThrown);
+                        //that.messagebox.Show("Proof Service Failed: " + errorThrown);
+                        //proofResultViewer.OnProofFailed();
                     });
                 });
 

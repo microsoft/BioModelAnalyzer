@@ -2804,7 +2804,7 @@ function IDD($, Rx) {;/**
             // element is DOM object which must be added to the plot prior to call this method
             // left, top are new coordinates of the left top corner of the element in the plot's data space
             // width, height are optional new width and height of the element in the plot's data space (if not provided, remain same; valuable only for scale mode 'element' or 'content')
-            this.set = function (element, x, y, width, height) {
+            this.set = function (element, x, y, width, height, ox, oy) {
                 var myEl = getElement(element);
                 if (!myEl) throw "Element is not found in the plot";
 
@@ -2816,6 +2816,9 @@ function IDD($, Rx) {;/**
                     if (height && height > 0)
                         myEl._height = height;
                 }
+
+                myEl._originX = ox || myEl._originX;
+                myEl._originY = oy || myEl._originY;
 
                 this.invalidateLocalBounds();
                 this.requestUpdateLayout();
