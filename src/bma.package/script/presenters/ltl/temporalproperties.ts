@@ -917,6 +917,9 @@ module BMA {
 
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
+                            if (operation.AnalysisStatus !== "processing")
+                                return;
+
                             if (res.Ticks == null) {
                                 that.log.LogLTLError();
 
@@ -994,6 +997,9 @@ module BMA {
                             }
                         })
                         .fail(function (xhr, textStatus, errorThrown) {
+                            if (operation.AnalysisStatus !== "processing")
+                                return;
+
                             that.log.LogLTLError();
                             driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
                             operation.AnalysisStatus = "nottested";
