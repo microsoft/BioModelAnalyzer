@@ -699,7 +699,8 @@ module BMA {
             private ResetOperation(operation: BMA.LTLOperations.OperationLayout) {
                 operation.AnalysisStatus = "nottested";
                 if (operation.Tag !== undefined && operation.Tag.driver !== undefined) {
-                    operation.Tag.driver.SetStatus("nottested", undefined);
+                    operation.Tag.driver.SetStatus("nottested");
+                    operation.Tag.driver.SetMessage(undefined);
                 }
             }
 

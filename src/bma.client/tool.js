@@ -14502,7 +14502,7 @@ var BMA;
                         for (var i = 0; i < _this.operations.length; i++) {
                             var op = _this.operations[i];
                             op.RefreshStates(args.states);
-                            if (op.AnalysisStatus === "notteseted")
+                            if (op.AnalysisStatus === "nottested")
                                 _this.ResetOperation(op);
                         }
                         _this.FitToView();
