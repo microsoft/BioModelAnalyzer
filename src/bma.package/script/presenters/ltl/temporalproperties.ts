@@ -356,7 +356,7 @@ module BMA {
                             var op = this.operations[i];
                             op.RefreshStates(args.states);
 
-                            if (!op.IsCompleted)
+                            if (op.AnalysisStatus === "nottested")
                                 this.ResetOperation(op);
                         }
 
