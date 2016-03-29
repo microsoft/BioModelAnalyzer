@@ -2118,6 +2118,36 @@ hr {
 .pill.some > div {
   background-color: transparent;
 }
+.pill.half-true {
+  background-image: url("../images/stripe-pattern-half-green.png");
+}
+.pill.half-true > div {
+  background-color: transparent;
+}
+.pill.true-stripes {
+  background-image: url("../images/stripe-pattern-green.png");
+}
+.pill.true-stripes > div {
+  background-color: transparent;
+}
+.pill.half-false {
+  background-image: url("../images/stripe-pattern-half-red.png");
+}
+.pill.half-false > div {
+  background-color: transparent;
+}
+.pill.false-stripes {
+  background-image: url("../images/stripe-pattern-red.png");
+}
+.pill.false-stripes > div {
+  background-color: transparent;
+}
+.pill.half-half {
+  background-image: url("../images/stripe-pattern-half-half.png");
+}
+.pill.half-half > div {
+  background-color: transparent;
+}
 .state {
   font-family: 'Segoe-UI';
   font-size: 13px;
@@ -2183,10 +2213,14 @@ hr {
 .LTL-test-results.some {
   border: 1px solid #606060;
   color: #606060;
+  width: 150px;
 }
 .LTL-test-results .pill-button-box .pill-button {
   margin-top: 5px;
   margin-bottom: 0px;
+}
+.LTL-test-results .server-error {
+  color: #cf451b;
 }
 .LTL-test-results .button-list {
   margin-top: 5px;
@@ -2212,4 +2246,8 @@ hr {
 }
 .LTL-test-results .action-button-small {
   margin: 5px 0px 5px 0px;
+}
+.LTL-test-results .action-button-small.loading {
+  background-color: white;
+  border: 1px solid #606060;
 }
