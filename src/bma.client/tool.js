@@ -14432,8 +14432,8 @@ var BMA;
                 });
                 commands.On("TemporalPropertiesEditorCut", function (args) {
                     if (_this.contextElement !== undefined) {
-                        _this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
-                        //this.ClearOperationTag(this.contextElement.operationlayoutref, false);
+                        _this.ResetOperation(_this.contextElement.operationlayoutref);
+                        //this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
                         var unpinned = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         var clonned = unpinned.operation !== undefined ? unpinned.operation.Clone() : undefined;
                         _this.clipboard = {
@@ -14482,7 +14482,8 @@ var BMA;
                 });
                 commands.On("TemporalPropertiesEditorDelete", function (args) {
                     if (_this.contextElement !== undefined) {
-                        _this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
+                        _this.ResetOperation(_this.contextElement.operationlayoutref);
+                        //this.contextElement.operationlayoutref.AnalysisStatus = "nottested";
                         //this.ClearOperationTag(this.contextElement.operationlayoutref);
                         var op = _this.contextElement.operationlayoutref.UnpinOperation(_this.contextElement.x, _this.contextElement.y);
                         if (op.isRoot) {
@@ -14536,7 +14537,7 @@ var BMA;
                             var op = _this.operations[i];
                             op.RefreshStates(appModel.States);
                             if (args.isMajorChange) {
-                                op.AnalysisStatus = "nottested";
+                                _this.ResetOperation(op);
                             }
                         }
                         _this.FitToView();
@@ -14608,7 +14609,7 @@ var BMA;
                                 }
                                 else {
                                     if (!picked.isRoot) {
-                                        staginOp.AnalysisStatus = "nottested";
+                                        _this.ResetOperation(staginOp);
                                     }
                                     tpEditorDriver.SetCopyZoneVisibility(true);
                                     tpEditorDriver.SetDeleteZoneVisibility(true);
@@ -14742,7 +14743,8 @@ var BMA;
                                                 //emptyCell.opLayout = operation;
                                                 emptyCell.operation.Operands[emptyCell.operandIndex] = _this.stagingOperation.operation.Operation.Clone();
                                                 operation.Refresh();
-                                                operation.AnalysisStatus = "nottested";
+                                                _this.ResetOperation(operation);
+                                                //operation.AnalysisStatus = "nottested";
                                                 //this.ClearOperationTag(operation);
                                                 //operation.Tag = undefined;
                                                 if (_this.stagingOperation.isRoot) {
@@ -14787,6 +14789,12 @@ var BMA;
                         }
                     });
                     this.isInitialized = true;
+                }
+            };
+            TemporalPropertiesPresenter.prototype.ResetOperation = function (operation) {
+                operation.AnalysisStatus = "nottested";
+                if (operation.Tag !== undefined && operation.Tag.driver !== undefined) {
+                    operation.Tag.driver.SetStatus("nottested", undefined);
                 }
             };
             TemporalPropertiesPresenter.prototype.CreateSvgHeaders = function () {
