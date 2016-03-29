@@ -595,11 +595,13 @@ module BMA {
         }
 
         export class LTLAnalyzeService implements IServiceDriver {
+            private url: string;
             private maxRequestCount: number = 1;
             private pendingRequests: { data: any; deferred: JQueryDeferred<any> }[];
             private currentActiveRequestCount: number = 0;
 
-            constructor(maxRequestCount: number) {
+            constructor(url: string, maxRequestCount: number) {
+                this.url = url;
                 this.maxRequestCount = maxRequestCount;
                 this.pendingRequests = [];
                 this.currentActiveRequestCount = 0;
@@ -622,7 +624,7 @@ module BMA {
                         this.currentActiveRequestCount++;
                         $.ajax({
                             type: "POST",
-                            url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
+                            url: that.url,
                             data: JSON.stringify(request.data),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json"

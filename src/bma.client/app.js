@@ -479,7 +479,8 @@ function loadScript(version) {
     var proofAnalyzeService = new BMA.UIDrivers.ProofAnalyzeService();
     var simulationService = new BMA.UIDrivers.SimulationService();
     var logService = new BMA.SessionLog();
-    var ltlService = new BMA.UIDrivers.LTLAnalyzeService(1);
+    var ltlSimulationService = new BMA.UIDrivers.LTLAnalyzeService("api/AnalyzeLTLSimulation", 1);
+    var ltlPolarityService = new BMA.UIDrivers.LTLAnalyzeService("api/AnalyzeLTLPolarity", 1);
     var waitScreen = new BMA.UIDrivers.LoadingWaitScreen($('.page-loading'));
     var dragndropextender = new BMA.UIDrivers.DrawingSurfaceDragnDropExtender(drawingSurface, popup);
     //Loading presenters
@@ -492,7 +493,7 @@ function loadScript(version) {
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
     //LTL Presenters
-    var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlService, popupDriver, exportService, fileLoaderDriver, logService);
+    var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlSimulationService, ltlPolarityService, popupDriver, exportService, fileLoaderDriver, logService);
     //Loading model from URL
     var reserved_key = "InitialModel";
     var params = getSearchParameters();

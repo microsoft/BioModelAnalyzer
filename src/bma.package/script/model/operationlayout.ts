@@ -89,6 +89,32 @@
                         }
 
                         break;
+                    case "partialfail":
+                        this.status = value;
+                        this.Fill = "rgb(217,255,182)";
+
+                        this.useMask = true;
+
+                        if (this.majorRect !== undefined) {
+                            //mask: url(#mask-stripe)
+                            this.svg.change(this.majorRect, {
+                                mask: this.mask
+                            });
+                        }
+
+                        break;
+                    case "partialsuccesspartialfail":
+                        this.status = value;
+                        this.fill = "yellow";
+                        break;
+                    case "processing, partialsuccess":
+                        this.status = value;
+                        this.fill = "cyan";
+                        break;
+                    case "processing, partialfail":
+                        this.status = value;
+                        this.fill = "azure";
+                        break;
                     case "fail":
                         this.status = value;
                         this.Fill = "rgb(254, 172, 158)";

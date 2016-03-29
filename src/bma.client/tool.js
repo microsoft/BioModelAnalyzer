@@ -3635,6 +3635,29 @@ var BMA;
                                 });
                             }
                             break;
+                        case "partialfail":
+                            this.status = value;
+                            this.Fill = "rgb(217,255,182)";
+                            this.useMask = true;
+                            if (this.majorRect !== undefined) {
+                                //mask: url(#mask-stripe)
+                                this.svg.change(this.majorRect, {
+                                    mask: this.mask
+                                });
+                            }
+                            break;
+                        case "partialsuccesspartialfail":
+                            this.status = value;
+                            this.fill = "yellow";
+                            break;
+                        case "processing, partialsuccess":
+                            this.status = value;
+                            this.fill = "cyan";
+                            break;
+                        case "processing, partialfail":
+                            this.status = value;
+                            this.fill = "azure";
+                            break;
                         case "fail":
                             this.status = value;
                             this.Fill = "rgb(254, 172, 158)";
@@ -4724,9 +4747,10 @@ var BMA;
         })();
         UIDrivers.ProofAnalyzeService = ProofAnalyzeService;
         var LTLAnalyzeService = (function () {
-            function LTLAnalyzeService(maxRequestCount) {
+            function LTLAnalyzeService(url, maxRequestCount) {
                 this.maxRequestCount = 1;
                 this.currentActiveRequestCount = 0;
+                this.url = url;
                 this.maxRequestCount = maxRequestCount;
                 this.pendingRequests = [];
                 this.currentActiveRequestCount = 0;
@@ -4746,7 +4770,7 @@ var BMA;
                         this.currentActiveRequestCount++;
                         $.ajax({
                             type: "POST",
-                            url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
+                            url: that.url,
                             data: JSON.stringify(request.data),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json"
@@ -13790,17 +13814,6 @@ jQuery.fn.extend({
                 var scale = { x: 1, y: 1 };
                 var offset = 80;
                 var w = opSize.width + offset;
-                /*
-                if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
-                    context.font = "14px Segoe-UI";
-                    var text = operations[i].steps + " steps";
-                    var textW = context.measureText(text);
-                    offset = Math.max(textW.width + 10, offset);
-                    w += offset;
-                } else if (operations[i].status === "processing") {
-                    w += offset;
-                }
-                */
                 if (w > width) {
                     scale = {
                         x: (width - offset) / opSize.width,
@@ -13828,14 +13841,14 @@ jQuery.fn.extend({
                     strokeWidth: 1,
                     borderThickness: 1
                 });
-                if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
+                if (operations[i].status !== "nottested" && operations[i].status.indexOf("processing") < 0 && operations[i].steps !== undefined) {
                     context.font = "14px Segoe-UI";
                     context.textBaseline = "middle";
-                    context.fillStyle = operations[i].status === "fail" ? "rgb(254, 172, 158)" : "green";
+                    context.fillStyle = operations[i].status.indexOf("fail") > -1 && operations[i].status !== "partialsuccespartialfail" ? "rgb(254, 172, 158)" : "green";
                     var text = operations[i].steps + " steps";
                     context.fillText(text, opSize.width + 10, opPosition.y);
                 }
-                else if (operations[i].status === "processing") {
+                else if (operations[i].status.indexOf("processing") > -1) {
                     var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7);
                     this._anims.push(anim);
                 }
@@ -13860,11 +13873,56 @@ jQuery.fn.extend({
                         gradient.addColorStop((2 * i + 1) / (2 * n), "white");
                     }
                     return gradient;
-                //return "rgb(217,255,182)";
+                case "processing, partialsuccess":
+                    var canvas = (this._canvas[0]);
+                    var context = canvas.getContext("2d");
+                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                    var n = 20;
+                    for (var i = 0; i < n; i++) {
+                        gradient.addColorStop(i / n, "rgb(217,255,182)");
+                        gradient.addColorStop((4 * i + 1) / (4 * n), "white");
+                        gradient.addColorStop((4 * i + 2) / (4 * n), "white");
+                        gradient.addColorStop((4 * i + 3) / (4 * n), "white");
+                    }
+                    return gradient;
+                case "processing, partialfail":
+                    var canvas = (this._canvas[0]);
+                    var context = canvas.getContext("2d");
+                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                    var n = 20;
+                    for (var i = 0; i < n; i++) {
+                        gradient.addColorStop(i / n, "rgb(254, 172, 158)");
+                        gradient.addColorStop((4 * i + 1) / (4 * n), "white");
+                        gradient.addColorStop((4 * i + 2) / (4 * n), "white");
+                        gradient.addColorStop((4 * i + 3) / (4 * n), "white");
+                    }
+                    return gradient;
+                case "partialfail":
+                    var canvas = (this._canvas[0]);
+                    var context = canvas.getContext("2d");
+                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                    var n = 20;
+                    for (var i = 0; i < n; i++) {
+                        gradient.addColorStop(i / n, "rgb(254, 172, 158)");
+                        gradient.addColorStop((2 * i + 1) / (2 * n), "white");
+                    }
+                    return gradient;
+                case "partialsuccesspartialfail":
+                    var canvas = (this._canvas[0]);
+                    var context = canvas.getContext("2d");
+                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                    var n = 20;
+                    for (var i = 0; i < n; i++) {
+                        gradient.addColorStop(i / n, "rgb(217,255,182)");
+                        gradient.addColorStop((4 * i + 1) / (4 * n), "white");
+                        gradient.addColorStop((4 * i + 2) / (4 * n), "rgb(254, 172, 158)");
+                        gradient.addColorStop((4 * i + 3) / (4 * n), "white");
+                    }
+                    return gradient;
                 case "fail":
                     return "rgb(254, 172, 158)";
                 default:
-                    throw "Invalid status!";
+                    return "white";
             }
         },
         _createWaitAnimation: function (x, y) {
@@ -13908,7 +13966,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var LTLPresenter = (function () {
-            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ltlresultsviewer, ajax, popupViewer, exportService, fileLoaderDriver, logService) {
+            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ltlresultsviewer, ltlSimlationService, ltlPolarityService, popupViewer, exportService, fileLoaderDriver, logService) {
                 var _this = this;
                 var that = this;
                 this.appModel = appModel;
@@ -13921,7 +13979,7 @@ var BMA;
                         //For faster reaction time
                         setTimeout(function () {
                             temporlapropertieseditor.Show();
-                            _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, that.statespresenter, logService);
+                            _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ltlSimlationService, ltlPolarityService, temporlapropertieseditor, that.statespresenter, logService);
                             temporlapropertieseditor.Hide();
                             ltlviewer.GetTemporalPropertiesViewer().Refresh();
                             ltlviewer.HideTabWaitIcon();
@@ -13951,7 +14009,7 @@ var BMA;
                             temporlapropertieseditor.Show();
                             commands.Execute("TemporalPropertiesEditorExpanded", {});
                             if (_this.tppresenter === undefined) {
-                                _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, _this.statespresenter, logService);
+                                _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ltlSimlationService, ltlPolarityService, temporlapropertieseditor, _this.statespresenter, logService);
                             }
                             break;
                         default:
@@ -14243,7 +14301,7 @@ var BMA;
     var LTL;
     (function (LTL) {
         var TemporalPropertiesPresenter = (function () {
-            function TemporalPropertiesPresenter(commands, appModel, ajax, tpEditorDriver, statesPresenter, logService) {
+            function TemporalPropertiesPresenter(commands, appModel, simulationService, polarityService, tpEditorDriver, statesPresenter, logService) {
                 var _this = this;
                 this.controlPanelPadding = 3;
                 this.isUpdateControlRequested = false;
@@ -14261,7 +14319,8 @@ var BMA;
                 };
                 var that = this;
                 this.appModel = appModel;
-                this.ajax = ajax;
+                this.simulationService = simulationService;
+                this.polarityService = polarityService;
                 this.tpEditorDriver = tpEditorDriver;
                 this.driver = tpEditorDriver.GetSVGDriver();
                 this.navigationDriver = tpEditorDriver.GetNavigationDriver();
@@ -14606,7 +14665,7 @@ var BMA;
                                 that.navigationDriver.TurnNavigation(false);
                                 //Can't drag parts of processing operations
                                 var picked = staginOp.PickOperation(gesture.x, gesture.y);
-                                if (staginOp.AnalysisStatus === "processing" && picked !== undefined && !picked.isRoot) {
+                                if (staginOp.AnalysisStatus.indexOf("processing") > -1 && picked !== undefined && !picked.isRoot) {
                                     _this.stagingOperation = undefined;
                                 }
                                 else {
@@ -14726,7 +14785,7 @@ var BMA;
                                 else {
                                     var operation = _this.GetOperationAtPoint(position.x, position.y);
                                     if (operation !== undefined) {
-                                        if (operation.AnalysisStatus === "processing") {
+                                        if (operation.AnalysisStatus.indexOf("processing") > -1) {
                                             if (!_this.stagingOperation.fromclipboard) {
                                                 //Operation should stay in its origin place bacuse editing of processing operations is not allowed
                                                 if (_this.stagingOperation.isRoot) {
@@ -14975,13 +15034,13 @@ var BMA;
                         "Formula": formula,
                         "Number_of_steps": driver.GetSteps()
                     };
-                    var result = that.ajax.Invoke(proofInput)
+                    var result = that.simulationService.Invoke(proofInput)
                         .done(function (res) {
-                        if (operation.AnalysisStatus !== "processing")
+                        if (operation.AnalysisStatus.indexOf("processing") < 0)
                             return;
                         if (res.Ticks == null) {
                             that.log.LogLTLError();
-                            if (res.Status === "Error" && res.Error.indexOf("Operation is not completed in") > -1)
+                            if (res.Error.indexOf("Operation is not completed in") > -1)
                                 driver.SetStatus("nottested", "Timed out");
                             else
                                 driver.SetStatus("nottested", "Server error");
@@ -14993,30 +15052,15 @@ var BMA;
                             that.OnOperationsChanged(false);
                         }
                         else {
-                            if (res.Status === "True") {
+                            if (res.Status === true) {
                                 driver.SetShowResultsCallback(function () {
                                     that.commands.Execute("ShowLTLResults", {
                                         ticks: res.Ticks
                                     });
                                 });
-                                driver.SetStatus("success");
-                                //driver.Expand();
-                                operation.AnalysisStatus = "success";
+                                operation.AnalysisStatus = "processing, partialsuccess";
                                 operation.Tag.data = res.Ticks;
                                 operation.Tag.negdata = undefined;
-                                operation.Tag.steps = driver.GetSteps();
-                            }
-                            else if (res.Status === "PartiallyTrue") {
-                                driver.SetShowResultsCallback(function (showpositive) {
-                                    that.commands.Execute("ShowLTLResults", {
-                                        ticks: showpositive ? res.Ticks : res.NegTicks
-                                    });
-                                });
-                                driver.SetStatus("partialsuccess");
-                                //driver.Expand();
-                                operation.AnalysisStatus = "partialsuccess";
-                                operation.Tag.data = res.Ticks;
-                                operation.Tag.negdata = res.NegTicks;
                                 operation.Tag.steps = driver.GetSteps();
                             }
                             else {
@@ -15025,19 +15069,73 @@ var BMA;
                                         ticks: res.NegTicks
                                     });
                                 });
-                                driver.SetStatus("fail");
-                                //driver.Expand();
-                                operation.AnalysisStatus = "fail";
+                                operation.AnalysisStatus = "processing, partialfail";
                                 operation.Tag.data = undefined;
                                 operation.Tag.negdata = res.NegTicks;
                                 operation.Tag.steps = driver.GetSteps();
                             }
                             domplot.updateLayout();
                             that.OnOperationsChanged(false);
+                            var polarity = !res.Status;
+                            proofInput.Polarity = polarity;
+                            that.polarityService.Invoke(proofInput).done(function (polarityResult) {
+                                if (operation.AnalysisStatus.indexOf("processing") < 0)
+                                    return;
+                                if (polarityResult.Ticks == null) {
+                                    that.log.LogLTLError();
+                                    operation.AnalysisStatus = operation.AnalysisStatus = "processing, partialfail" ? "partialfail" : "partialsuccess";
+                                    driver.SetStatus(operation.AnalysisStatus === "partialfail" ? "fail" : "success");
+                                    domplot.updateLayout();
+                                    that.OnOperationsChanged(false);
+                                }
+                                else {
+                                    var polarityStatus = polarityResult.Status;
+                                    var resultStatus = "";
+                                    if (res.Status) {
+                                        if (!polarityStatus) {
+                                            resultStatus = "success";
+                                        }
+                                        else {
+                                            resultStatus = "partialsuccesspartialfail";
+                                            operation.Tag.negdata = polarityResult.Ticks;
+                                        }
+                                    }
+                                    else {
+                                        if (!polarityStatus) {
+                                            resultStatus = "fail";
+                                        }
+                                        else {
+                                            resultStatus = "partialsuccesspartialfail";
+                                            operation.Tag.data = polarityResult.Ticks;
+                                        }
+                                    }
+                                    operation.AnalysisStatus = resultStatus;
+                                    operation.Tag.steps = driver.GetSteps();
+                                    if (resultStatus === "partialsuccesspartialfail") {
+                                        driver.SetStatus("partialsuccess");
+                                        driver.SetShowResultsCallback(function (showpositive) {
+                                            that.commands.Execute("ShowLTLResults", {
+                                                ticks: showpositive ? operation.Tag.data : operation.Tag.negdata
+                                            });
+                                        });
+                                    }
+                                    else {
+                                        driver.SetStatus = resultStatus;
+                                    }
+                                }
+                            }).fail(function (xhr, textStatus, errorThrown) {
+                                if (operation.AnalysisStatus.indexOf("processing") < 0)
+                                    return;
+                                that.log.LogLTLError();
+                                operation.AnalysisStatus = operation.AnalysisStatus = "processing, partialfail" ? "partialfail" : "partialsuccess";
+                                driver.SetStatus(operation.AnalysisStatus === "partialfail" ? "fail" : "success");
+                                domplot.updateLayout();
+                                that.OnOperationsChanged(false);
+                            });
                         }
                     })
                         .fail(function (xhr, textStatus, errorThrown) {
-                        if (operation.AnalysisStatus !== "processing")
+                        if (operation.AnalysisStatus.indexOf("processing") < 0)
                             return;
                         that.log.LogLTLError();
                         driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));

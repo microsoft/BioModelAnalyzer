@@ -18,7 +18,8 @@
                 temporlapropertieseditor: BMA.UIDrivers.ITemporalPropertiesEditor,
                 ltlviewer: BMA.UIDrivers.ILTLViewer,
                 ltlresultsviewer: BMA.UIDrivers.ILTLResultsViewer,
-                ajax: BMA.UIDrivers.IServiceDriver,
+                ltlSimlationService: BMA.UIDrivers.IServiceDriver,
+                ltlPolarityService: BMA.UIDrivers.IServiceDriver,
                 popupViewer: BMA.UIDrivers.IPopup,
                 exportService: BMA.UIDrivers.IExportService,
                 fileLoaderDriver: BMA.UIDrivers.IFileLoader,
@@ -43,7 +44,8 @@
                             this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(
                                 commands,
                                 appModel,
-                                ajax,
+                                ltlSimlationService,
+                                ltlPolarityService,
                                 temporlapropertieseditor,
                                 that.statespresenter,
                                 logService);
@@ -85,7 +87,8 @@
                                 this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(
                                     commands,
                                     appModel,
-                                    ajax,
+                                    ltlSimlationService,
+                                    ltlPolarityService,
                                     temporlapropertieseditor,
                                     this.statespresenter,
                                     logService);

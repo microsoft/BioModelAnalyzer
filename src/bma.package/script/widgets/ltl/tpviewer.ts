@@ -63,18 +63,6 @@
                 var offset = 80;
                 var w = opSize.width + offset;
                 
-                /*
-                if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
-                    context.font = "14px Segoe-UI";
-                    var text = operations[i].steps + " steps";
-                    var textW = context.measureText(text);
-                    offset = Math.max(textW.width + 10, offset);
-                    w += offset;
-                } else if (operations[i].status === "processing") {
-                    w += offset;
-                }
-                */
-
                 if (w > width) {
                     scale = {
                         x: (width - offset) / opSize.width,
@@ -107,13 +95,13 @@
                 });
 
 
-                if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
+                if (operations[i].status !== "nottested" && operations[i].status.indexOf("processing") < 0 && operations[i].steps !== undefined) {
                     context.font = "14px Segoe-UI";
                     context.textBaseline = "middle";
-                    context.fillStyle = operations[i].status === "fail" ? "rgb(254, 172, 158)" : "green"
+                    context.fillStyle = operations[i].status.indexOf("fail") > -1 && operations[i].status !== "partialsuccespartialfail" ? "rgb(254, 172, 158)" : "green"
                     var text = operations[i].steps + " steps";
                     context.fillText(text, opSize.width + 10, opPosition.y);
-                } else if (operations[i].status === "processing") {
+                } else if (operations[i].status.indexOf("processing") > -1) {
                     var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7);
                     this._anims.push(anim);
                 }
@@ -140,11 +128,56 @@
                         gradient.addColorStop((2 * i + 1) / (2 * n), "white");
                     }
                     return gradient;
-                //return "rgb(217,255,182)";
+                case "processing, partialsuccess":
+                    var canvas = <HTMLCanvasElement>(this._canvas[0]);
+                    var context = canvas.getContext("2d");
+                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                    var n = 20;
+                    for (var i = 0; i < n; i++) {
+                        gradient.addColorStop(i / n, "rgb(217,255,182)");
+                        gradient.addColorStop((4 * i + 1) / (4 * n), "white");
+                        gradient.addColorStop((4 * i + 2) / (4 * n), "white");
+                        gradient.addColorStop((4 * i + 3) / (4 * n), "white");
+                    }
+                    return gradient;
+                case "processing, partialfail":
+                    var canvas = <HTMLCanvasElement>(this._canvas[0]);
+                    var context = canvas.getContext("2d");
+                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                    var n = 20;
+                    for (var i = 0; i < n; i++) {
+                        gradient.addColorStop(i / n, "rgb(254, 172, 158)");
+                        gradient.addColorStop((4 * i + 1) / (4 * n), "white");
+                        gradient.addColorStop((4 * i + 2) / (4 * n), "white");
+                        gradient.addColorStop((4 * i + 3) / (4 * n), "white");
+                    }
+                    return gradient;
+                case "partialfail":
+                    var canvas = <HTMLCanvasElement>(this._canvas[0]);
+                    var context = canvas.getContext("2d");
+                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                    var n = 20;
+                    for (var i = 0; i < n; i++) {
+                        gradient.addColorStop(i / n, "rgb(254, 172, 158)");
+                        gradient.addColorStop((2 * i + 1) / (2 * n), "white");
+                    }
+                    return gradient;
+                case "partialsuccesspartialfail":
+                    var canvas = <HTMLCanvasElement>(this._canvas[0]);
+                    var context = canvas.getContext("2d");
+                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                    var n = 20;
+                    for (var i = 0; i < n; i++) {
+                        gradient.addColorStop(i / n, "rgb(217,255,182)");
+                        gradient.addColorStop((4 * i + 1) / (4 * n), "white");
+                        gradient.addColorStop((4 * i + 2) / (4 * n), "rgb(254, 172, 158)");
+                        gradient.addColorStop((4 * i + 3) / (4 * n), "white");
+                    }
+                    return gradient;
                 case "fail":
                     return "rgb(254, 172, 158)";
                 default:
-                    throw "Invalid status!";
+                    return "white";
             }
         },
 
