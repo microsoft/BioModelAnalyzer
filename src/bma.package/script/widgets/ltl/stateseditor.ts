@@ -697,7 +697,6 @@
                     
                     if (this.options.states.length == 0) {
                         that.addState();
-                        that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
                     } else {
                         this._initStates();
                         if (this._activeState != null)

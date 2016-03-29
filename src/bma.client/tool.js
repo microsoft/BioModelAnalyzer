@@ -7762,6 +7762,7 @@ var BMA;
                                         button: 'Yes',
                                         callback: function () {
                                             userDialog.detach();
+                                            logService.LogImportModel();
                                             load();
                                         }
                                     },
@@ -12624,7 +12625,6 @@ jQuery.fn.extend({
                     }
                     if (this.options.states.length == 0) {
                         that.addState();
-                        that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
                     }
                     else {
                         this._initStates();
@@ -14796,7 +14796,8 @@ var BMA;
             TemporalPropertiesPresenter.prototype.ResetOperation = function (operation) {
                 operation.AnalysisStatus = "nottested";
                 if (operation.Tag !== undefined && operation.Tag.driver !== undefined) {
-                    operation.Tag.driver.SetStatus("nottested", undefined);
+                    operation.Tag.driver.SetStatus("nottested");
+                    operation.Tag.driver.SetMessage(undefined);
                 }
             };
             TemporalPropertiesPresenter.prototype.CreateSvgHeaders = function () {
