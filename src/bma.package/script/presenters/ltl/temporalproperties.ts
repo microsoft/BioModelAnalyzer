@@ -355,6 +355,9 @@ module BMA {
                         for (var i = 0; i < this.operations.length; i++) {
                             var op = this.operations[i];
                             op.RefreshStates(args.states);
+
+                            if (!op.IsCompleted)
+                                this.ResetOperation(op);
                         }
 
                         this.FitToView();
