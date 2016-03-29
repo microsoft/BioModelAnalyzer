@@ -11,28 +11,28 @@ using System.Xml.Serialization;
 
 namespace BioModelAnalyzer
 {
-    public class AnalysisResult
+    public class Tick
     {
-        public class Tick
+        public class Variable
         {
-            public class Variable
-            {
-                [XmlAttribute]
-                public int Id { get; set; }
+            [XmlAttribute]
+            public int Id { get; set; }
 
-                [XmlAttribute]
-                public int Lo { get; set; }
+            [XmlAttribute]
+            public int Lo { get; set; }
 
-                [XmlAttribute]
-                public int Hi { get; set; }
-            }
-
-            public int Time { get; set; }
-
-            [XmlArrayItem("Variable")]
-            public Variable[] Variables { get; set; }
+            [XmlAttribute]
+            public int Hi { get; set; }
         }
 
+        public int Time { get; set; }
+
+        [XmlArrayItem("Variable")]
+        public Variable[] Variables { get; set; }
+    }
+
+    public class AnalysisResult
+    {
         [JsonConverter(typeof(StringEnumConverter))]
         public StatusType Status { get; set; }
 
@@ -50,13 +50,20 @@ namespace BioModelAnalyzer
         public int Loop { get; set; }
 
     }
-    public class LTLAnalysisResultDTO : AnalysisResultDTO
+    public class LTLAnalysisResultDTO
     {
+        /// <summary>Additional error information if status is nor Stabilizing neither NonStabilizing</summary>
+        [XmlIgnore]
+        public string Error { get; set; }
+
         [XmlElement("Tick", Type = typeof(Tick))]
-        public Tick[] NegTicks { get; set; }
+        public Tick[] Ticks { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public StatusType NegStatus { get; set; }
+        public bool Status { get; set; }
+
+        [XmlElement("Loop", Type = typeof(int))]
+        public int Loop { get; set; }
     }
 
     public enum StatusType

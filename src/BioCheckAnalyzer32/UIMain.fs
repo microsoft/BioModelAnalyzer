@@ -79,31 +79,31 @@ type Analyzer () =
 
 
         // 2. CAV interface
-        member this.checkLTL(input_model:Model, formula:string, num_of_steps:string) = 
-            try
-                let network = Marshal.QN_of_Model input_model
-                let formula = LTL.string_to_LTL_formula formula network true
-                let num_of_steps = (int)num_of_steps 
-                if (formula = LTL.Error) then
-                    Marshal.LTLAnalysisResultDTO_of_error -1 "unable to parse formula"                  
-                else             
-                    let range = Rangelist.nuRangel network
-                    // SI: pass default value of 3rd argument. 
-                    let paths = Paths.output_paths network range 
-                    let padded_paths = Paths.change_list_to_length paths num_of_steps
+//        member this.checkLTL(input_model:Model, formula:string, num_of_steps:string) = 
+//            try
+//                let network = Marshal.QN_of_Model input_model
+//                let formula = LTL.string_to_LTL_formula formula network true
+//                let num_of_steps = (int)num_of_steps 
+//                if (formula = LTL.Error) then
+//                    Marshal.LTLAnalysisResultDTO_of_error -1 "unable to parse formula"                  
+//                else             
+//                    let range = Rangelist.nuRangel network
+//                    // SI: pass default value of 3rd argument. 
+//                    let paths = Paths.output_paths network range 
+//                    let padded_paths = Paths.change_list_to_length paths num_of_steps
+//
+//                    // SI: right now, we're just dumping res,model back to the UI.
+//                    // We should structure the data that res,model,model_checked are.
+//                    //let (res,model) = BMC.BoundedMC formula network range padded_paths
+//                    let (res1,model1,res2,model2) = BMC.DoubleBoundedMCWithSim formula network padded_paths true
+//                    let model1_checked = BioCheckPlusZ3.check_model model1 res1 network
+//                    let model2_checked = BioCheckPlusZ3.check_model model2 res2 network 
+//
+//                    Marshal.ltl_result_full res1 model1 (Some(res2,model2))
+//
+//            with Marshal.MarshalInFailed(id,msg) -> Marshal.LTLAnalysisResultDTO_of_error id msg
 
-                    // SI: right now, we're just dumping res,model back to the UI.
-                    // We should structure the data that res,model,model_checked are.
-                    //let (res,model) = BMC.BoundedMC formula network range padded_paths
-                    let (res1,model1,res2,model2) = BMC.DoubleBoundedMCWithSim formula network padded_paths true
-                    let model1_checked = BioCheckPlusZ3.check_model model1 res1 network
-                    let model2_checked = BioCheckPlusZ3.check_model model2 res2 network 
-
-                    Marshal.ltl_result_full res1 model1 (Some(res2,model2))
-
-            with Marshal.MarshalInFailed(id,msg) -> Marshal.LTLAnalysisResultDTO_of_error id msg
-
-        member this.checkLTLPreliminary(input_model:Model, formula:string, num_of_steps:string) = 
+        member this.checkLTLSimulation(input_model:Model, formula:string, num_of_steps:string) = 
             try
                 let network = Marshal.QN_of_Model input_model
                 let formula = LTL.string_to_LTL_formula formula network true
@@ -120,10 +120,30 @@ type Analyzer () =
                     // We should structure the data that res,model,model_checked are.
                     //let (res,model) = BMC.BoundedMC formula network range padded_paths
                     let (res,model) = BMC.SimulationBasedMC formula network padded_paths
-                    //let model1_checked = BioCheckPlusZ3.check_model model1 res1 network
-                    //let model2_checked = BioCheckPlusZ3.check_model model2 res2 network 
 
-                    Marshal.ltl_result_full res model None
+                    Marshal.ltl_result_full res model
+
+            with Marshal.MarshalInFailed(id,msg) -> Marshal.LTLAnalysisResultDTO_of_error id msg
+
+        member this.checkLTLPolarity(input_model:Model, formula:string, num_of_steps:string, polarity: bool) = 
+            try
+                let network = Marshal.QN_of_Model input_model
+                let formula = LTL.string_to_LTL_formula formula network true
+                let num_of_steps = (int)num_of_steps 
+                if (formula = LTL.Error) then
+                    Marshal.LTLAnalysisResultDTO_of_error -1 "unable to parse formula"                  
+                else             
+                    let range = Rangelist.nuRangel network
+                    // SI: pass default value of 3rd argument. 
+                    let paths = Paths.output_paths network range 
+                    let padded_paths = Paths.change_list_to_length paths num_of_steps
+
+                    // SI: right now, we're just dumping res,model back to the UI.
+                    // We should structure the data that res,model,model_checked are.
+                    //let (res,model) = BMC.BoundedMC formula network range padded_paths
+                    let (res,model) = BMC.SingleSideBoundedMC formula network paths -1 polarity 
+
+                    Marshal.ltl_result_full res model
 
             with Marshal.MarshalInFailed(id,msg) -> Marshal.LTLAnalysisResultDTO_of_error id msg
 

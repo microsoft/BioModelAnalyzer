@@ -89,8 +89,9 @@ namespace BioCheckAnalyzerCommon
         FSharpOption<FixPointCounterExample> findCExFixpoint(Model input_model, AnalysisResult notstabilizing_result);
 
         // 2. CAV interface
-        LTLAnalysisResultDTO checkLTL(Model input_model, string formula, string num_of_steps);
-        LTLAnalysisResultDTO checkLTLPreliminary(Model input_model, string formula, string num_of_steps);
+        //LTLAnalysisResultDTO checkLTL(Model input_model, string formula, string num_of_steps);
+        LTLAnalysisResultDTO checkLTLSimulation(Model input_model, string formula, string num_of_steps);
+        LTLAnalysisResultDTO checkLTLPolarity(Model input_model, string formula, string num_of_steps, bool polarity);
 
         ////// 3. SYN interface
         ////XDocument checkSynth(Model input_model);

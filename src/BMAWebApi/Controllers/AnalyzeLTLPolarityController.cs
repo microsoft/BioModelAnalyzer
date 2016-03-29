@@ -17,24 +17,26 @@ using System.Xml.Serialization;
 
 namespace bma.client.Controllers
 {
-    public class AnalysisOutputDTO : AnalysisResult
+    public class LTLAnalysisResult
     {
-        public int Time { get; set; }
+        public bool Status { get; set; }
+
+        /// <summary>Additional error information if status is nor Stabilizing neither NonStabilizing</summary>
+        [XmlIgnore]
+        public string Error { get; set; }
+
+        [XmlElement("Tick", Type = typeof(Tick))]
+        public Tick[] Ticks { get; set; }
 
         public string[] ErrorMessages { get; set; }
 
         public string[] DebugMessages { get; set; }
 
+        [XmlElement("Loop", Type = typeof(int))]
         public int Loop { get; set; }
     }
 
-    public class LTLAnalysisOutputDTO : AnalysisOutputDTO
-    {
-        [XmlElement("Tick", Type = typeof(Tick))]
-        public Tick[] NegTicks { get; set; }
-    }
-
-    public class AnalysisInputDTO : Model
+    public class LTLPolarityAnalysisInputDTO : Model
     {
         [XmlIgnore]
         public bool EnableLogging { get; set; }
@@ -42,19 +44,20 @@ namespace bma.client.Controllers
 
         public string Number_of_steps { get; set; }
 
+        public bool Polarity { get; set; }
     }
 
-    public class AnalyzeLTLController : ApiController
+    public class AnalyzeLTLPolarityController : ApiController
     {
         private readonly IFailureLogger faultLogger;
 
-        public AnalyzeLTLController(IFailureLogger logger)
+        public AnalyzeLTLPolarityController(IFailureLogger logger)
         {
             this.faultLogger = logger;
         }
 
         // POST api/AnalyzeLTL
-        public AnalysisOutputDTO Post([FromBody]AnalysisInputDTO input)
+        public LTLAnalysisResult Post([FromBody]LTLPolarityAnalysisInputDTO input)
         {
 
             var log = new DefaultLogService();
@@ -63,6 +66,7 @@ namespace bma.client.Controllers
             {
                 string formula = input.Formula;
                 string num_of_steps = input.Number_of_steps;
+                bool polarity = input.Polarity;
 
                 IAnalyzer analyzer = new UIMain.Analyzer();
 
@@ -81,7 +85,7 @@ namespace bma.client.Controllers
 
                 var model = (Model)input;
                 //var result = analyzer.checkLTL((Model)input, formula, num_of_steps); 
-                var result = Utilities.RunWithTimeLimit(() => analyzer.checkLTL((Model)input, formula, num_of_steps), TimeSpan.FromMinutes(1));//, Utilities.GetTimeLimitFromConfig());
+                var result = Utilities.RunWithTimeLimit(() => analyzer.checkLTLPolarity((Model)input, formula, num_of_steps, polarity), TimeSpan.FromMinutes(1));//, Utilities.GetTimeLimitFromConfig());
 
                 // Log the output XML each time it's run
                 // DEBUG: Sam - to check why the output is returning is null
@@ -99,16 +103,16 @@ namespace bma.client.Controllers
                 //}
 
                 var status = result.Status;
-                if (result.Status == StatusType.True && result.NegStatus == StatusType.True)
-                    status = StatusType.PartiallyTrue;
+                //if (result.Status == StatusType.True && result.NegStatus == StatusType.True)
+                //    status = StatusType.PartiallyTrue;
 
-                return new LTLAnalysisOutputDTO
+                return new LTLAnalysisResult
                 {
                     Error = result.Error,
                     Ticks = result.Ticks,
-                    NegTicks = result.NegTicks,
+                    //NegTicks = result.NegTicks,
                     Status = status,
-                    Time = (int)time,
+                    //Time = (int)time,
                     Loop = result.Loop,
                     ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
                     DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
@@ -123,9 +127,8 @@ namespace bma.client.Controllers
                 log.LogError(ex.ToString());
                 faultLogger.Add(DateTime.Now, "2.0", input, log);
                 // Return an Unknown if fails
-                return new AnalysisOutputDTO
+                return new LTLAnalysisResult
                 {
-                    Status = StatusType.Error,
                     Error = ex.Message,
                     ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
                     DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null

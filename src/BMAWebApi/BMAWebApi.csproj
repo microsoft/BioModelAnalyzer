@@ -112,8 +112,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\AnalyzeLTLPreliminaryController.cs" />
-    <Compile Include="Controllers\AnalyzeLTLController.cs" />
+    <Compile Include="Controllers\AnalyzeLTLSimulationController.cs" />
+    <Compile Include="Controllers\AnalyzeLTLPolarityController.cs" />
     <Compile Include="FailureAzureLogger.cs" />
     <Compile Include="ActivityAzureLogger.cs" />
     <Compile Include="Controllers\ActivityLogController.cs" />

@@ -17,17 +17,26 @@ using System.Xml.Serialization;
 
 namespace bma.client.Controllers
 {
-    public class AnalyzeLTLPreliminaryController : ApiController
+    public class LTLSimulationAnalysisInputDTO : Model
+    {
+        [XmlIgnore]
+        public bool EnableLogging { get; set; }
+        public string Formula { get; set; }
+
+        public string Number_of_steps { get; set; }
+    }
+
+    public class AnalyzeLTLSimulationController : ApiController
     {
         private readonly IFailureLogger faultLogger;
 
-        public AnalyzeLTLPreliminaryController(IFailureLogger logger)
+        public AnalyzeLTLSimulationController(IFailureLogger logger)
         {
             this.faultLogger = logger;
         }
 
         // POST api/AnalyzeLTL
-        public AnalysisOutputDTO Post([FromBody]AnalysisInputDTO input)
+        public LTLAnalysisResult Post([FromBody]LTLSimulationAnalysisInputDTO input)
         {
 
             var log = new DefaultLogService();
@@ -54,7 +63,7 @@ namespace bma.client.Controllers
 
                 var model = (Model)input;
                 //var result = analyzer.checkLTL((Model)input, formula, num_of_steps); 
-                var result = Utilities.RunWithTimeLimit(() => analyzer.checkLTLPreliminary((Model)input, formula, num_of_steps), TimeSpan.FromMinutes(1));//, Utilities.GetTimeLimitFromConfig());
+                var result = Utilities.RunWithTimeLimit(() => analyzer.checkLTLSimulation((Model)input, formula, num_of_steps), TimeSpan.FromMinutes(1));//, Utilities.GetTimeLimitFromConfig());
 
                 // Log the output XML each time it's run
                 // DEBUG: Sam - to check why the output is returning is null
@@ -72,16 +81,15 @@ namespace bma.client.Controllers
                 //}
 
                 var status = result.Status;
-                if (result.Status == StatusType.True && result.NegStatus == StatusType.True)
-                    status = StatusType.PartiallyTrue;
+                //if (result.Status == StatusType.True && result.NegStatus == StatusType.True)
+                //    status = StatusType.PartiallyTrue;
 
-                return new LTLAnalysisOutputDTO
+                return new LTLAnalysisResult
                 {
                     Error = result.Error,
                     Ticks = result.Ticks,
-                    NegTicks = result.NegTicks,
                     Status = status,
-                    Time = (int)time,
+                    //Time = (int)time,
                     Loop = result.Loop,
                     ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
                     DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
@@ -96,9 +104,8 @@ namespace bma.client.Controllers
                 log.LogError(ex.ToString());
                 faultLogger.Add(DateTime.Now, "2.0", input, log);
                 // Return an Unknown if fails
-                return new AnalysisOutputDTO
+                return new LTLAnalysisResult
                 {
-                    Status = StatusType.Error,
                     Error = ex.Message,
                     ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
                     DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null

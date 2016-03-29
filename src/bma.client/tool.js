@@ -14796,7 +14796,8 @@ var BMA;
             TemporalPropertiesPresenter.prototype.ResetOperation = function (operation) {
                 operation.AnalysisStatus = "nottested";
                 if (operation.Tag !== undefined && operation.Tag.driver !== undefined) {
-                    operation.Tag.driver.SetStatus("nottested", undefined);
+                    operation.Tag.driver.SetStatus("nottested");
+                    operation.Tag.driver.SetMessage(undefined);
                 }
             };
             TemporalPropertiesPresenter.prototype.CreateSvgHeaders = function () {

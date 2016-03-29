@@ -662,12 +662,12 @@ let QN_of_Model (model:Model) =
 
 // C# AnalysisResult = F# stability_result
 let stability_result_of_AnalysisResult (ar:AnalysisResult) = 
-    let parse_tick (tick:AnalysisResult.Tick) =
+    let parse_tick (tick:Tick) =
         let time = tick.Time
         let variables = tick.Variables
         let bounds =
             Seq.fold
-                (fun (bb:QN.interval) (v:AnalysisResult.Tick.Variable) ->
+                (fun (bb:QN.interval) (v:Tick.Variable) ->
                     let id = v.Id
                     let lo = (int)v.Lo
                     let hi = (int)v.Hi
@@ -688,16 +688,16 @@ let stability_result_of_AnalysisResult (ar:AnalysisResult) =
     | x -> raise(MarshalInFailed(-1,"Bad status descriptor: "+x.ToString()))
 
 let AnalysisResult_of_stability_result (sr:Result.stability_result) = 
-    let Tick_of_tick (a:AnalysisResult.Tick[]) i (t:(int * QN.interval)) = 
+    let Tick_of_tick (a:Tick[]) i (t:(int * QN.interval)) = 
         let (time,interval) = t
-        a.[i] <- new AnalysisResult.Tick()
+        a.[i] <- new Tick()
         a.[i].Time <- time
         a.[i].Variables <- 
             let vv = Array.zeroCreate (interval.Count)
             let vi = ref 0
             Map.iter 
                 (fun v (lo,hi) -> 
-                    let v' = new AnalysisResult.Tick.Variable ()
+                    let v' = new Tick.Variable ()
                     v'.Id <- v; v'.Lo <- lo; v'.Hi <- hi
                     vv.[!vi] <- v'
                     incr vi)
@@ -717,14 +717,14 @@ let AnalysisResult_of_stability_result (sr:Result.stability_result) =
     | Result.SRNotStabilizing(hist) -> 
         mk_AnalysisResult StatusType.NotStabilizing "" hist
 
-let ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) (negative: Option<bool * (int * Map<int,Map<QN.var,int>>)>) = 
+let ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) = //(negative: Option<bool * (int * Map<int,Map<QN.var,int>>)>) = 
     let (loop,model_map) = model
 
     let getvariables (variable: Map<QN.var,int>) = 
         let varlist = Array.zeroCreate variable.Count
         let j = ref 0
         for item in variable do  
-            let vrbl = new AnalysisResult.Tick.Variable ()
+            let vrbl = new Tick.Variable ()
             vrbl.Id <- item.Key; vrbl.Hi <- item.Value; vrbl.Lo <- item.Value
             varlist.[j.Value] <- vrbl
             incr j
@@ -734,7 +734,7 @@ let ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) (negati
         let ticks = Array.zeroCreate model_map.Count
         let i = ref 0
         while (Map.containsKey !i model_map) do            
-            ticks.[i.Value] <- new AnalysisResult.Tick() 
+            ticks.[i.Value] <- new Tick() 
             ticks.[i.Value].Time <- i.Value
             let vrb = Map.find !i model_map
             ticks.[i.Value].Variables <- getvariables vrb
@@ -753,13 +753,13 @@ let ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) (negati
     let ltlresult = new LTLAnalysisResultDTO()
     ltlresult.Loop <- loop
     ltlresult.Ticks <- ticks model_map
-    ltlresult.Status <- if result then StatusType.True else StatusType.False
+    ltlresult.Status <- result
     
-    match negative with
-    | Some(resultneg, (loopneg, modelneg)) -> 
-        ltlresult.NegTicks <- ticks modelneg
-        ltlresult.NegStatus <- if resultneg then StatusType.True else StatusType.False
-    | None -> ()
+//    match negative with
+//    | Some(resultneg, (loopneg, modelneg)) -> 
+//        ltlresult.NegTicks <- ticks modelneg
+//        ltlresult.NegStatus <- if resultneg then StatusType.True else StatusType.False
+//    | None -> ()
 
     ltlresult
 
@@ -822,7 +822,6 @@ let AnalysisResultDTO_of_error id msg =
 
 let LTLAnalysisResultDTO_of_error id msg = 
     let r = new LTLAnalysisResultDTO()
-    r.Status <- StatusType.Error
     r.Error <- (string)id + msg
     r
 
