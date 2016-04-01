@@ -962,13 +962,13 @@ module BMA {
                                 } else {
                                     driver.SetShowResultsCallback(function (showpositive) {
                                         that.commands.Execute("ShowLTLResults", {
-                                            ticks: res.NegTicks
+                                            ticks: res.Ticks
                                         });
                                     });
 
                                     operation.AnalysisStatus = "processing, partialfail";
                                     operation.Tag.data = undefined;
-                                    operation.Tag.negdata = res.NegTicks;
+                                    operation.Tag.negdata = res.Ticks;
                                     operation.Tag.steps = driver.GetSteps();
                                 }
 
@@ -1018,8 +1018,11 @@ module BMA {
                                             });
                                         }
                                         else {
-                                            driver.SetStatus = resultStatus;
+                                            driver.SetStatus(resultStatus);
                                         }
+
+                                        domplot.updateLayout();
+                                        that.OnOperationsChanged(false);
                                     }
 
                                 }).fail(function (xhr, textStatus, errorThrown) {
