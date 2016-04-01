@@ -5363,9 +5363,10 @@ var BMA;
             };
             LTLResultsCompactViewer.prototype.SetSteps = function (steps) {
                 if (steps && steps > 0)
-                    this.compactltlresult.compactltlresult({
-                        steps: steps
-                    });
+                    this.steps = steps;
+                this.compactltlresult.compactltlresult({
+                    steps: steps
+                });
             };
             LTLResultsCompactViewer.prototype.GetSteps = function () {
                 return this.steps;
@@ -13011,33 +13012,32 @@ jQuery.fn.extend({
                     //}
                     break;
                 case "processing":
-                    if (this.options.isexpanded) {
-                        var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                        var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block").css("width", 55)
-                            .appendTo(ltltestdiv);
-                        var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
-                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
-                        var minusb = $("<button>-</button>").appendTo(minusd);
-                        minusd.addClass("testing");
-                        minusb.addClass("testing");
-                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
-                        var plusb = $("<button>+</button>").appendTo(plusd);
-                        plusd.addClass("testing");
-                        plusb.addClass("testing");
-                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
-                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                        var btn = $("<button></button>").appendTo(li);
-                        li.addClass("spin");
-                        that.createWaitAnim().appendTo(btn);
-                    }
-                    else {
-                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
-                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                        var btn = $("<button></button>").appendTo(li);
-                        li.addClass("spin");
-                        that.createWaitAnim().appendTo(btn);
-                    }
+                    //if (this.options.isexpanded) {
+                    //    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
+                    //    var d = $("<div>" + that.options.steps + " steps</div>")
+                    //        .css("display", "inline-block").css("width", 55)
+                    //        .appendTo(ltltestdiv);
+                    //    var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
+                    //    var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                    //    var minusb = $("<button>-</button>").appendTo(minusd);
+                    //    minusd.addClass("testing");
+                    //    minusb.addClass("testing");
+                    //    var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                    //    var plusb = $("<button>+</button>").appendTo(plusd);
+                    //    plusd.addClass("testing");
+                    //    plusb.addClass("testing");
+                    //    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
+                    //    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    //    var btn = $("<button></button>").appendTo(li);
+                    //    li.addClass("spin");
+                    //    that.createWaitAnim().appendTo(btn);
+                    //} else {
+                    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var btn = $("<button></button>").appendTo(li);
+                    li.addClass("spin");
+                    that.createWaitAnim().appendTo(btn);
+                    //}
                     break;
                 case "success":
                     if (this.options.isexpanded) {
@@ -14877,6 +14877,7 @@ var BMA;
                 if (appModel.Operations !== undefined && appModel.Operations.length > 0) {
                     for (var i = 0; i < appModel.Operations.length; i++) {
                         var position = { x: 0, y: 0 };
+                        var steps;
                         if (checkAppearance) {
                             var opAppearance = appModel.OperationAppearances[i];
                             if (opAppearance.x !== undefined) {
@@ -14885,9 +14886,16 @@ var BMA;
                             if (opAppearance.y !== undefined) {
                                 position.y = opAppearance.y;
                             }
+                            if (opAppearance.steps !== undefined) {
+                                steps = opAppearance.steps;
+                            }
                         }
                         var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVGRef(), appModel.Operations[i], position);
                         this.InitializeOperationTag(newOp);
+                        if (steps) {
+                            newOp.Tag.steps = steps;
+                            newOp.Tag.driver.SetSteps(steps);
+                        }
                         if (!checkAppearance) {
                             height += newOp.BoundingBox.height / 2 + padding;
                             newOp.Position = { x: 0, y: height };
@@ -15084,7 +15092,8 @@ var BMA;
                     ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus, steps: this.operations[i].Tag.steps });
                     appearances.push({
                         x: this.operations[i].Position.x,
-                        y: this.operations[i].Position.y
+                        y: this.operations[i].Position.y,
+                        steps: this.operations[i].Tag.steps,
                     });
                 }
                 if (updateControls) {

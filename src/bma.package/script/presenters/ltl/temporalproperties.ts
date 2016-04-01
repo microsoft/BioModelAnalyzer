@@ -796,6 +796,7 @@ module BMA {
                 if (appModel.Operations !== undefined && appModel.Operations.length > 0) {
                     for (var i = 0; i < appModel.Operations.length; i++) {
                         var position = { x: 0, y: 0 };
+                        var steps;
                         if (checkAppearance) {
                             var opAppearance = appModel.OperationAppearances[i];
                             if (opAppearance.x !== undefined) {
@@ -804,10 +805,17 @@ module BMA {
                             if (opAppearance.y !== undefined) {
                                 position.y = opAppearance.y;
                             }
+                            if (opAppearance.steps !== undefined) {
+                                steps = opAppearance.steps;
+                            }
                         }
 
                         var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVGRef(), appModel.Operations[i], position);
                         this.InitializeOperationTag(newOp);
+                        if (steps) {
+                            newOp.Tag.steps = steps;
+                            newOp.Tag.driver.SetSteps(steps);
+                        }
 
                         if (!checkAppearance) {
                             height += newOp.BoundingBox.height / 2 + padding;
@@ -1053,7 +1061,8 @@ module BMA {
                     ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus, steps: this.operations[i].Tag.steps });
                     appearances.push({
                         x: this.operations[i].Position.x,
-                        y: this.operations[i].Position.y
+                        y: this.operations[i].Position.y,
+                        steps: this.operations[i].Tag.steps,
                     });
                 }
 

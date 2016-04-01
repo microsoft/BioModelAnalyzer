@@ -633,6 +633,7 @@ module BMA {
 
             public SetSteps(steps: number) {
                 if (steps && steps > 0)
+                    this.steps = steps;
                     this.compactltlresult.compactltlresult({
                         steps: steps
                     });
