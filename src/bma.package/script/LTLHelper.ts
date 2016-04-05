@@ -57,6 +57,7 @@
                         var fill = options && options.fill ? options.fill : "transparent";
                         var stroke = options && options.stroke ? options.stroke : "rgb(96,96,96)";
 
+                        /*
                         var strokeWidth = 1;
                         if (options !== undefined) {
                             if (options.isRoot) {
@@ -65,12 +66,13 @@
                                 strokeWidth = options.strokeWidth;
                             }
                         }
+                        */
 
                         context.strokeStyle = "rgb(96,96,96)";
                         context.fillStyle = options !== undefined && options.isRoot && operationAppearance.fill !== undefined ? operationAppearance.fill : "transparent";
                         RoundRect(context, pos.x - halfWidth, pos.y - height / 2, halfWidth * 2, height, height / 2);
-                        context.stroke();
                         context.fill();
+                        context.stroke();
 
                         var operands = operation.operands;
                         switch (operands.length) {
@@ -117,8 +119,8 @@
                         context.beginPath();
                         context.arc(pos.x, pos.y, hks, 0, 2 * Math.PI, false);
                         context.closePath();
-                        context.stroke();
                         context.fill();
+                        context.stroke();
 
                         if (layoutPart.type === "keyframe") {
                             var name = layoutPart.name;
