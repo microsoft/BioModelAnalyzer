@@ -2060,7 +2060,24 @@ var BMA;
             this.currentModel = new BMA.Model.AppModel();
         }
         ChangesChecker.prototype.Snapshot = function (model) {
-            this.currentModel.Deserialize(model.Serialize());
+            this.currentModel.BioModel = model.BioModel.Clone();
+            this.currentModel.Layout = model.Layout.Clone();
+            this.currentModel.ProofResult = model.ProofResult;
+            this.currentModel.Operations = [];
+            this.currentModel.OperationAppearances = [];
+            for (var i = 0; i < model.Operations.length; i++) {
+                this.currentModel.Operations.push(model.Operations[i].Clone());
+                if (model.OperationAppearances !== undefined && model.OperationAppearances.length !== 0)
+                    this.currentModel.OperationAppearances.push({
+                        x: model.OperationAppearances[i].x,
+                        y: model.OperationAppearances[i].y,
+                        steps: model.OperationAppearances[i].steps,
+                    });
+            }
+            this.currentModel.States = [];
+            for (var i = 0; i < model.States.length; i++)
+                this.currentModel.States.push(model.States[i].Clone());
+            //this.currentModel.Deserialize(model.Serialize());
         };
         ChangesChecker.prototype.IsChanged = function (model) {
             return this.currentModel.Serialize() !== model.Serialize();
@@ -5362,11 +5379,12 @@ var BMA;
                 this.compactltlresult.compactltlresult({ "error": message });
             };
             LTLResultsCompactViewer.prototype.SetSteps = function (steps) {
-                if (steps && steps > 0)
-                    this.steps = steps;
-                this.compactltlresult.compactltlresult({
-                    steps: steps
-                });
+                if (steps && steps > 0) {
+                    //this.steps = steps;
+                    this.compactltlresult.compactltlresult({
+                        steps: steps
+                    });
+                }
             };
             LTLResultsCompactViewer.prototype.GetSteps = function () {
                 return this.steps;
@@ -13304,16 +13322,24 @@ jQuery.fn.extend({
             var needRefreshStates = false;
             switch (key) {
                 case "status":
-                    needRefreshStates = true;
+                    if (that.options.status !== value)
+                        needRefreshStates = true;
                     break;
                 case "isexpanded":
-                    needRefreshStates = true;
+                    if (that.options.isexpanded !== value)
+                        needRefreshStates = true;
                     break;
                 case "steps":
-                    needRefreshStates = true;
+                    if (that.options.steps !== value) {
+                        if (that.options.onstepschanged !== undefined) {
+                            that.options.onstepschanged(value);
+                        }
+                        needRefreshStates = true;
+                    }
                     break;
                 case "error":
-                    needRefreshStates = true;
+                    if (that.options.error !== value)
+                        needRefreshStates = true;
                     break;
                 default:
                     break;
@@ -15197,7 +15223,7 @@ var BMA;
                         operation.AnalysisStatus = "nottested";
                         driver.SetMessage(undefined);
                     }
-                    that.OnOperationsChanged(false, false);
+                    that.OnOperationsChanged(false, true);
                 });
                 var bbox = operation.BoundingBox;
                 dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -operation.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);

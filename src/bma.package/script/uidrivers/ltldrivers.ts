@@ -632,11 +632,12 @@ module BMA {
             }
 
             public SetSteps(steps: number) {
-                if (steps && steps > 0)
-                    this.steps = steps;
+                if (steps && steps > 0) {
+                    //this.steps = steps;
                     this.compactltlresult.compactltlresult({
                         steps: steps
                     });
+                }
             }
 
             public GetSteps(): number {

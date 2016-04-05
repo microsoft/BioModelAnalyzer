@@ -441,16 +441,24 @@
             var needRefreshStates = false;
             switch (key) {
                 case "status":
-                    needRefreshStates = true;
+                    if (that.options.status !== value)
+                        needRefreshStates = true;
                     break;
                 case "isexpanded":
-                    needRefreshStates = true;
+                    if (that.options.isexpanded !== value)
+                        needRefreshStates = true;
                     break;
                 case "steps":
-                    needRefreshStates = true;
+                    if (that.options.steps !== value) {
+                        if (that.options.onstepschanged !== undefined) {
+                            that.options.onstepschanged(value);
+                        }
+                        needRefreshStates = true;
+                    }
                     break;
                 case "error":
-                    needRefreshStates = true;
+                    if (that.options.error !== value)
+                        needRefreshStates = true;
                     break;
                 default:
                     break;

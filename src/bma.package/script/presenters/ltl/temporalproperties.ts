@@ -1181,7 +1181,7 @@ module BMA {
                         operation.AnalysisStatus = "nottested";
                         driver.SetMessage(undefined);
                     }
-                    that.OnOperationsChanged(false, false);
+                    that.OnOperationsChanged(false, true);
                 });
 
                 var bbox = operation.BoundingBox;
