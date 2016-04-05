@@ -617,20 +617,21 @@ var BMA;
                         var height = operationAppearance.keyFrameSize + paddingY * layoutPart.layer;
                         var fill = options && options.fill ? options.fill : "transparent";
                         var stroke = options && options.stroke ? options.stroke : "rgb(96,96,96)";
+                        /*
                         var strokeWidth = 1;
                         if (options !== undefined) {
                             if (options.isRoot) {
                                 strokeWidth = operationAppearance.borderThickness;
-                            }
-                            else if (options.strokeWidth) {
+                            } else if (options.strokeWidth) {
                                 strokeWidth = options.strokeWidth;
                             }
                         }
+                        */
                         context.strokeStyle = "rgb(96,96,96)";
                         context.fillStyle = options !== undefined && options.isRoot && operationAppearance.fill !== undefined ? operationAppearance.fill : "transparent";
                         RoundRect(context, pos.x - halfWidth, pos.y - height / 2, halfWidth * 2, height, height / 2);
-                        context.stroke();
                         context.fill();
+                        context.stroke();
                         var operands = operation.operands;
                         switch (operands.length) {
                             case 1:
@@ -668,8 +669,8 @@ var BMA;
                         context.beginPath();
                         context.arc(pos.x, pos.y, hks, 0, 2 * Math.PI, false);
                         context.closePath();
-                        context.stroke();
                         context.fill();
+                        context.stroke();
                         if (layoutPart.type === "keyframe") {
                             var name = layoutPart.name;
                             var fs = 16;
@@ -11057,6 +11058,7 @@ var BMA;
         //    }
         //},
         Show: function () {
+            this._popup_position();
             this.element.show();
         },
         Hide: function () {
@@ -13796,9 +13798,9 @@ jQuery.fn.extend({
         refresh: function () {
             var that = this;
             var canvas = (this._canvas[0]);
-            var keyFrameSize = 25;
+            var keyFrameSize = 26;
             var padding = { x: 5, y: 10 };
-            var maxHeight = 25 * 4;
+            var maxHeight = keyFrameSize * 4;
             var context = canvas.getContext("2d");
             canvas.height = canvas.height;
             var operations = this.options.operations;
@@ -13839,12 +13841,14 @@ jQuery.fn.extend({
                 height += opSize.height + this.options.padding.y;
             }
             canvas.height = height;
+            //context.msImageSmoothingEnabled = true;
+            context.translate(0.5, 0.5);
             height = this.options.padding.y;
             for (var i = 0; i < operations.length; i++) {
                 var op = operations[i].operation;
                 var opSize = sizes[i].size;
                 var scale = sizes[i].scale;
-                var opPosition = { x: opSize.width / 2 + this.options.padding.x, y: height + opSize.height / 2 };
+                var opPosition = { x: opSize.width / 2 + this.options.padding.x, y: Math.floor(height + opSize.height / 2) };
                 BMA.LTLOperations.RenderOperation(canvas, op, opPosition, scale, {
                     padding: padding,
                     keyFrameSize: keyFrameSize,

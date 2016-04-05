@@ -83,6 +83,7 @@
 
 
         Show: function () {
+            this._popup_position();
             this.element.show();
         },
 

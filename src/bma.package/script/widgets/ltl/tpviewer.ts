@@ -27,11 +27,12 @@
         refresh: function () {
             var that = this;
             var canvas = <HTMLCanvasElement>(this._canvas[0]);
-            var keyFrameSize = 25;
+            var keyFrameSize = 26;
             var padding = { x: 5, y: 10 };
-            var maxHeight = 25 * 4;
+            var maxHeight = keyFrameSize * 4;
             var context = canvas.getContext("2d");
             canvas.height = canvas.height;
+            
 
             var operations = this.options.operations;
             var currentPos = { x: 0, y: 0 };
@@ -88,13 +89,16 @@
                 height += opSize.height + this.options.padding.y;
             }
             canvas.height = height;
+            //context.msImageSmoothingEnabled = true;
+            context.translate(0.5, 0.5);
+            
 
             height = this.options.padding.y;
             for (var i = 0; i < operations.length; i++) {
                 var op = operations[i].operation;
                 var opSize = sizes[i].size;
                 var scale = sizes[i].scale;
-                var opPosition = { x: opSize.width / 2 + this.options.padding.x, y: height + opSize.height / 2 };
+                var opPosition = { x: opSize.width / 2 + this.options.padding.x, y: Math.floor(height + opSize.height / 2) };
 
                 BMA.LTLOperations.RenderOperation(canvas, op, opPosition, scale, {
                     padding: padding,
