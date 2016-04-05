@@ -3,6 +3,7 @@
         _svg: undefined,
         _pixelOffset: 10,
         _anims: [],
+        _stripesImg: undefined,
 
         options: {
             operations: [],
@@ -21,6 +22,14 @@
             
             that.canvasDiv = $("<div></div>").width(root.width()).appendTo(root);
             that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).appendTo(that.canvasDiv);
+
+            that._stripesImg = new Image();
+            that._stripesImg.src = "images/stripe-pattern.png";
+            
+            that._stripesImg.onload = () => {
+                that.refresh();
+            }
+
             that.refresh();
         },
 
@@ -137,14 +146,17 @@
                 case "partialsuccess":
                     var canvas = <HTMLCanvasElement>(this._canvas[0]);
                     var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                    return context.createPattern(this._stripesImg, "repeat");
+
+                    /*var gradient = context.createLinearGradient(-width / 2, 0, width, height);
                     var n = 20;
                     for (var i = 0; i < n; i++) {
                         gradient.addColorStop(i / n, "rgb(217,255,182)");
                         gradient.addColorStop((2 * i + 1) / (2 * n), "white");
                     }
                     return gradient;
-                //return "rgb(217,255,182)";
+                    */
+                    //return "rgb(217,255,182)";
                 case "fail":
                     return "rgb(254, 172, 158)";
                 default:

@@ -708,19 +708,11 @@ module BMA {
                 var svg = this.driver.GetSVGRef();
                 var defs = svg.defs("ltlBmaDefs");
 
-                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
-                    patternUnits: "userSpaceOnUse",
-                    patternTransform: "rotate(45)"
-                });
-                svg.rect(pattern, 0, 0, 4, 4, {
-                    transform: "translate(0,0)",
-                    fill: "white"
+                var imgPattern = svg.pattern(defs, "pattern-stripe", undefined, undefined, 80, 40, {
+                    patternUnits: "userSpaceOnUse"
                 });
 
-                var mask = svg.mask(defs, "mask-stripe");
-                svg.rect(mask, "-50%", "-50%", "100%", "100%", {
-                    fill: "url(#pattern-stripe)"
-                });
+                svg.image(imgPattern, 0, 0, 80, 40, "images/stripe-pattern.png");
             }
 
             private CompareStatesToLocal(states: BMA.LTLOperations.Keyframe[]) {

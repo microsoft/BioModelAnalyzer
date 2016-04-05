@@ -122,7 +122,7 @@ $(document).ready(function () {
         var dfd = $.Deferred();
         loadVersion().done(function (version) {
             loadScript(version);
-            window.setInterval(function () { versionCheck(version); }, 1000 /* 1 hour */);
+            window.setInterval(function () { versionCheck(version); }, 60 * 60 * 1000 /* 1 hour */);
             dfd.resolve();
         });
         return dfd.promise();

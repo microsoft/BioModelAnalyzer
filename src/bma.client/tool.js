@@ -3627,14 +3627,17 @@ var BMA;
                             break;
                         case "partialsuccess":
                             this.status = value;
-                            this.Fill = "rgb(217,255,182)";
+                            this.Fill = "url(#pattern-stripe)"; //"rgb(217,255,182)";
+                            /*
                             this.useMask = true;
+    
                             if (this.majorRect !== undefined) {
                                 //mask: url(#mask-stripe)
                                 this.svg.change(this.majorRect, {
                                     mask: this.mask
                                 });
                             }
+                            */
                             break;
                         case "fail":
                             this.status = value;
@@ -13754,6 +13757,7 @@ jQuery.fn.extend({
         _svg: undefined,
         _pixelOffset: 10,
         _anims: [],
+        _stripesImg: undefined,
         options: {
             operations: [],
             padding: { x: 3, y: 5 }
@@ -13767,6 +13771,11 @@ jQuery.fn.extend({
             $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
             that.canvasDiv = $("<div></div>").width(root.width()).appendTo(root);
             that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).appendTo(that.canvasDiv);
+            that._stripesImg = new Image();
+            that._stripesImg.src = "images/stripe-pattern.png";
+            that._stripesImg.onload = function () {
+                that.refresh();
+            };
             that.refresh();
         },
         refresh: function () {
@@ -13857,13 +13866,15 @@ jQuery.fn.extend({
                 case "partialsuccess":
                     var canvas = (this._canvas[0]);
                     var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
-                    var n = 20;
-                    for (var i = 0; i < n; i++) {
-                        gradient.addColorStop(i / n, "rgb(217,255,182)");
-                        gradient.addColorStop((2 * i + 1) / (2 * n), "white");
-                    }
-                    return gradient;
+                    return context.createPattern(this._stripesImg, "repeat");
+                /*var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                var n = 20;
+                for (var i = 0; i < n; i++) {
+                    gradient.addColorStop(i / n, "rgb(217,255,182)");
+                    gradient.addColorStop((2 * i + 1) / (2 * n), "white");
+                }
+                return gradient;
+                */
                 //return "rgb(217,255,182)";
                 case "fail":
                     return "rgb(254, 172, 158)";
@@ -14807,18 +14818,10 @@ var BMA;
             TemporalPropertiesPresenter.prototype.CreateSvgHeaders = function () {
                 var svg = this.driver.GetSVGRef();
                 var defs = svg.defs("ltlBmaDefs");
-                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
-                    patternUnits: "userSpaceOnUse",
-                    patternTransform: "rotate(45)"
+                var imgPattern = svg.pattern(defs, "pattern-stripe", undefined, undefined, 80, 40, {
+                    patternUnits: "userSpaceOnUse"
                 });
-                svg.rect(pattern, 0, 0, 4, 4, {
-                    transform: "translate(0,0)",
-                    fill: "white"
-                });
-                var mask = svg.mask(defs, "mask-stripe");
-                svg.rect(mask, "-50%", "-50%", "100%", "100%", {
-                    fill: "url(#pattern-stripe)"
-                });
+                svg.image(imgPattern, 0, 0, 80, 40, "images/stripe-pattern.png");
             };
             TemporalPropertiesPresenter.prototype.CompareStatesToLocal = function (states) {
                 if (states.length !== this.states.length)
