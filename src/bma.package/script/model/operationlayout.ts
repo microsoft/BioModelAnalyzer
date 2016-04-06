@@ -77,8 +77,9 @@
                         break;
                     case "partialsuccess":
                         this.status = value;
-                        this.Fill = "rgb(217,255,182)";
+                        this.Fill = "url(#pattern-stripe)";//"rgb(217,255,182)";
 
+                        /*
                         this.useMask = true;
 
                         if (this.majorRect !== undefined) {
@@ -87,7 +88,7 @@
                                 mask: this.mask
                             });
                         }
-
+                        */
                         break;
                     case "fail":
                         this.status = value;

@@ -24,6 +24,8 @@
 
     <script>
 
+        
+
         $(document).ready(function () {
             window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
 
@@ -45,8 +47,23 @@
             operation.Operator = new BMA.LTLOperations.Operator("AND", 2, () => { });
             */
 
+            var c = $("<canvas></canvas>").width(40).height(40);
+            var patteranCanvas = c[0];
+            var context = patteranCanvas.getContext("2d");
+            context.beginPath();
+            context.moveTo(-10, 40);
+            context.lineTo(30, 0);
+            context.lineTo(50, 0);
+            context.lineTo(10, 40);
+            context.closePath();
+            context.fillStyle = "green";
+            context.fill();
+
+            var ctx = $("#canvas")[0].getContext("2d");
+            var pattern = ctx.createPattern(patteranCanvas, "repeat-x");
+
             //BMA.LTLOperations.RenderOperation($("#canvas")[0], op, { x: 400, y: 300 }, { x: 0.7, y: 0.7 }, { padding: { x: 5, y: 10 }, stroke: "black", fill: "black", keyFrameSize: 25, isRoot: true, strokeWidth: 1, borderThickness: 1 });
-            BMA.LTLOperations.RenderOperation($("#canvas")[0], op2, { x: 400, y: 100 }, { x: 1, y: 1 }, { padding: { x: 5, y: 10 }, stroke: "black", fill: "white", keyFrameSize: 25, isRoot: true, strokeWidth: 1, borderThickness: 1 });
+            BMA.LTLOperations.RenderOperation($("#canvas")[0], op2, { x: 400, y: 100 }, { x: 1, y: 1 }, { padding: { x: 5, y: 10 }, stroke: "black", fill: pattern, keyFrameSize: 25, isRoot: true, strokeWidth: 1, borderThickness: 1 });
             //BMA.LTLOperations.RenderOperation($("#canvas")[0], op3, { x: 400, y: 500 }, { x: 1, y: 1 }, { padding: { x: 5, y: 10 }, stroke: "black", fill: "black", keyFrameSize: 25, isRoot: true, strokeWidth: 1, borderThickness: 1 });
 
 
@@ -56,6 +73,8 @@
 <body style="margin: 0;">
     <div id="tpviewer">
         <canvas width="800" height="600" id="canvas"></canvas>
+        <canvas width="40" height="40" id="patternCanvas"></canvas>
+
     </div>
 </body>
 </html>

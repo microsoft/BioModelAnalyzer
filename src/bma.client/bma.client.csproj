@@ -254,6 +254,8 @@
     <Content Include="images\state-container.svg" />
     <Content Include="images\state-line-del.svg" />
     <Content Include="images\state-variable.svg" />
+    <Content Include="images\stripe-pattern.png" />
+    <Content Include="images\stripes.png" />
     <Content Include="images\succeeded.png" />
     <Content Include="images\succeeded.svg" />
     <Content Include="images\svgtest.txt" />
