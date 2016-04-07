@@ -13600,6 +13600,7 @@ jQuery.fn.extend({
                 holdCords.holdY = event.pageY;
             });
             drawingSurfaceCnt.contextmenu({
+                addClass: "temporal-properties-contextmenu",
                 delegate: drawingSurfaceCnt,
                 autoFocus: true,
                 preventContextMenuForPopup: true,
@@ -13610,7 +13611,7 @@ jQuery.fn.extend({
                     { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
                     { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
-                    { title: "Export", cmd: "Export", uiIcon: "ui-icon-export" },
+                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }] },
                     { title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
                 ],
                 beforeOpen: function (event, ui) {
@@ -14052,9 +14053,14 @@ var BMA;
                         ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
                     }
                 });
-                commands.On("ExportLTLFormula", function (args) {
+                commands.On("ExportLTLFormulaAsJson", function (args) {
                     if (args.operation !== undefined) {
                         exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "txt");
+                    }
+                });
+                commands.On("ExportLTLFormulaAsText", function (args) {
+                    if (args.operation !== undefined) {
+                        exportService.Export(args.operation, "operation", "txt");
                     }
                 });
                 commands.On("ImportLTLFormula", function (args) {
@@ -14457,11 +14463,18 @@ var BMA;
                         ]);
                     }
                 });
-                commands.On("TemporalPropertiesEditorExport", function (args) {
+                commands.On("TemporalPropertiesEditorExportAsJson", function (args) {
                     if (_this.contextElement !== undefined) {
                         var operationDescr = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
                         var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
-                        commands.Execute("ExportLTLFormula", { operation: clonned });
+                        commands.Execute("ExportLTLFormulaAsJson", { operation: clonned });
+                    }
+                });
+                commands.On("TemporalPropertiesEditorExportAsText", function (args) {
+                    if (_this.contextElement !== undefined) {
+                        var operationDescr = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
+                        var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
+                        commands.Execute("ExportLTLFormulaAsText", { operation: clonned.GetFormula() });
                     }
                 });
                 commands.On("TemporalPropertiesEditorImport", function (args) {

@@ -280,6 +280,7 @@
             });
 
             drawingSurfaceCnt.contextmenu({
+                addClass: "temporal-properties-contextmenu",
                 delegate: drawingSurfaceCnt,//".bma-drawingsurface",
                 autoFocus: true,
                 preventContextMenuForPopup: true,
@@ -290,9 +291,8 @@
                     { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
                     { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
-                    { title: "Export", cmd: "Export", uiIcon: "ui-icon-export" },
+                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" } ] },
                     { title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
-
                 ],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);

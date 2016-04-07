@@ -3,18 +3,18 @@
 // LTL windows
 
 .arrow-down {
-	width: 0; 
-	height: 0; 
-	border-left: 5px solid transparent;
-	border-right: 5px solid transparent;
-	border-top: 10px solid @darkgrey;
-	display: inline-block;
-	margin-left: 5px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 10px solid @darkgrey;
+    display: inline-block;
+    margin-left: 5px;
 }
 
 // LTL States Editor
 .window.LTL-states {
-    width:380px;
+    width: 380px;
     padding: 0px 0px 10px 0px;
 
     .window-title {
@@ -46,13 +46,13 @@
 
         &.new {
             color: white;
-			border: 1px solid white;
-			background-color: @midgrey;
-			margin-left: 5px;
+            border: 1px solid white;
+            background-color: @midgrey;
+            margin-left: 5px;
 
             &:hover {
                 color: @lightgrey;
-				border: 1px solid @lightgrey;
+                border: 1px solid @lightgrey;
                 cursor: pointer;
             }
         }
@@ -62,19 +62,18 @@
 .state-toolbar {
     background-color: @midgrey;
     padding: 5px 5px 0px 10px;
-
 }
 
-.LTL-state{
-    width:380px;
+.LTL-state {
+    width: 380px;
 
-	.default-cell(){
-		width: 45px;
-		height: 45px;
-		vertical-align: middle;
-		line-height: 30px;
-		font-size: 30px;
-	}
+    .default-cell() {
+        width: 45px;
+        height: 45px;
+        vertical-align: middle;
+        line-height: 30px;
+        font-size: 30px;
+    }
 
     table {
         border-collapse: collapse;
@@ -88,18 +87,17 @@
                 border: 1px solid @midgrey;
                 text-align: center;
                 margin: 0px;
-                padding:0px;
-				.default-cell();
+                padding: 0px;
+                .default-cell();
 
                 &.variable {
                     //.default-text();
-                    width:230px;
+                    width: 230px;
                     padding: 0px 5px;
                     text-align: left;
                     white-space: nowrap;
                     //overflow: hidden;
                     //text-overflow: ellipsis;
-
                     img {
                         height: 20px;
                     }
@@ -129,18 +127,19 @@
 
                 &.LTL-line-new {
                     .default-cell();
-					font-size: 40px;
-					line-height: 40px;
-                    vertical-align:top;
-					//padding-bottom: 8px;
-					border: 1px solid @lightgrey;
-					color: @lightgrey;
-					&:hover{
-						color: @midgrey;
-						border: 1px solid @midgrey;
-						cursor: pointer;
-					}
-				}
+                    font-size: 40px;
+                    line-height: 40px;
+                    vertical-align: top;
+                    //padding-bottom: 8px;
+                    border: 1px solid @lightgrey;
+                    color: @lightgrey;
+
+                    &:hover {
+                        color: @midgrey;
+                        border: 1px solid @midgrey;
+                        cursor: pointer;
+                    }
+                }
             }
         }
     }
@@ -163,13 +162,16 @@
         }
 
         td {
-            &.container{
-				width:80px;
-			}
-			&.variable{
-				width:140px;
-			}
+            &.container {
+                width: 80px;
+            }
+
+            &.variable {
+                width: 140px;
+            }
+
             min-width: 50px;
+
             &.list {
                 //height: 85px;
             }
@@ -230,6 +232,10 @@
     }
 }
 
+.temporal-properties-contextmenu {
+    min-width: 110px;
+}
+
 .fit-screen {
     width: 25px;
     padding: 10px;
@@ -249,7 +255,6 @@
     /*width: 800px;*/
     height: 60px;
     /*padding: 15px 10px;*/
-
     .dropzone {
         position: absolute;
         display: inline-block;
@@ -296,7 +301,6 @@
     .state-buttons {
         display: table-cell;
         width: 120px;
-
     }
 
 
@@ -319,7 +323,7 @@
             height: 21px;
             padding: 2px;
             margin-top: 5px;
-            margin-right:5px;
+            margin-right: 5px;
 
             .label {
                 display: inline-block;
@@ -365,33 +369,33 @@ ui-icon-arrowthickstop-1-n {
     display: inline-block;
     .container;
     padding: 7px 7px;
-	vertical-align: middle;
-		
+    vertical-align: middle;
 
-	&.true{
-	    background-color: @lightgreen;
-	    //border: 2px solid @green;
-	    & div{
-		    background-color: @lightgreen;
-	    }
-	}
 
-	&.false{
-	    //border: 2px solid @darkred;
-	    background-color: @red;
-	    & div{
-		    background-color: @red;
-	    }
-	}
+    &.true {
+        background-color: @lightgreen;
+        //border: 2px solid @green;
+        & div {
+            background-color: @lightgreen;
+        }
+    }
 
-	&.some{
-		background-image: url("../images/stripe-pattern.png");
-		&>div{
-			background-color: transparent;
-		}
-	}
-	
-		
+    &.false {
+        //border: 2px solid @darkred;
+        background-color: @red;
+
+        & div {
+            background-color: @red;
+        }
+    }
+
+    &.some {
+        background-image: url("../images/stripe-pattern.png");
+
+        & > div {
+            background-color: transparent;
+        }
+    }
 }
 
 
@@ -412,7 +416,7 @@ ui-icon-arrowthickstop-1-n {
         }
 
         background-color: @red;
-		border-color: @darkred;
+        border-color: @darkred;
     }
 }
 
@@ -422,22 +426,21 @@ ui-icon-arrowthickstop-1-n {
     display: inline-block;
 }
 
-.closed-results{
-	display: inline-block;
-	vertical-align: middle;
+.closed-results {
+    display: inline-block;
+    vertical-align: middle;
 
-	.action-button-small{
-		margin: 0px;
-	}
+    .action-button-small {
+        margin: 0px;
+    }
 
-	&.true{
-		color: @green;
-	}
+    &.true {
+        color: @green;
+    }
 
-	&.false{
-		color: @darkred;
-	}
-
+    &.false {
+        color: @darkred;
+    }
 }
 
 .LTL-test-results {
@@ -447,12 +450,12 @@ ui-icon-arrowthickstop-1-n {
     padding: 5px 5px 0px 5px;
     margin-left: 10px;
     background-color: white;
-	.border-radius(5px);
+    .border-radius(5px);
 
-	&.default{
-		border: 1px solid @darkgrey;
-		color:@darkgrey;
-	}
+    &.default {
+        border: 1px solid @darkgrey;
+        color: @darkgrey;
+    }
 
     &.true {
         border: 1px solid @green;
@@ -464,44 +467,49 @@ ui-icon-arrowthickstop-1-n {
         color: @darkred;
     }
 
-    &.some{
-		border: 1px solid @darkgrey;
-		color:@darkgrey;
-	}
-		
-	.pill-button-box{
-        margin-left:5px;
-		.pill-button{
-			margin-top: 5px;
-			margin-bottom: 0px;
-            width:17px;
-            font-size:19.5px;
-		}
-	}
+    &.some {
+        border: 1px solid @darkgrey;
+        color: @darkgrey;
+    }
 
-    .button-list{
-		margin-top: 5px;
-		button{
-			.default-text();
-			vertical-align: middle;
-			line-height: 15px;
-			margin-top: -2px;
-			img{
-				margin-top: 2px;
-				max-height: 13px;
-			}
-		}
-		.LTL-sim-true{
-			color:@green;
-		}
+    .pill-button-box {
+        margin-left: 5px;
 
-		.LTL-sim-false{
-			color:@darkred;
-		}
-	}
-	.action-button-small{
-		margin: 5px 0px 5px 0px;
-	}
+        .pill-button {
+            margin-top: 5px;
+            margin-bottom: 0px;
+            width: 17px;
+            font-size: 19.5px;
+        }
+    }
+
+    .button-list {
+        margin-top: 5px;
+
+        button {
+            .default-text();
+            vertical-align: middle;
+            line-height: 15px;
+            margin-top: -2px;
+
+            img {
+                margin-top: 2px;
+                max-height: 13px;
+            }
+        }
+
+        .LTL-sim-true {
+            color: @green;
+        }
+
+        .LTL-sim-false {
+            color: @darkred;
+        }
+    }
+
+    .action-button-small {
+        margin: 5px 0px 5px 0px;
+    }
 }
 
 .btns {

@@ -163,9 +163,15 @@
                     }
                 });
 
-                commands.On("ExportLTLFormula", (args) => {
+                commands.On("ExportLTLFormulaAsJson", (args) => {
                     if (args.operation !== undefined) {
                         exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "txt");
+                    }
+                });
+
+                commands.On("ExportLTLFormulaAsText", (args) => {
+                    if (args.operation !== undefined) {
+                        exportService.Export(args.operation, "operation", "txt");
                     }
                 });
 

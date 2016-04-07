@@ -1186,6 +1186,7 @@ ul.command-list li a img {
 }
 ul.command-list li a span {
   margin-left: 5px;
+  margin-right: 5px;
 }
 .ui-menu .ui-menu-item {
   list-style-image: none;
@@ -1195,6 +1196,9 @@ ul.command-list li a span {
 }
 .ui-menu .ui-menu-item a img {
   margin: 0;
+}
+.ui-menu .ui-menu-item span {
+  margin-left: 5px;
 }
 .context-menu-small {
   /*li {
@@ -3456,6 +3460,9 @@ textarea:focus {
 }
 .window.temporal-properties .window-title {
   padding: 10px 0px 0px 10px;
+}
+.temporal-properties-contextmenu {
+  min-width: 110px;
 }
 .fit-screen {
   width: 25px;

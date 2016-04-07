@@ -256,11 +256,19 @@ module BMA {
                     }
                 });
 
-                commands.On("TemporalPropertiesEditorExport", (args: { top: number; left: number }) => {
+                commands.On("TemporalPropertiesEditorExportAsJson", (args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
                         var operationDescr = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
                         var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
-                        commands.Execute("ExportLTLFormula", { operation: clonned });
+                        commands.Execute("ExportLTLFormulaAsJson", { operation: clonned });
+                    }
+                });
+
+                commands.On("TemporalPropertiesEditorExportAsText", (args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        var operationDescr = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
+                        var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
+                        commands.Execute("ExportLTLFormulaAsText", { operation: (<BMA.LTLOperations.IOperand>clonned).GetFormula() });
                     }
                 });
 
