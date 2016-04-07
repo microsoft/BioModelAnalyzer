@@ -14940,7 +14940,6 @@ var BMA;
                         this.InitializeOperationTag(newOp);
                         if (steps) {
                             newOp.Tag.steps = steps;
-                            newOp.Tag.driver.SetSteps(steps);
                         }
                         if (!checkAppearance) {
                             height += newOp.BoundingBox.height / 2 + padding;
@@ -14948,6 +14947,10 @@ var BMA;
                             height += newOp.BoundingBox.height / 2 + padding;
                         }
                         this.operations.push(newOp);
+                    }
+                    for (var i = 0; i < this.operations.length; i++) {
+                        var op = this.operations[i];
+                        op.Tag.driver.SetSteps(op.Tag.steps);
                     }
                 }
                 this.states = appModel.States;

@@ -814,7 +814,7 @@ module BMA {
                         this.InitializeOperationTag(newOp);
                         if (steps) {
                             newOp.Tag.steps = steps;
-                            newOp.Tag.driver.SetSteps(steps);
+                            //newOp.Tag.driver.SetSteps(steps);
                         }
 
                         if (!checkAppearance) {
@@ -824,6 +824,11 @@ module BMA {
                         }
 
                         this.operations.push(newOp);
+                    }
+
+                    for (var i = 0; i < this.operations.length; i++) {
+                        var op = this.operations[i];
+                        op.Tag.driver.SetSteps(op.Tag.steps);
                     }
                 }
 
@@ -1073,7 +1078,7 @@ module BMA {
                 if (updateAppModel) {
                     this.appModel.Operations = operations;
                     this.appModel.OperationAppearances = appearances;
-                }
+                } 
 
                 var bbox = that.CalcOperationsBBox();
                 if (bbox !== undefined) {
