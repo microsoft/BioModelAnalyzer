@@ -4188,6 +4188,9 @@ ui-icon-arrowthickstop-1-n {
 .LTL-state table tr td.variable .state-text.only-variable {
   max-width: 170px;
 }
+.LTL-state table tr td.variable .arrow-down.hidden {
+  display: none;
+}
 .LTL-state table tr td.variable img {
   display: inline-block;
   width: 20px;

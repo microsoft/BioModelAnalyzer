@@ -233,7 +233,7 @@
                         }
 
                         var variableInModel = model.GetVariableById(variableId);
-                        if (variableInModel === undefined || !variableInModel.Name) {
+                        if (variableInModel === undefined/* || !variableInModel.Name*/) {
                             isActual = false;
                             isChanged = true;
                             break;
