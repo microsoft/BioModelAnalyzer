@@ -24,7 +24,9 @@ module BMA {
                 //if (this.states.length != 0) this.UpdateStates();
                 var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
                 if (statesChanged.isChanged) this.states = statesChanged.states;
+                if (statesChanged.shouldNotify) window.Commands.Execute("InvalidStatesImported", {});
                 window.Commands.Execute("AppModelChanged", { isMajorChange: isMajorChange });
+                
                 //TODO: update inner components (analytics)
             }
 

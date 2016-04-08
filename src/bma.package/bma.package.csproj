@@ -108,11 +108,14 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="test\data\Firing_neuron_2_cells.json" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
+    <Content Include="test\data\Firing_neuron_3_cells.json" />
+    <Content Include="test\data\Firing_neuron_2_cells_without_ids.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -221,6 +224,7 @@
     <TypeScriptCompile Include="test\SimulationViewerTest.ts" />
     <TypeScriptCompile Include="test\TestComponents\BMA.TestComponents.ts" />
     <TypeScriptCompile Include="test\TestComponents\BMATestDrivers.ts" />
+    <TypeScriptCompile Include="test\UpdateStatesWithModelTests.ts" />
     <TypeScriptCompile Include="test\UserDialogTest.ts" />
     <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
     <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
