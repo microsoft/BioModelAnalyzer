@@ -426,7 +426,7 @@
                 }
 
                 var containerName;
-                var variableName;
+                var variableName = undefined;
                 for (var i = 0; i < that.options.variables.length; i++) 
                     if (that.options.variables[i].id == value.container) {
                         containerName = that.options.variables[i].name;
@@ -440,6 +440,13 @@
                     }
                 
                 containerName = containerName ? containerName : "ALL";
+
+                if (variableName === "") {
+                    variableName = "Unnamed";
+                    expandButton.addClass("hidden");
+                } else {
+                    expandButton.removeClass("hidden");
+                }
                 
                 $(selectedContainer).text(containerName);
                 $(selectedVariable).text(variableName);

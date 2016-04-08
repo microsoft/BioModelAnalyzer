@@ -179,7 +179,7 @@
     <TypeScriptCompile Include="script\widgets\ltl\ltlviewer.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\statescompact.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\stateseditor.ts" />
-    <TypeScriptCompile Include="script\widgets\ltl\stateseditor1.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\stateseditorOld.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\statetooltip.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpeditor.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\tpformulaoptions.ts" />

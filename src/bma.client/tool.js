@@ -975,7 +975,7 @@ var BMA;
                             isChanged = true;
                         }
                         var variableInModel = model.GetVariableById(variableId);
-                        if (variableInModel === undefined || !variableInModel.Name) {
+                        if (variableInModel === undefined /* || !variableInModel.Name*/) {
                             isActual = false;
                             isChanged = true;
                             break;
@@ -5129,7 +5129,7 @@ var BMA;
                         if (f[0] && f[0].type == "variable" && f[0].value && f[0].value.variable && f[1] && f[1].value && f[2]) {
                             var operator = f[1].value;
                             var constant = parseFloat(f[2].value);
-                            var varName;
+                            var varName = undefined;
                             for (var k = 0; k < that.model.Variables.length; k++)
                                 if (that.model.Variables[k].Id == f[0].value.variable) {
                                     if ((f[0].value.container === undefined)
@@ -5145,7 +5145,7 @@ var BMA;
                             //            break;
                             //        }
                             //}
-                            if (varName) {
+                            if (varName !== undefined) {
                                 op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(varName, f[0].value.variable), operator, new BMA.LTLOperations.ConstOperand(constant));
                                 ops.push(op);
                             }
@@ -5190,7 +5190,7 @@ var BMA;
                             && (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h)
                             && (params.dropObject.type == "variable")) {
                             var variable = that.model.GetVariableById(params.dropObject.id);
-                            if (variable && variable.Name && variable.Id !== undefined && variable.ContainerId !== undefined) {
+                            if (variable /* && variable.Name */ && variable.Id !== undefined && variable.ContainerId !== undefined) {
                                 that.statesEditor.stateseditor("checkDroppedItem", {
                                     screenLocation: params.screenLocation,
                                     variable: { container: variable.ContainerId, variable: variable.Id }
@@ -12429,7 +12429,7 @@ jQuery.fn.extend({
                     value.container = that.findContainer(value.variable);
                 }
                 var containerName;
-                var variableName;
+                var variableName = undefined;
                 for (var i = 0; i < that.options.variables.length; i++)
                     if (that.options.variables[i].id == value.container) {
                         containerName = that.options.variables[i].name;
@@ -12442,6 +12442,13 @@ jQuery.fn.extend({
                         break;
                     }
                 containerName = containerName ? containerName : "ALL";
+                if (variableName === "") {
+                    variableName = "Unnamed";
+                    expandButton.addClass("hidden");
+                }
+                else {
+                    expandButton.removeClass("hidden");
+                }
                 $(selectedContainer).text(containerName);
                 $(selectedVariable).text(variableName);
                 selectedVariable.removeClass("not-selected");
