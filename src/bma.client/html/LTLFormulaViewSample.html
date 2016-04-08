@@ -24,7 +24,35 @@
 
     <script>
 
-        
+        var PIXEL_RATIO = (function () {
+            var ctx = document.createElement("canvas").getContext("2d"),
+                dpr = window.devicePixelRatio || 1,
+                bsr = ctx.webkitBackingStorePixelRatio ||
+                      ctx.mozBackingStorePixelRatio ||
+                      ctx.msBackingStorePixelRatio ||
+                      ctx.oBackingStorePixelRatio ||
+                      ctx.backingStorePixelRatio || 1;
+
+            return dpr / bsr;
+        })();
+
+
+        createHiDPICanvas = function (w, h, ratio) {
+            if (!ratio) { ratio = PIXEL_RATIO; }
+            var can = document.createElement("canvas");
+            can.width = w * ratio;
+            can.height = h * ratio;
+            can.style.width = w + "px";
+            can.style.height = h + "px";
+            can.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
+            return can;
+        }
+
+        //Create canvas with the device resolution.
+        var myCanvas = createHiDPICanvas(500, 250);
+
+        //Create canvas with a custom resolution.
+        var myCustomCanvas = createHiDPICanvas(500, 200, 4);
 
         $(document).ready(function () {
             window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
@@ -46,35 +74,66 @@
             ]
             operation.Operator = new BMA.LTLOperations.Operator("AND", 2, () => { });
             */
+          
+            var updateFunc = () => {
+                var canvas = $("#canvas")[0];
+                canvas.height = canvas.height;
 
-            var c = $("<canvas></canvas>").width(40).height(40);
-            var patteranCanvas = c[0];
-            var context = patteranCanvas.getContext("2d");
-            context.beginPath();
-            context.moveTo(-10, 40);
-            context.lineTo(30, 0);
-            context.lineTo(50, 0);
-            context.lineTo(10, 40);
-            context.closePath();
-            context.fillStyle = "green";
-            context.fill();
+                var canvas2 = $("#canvas2")[0];
+                var context = canvas2.getContext("2d");
+                context.clearRect(0, 0, canvas2.width, canvas2.height);
 
-            var ctx = $("#canvas")[0].getContext("2d");
-            var pattern = ctx.createPattern(patteranCanvas, "repeat-x");
+                var canvas3 = $("#canvas3")[0];
+                var context2 = canvas3.getContext("2d");
+                canvas3.height = 400 * PIXEL_RATIO;
+                canvas3.width = 400 * PIXEL_RATIO;
+                canvas3.style.width = 400 + "px";
+                canvas3.style.height = 400 + "px";
 
-            //BMA.LTLOperations.RenderOperation($("#canvas")[0], op, { x: 400, y: 300 }, { x: 0.7, y: 0.7 }, { padding: { x: 5, y: 10 }, stroke: "black", fill: "black", keyFrameSize: 25, isRoot: true, strokeWidth: 1, borderThickness: 1 });
-            BMA.LTLOperations.RenderOperation($("#canvas")[0], op2, { x: 400, y: 100 }, { x: 1, y: 1 }, { padding: { x: 5, y: 10 }, stroke: "black", fill: pattern, keyFrameSize: 25, isRoot: true, strokeWidth: 1, borderThickness: 1 });
-            //BMA.LTLOperations.RenderOperation($("#canvas")[0], op3, { x: 400, y: 500 }, { x: 1, y: 1 }, { padding: { x: 5, y: 10 }, stroke: "black", fill: "black", keyFrameSize: 25, isRoot: true, strokeWidth: 1, borderThickness: 1 });
+                for (var i = 0; i < 10; i++) {
+                    var color = Math.random() > 0.5 ? "rgb(217,255,182)" : "white";
+                    BMA.LTLOperations.RenderOperation(canvas, op2, { x: 100, y: i * 50 + 25 }, { x: 1, y: 1 }, { padding: { x: 5, y: 10 }, stroke: "black", fill: color, keyFrameSize: 25, isRoot: true, strokeWidth: 1, borderThickness: 1 });
+                    BMA.LTLOperations.RenderOperation(canvas2, op2, { x: 100, y: i * 50 + 25 }, { x: 1, y: 1 }, { padding: { x: 5, y: 10 }, stroke: "black", fill: color, keyFrameSize: 25, isRoot: true, strokeWidth: 1, borderThickness: 1 });
+                    BMA.LTLOperations.RenderOperation(canvas3, op2, { x: 100, y: i * 50 + 25 }, { x: 1, y: 1 }, { padding: { x: 5, y: 10 }, stroke: "black", fill: color, keyFrameSize: 25, isRoot: true, strokeWidth: 1, borderThickness: 1 });
+                }
+            }
 
+            updateFunc();
 
+            var intervalId = undefined;
+            $("#startBtn").click(() => {
+                if (intervalId === undefined) {
+                    intervalId = setInterval(() => { updateFunc(); }, 100);
+                }
+            });
+
+            $("#stopBtn").click(() => {
+                if (intervalId !== undefined) {
+                    clearInterval(intervalId);
+                    intervalId = undefined;
+                }
+            });
         });
     </script>
 </head>
 <body style="margin: 0;">
     <div id="tpviewer">
-        <canvas width="800" height="600" id="canvas"></canvas>
-        <canvas width="40" height="40" id="patternCanvas"></canvas>
-
+        <div style="display:inline-block">
+            <div style="float: left">
+                <div>Clear by height assignment</div>
+                <canvas width="400" height="400" id="canvas" style="border:1px solid black;"></canvas>
+            </div>
+            <div style="float: left">
+                <div>Clear by clear rect</div>
+                <canvas width="400" height="400" id="canvas2" style="border:1px solid black;"></canvas>
+            </div>
+            <div style="float: left">
+                <div>Clear by clear rect + DPI check</div>
+                <canvas width="400" height="400" id="canvas3" style="border:1px solid black;"></canvas>
+            </div>
+        </div>
+        <button id="startBtn">Start</button>
+        <button id="stopBtn">Stop</button>
     </div>
 </body>
 </html>
