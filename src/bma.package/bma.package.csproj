@@ -224,7 +224,6 @@
     <TypeScriptCompile Include="test\SimulationViewerTest.ts" />
     <TypeScriptCompile Include="test\TestComponents\BMA.TestComponents.ts" />
     <TypeScriptCompile Include="test\TestComponents\BMATestDrivers.ts" />
-    <TypeScriptCompile Include="test\UpdateStatesWithModelTests.ts" />
     <TypeScriptCompile Include="test\UserDialogTest.ts" />
     <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
     <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
