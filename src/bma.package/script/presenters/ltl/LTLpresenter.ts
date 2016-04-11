@@ -117,6 +117,18 @@
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(ops);
                 });
 
+                window.Commands.On("InvalidStatesImported", (args) => {
+                    var userDialog = $('<div></div>').appendTo('body').userdialog({
+                        message: "States was imported incorrectly.",
+                        actions: [
+                            {
+                                button: 'Ok',
+                                callback: function () { userDialog.detach(); }
+                            }
+                        ]
+                    });
+                });
+
                 //window.Commands.On("LTLRequested",(args) => {
                 //    ltlviewer.GetTemporalPropertiesViewer().Refresh();
                 //});
@@ -165,7 +177,7 @@
 
                 commands.On("ExportLTLFormulaAsJson", (args) => {
                     if (args.operation !== undefined) {
-                        exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "txt");
+                        exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "json");
                     }
                 });
 
@@ -191,6 +203,7 @@
                                     states = statesChanged.states;
                                     BMA.LTLOperations.RefreshStatesInOperation(op, states);
                                 }
+                                if (statesChanged.shouldNotify) window.Commands.Execute("InvalidStatesImported", {});
                                 var merged = that.MergeStates(that.appModel.States, states);
                                 that.appModel.States = merged.states;
                                 that.UpdateOperationStates(op, merged.map);

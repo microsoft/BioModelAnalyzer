@@ -167,6 +167,7 @@ module BMA {
                             var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, ltl.states);
                             this.states = statesChanged.states;
                             statesAreChanged = statesChanged.isChanged;
+                            if (statesChanged.shouldNotify) window.Commands.Execute("InvalidStatesImported", {});
                         } else {
                             this.states = [];
                         }

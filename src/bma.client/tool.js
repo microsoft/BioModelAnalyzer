@@ -2658,6 +2658,8 @@ var BMA;
                             var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, ltl.states);
                             this.states = statesChanged.states;
                             statesAreChanged = statesChanged.isChanged;
+                            if (statesChanged.shouldNotify)
+                                window.Commands.Execute("InvalidStatesImported", {});
                         }
                         else {
                             this.states = [];
@@ -14047,6 +14049,17 @@ var BMA;
                     }
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(ops);
                 });
+                window.Commands.On("InvalidStatesImported", function (args) {
+                    var userDialog = $('<div></div>').appendTo('body').userdialog({
+                        message: "States was imported incorrectly.\nThere are used few variables with equal names, so check states",
+                        actions: [
+                            {
+                                button: 'Ok',
+                                callback: function () { userDialog.detach(); }
+                            }
+                        ]
+                    });
+                });
                 //window.Commands.On("LTLRequested",(args) => {
                 //    ltlviewer.GetTemporalPropertiesViewer().Refresh();
                 //});
@@ -14085,7 +14098,7 @@ var BMA;
                 });
                 commands.On("ExportLTLFormulaAsJson", function (args) {
                     if (args.operation !== undefined) {
-                        exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "txt");
+                        exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "json");
                     }
                 });
                 commands.On("ExportLTLFormulaAsText", function (args) {
@@ -14108,6 +14121,8 @@ var BMA;
                                     states = statesChanged.states;
                                     BMA.LTLOperations.RefreshStatesInOperation(op, states);
                                 }
+                                if (statesChanged.shouldNotify)
+                                    window.Commands.Execute("InvalidStatesImported", {});
                                 var merged = that.MergeStates(that.appModel.States, states);
                                 that.appModel.States = merged.states;
                                 that.UpdateOperationStates(op, merged.map);
