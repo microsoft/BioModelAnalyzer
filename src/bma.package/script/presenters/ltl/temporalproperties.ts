@@ -720,11 +720,22 @@ module BMA {
                 var svg = this.driver.GetSVGRef();
                 var defs = svg.defs("ltlBmaDefs");
 
-                var imgPattern = svg.pattern(defs, "pattern-stripe", undefined, undefined, 80, 40, {
-                    patternUnits: "userSpaceOnUse"
-                });
 
-                svg.image(imgPattern, 0, 0, 80, 40, "images/stripe-pattern.png");
+                var patterns = [
+                    "stripe-pattern-green",
+                    "stripe-pattern-half-green",
+                    "stripe-pattern-half-half",
+                    "stripe-pattern-half-red",
+                    "stripe-pattern-red",
+                ];
+
+                for (var i = 0; i < patterns.length; i++) {
+                    var imgPattern = svg.pattern(defs, patterns[i], undefined, undefined, 72, 72, {
+                        patternUnits: "userSpaceOnUse"
+                    });
+
+                    svg.image(imgPattern, 0, 0, 72, 72, "images/" + patterns[i] + ".png");
+                }
             }
 
             private CompareStatesToLocal(states: BMA.LTLOperations.Keyframe[]) {

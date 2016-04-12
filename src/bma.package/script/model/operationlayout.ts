@@ -53,14 +53,15 @@
             }
 
             public set AnalysisStatus(value: string) {
-
-                this.useMask = false;
-                if (this.majorRect !== undefined) {
-                    this.svg.change(this.majorRect, {
-                        mask: undefined
-                    });
-                }
-
+                /*
+                var patterns = [
+                    "stripe-pattern-green",
+                    "stripe-pattern-half-green",
+                    "stripe-pattern-half-half",
+                    "stripe-pattern-half-red",
+                    "stripe-pattern-red",
+                ];
+                */
 
                 switch (value) {
                     case "nottested":
@@ -77,44 +78,23 @@
                         break;
                     case "partialsuccess":
                         this.status = value;
-                        this.Fill = "url(#pattern-stripe)";//"rgb(217,255,182)";
-
-                        /*
-                        this.useMask = true;
-
-                        if (this.majorRect !== undefined) {
-                            //mask: url(#mask-stripe)
-                            this.svg.change(this.majorRect, {
-                                mask: this.mask
-                            });
-                        }
-                        */
+                        this.Fill = "url(#stripe-pattern-green)";
                         break;
                     case "partialfail":
                         this.status = value;
-                        this.Fill = "rgb(217,255,182)";
-
-                        this.useMask = true;
-
-                        if (this.majorRect !== undefined) {
-                            //mask: url(#mask-stripe)
-                            this.svg.change(this.majorRect, {
-                                mask: this.mask
-                            });
-                        }
-
+                        this.Fill = "url(#stripe-pattern-red)";
                         break;
                     case "partialsuccesspartialfail":
                         this.status = value;
-                        this.fill = "yellow";
+                        this.fill = "url(#stripe-pattern-half-half)";
                         break;
                     case "processing, partialsuccess":
                         this.status = value;
-                        this.fill = "cyan";
+                        this.Fill = "url(#stripe-pattern-half-green)";
                         break;
                     case "processing, partialfail":
                         this.status = value;
-                        this.fill = "azure";
+                        this.Fill = "url(#stripe-pattern-half-red)";
                         break;
                     case "fail":
                         this.status = value;

@@ -254,6 +254,11 @@
     <Content Include="images\state-container.svg" />
     <Content Include="images\state-line-del.svg" />
     <Content Include="images\state-variable.svg" />
+    <Content Include="images\stripe-pattern-green.png" />
+    <Content Include="images\stripe-pattern-half-green.png" />
+    <Content Include="images\stripe-pattern-half-half.png" />
+    <Content Include="images\stripe-pattern-half-red.png" />
+    <Content Include="images\stripe-pattern-red.png" />
     <Content Include="images\stripe-pattern.png" />
     <Content Include="images\stripes.png" />
     <Content Include="images\succeeded.png" />
