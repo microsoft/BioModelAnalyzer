@@ -13101,7 +13101,7 @@ jQuery.fn.extend({
                             </div>
                         */
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("true").appendTo(opDiv);
-                        ltlresdiv.html("True for all traces<br>");
+                        ltlresdiv.html("True for ALL traces<br>");
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block").css("width", 55)
@@ -13169,16 +13169,77 @@ jQuery.fn.extend({
                     break;
                 case "partialsuccess":
                     if (this.options.isexpanded) {
-                        /*
-                         <div class="LTL-test-results true">
-                            Simulation Found<br>12 steps<br>
-                            <ul class="button-list">
-                            <li><button>OPEN</button></li>
-                            </ul>
-                            </div>
-                        */
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("true").appendTo(opDiv);
-                        ltlresdiv.html("True for some traces<br>");
+                        ltlresdiv.html("True for SOME traces<br>");
+                        var sr = $("<div></div>").appendTo(ltlresdiv);
+                        var d = $("<div>" + that.options.steps + " steps</div>")
+                            .css("display", "inline-block").css("width", 55)
+                            .appendTo(sr);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                        var minusb = $("<button>-</button>").appendTo(minusd);
+                        if (that.options.steps == 1) {
+                            minusd.addClass("testing");
+                            minusb.addClass("testing").addClass("green");
+                        }
+                        minusb.click(function (e) {
+                            if (that.options.steps > 1) {
+                                that.options.steps--;
+                                d.text(that.options.steps + " steps");
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
+                            }
+                        });
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                        var plusb = $("<button>+</button>").appendTo(plusd);
+                        plusb.click(function (e) {
+                            that.options.steps++;
+                            d.text(that.options.steps + " steps");
+                            if (that.options.onstepschanged !== undefined) {
+                                that.options.onstepschanged(that.options.steps);
+                            }
+                            that.options.status = "nottested";
+                            that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
+                            minusd.removeClass("testing");
+                            minusb.removeClass("testing");
+                        });
+                        var ul = $("<ul></ul>").addClass("button-list").css("margin", "5px 0 5px 0").appendTo(ltlresdiv);
+                        var li = $("<li></li>").appendTo(ul);
+                        var btn = $("<button><img src='../images/small-tick.svg'> example </button>").addClass("LTL-sim-true").appendTo(li);
+                        btn.click(function () {
+                            if (that.options.onshowresultsrequested !== undefined) {
+                                that.options.onshowresultsrequested();
+                            }
+                        });
+                    }
+                    else {
+                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("closed-results").addClass("true").appendTo(opDiv); //
+                        var br = $("<br>").appendTo(opDiv);
+                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                        var li = $("<li></li>").addClass("action-button-small").addClass("green").appendTo(ul);
+                        var btn = $("<button>OPEN </button>").appendTo(li);
+                        btn.click(function () {
+                            that.options.isexpanded = true;
+                            that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
+                        });
+                    }
+                    break;
+                case "partialsuccesspartialfail":
+                    if (this.options.isexpanded) {
+                        var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("some").appendTo(opDiv);
+                        ltlresdiv.html("True/False for SOME traces<br>");
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block").css("width", 55)
@@ -13237,10 +13298,79 @@ jQuery.fn.extend({
                         });
                     }
                     else {
-                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("closed-results").addClass("true").appendTo(opDiv); //
+                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("closed-results").appendTo(opDiv); //
                         var br = $("<br>").appendTo(opDiv);
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
-                        var li = $("<li></li>").addClass("action-button-small").addClass("green").appendTo(ul);
+                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                        var btn = $("<button>OPEN </button>").appendTo(li);
+                        btn.click(function () {
+                            that.options.isexpanded = true;
+                            that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
+                        });
+                    }
+                    break;
+                case "partialfail":
+                    if (this.options.isexpanded) {
+                        var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("false").appendTo(opDiv);
+                        var fr = $("<div>False for SOME traces</div>").appendTo(ltlresdiv);
+                        var sr = $("<div></div>").appendTo(ltlresdiv);
+                        var d = $("<div>" + that.options.steps + " steps</div>")
+                            .css("display", "inline-block").css("width", 55)
+                            .appendTo(sr);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                        var minusb = $("<button>-</button>").appendTo(minusd);
+                        if (that.options.steps == 1) {
+                            minusd.addClass("testing");
+                            minusb.addClass("testing").addClass("red");
+                        }
+                        minusb.click(function (e) {
+                            if (that.options.steps > 1) {
+                                that.options.steps--;
+                                d.text(that.options.steps + " steps");
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
+                            }
+                        });
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                        var plusb = $("<button>+</button>").appendTo(plusd);
+                        plusb.click(function (e) {
+                            that.options.steps++;
+                            d.text(that.options.steps + " steps");
+                            if (that.options.onstepschanged !== undefined) {
+                                that.options.onstepschanged(that.options.steps);
+                            }
+                            that.options.status = "nottested";
+                            that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
+                            minusd.removeClass("testing");
+                            minusb.removeClass("testing");
+                        });
+                        var ul = $("<ul></ul>").addClass("button-list").css("margin-top", 5).css("margin-bottom", 5).appendTo(ltlresdiv);
+                        var li = $("<li></li>").appendTo(ul);
+                        var btn = $("<button><img src='../images/small-cross.svg'> example</button>").addClass("LTL-sim-false").appendTo(li);
+                        btn.click(function () {
+                            if (that.options.onshowresultsrequested !== undefined) {
+                                that.options.onshowresultsrequested();
+                            }
+                        });
+                    }
+                    else {
+                        var ltlresdiv = $("<div>" + that.options.steps + " steps</div>").addClass("closed-results").addClass("false").appendTo(opDiv); //
+                        var br = $("<br>").appendTo(opDiv);
+                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                        var li = $("<li></li>").addClass("action-button-small").addClass("red").appendTo(ul);
                         var btn = $("<button>OPEN </button>").appendTo(li);
                         btn.click(function () {
                             that.options.isexpanded = true;
@@ -13266,7 +13396,7 @@ jQuery.fn.extend({
                         </div>
                          */
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("false").appendTo(opDiv);
-                        var fr = $("<div>No trace found</div>").appendTo(ltlresdiv);
+                        var fr = $("<div>False for ALL traces</div>").appendTo(ltlresdiv);
                         var sr = $("<div></div>").appendTo(ltlresdiv);
                         var d = $("<div>" + that.options.steps + " steps</div>")
                             .css("display", "inline-block").css("width", 55)
@@ -13333,6 +13463,11 @@ jQuery.fn.extend({
                     }
                     break;
                 default:
+                    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var btn = $("<button></button>").appendTo(li);
+                    li.addClass("spin");
+                    that.createWaitAnim().appendTo(btn);
                     break;
             }
         },
@@ -15190,8 +15325,8 @@ var BMA;
                                     return;
                                 if (polarityResult.Ticks == null) {
                                     that.log.LogLTLError();
-                                    operation.AnalysisStatus = operation.AnalysisStatus = "processing, partialfail" ? "partialfail" : "partialsuccess";
-                                    driver.SetStatus(operation.AnalysisStatus === "partialfail" ? "fail" : "success");
+                                    operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
+                                    driver.SetStatus(operation.AnalysisStatus /* === "partialfail" ? "fail" : "success"*/);
                                     domplot.updateLayout();
                                     that.OnOperationsChanged(false);
                                 }
@@ -15219,7 +15354,7 @@ var BMA;
                                     operation.AnalysisStatus = resultStatus;
                                     operation.Tag.steps = driver.GetSteps();
                                     if (resultStatus === "partialsuccesspartialfail") {
-                                        driver.SetStatus("partialsuccess");
+                                        driver.SetStatus("partialsuccesspartialfail");
                                         driver.SetShowResultsCallback(function (showpositive) {
                                             that.commands.Execute("ShowLTLResults", {
                                                 ticks: showpositive ? operation.Tag.data : operation.Tag.negdata
@@ -15236,8 +15371,8 @@ var BMA;
                                 if (operation.AnalysisStatus.indexOf("processing") < 0)
                                     return;
                                 that.log.LogLTLError();
-                                operation.AnalysisStatus = operation.AnalysisStatus = "processing, partialfail" ? "partialfail" : "partialsuccess";
-                                driver.SetStatus(operation.AnalysisStatus === "partialfail" ? "fail" : "success");
+                                operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
+                                driver.SetStatus(operation.AnalysisStatus /* === "partialfail" ? "fail" : "success"*/);
                                 domplot.updateLayout();
                                 that.OnOperationsChanged(false);
                             });

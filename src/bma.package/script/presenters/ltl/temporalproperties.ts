@@ -1007,8 +1007,8 @@ module BMA {
 
                                     if (polarityResult.Ticks == null) {
                                         that.log.LogLTLError();
-                                        operation.AnalysisStatus = operation.AnalysisStatus = "processing, partialfail" ? "partialfail" : "partialsuccess";
-                                        driver.SetStatus(operation.AnalysisStatus === "partialfail" ? "fail" : "success");
+                                        operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail")? "partialfail" : "partialsuccess";
+                                        driver.SetStatus(operation.AnalysisStatus/* === "partialfail" ? "fail" : "success"*/);
                                         domplot.updateLayout();
                                         that.OnOperationsChanged(false);
                                     }
@@ -1034,7 +1034,7 @@ module BMA {
                                         operation.Tag.steps = driver.GetSteps();
 
                                         if (resultStatus === "partialsuccesspartialfail") {
-                                            driver.SetStatus("partialsuccess");
+                                            driver.SetStatus("partialsuccesspartialfail");
                                             driver.SetShowResultsCallback(function (showpositive) {
                                                 that.commands.Execute("ShowLTLResults", {
                                                     ticks: showpositive ? operation.Tag.data : operation.Tag.negdata
@@ -1053,8 +1053,8 @@ module BMA {
                                     if (operation.AnalysisStatus.indexOf("processing") < 0)
                                         return;
                                     that.log.LogLTLError();
-                                    operation.AnalysisStatus = operation.AnalysisStatus = "processing, partialfail" ? "partialfail" : "partialsuccess";
-                                    driver.SetStatus(operation.AnalysisStatus === "partialfail" ? "fail" : "success");
+                                    operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
+                                    driver.SetStatus(operation.AnalysisStatus/* === "partialfail" ? "fail" : "success"*/);
                                     domplot.updateLayout();
                                     that.OnOperationsChanged(false);
                                 });
