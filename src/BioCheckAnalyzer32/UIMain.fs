@@ -141,7 +141,7 @@ type Analyzer () =
                     // SI: right now, we're just dumping res,model back to the UI.
                     // We should structure the data that res,model,model_checked are.
                     //let (res,model) = BMC.BoundedMC formula network range padded_paths
-                    let (res,model) = BMC.SingleSideBoundedMC formula network paths -1 polarity 
+                    let (res,model) = BMC.SingleSideBoundedMC formula network padded_paths -1 polarity 
 
                     Marshal.ltl_result_full res model
 
