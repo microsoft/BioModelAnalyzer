@@ -617,20 +617,21 @@ var BMA;
                         var height = operationAppearance.keyFrameSize + paddingY * layoutPart.layer;
                         var fill = options && options.fill ? options.fill : "transparent";
                         var stroke = options && options.stroke ? options.stroke : "rgb(96,96,96)";
+                        /*
                         var strokeWidth = 1;
                         if (options !== undefined) {
                             if (options.isRoot) {
                                 strokeWidth = operationAppearance.borderThickness;
-                            }
-                            else if (options.strokeWidth) {
+                            } else if (options.strokeWidth) {
                                 strokeWidth = options.strokeWidth;
                             }
                         }
+                        */
                         context.strokeStyle = "rgb(96,96,96)";
                         context.fillStyle = options !== undefined && options.isRoot && operationAppearance.fill !== undefined ? operationAppearance.fill : "transparent";
                         RoundRect(context, pos.x - halfWidth, pos.y - height / 2, halfWidth * 2, height, height / 2);
-                        context.stroke();
                         context.fill();
+                        context.stroke();
                         var operands = operation.operands;
                         switch (operands.length) {
                             case 1:
@@ -668,8 +669,8 @@ var BMA;
                         context.beginPath();
                         context.arc(pos.x, pos.y, hks, 0, 2 * Math.PI, false);
                         context.closePath();
-                        context.stroke();
                         context.fill();
+                        context.stroke();
                         if (layoutPart.type === "keyframe") {
                             var name = layoutPart.name;
                             var fs = 16;
@@ -947,6 +948,7 @@ var BMA;
         ModelHelper.GetModelBoundingBox = GetModelBoundingBox;
         function UpdateStatesWithModel(model, layout, states) {
             var isChanged = false;
+            var shouldNotify = false;
             var newStates = [];
             for (var i = 0; i < states.length; i++) {
                 var state = states[i];
@@ -963,18 +965,20 @@ var BMA;
                     }
                     if (variable instanceof BMA.LTLOperations.NameOperand) {
                         var variableId = variable.Id;
-                        if (variableId === undefined || !model.GetVariableById(variableId)) {
+                        if (variableId === undefined) {
                             var id = model.GetIdByName(variable.Name);
-                            if (id.length != 1) {
+                            if (id.length == 0) {
                                 isActual = false;
                                 isChanged = true;
                                 break;
                             }
+                            if (id.length > 1)
+                                shouldNotify = true;
                             variableId = parseFloat(id[0]);
                             isChanged = true;
                         }
                         var variableInModel = model.GetVariableById(variableId);
-                        if (variableInModel === undefined || !variableInModel.Name) {
+                        if (variableInModel === undefined /* || !variableInModel.Name*/) {
                             isActual = false;
                             isChanged = true;
                             break;
@@ -997,7 +1001,8 @@ var BMA;
             }
             return {
                 states: newStates,
-                isChanged: isChanged
+                isChanged: isChanged,
+                shouldNotify: shouldNotify
             };
         }
         ModelHelper.UpdateStatesWithModel = UpdateStatesWithModel;
@@ -2060,7 +2065,24 @@ var BMA;
             this.currentModel = new BMA.Model.AppModel();
         }
         ChangesChecker.prototype.Snapshot = function (model) {
-            this.currentModel.Deserialize(model.Serialize());
+            this.currentModel.BioModel = model.BioModel.Clone();
+            this.currentModel.Layout = model.Layout.Clone();
+            this.currentModel.ProofResult = model.ProofResult;
+            this.currentModel.Operations = [];
+            this.currentModel.OperationAppearances = [];
+            for (var i = 0; i < model.Operations.length; i++) {
+                this.currentModel.Operations.push(model.Operations[i].Clone());
+                if (model.OperationAppearances !== undefined && model.OperationAppearances.length !== 0)
+                    this.currentModel.OperationAppearances.push({
+                        x: model.OperationAppearances[i].x,
+                        y: model.OperationAppearances[i].y,
+                        steps: model.OperationAppearances[i].steps,
+                    });
+            }
+            this.currentModel.States = [];
+            for (var i = 0; i < model.States.length; i++)
+                this.currentModel.States.push(model.States[i].Clone());
+            //this.currentModel.Deserialize(model.Serialize());
         };
         ChangesChecker.prototype.IsChanged = function (model) {
             return this.currentModel.Serialize() !== model.Serialize();
@@ -2515,6 +2537,8 @@ var BMA;
                     var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, this.states);
                     if (statesChanged.isChanged)
                         this.states = statesChanged.states;
+                    if (statesChanged.shouldNotify)
+                        window.Commands.Execute("InvalidStatesImported", {});
                     window.Commands.Execute("AppModelChanged", { isMajorChange: isMajorChange });
                     //TODO: update inner components (analytics)
                 },
@@ -2634,6 +2658,8 @@ var BMA;
                             var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(this.model, this.layout, ltl.states);
                             this.states = statesChanged.states;
                             statesAreChanged = statesChanged.isChanged;
+                            if (statesChanged.shouldNotify)
+                                window.Commands.Execute("InvalidStatesImported", {});
                         }
                         else {
                             this.states = [];
@@ -3626,37 +3652,17 @@ var BMA;
                             break;
                         case "partialsuccess":
                             this.status = value;
-                            this.Fill = "rgb(217,255,182)";
+                            this.Fill = "url(#pattern-stripe)"; //"rgb(217,255,182)";
+                            /*
                             this.useMask = true;
+    
                             if (this.majorRect !== undefined) {
                                 //mask: url(#mask-stripe)
                                 this.svg.change(this.majorRect, {
                                     mask: this.mask
                                 });
                             }
-                            break;
-                        case "partialfail":
-                            this.status = value;
-                            this.Fill = "rgb(217,255,182)";
-                            this.useMask = true;
-                            if (this.majorRect !== undefined) {
-                                //mask: url(#mask-stripe)
-                                this.svg.change(this.majorRect, {
-                                    mask: this.mask
-                                });
-                            }
-                            break;
-                        case "partialsuccesspartialfail":
-                            this.status = value;
-                            this.fill = "yellow";
-                            break;
-                        case "processing, partialsuccess":
-                            this.status = value;
-                            this.fill = "cyan";
-                            break;
-                        case "processing, partialfail":
-                            this.status = value;
-                            this.fill = "azure";
+                            */
                             break;
                         case "fail":
                             this.status = value;
@@ -4747,10 +4753,9 @@ var BMA;
         })();
         UIDrivers.ProofAnalyzeService = ProofAnalyzeService;
         var LTLAnalyzeService = (function () {
-            function LTLAnalyzeService(url, maxRequestCount) {
+            function LTLAnalyzeService(maxRequestCount) {
                 this.maxRequestCount = 1;
                 this.currentActiveRequestCount = 0;
-                this.url = url;
                 this.maxRequestCount = maxRequestCount;
                 this.pendingRequests = [];
                 this.currentActiveRequestCount = 0;
@@ -4770,7 +4775,7 @@ var BMA;
                         this.currentActiveRequestCount++;
                         $.ajax({
                             type: "POST",
-                            url: that.url,
+                            url: "http://bmamath.cloudapp.net/api/AnalyzeLTL",
                             data: JSON.stringify(request.data),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json"
@@ -5132,7 +5137,7 @@ var BMA;
                         if (f[0] && f[0].type == "variable" && f[0].value && f[0].value.variable && f[1] && f[1].value && f[2]) {
                             var operator = f[1].value;
                             var constant = parseFloat(f[2].value);
-                            var varName;
+                            var varName = undefined;
                             for (var k = 0; k < that.model.Variables.length; k++)
                                 if (that.model.Variables[k].Id == f[0].value.variable) {
                                     if ((f[0].value.container === undefined)
@@ -5148,7 +5153,7 @@ var BMA;
                             //            break;
                             //        }
                             //}
-                            if (varName) {
+                            if (varName !== undefined) {
                                 op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(varName, f[0].value.variable), operator, new BMA.LTLOperations.ConstOperand(constant));
                                 ops.push(op);
                             }
@@ -5193,7 +5198,7 @@ var BMA;
                             && (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h)
                             && (params.dropObject.type == "variable")) {
                             var variable = that.model.GetVariableById(params.dropObject.id);
-                            if (variable && variable.Name && variable.Id !== undefined && variable.ContainerId !== undefined) {
+                            if (variable /* && variable.Name */ && variable.Id !== undefined && variable.ContainerId !== undefined) {
                                 that.statesEditor.stateseditor("checkDroppedItem", {
                                     screenLocation: params.screenLocation,
                                     variable: { container: variable.ContainerId, variable: variable.Id }
@@ -5385,11 +5390,16 @@ var BMA;
             LTLResultsCompactViewer.prototype.SetMessage = function (message) {
                 this.compactltlresult.compactltlresult({ "error": message });
             };
+            LTLResultsCompactViewer.prototype.GetMessage = function () {
+                return this.compactltlresult.compactltlresult("option", "error");
+            };
             LTLResultsCompactViewer.prototype.SetSteps = function (steps) {
-                if (steps && steps > 0)
+                if (steps && steps > 0) {
+                    //this.steps = steps;
                     this.compactltlresult.compactltlresult({
                         steps: steps
                     });
+                }
             };
             LTLResultsCompactViewer.prototype.GetSteps = function () {
                 return this.steps;
@@ -5636,11 +5646,11 @@ var BMA;
                 var init = tableData.init;
                 var data = tableData.data;
                 var tags = that.PrepareTableTags(data, states, vars);
-                var labelsHeight = Math.max.apply(Math, data.map(function (s) {
+                var labelsHeight = Math.max(1, (Math.max.apply(Math, data.map(function (s) {
                     return Math.max.apply(Math, s);
                 })) - Math.min.apply(Math, data.map(function (s) {
                     return Math.min.apply(Math, s);
-                }));
+                }))));
                 var labels = that.PreparePlotLabels(tags, labelsHeight);
                 var interval = this.CreateInterval(vars);
                 var options = {
@@ -5707,11 +5717,11 @@ var BMA;
                     });
                 }
                 var tags = this.PrepareTableTags(that.currentData.data, states, vars);
-                var labelsHeight = Math.max.apply(Math, that.currentData.data.map(function (s) {
+                var labelsHeight = Math.max(1, (Math.max.apply(Math, that.currentData.data.map(function (s) {
                     return Math.max.apply(Math, s);
                 })) - Math.min.apply(Math, that.currentData.data.map(function (s) {
                     return Math.min.apply(Math, s);
-                }));
+                }))));
                 var labels = this.PreparePlotLabels(tags, labelsHeight);
                 that.currentData.tags = tags;
                 that.currentData.labels = labels;
@@ -7786,6 +7796,7 @@ var BMA;
                                         button: 'Yes',
                                         callback: function () {
                                             userDialog.detach();
+                                            logService.LogImportModel();
                                             load();
                                         }
                                     },
@@ -11061,6 +11072,7 @@ var BMA;
         //    }
         //},
         Show: function () {
+            this._popup_position();
             this.element.show();
         },
         Hide: function () {
@@ -11843,7 +11855,7 @@ jQuery.fn.extend({
             this._variables.css("max-height", 322 - scrollBarSize.height);
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
-            this.loading = $("<div></div>").addClass("page-loading").css("position", "inherit").css("height", 300).appendTo(this._plot);
+            this.loading = $("<div></div>").addClass("page-loading").css("position", "inherit").css("height", 322).appendTo(this._plot);
             var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
             var snipper = $('<div></div>').addClass('spinner').appendTo(loadingText);
             for (var i = 1; i < 4; i++) {
@@ -12428,7 +12440,7 @@ jQuery.fn.extend({
                     value.container = that.findContainer(value.variable);
                 }
                 var containerName;
-                var variableName;
+                var variableName = undefined;
                 for (var i = 0; i < that.options.variables.length; i++)
                     if (that.options.variables[i].id == value.container) {
                         containerName = that.options.variables[i].name;
@@ -12441,6 +12453,13 @@ jQuery.fn.extend({
                         break;
                     }
                 containerName = containerName ? containerName : "ALL";
+                if (variableName === "") {
+                    variableName = "Unnamed";
+                    expandButton.addClass("hidden");
+                }
+                else {
+                    expandButton.removeClass("hidden");
+                }
                 $(selectedContainer).text(containerName);
                 $(selectedVariable).text(variableName);
                 selectedVariable.removeClass("not-selected");
@@ -12648,7 +12667,6 @@ jQuery.fn.extend({
                     }
                     if (this.options.states.length == 0) {
                         that.addState();
-                        that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
                     }
                     else {
                         this._initStates();
@@ -13035,33 +13053,32 @@ jQuery.fn.extend({
                     //}
                     break;
                 case "processing":
-                    if (this.options.isexpanded) {
-                        var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                        var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block").css("width", 55)
-                            .appendTo(ltltestdiv);
-                        var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
-                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
-                        var minusb = $("<button>-</button>").appendTo(minusd);
-                        minusd.addClass("testing");
-                        minusb.addClass("testing");
-                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
-                        var plusb = $("<button>+</button>").appendTo(plusd);
-                        plusd.addClass("testing");
-                        plusb.addClass("testing");
-                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
-                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                        var btn = $("<button></button>").appendTo(li);
-                        li.addClass("spin");
-                        that.createWaitAnim().appendTo(btn);
-                    }
-                    else {
-                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
-                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                        var btn = $("<button></button>").appendTo(li);
-                        li.addClass("spin");
-                        that.createWaitAnim().appendTo(btn);
-                    }
+                    //if (this.options.isexpanded) {
+                    //    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
+                    //    var d = $("<div>" + that.options.steps + " steps</div>")
+                    //        .css("display", "inline-block").css("width", 55)
+                    //        .appendTo(ltltestdiv);
+                    //    var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
+                    //    var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                    //    var minusb = $("<button>-</button>").appendTo(minusd);
+                    //    minusd.addClass("testing");
+                    //    minusb.addClass("testing");
+                    //    var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                    //    var plusb = $("<button>+</button>").appendTo(plusd);
+                    //    plusd.addClass("testing");
+                    //    plusb.addClass("testing");
+                    //    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
+                    //    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    //    var btn = $("<button></button>").appendTo(li);
+                    //    li.addClass("spin");
+                    //    that.createWaitAnim().appendTo(btn);
+                    //} else {
+                    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var btn = $("<button></button>").appendTo(li);
+                    li.addClass("spin");
+                    that.createWaitAnim().appendTo(btn);
+                    //}
                     break;
                 case "success":
                     if (this.options.isexpanded) {
@@ -13328,16 +13345,24 @@ jQuery.fn.extend({
             var needRefreshStates = false;
             switch (key) {
                 case "status":
-                    needRefreshStates = true;
+                    if (that.options.status !== value)
+                        needRefreshStates = true;
                     break;
                 case "isexpanded":
-                    needRefreshStates = true;
+                    if (that.options.isexpanded !== value)
+                        needRefreshStates = true;
                     break;
                 case "steps":
-                    needRefreshStates = true;
+                    if (that.options.steps !== value) {
+                        if (that.options.onstepschanged !== undefined) {
+                            that.options.onstepschanged(value);
+                        }
+                        needRefreshStates = true;
+                    }
                     break;
                 case "error":
-                    needRefreshStates = true;
+                    if (that.options.error !== value)
+                        needRefreshStates = true;
                     break;
                 default:
                     break;
@@ -13593,6 +13618,7 @@ jQuery.fn.extend({
                 holdCords.holdY = event.pageY;
             });
             drawingSurfaceCnt.contextmenu({
+                addClass: "temporal-properties-contextmenu",
                 delegate: drawingSurfaceCnt,
                 autoFocus: true,
                 preventContextMenuForPopup: true,
@@ -13603,7 +13629,7 @@ jQuery.fn.extend({
                     { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
                     { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
-                    { title: "Export", cmd: "Export", uiIcon: "ui-icon-export" },
+                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }] },
                     { title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
                 ],
                 beforeOpen: function (event, ui) {
@@ -13776,6 +13802,7 @@ jQuery.fn.extend({
         _svg: undefined,
         _pixelOffset: 10,
         _anims: [],
+        _stripesImg: undefined,
         options: {
             operations: [],
             padding: { x: 3, y: 5 }
@@ -13788,16 +13815,30 @@ jQuery.fn.extend({
             $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
             $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
             that.canvasDiv = $("<div></div>").width(root.width()).appendTo(root);
-            that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).appendTo(that.canvasDiv);
+            that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).width(root.width()).appendTo(that.canvasDiv);
+            that._stripesImg = new Image();
+            that._stripesImg.src = "images/stripe-pattern.png";
+            that._stripesImg.onload = function () {
+                that.refresh();
+            };
             that.refresh();
         },
         refresh: function () {
             var that = this;
             var canvas = (this._canvas[0]);
-            var keyFrameSize = 25;
+            var keyFrameSize = 26;
             var padding = { x: 5, y: 10 };
-            var maxHeight = 25 * 4;
+            var maxHeight = keyFrameSize * 4;
             var context = canvas.getContext("2d");
+            var PIXEL_RATIO = (function () {
+                var dpr = window.devicePixelRatio || 1;
+                var bsr = context.webkitBackingStorePixelRatio ||
+                    context.mozBackingStorePixelRatio ||
+                    context.msBackingStorePixelRatio ||
+                    context.oBackingStorePixelRatio ||
+                    context.backingStorePixelRatio || 1;
+                return dpr / bsr;
+            })();
             canvas.height = canvas.height;
             var operations = this.options.operations;
             var currentPos = { x: 0, y: 0 };
@@ -13814,6 +13855,17 @@ jQuery.fn.extend({
                 var scale = { x: 1, y: 1 };
                 var offset = 80;
                 var w = opSize.width + offset;
+                /*
+                if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
+                    context.font = "14px Segoe-UI";
+                    var text = operations[i].steps + " steps";
+                    var textW = context.measureText(text);
+                    offset = Math.max(textW.width + 10, offset);
+                    w += offset;
+                } else if (operations[i].status === "processing") {
+                    w += offset;
+                }
+                */
                 if (w > width) {
                     scale = {
                         x: (width - offset) / opSize.width,
@@ -13825,13 +13877,23 @@ jQuery.fn.extend({
                 sizes.push({ size: opSize, offset: offset, scale: scale });
                 height += opSize.height + this.options.padding.y;
             }
-            canvas.height = height;
+            if (PIXEL_RATIO !== 1) {
+                canvas.height = height * PIXEL_RATIO;
+                canvas.width = that._canvas.width() * PIXEL_RATIO;
+                that._canvas.height(height);
+                context.setTransform(PIXEL_RATIO, 0, 0, PIXEL_RATIO, 0, 0);
+            }
+            else {
+                canvas.height = height;
+            }
+            //context.msImageSmoothingEnabled = true;
+            context.translate(0.5, 0.5);
             height = this.options.padding.y;
             for (var i = 0; i < operations.length; i++) {
                 var op = operations[i].operation;
                 var opSize = sizes[i].size;
                 var scale = sizes[i].scale;
-                var opPosition = { x: opSize.width / 2 + this.options.padding.x, y: height + opSize.height / 2 };
+                var opPosition = { x: opSize.width / 2 + this.options.padding.x, y: Math.floor(height + opSize.height / 2) };
                 BMA.LTLOperations.RenderOperation(canvas, op, opPosition, scale, {
                     padding: padding,
                     keyFrameSize: keyFrameSize,
@@ -13841,16 +13903,31 @@ jQuery.fn.extend({
                     strokeWidth: 1,
                     borderThickness: 1
                 });
-                if (operations[i].status !== "nottested" && operations[i].status.indexOf("processing") < 0 && operations[i].steps !== undefined) {
+                if (operations[i].status !== "nottested" && operations[i].status !== "processing" && operations[i].steps !== undefined) {
                     context.font = "14px Segoe-UI";
                     context.textBaseline = "middle";
-                    context.fillStyle = operations[i].status.indexOf("fail") > -1 && operations[i].status !== "partialsuccespartialfail" ? "rgb(254, 172, 158)" : "green";
+                    context.fillStyle = operations[i].status === "fail" ? "rgb(254, 172, 158)" : "green";
                     var text = operations[i].steps + " steps";
                     context.fillText(text, opSize.width + 10, opPosition.y);
                 }
-                else if (operations[i].status.indexOf("processing") > -1) {
+                else if (operations[i].status === "processing") {
                     var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7);
                     this._anims.push(anim);
+                }
+                else if (operations[i].status === "nottested" && operations[i].message !== undefined && operations[i].message !== null) {
+                    context.font = "14px Segoe-UI";
+                    context.textBaseline = "middle";
+                    context.fillStyle = "rgb(254, 172, 158)";
+                    var text = operations[i].message;
+                    if (text !== "Timed out" && text.length > 0) {
+                        if (text.indexOf("Incorrect Model") > -1) {
+                            text = "Incorrect model";
+                        }
+                        else {
+                            text = "Server error";
+                        }
+                    }
+                    context.fillText(text, opSize.width + 10, opPosition.y);
                 }
                 height += opSize.height + this.options.padding.y;
             }
@@ -13866,63 +13943,20 @@ jQuery.fn.extend({
                 case "partialsuccess":
                     var canvas = (this._canvas[0]);
                     var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
-                    var n = 20;
-                    for (var i = 0; i < n; i++) {
-                        gradient.addColorStop(i / n, "rgb(217,255,182)");
-                        gradient.addColorStop((2 * i + 1) / (2 * n), "white");
-                    }
-                    return gradient;
-                case "processing, partialsuccess":
-                    var canvas = (this._canvas[0]);
-                    var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
-                    var n = 20;
-                    for (var i = 0; i < n; i++) {
-                        gradient.addColorStop(i / n, "rgb(217,255,182)");
-                        gradient.addColorStop((4 * i + 1) / (4 * n), "white");
-                        gradient.addColorStop((4 * i + 2) / (4 * n), "white");
-                        gradient.addColorStop((4 * i + 3) / (4 * n), "white");
-                    }
-                    return gradient;
-                case "processing, partialfail":
-                    var canvas = (this._canvas[0]);
-                    var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
-                    var n = 20;
-                    for (var i = 0; i < n; i++) {
-                        gradient.addColorStop(i / n, "rgb(254, 172, 158)");
-                        gradient.addColorStop((4 * i + 1) / (4 * n), "white");
-                        gradient.addColorStop((4 * i + 2) / (4 * n), "white");
-                        gradient.addColorStop((4 * i + 3) / (4 * n), "white");
-                    }
-                    return gradient;
-                case "partialfail":
-                    var canvas = (this._canvas[0]);
-                    var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
-                    var n = 20;
-                    for (var i = 0; i < n; i++) {
-                        gradient.addColorStop(i / n, "rgb(254, 172, 158)");
-                        gradient.addColorStop((2 * i + 1) / (2 * n), "white");
-                    }
-                    return gradient;
-                case "partialsuccesspartialfail":
-                    var canvas = (this._canvas[0]);
-                    var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
-                    var n = 20;
-                    for (var i = 0; i < n; i++) {
-                        gradient.addColorStop(i / n, "rgb(217,255,182)");
-                        gradient.addColorStop((4 * i + 1) / (4 * n), "white");
-                        gradient.addColorStop((4 * i + 2) / (4 * n), "rgb(254, 172, 158)");
-                        gradient.addColorStop((4 * i + 3) / (4 * n), "white");
-                    }
-                    return gradient;
+                    return context.createPattern(this._stripesImg, "repeat");
+                /*var gradient = context.createLinearGradient(-width / 2, 0, width, height);
+                var n = 20;
+                for (var i = 0; i < n; i++) {
+                    gradient.addColorStop(i / n, "rgb(217,255,182)");
+                    gradient.addColorStop((2 * i + 1) / (2 * n), "white");
+                }
+                return gradient;
+                */
+                //return "rgb(217,255,182)";
                 case "fail":
                     return "rgb(254, 172, 158)";
                 default:
-                    return "white";
+                    throw "Invalid status!";
             }
         },
         _createWaitAnimation: function (x, y) {
@@ -13966,7 +14000,7 @@ var BMA;
     var Presenters;
     (function (Presenters) {
         var LTLPresenter = (function () {
-            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ltlresultsviewer, ltlSimlationService, ltlPolarityService, popupViewer, exportService, fileLoaderDriver, logService) {
+            function LTLPresenter(commands, appModel, statesEditorDriver, temporlapropertieseditor, ltlviewer, ltlresultsviewer, ajax, popupViewer, exportService, fileLoaderDriver, logService) {
                 var _this = this;
                 var that = this;
                 this.appModel = appModel;
@@ -13979,7 +14013,7 @@ var BMA;
                         //For faster reaction time
                         setTimeout(function () {
                             temporlapropertieseditor.Show();
-                            _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ltlSimlationService, ltlPolarityService, temporlapropertieseditor, that.statespresenter, logService);
+                            _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, that.statespresenter, logService);
                             temporlapropertieseditor.Hide();
                             ltlviewer.GetTemporalPropertiesViewer().Refresh();
                             ltlviewer.HideTabWaitIcon();
@@ -14009,7 +14043,7 @@ var BMA;
                             temporlapropertieseditor.Show();
                             commands.Execute("TemporalPropertiesEditorExpanded", {});
                             if (_this.tppresenter === undefined) {
-                                _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ltlSimlationService, ltlPolarityService, temporlapropertieseditor, _this.statespresenter, logService);
+                                _this.tppresenter = new BMA.LTL.TemporalPropertiesPresenter(commands, appModel, ajax, temporlapropertieseditor, _this.statespresenter, logService);
                             }
                             break;
                         default:
@@ -14032,6 +14066,17 @@ var BMA;
                         });
                     }
                     ltlviewer.GetTemporalPropertiesViewer().SetOperations(ops);
+                });
+                window.Commands.On("InvalidStatesImported", function (args) {
+                    var userDialog = $('<div></div>').appendTo('body').userdialog({
+                        message: "States was imported incorrectly.",
+                        actions: [
+                            {
+                                button: 'Ok',
+                                callback: function () { userDialog.detach(); }
+                            }
+                        ]
+                    });
                 });
                 //window.Commands.On("LTLRequested",(args) => {
                 //    ltlviewer.GetTemporalPropertiesViewer().Refresh();
@@ -14069,9 +14114,14 @@ var BMA;
                         ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
                     }
                 });
-                commands.On("ExportLTLFormula", function (args) {
+                commands.On("ExportLTLFormulaAsJson", function (args) {
                     if (args.operation !== undefined) {
-                        exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "txt");
+                        exportService.Export(JSON.stringify(BMA.Model.ExportOperation(args.operation, true)), "operation", "json");
+                    }
+                });
+                commands.On("ExportLTLFormulaAsText", function (args) {
+                    if (args.operation !== undefined) {
+                        exportService.Export(args.operation, "operation", "txt");
                     }
                 });
                 commands.On("ImportLTLFormula", function (args) {
@@ -14089,6 +14139,8 @@ var BMA;
                                     states = statesChanged.states;
                                     BMA.LTLOperations.RefreshStatesInOperation(op, states);
                                 }
+                                if (statesChanged.shouldNotify)
+                                    window.Commands.Execute("InvalidStatesImported", {});
                                 var merged = that.MergeStates(that.appModel.States, states);
                                 that.appModel.States = merged.states;
                                 that.UpdateOperationStates(op, merged.map);
@@ -14301,7 +14353,7 @@ var BMA;
     var LTL;
     (function (LTL) {
         var TemporalPropertiesPresenter = (function () {
-            function TemporalPropertiesPresenter(commands, appModel, simulationService, polarityService, tpEditorDriver, statesPresenter, logService) {
+            function TemporalPropertiesPresenter(commands, appModel, ajax, tpEditorDriver, statesPresenter, logService) {
                 var _this = this;
                 this.controlPanelPadding = 3;
                 this.isUpdateControlRequested = false;
@@ -14319,8 +14371,7 @@ var BMA;
                 };
                 var that = this;
                 this.appModel = appModel;
-                this.simulationService = simulationService;
-                this.polarityService = polarityService;
+                this.ajax = ajax;
                 this.tpEditorDriver = tpEditorDriver;
                 this.driver = tpEditorDriver.GetSVGDriver();
                 this.navigationDriver = tpEditorDriver.GetNavigationDriver();
@@ -14475,11 +14526,18 @@ var BMA;
                         ]);
                     }
                 });
-                commands.On("TemporalPropertiesEditorExport", function (args) {
+                commands.On("TemporalPropertiesEditorExportAsJson", function (args) {
                     if (_this.contextElement !== undefined) {
                         var operationDescr = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
                         var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
-                        commands.Execute("ExportLTLFormula", { operation: clonned });
+                        commands.Execute("ExportLTLFormulaAsJson", { operation: clonned });
+                    }
+                });
+                commands.On("TemporalPropertiesEditorExportAsText", function (args) {
+                    if (_this.contextElement !== undefined) {
+                        var operationDescr = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
+                        var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
+                        commands.Execute("ExportLTLFormulaAsText", { operation: clonned.GetFormula() });
                     }
                 });
                 commands.On("TemporalPropertiesEditorImport", function (args) {
@@ -14665,7 +14723,7 @@ var BMA;
                                 that.navigationDriver.TurnNavigation(false);
                                 //Can't drag parts of processing operations
                                 var picked = staginOp.PickOperation(gesture.x, gesture.y);
-                                if (staginOp.AnalysisStatus.indexOf("processing") > -1 && picked !== undefined && !picked.isRoot) {
+                                if (staginOp.AnalysisStatus === "processing" && picked !== undefined && !picked.isRoot) {
                                     _this.stagingOperation = undefined;
                                 }
                                 else {
@@ -14785,7 +14843,7 @@ var BMA;
                                 else {
                                     var operation = _this.GetOperationAtPoint(position.x, position.y);
                                     if (operation !== undefined) {
-                                        if (operation.AnalysisStatus.indexOf("processing") > -1) {
+                                        if (operation.AnalysisStatus === "processing") {
                                             if (!_this.stagingOperation.fromclipboard) {
                                                 //Operation should stay in its origin place bacuse editing of processing operations is not allowed
                                                 if (_this.stagingOperation.isRoot) {
@@ -14862,18 +14920,10 @@ var BMA;
             TemporalPropertiesPresenter.prototype.CreateSvgHeaders = function () {
                 var svg = this.driver.GetSVGRef();
                 var defs = svg.defs("ltlBmaDefs");
-                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
-                    patternUnits: "userSpaceOnUse",
-                    patternTransform: "rotate(45)"
+                var imgPattern = svg.pattern(defs, "pattern-stripe", undefined, undefined, 80, 40, {
+                    patternUnits: "userSpaceOnUse"
                 });
-                svg.rect(pattern, 0, 0, 4, 4, {
-                    transform: "translate(0,0)",
-                    fill: "white"
-                });
-                var mask = svg.mask(defs, "mask-stripe");
-                svg.rect(mask, "-50%", "-50%", "100%", "100%", {
-                    fill: "url(#pattern-stripe)"
-                });
+                svg.image(imgPattern, 0, 0, 80, 40, "images/stripe-pattern.png");
             };
             TemporalPropertiesPresenter.prototype.CompareStatesToLocal = function (states) {
                 if (states.length !== this.states.length)
@@ -14936,6 +14986,7 @@ var BMA;
                 if (appModel.Operations !== undefined && appModel.Operations.length > 0) {
                     for (var i = 0; i < appModel.Operations.length; i++) {
                         var position = { x: 0, y: 0 };
+                        var steps;
                         if (checkAppearance) {
                             var opAppearance = appModel.OperationAppearances[i];
                             if (opAppearance.x !== undefined) {
@@ -14944,15 +14995,25 @@ var BMA;
                             if (opAppearance.y !== undefined) {
                                 position.y = opAppearance.y;
                             }
+                            if (opAppearance.steps !== undefined) {
+                                steps = opAppearance.steps;
+                            }
                         }
                         var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVGRef(), appModel.Operations[i], position);
                         this.InitializeOperationTag(newOp);
+                        if (steps) {
+                            newOp.Tag.steps = steps;
+                        }
                         if (!checkAppearance) {
                             height += newOp.BoundingBox.height / 2 + padding;
                             newOp.Position = { x: 0, y: height };
                             height += newOp.BoundingBox.height / 2 + padding;
                         }
                         this.operations.push(newOp);
+                    }
+                    for (var i = 0; i < this.operations.length; i++) {
+                        var op = this.operations[i];
+                        op.Tag.driver.SetSteps(op.Tag.steps);
                     }
                 }
                 this.states = appModel.States;
@@ -15034,13 +15095,13 @@ var BMA;
                         "Formula": formula,
                         "Number_of_steps": driver.GetSteps()
                     };
-                    var result = that.simulationService.Invoke(proofInput)
+                    var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
-                        if (operation.AnalysisStatus.indexOf("processing") < 0)
+                        if (operation.AnalysisStatus !== "processing")
                             return;
                         if (res.Ticks == null) {
                             that.log.LogLTLError();
-                            if (res.Error.indexOf("Operation is not completed in") > -1)
+                            if (res.Status === "Error" && res.Error.indexOf("Operation is not completed in") > -1)
                                 driver.SetStatus("nottested", "Timed out");
                             else
                                 driver.SetStatus("nottested", "Server error");
@@ -15052,92 +15113,51 @@ var BMA;
                             that.OnOperationsChanged(false);
                         }
                         else {
-                            if (res.Status === true) {
+                            if (res.Status === "True") {
                                 driver.SetShowResultsCallback(function () {
                                     that.commands.Execute("ShowLTLResults", {
                                         ticks: res.Ticks
                                     });
                                 });
-                                operation.AnalysisStatus = "processing, partialsuccess";
+                                driver.SetStatus("success");
+                                //driver.Expand();
+                                operation.AnalysisStatus = "success";
                                 operation.Tag.data = res.Ticks;
                                 operation.Tag.negdata = undefined;
+                                operation.Tag.steps = driver.GetSteps();
+                            }
+                            else if (res.Status === "PartiallyTrue") {
+                                driver.SetShowResultsCallback(function (showpositive) {
+                                    that.commands.Execute("ShowLTLResults", {
+                                        ticks: showpositive ? res.Ticks : res.NegTicks
+                                    });
+                                });
+                                driver.SetStatus("partialsuccess");
+                                //driver.Expand();
+                                operation.AnalysisStatus = "partialsuccess";
+                                operation.Tag.data = res.Ticks;
+                                operation.Tag.negdata = res.NegTicks;
                                 operation.Tag.steps = driver.GetSteps();
                             }
                             else {
                                 driver.SetShowResultsCallback(function (showpositive) {
                                     that.commands.Execute("ShowLTLResults", {
-                                        ticks: res.Ticks
+                                        ticks: res.NegTicks
                                     });
                                 });
-                                operation.AnalysisStatus = "processing, partialfail";
+                                driver.SetStatus("fail");
+                                //driver.Expand();
+                                operation.AnalysisStatus = "fail";
                                 operation.Tag.data = undefined;
-                                operation.Tag.negdata = res.Ticks;
+                                operation.Tag.negdata = res.NegTicks;
                                 operation.Tag.steps = driver.GetSteps();
                             }
                             domplot.updateLayout();
                             that.OnOperationsChanged(false);
-                            var polarity = !res.Status;
-                            proofInput.Polarity = polarity;
-                            that.polarityService.Invoke(proofInput).done(function (polarityResult) {
-                                if (operation.AnalysisStatus.indexOf("processing") < 0)
-                                    return;
-                                if (polarityResult.Ticks == null) {
-                                    that.log.LogLTLError();
-                                    operation.AnalysisStatus = operation.AnalysisStatus = "processing, partialfail" ? "partialfail" : "partialsuccess";
-                                    driver.SetStatus(operation.AnalysisStatus === "partialfail" ? "fail" : "success");
-                                    domplot.updateLayout();
-                                    that.OnOperationsChanged(false);
-                                }
-                                else {
-                                    var polarityStatus = polarityResult.Status;
-                                    var resultStatus = "";
-                                    if (res.Status) {
-                                        if (!polarityStatus) {
-                                            resultStatus = "success";
-                                        }
-                                        else {
-                                            resultStatus = "partialsuccesspartialfail";
-                                            operation.Tag.negdata = polarityResult.Ticks;
-                                        }
-                                    }
-                                    else {
-                                        if (!polarityStatus) {
-                                            resultStatus = "fail";
-                                        }
-                                        else {
-                                            resultStatus = "partialsuccesspartialfail";
-                                            operation.Tag.data = polarityResult.Ticks;
-                                        }
-                                    }
-                                    operation.AnalysisStatus = resultStatus;
-                                    operation.Tag.steps = driver.GetSteps();
-                                    if (resultStatus === "partialsuccesspartialfail") {
-                                        driver.SetStatus("partialsuccess");
-                                        driver.SetShowResultsCallback(function (showpositive) {
-                                            that.commands.Execute("ShowLTLResults", {
-                                                ticks: showpositive ? operation.Tag.data : operation.Tag.negdata
-                                            });
-                                        });
-                                    }
-                                    else {
-                                        driver.SetStatus(resultStatus);
-                                    }
-                                    domplot.updateLayout();
-                                    that.OnOperationsChanged(false);
-                                }
-                            }).fail(function (xhr, textStatus, errorThrown) {
-                                if (operation.AnalysisStatus.indexOf("processing") < 0)
-                                    return;
-                                that.log.LogLTLError();
-                                operation.AnalysisStatus = operation.AnalysisStatus = "processing, partialfail" ? "partialfail" : "partialsuccess";
-                                driver.SetStatus(operation.AnalysisStatus === "partialfail" ? "fail" : "success");
-                                domplot.updateLayout();
-                                that.OnOperationsChanged(false);
-                            });
                         }
                     })
                         .fail(function (xhr, textStatus, errorThrown) {
-                        if (operation.AnalysisStatus.indexOf("processing") < 0)
+                        if (operation.AnalysisStatus !== "processing")
                             return;
                         that.log.LogLTLError();
                         driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
@@ -15181,10 +15201,11 @@ var BMA;
                 var appearances = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     operations.push(this.operations[i].Operation.Clone());
-                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus, steps: this.operations[i].Tag.steps });
+                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus, steps: this.operations[i].Tag.steps, message: this.operations[i].Tag.driver.GetMessage() });
                     appearances.push({
                         x: this.operations[i].Position.x,
-                        y: this.operations[i].Position.y
+                        y: this.operations[i].Position.y,
+                        steps: this.operations[i].Tag.steps,
                     });
                 }
                 if (updateControls) {
@@ -15288,7 +15309,7 @@ var BMA;
                         operation.AnalysisStatus = "nottested";
                         driver.SetMessage(undefined);
                     }
-                    that.OnOperationsChanged(false, false);
+                    that.OnOperationsChanged(false, true);
                 });
                 var bbox = operation.BoundingBox;
                 dom.add(opDiv, "none", bbox.x + bbox.width + this.controlPanelPadding, -operation.Position.y, 0, 0 /*40 * 57.28 / 27, 40*/, 0, 0.5);

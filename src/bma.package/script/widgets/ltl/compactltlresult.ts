@@ -105,33 +105,33 @@
                     //}
                     break;
                 case "processing":
-                    if (this.options.isexpanded) {
+                    //if (this.options.isexpanded) {
 
-                        var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                        var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block").css("width", 55)
-                            .appendTo(ltltestdiv);
-                        var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
-                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
-                        var minusb = $("<button>-</button>").appendTo(minusd);
-                        minusd.addClass("testing");
-                        minusb.addClass("testing");
-                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
-                        var plusb = $("<button>+</button>").appendTo(plusd);
-                        plusd.addClass("testing");
-                        plusb.addClass("testing");
-                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
-                        var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                        var btn = $("<button></button>").appendTo(li);
-                        li.addClass("spin");
-                        that.createWaitAnim().appendTo(btn);
-                    } else {
+                    //    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
+                    //    var d = $("<div>" + that.options.steps + " steps</div>")
+                    //        .css("display", "inline-block").css("width", 55)
+                    //        .appendTo(ltltestdiv);
+                    //    var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
+                    //    var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                    //    var minusb = $("<button>-</button>").appendTo(minusd);
+                    //    minusd.addClass("testing");
+                    //    minusb.addClass("testing");
+                    //    var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                    //    var plusb = $("<button>+</button>").appendTo(plusd);
+                    //    plusd.addClass("testing");
+                    //    plusb.addClass("testing");
+                    //    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
+                    //    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    //    var btn = $("<button></button>").appendTo(li);
+                    //    li.addClass("spin");
+                    //    that.createWaitAnim().appendTo(btn);
+                    //} else {
                         var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                         var btn = $("<button></button>").appendTo(li);
                         li.addClass("spin");
                         that.createWaitAnim().appendTo(btn);
-                    }
+                    //}
                     break;
                 case "success":
 
@@ -441,16 +441,24 @@
             var needRefreshStates = false;
             switch (key) {
                 case "status":
-                    needRefreshStates = true;
+                    if (that.options.status !== value)
+                        needRefreshStates = true;
                     break;
                 case "isexpanded":
-                    needRefreshStates = true;
+                    if (that.options.isexpanded !== value)
+                        needRefreshStates = true;
                     break;
                 case "steps":
-                    needRefreshStates = true;
+                    if (that.options.steps !== value) {
+                        if (that.options.onstepschanged !== undefined) {
+                            that.options.onstepschanged(value);
+                        }
+                        needRefreshStates = true;
+                    }
                     break;
                 case "error":
-                    needRefreshStates = true;
+                    if (that.options.error !== value)
+                        needRefreshStates = true;
                     break;
                 default:
                     break;

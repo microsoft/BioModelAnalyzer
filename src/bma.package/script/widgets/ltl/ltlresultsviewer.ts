@@ -49,7 +49,7 @@
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
-            this.loading = $("<div></div>").addClass("page-loading").css("position", "inherit").css("height", 300).appendTo(this._plot);
+            this.loading = $("<div></div>").addClass("page-loading").css("position", "inherit").css("height", 322).appendTo(this._plot);
             var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
             var snipper = $('<div></div>').addClass('spinner').appendTo(loadingText);
             for (var i = 1; i < 4; i++) {

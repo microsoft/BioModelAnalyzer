@@ -426,7 +426,7 @@
                 }
 
                 var containerName;
-                var variableName;
+                var variableName = undefined;
                 for (var i = 0; i < that.options.variables.length; i++) 
                     if (that.options.variables[i].id == value.container) {
                         containerName = that.options.variables[i].name;
@@ -440,6 +440,13 @@
                     }
                 
                 containerName = containerName ? containerName : "ALL";
+
+                if (variableName === "") {
+                    variableName = "Unnamed";
+                    expandButton.addClass("hidden");
+                } else {
+                    expandButton.removeClass("hidden");
+                }
                 
                 $(selectedContainer).text(containerName);
                 $(selectedVariable).text(variableName);
@@ -697,7 +704,6 @@
                     
                     if (this.options.states.length == 0) {
                         that.addState();
-                        that.executeStatesUpdate({ states: that.options.states, changeType: "stateAdded" });
                     } else {
                         this._initStates();
                         if (this._activeState != null)

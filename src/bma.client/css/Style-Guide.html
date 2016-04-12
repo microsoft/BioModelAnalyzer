@@ -3462,14 +3462,22 @@ Description text<br>
   <div class="state"></div>
  </div>
 </div>
-<ul class="button-list LTL-test">
-		<li class="action-button-small grey"><button>TEST</button></li>
-	</ul>
+<div class="LTL-test-results">
+	10 Steps
+	<div class="pill-button-box">
+		<div class="pill-button"><button>-</button></div>
+		<div class="pill-button"><button>+</button></div>
+	</div><br>
+	<ul class="button-list LTL-test">
+			<li class="action-button-small grey"><button>TEST</button></li>
+		</ul>
+</div>
 
 </div>
 </div>
 
-<p class="guide-text">Basic Formula expanded</p>
+
+<p class="guide-text">Server Error</p>
 <div data-xrayhtml="flip" class="data-xrayhtml method-flip">
 <div class="snippet">
 <div class="pill">
@@ -3482,26 +3490,107 @@ Description text<br>
    B
   </div>
   UNTIL
+  <div class="state">C</div>
+ </div>
+</div>
+<div class="LTL-test-results">
+<div class="server-error">Timed out</div>
+	10 Steps
+	<div class="pill-button-box">
+		<div class="pill-button"><button>-</button></div>
+		<div class="pill-button"><button>+</button></div>
+	</div><br>
+	<ul class="button-list LTL-test">
+			<li class="action-button-small grey"><button>TEST</button></li>
+		</ul>
+</div>
+
+</div>
+</div>
+
+<p class="guide-text">Stage 1 - Some examples found</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+
+<div class="pill half-true">
+ <div class="pill">
   <div class="state">
-   C 
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   D
   </div>
  </div>
 </div>
-<div class="LTL-test-results default">
+<div class="LTL-test-results">
 10 Steps
-<div class="pill-button-box">
-	<div class="pill-button"><button>-</button></div>
-	<div class="pill-button"><button>+</button></div>
+	<div class="pill-button-box">
+		<div class="pill-button"><button>-</button></div>
+		<div class="pill-button"><button>+</button></div>
+	</div><br>
+
+			<div class="spinner">
+			  <div class="bounce1"></div>
+			  <div class="bounce2"></div>
+			  <div class="bounce3"></div>
+			</div>	
 </div>
-<ul class="button-list">
-		<li class="action-button-small grey"><button>TEST</button></li>
-	</ul>
+</div>
 </div>
 
+<p class="guide-text">Stage 1 - Some examples not found</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+
+<div class="pill half-false">
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   D
+  </div>
+ </div>
+</div>
+<div class="LTL-test-results">
+10 Steps
+	<div class="pill-button-box">
+		<div class="pill-button"><button>-</button></div>
+		<div class="pill-button"><button>+</button></div>
+	</div><br>
+
+			<div class="spinner">
+			  <div class="bounce1"></div>
+			  <div class="bounce2"></div>
+			  <div class="bounce3"></div>
+			</div>	
+</div>
 </div>
 </div>
 
-<p class="guide-text">ALL Simulations Found</p>
+<p class="guide-text">Stage 2 - True for all</p>
 <div data-xrayhtml="flip" class="data-xrayhtml method-flip">
 <div class="snippet">
 
@@ -3527,7 +3616,7 @@ Description text<br>
  </div>
 </div>
 <div class="LTL-test-results true">
-	True for all traces<br>
+	true for ALL traces<br>
 	12 steps <div class="pill-button-box">
 	<div class="pill-button"><button>-</button></div>
 	<div class="pill-button"><button>+</button></div>
@@ -3537,36 +3626,124 @@ Description text<br>
 	</ul>
 </div>
 </div>
-
-
 </div>
 
-<p class="guide-text">ALL Simulations Found Collapsed</p>
+<p class="guide-text">Stage 2 - True for some</p>
 <div data-xrayhtml="flip" class="data-xrayhtml method-flip">
 <div class="snippet">
-<div class="pill true">
- <div class="state">
-  A
+
+<div class="pill true-stripes">
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
  </div>
  UNTIL
  <div class="pill">
   <div class="state">
-   B
+   A
   </div>
-  UNTIL
-  <div class="state">C</div>
+  AND
+  <div class="state">
+   D
+  </div>
  </div>
 </div>
-<div class="closed-results true">
-12 steps<br>
-<ul class="button-list LTL-test">
-	<li class="action-button-small green"><button>TEST</button></li>
-</ul>
+<div class="LTL-test-results true">
+	true for SOME traces<br>
+	12 steps <div class="pill-button-box">
+	<div class="pill-button"><button>-</button></div>
+	<div class="pill-button"><button>+</button></div>
+</div><br>
+	<ul class="button-list">
+		<li><button class="LTL-sim-true"><img src="../images/small-tick.svg"> example</button></li>
+	</ul>
 </div>
 </div>
 </div>
 
-<p class="guide-text">NO Simulation Found</p>
+<p class="guide-text">Stage 2 - True/False for some</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+
+<div class="pill half-half">
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   D
+  </div>
+ </div>
+</div>
+<div class="LTL-test-results some">
+	true/false for SOME traces<br>
+	12 steps <div class="pill-button-box">
+	<div class="pill-button"><button>-</button></div>
+	<div class="pill-button"><button>+</button></div>
+</div><br>
+	<ul class="button-list">
+		<li><button class="LTL-sim-true"><img src="../images/small-tick.svg"> example</button></li>
+		<li><button class="LTL-sim-false"><img src="../images/small-cross.svg"> example</button></li>
+	</ul>
+</div>
+</div>
+</div>
+
+<p class="guide-text">Stage 2 - false for some</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+
+<div class="pill false-stripes">
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   C
+  </div>
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   A
+  </div>
+  AND
+  <div class="state">
+   D
+  </div>
+ </div>
+</div>
+<div class="LTL-test-results false">
+	false for SOME traces<br>
+	12 steps <div class="pill-button-box">
+	<div class="pill-button"><button>-</button></div>
+	<div class="pill-button"><button>+</button></div>
+</div><br>
+	<ul class="button-list">
+		<li><button class="LTL-sim-false"><img src="../images/small-cross.svg"> example</button></li>
+	</ul>
+</div>
+</div>
+</div>
+
+<p class="guide-text">Stage 2 - False for all</p>
 <div data-xrayhtml="flip" class="data-xrayhtml method-flip">
 <div class="snippet">
 
@@ -3592,7 +3769,7 @@ Description text<br>
  </div>
 </div>
 <div class="LTL-test-results false">
-	No trace found<br>
+	false for ALL traces<br>
 	12 steps <div class="pill-button-box">
 	<div class="pill-button"><button>-</button></div>
 	<div class="pill-button"><button>+</button></div>
@@ -3604,7 +3781,127 @@ Description text<br>
 </div>
 </div>
 
-<p class="guide-text">NO Simulation Found Collapsed</p>
+<p class="guide-text">Collapsed view - true for all</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill true">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state">C</div>
+ </div>
+</div>
+<div class="LTL-test-results ">
+	10 Steps
+	<div class="pill-button-box">
+		<div class="pill-button"><button>-</button></div>
+		<div class="pill-button"><button>+</button></div>
+	</div><br>
+	<ul class="button-list LTL-test">
+			<li class="action-button-small green"><button>OPEN</button></li>
+		</ul>
+</div>
+
+</div>
+</div>
+
+<p class="guide-text">Collapsed view - true for some</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill true-stripes">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state">C</div>
+ </div>
+</div>
+<div class="LTL-test-results ">
+	10 Steps
+	<div class="pill-button-box">
+		<div class="pill-button"><button>-</button></div>
+		<div class="pill-button"><button>+</button></div>
+	</div><br>
+	<ul class="button-list LTL-test">
+			<li class="action-button-small green"><button>OPEN</button></li>
+		</ul>
+</div>
+
+</div>
+</div>
+
+<p class="guide-text">Collapsed view - true/false for some</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill half-half">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state">C</div>
+ </div>
+</div>
+<div class="LTL-test-results ">
+	10 Steps
+	<div class="pill-button-box">
+		<div class="pill-button"><button>-</button></div>
+		<div class="pill-button"><button>+</button></div>
+	</div><br>
+	<ul class="button-list LTL-test">
+			<li class="action-button-small grey"><button>OPEN</button></li>
+		</ul>
+</div>
+
+</div>
+</div>
+
+<p class="guide-text">Collapsed view - false for some</p>
+<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
+<div class="snippet">
+<div class="pill false-stripes">
+ <div class="state">
+  A
+ </div>
+ UNTIL
+ <div class="pill">
+  <div class="state">
+   B
+  </div>
+  UNTIL
+  <div class="state">C</div>
+ </div>
+</div>
+<div class="LTL-test-results ">
+	10 Steps
+	<div class="pill-button-box">
+		<div class="pill-button"><button>-</button></div>
+		<div class="pill-button"><button>+</button></div>
+	</div><br>
+	<ul class="button-list LTL-test">
+			<li class="action-button-small red"><button>OPEN</button></li>
+		</ul>
+</div>
+
+</div>
+</div>
+
+<p class="guide-text">Collapsed view - false for all</p>
 <div data-xrayhtml="flip" class="data-xrayhtml method-flip">
 <div class="snippet">
 <div class="pill false">
@@ -3617,91 +3914,22 @@ Description text<br>
    B
   </div>
   UNTIL
-  <div class="state">D</div>
+  <div class="state">C</div>
  </div>
 </div>
-<div class="closed-results false">
-12 steps<br>
+<div class="LTL-test-results ">
+	10 Steps
+	<div class="pill-button-box">
+		<div class="pill-button"><button>-</button></div>
+		<div class="pill-button"><button>+</button></div>
+	</div><br>
 	<ul class="button-list LTL-test">
-			<li class="action-button-small red"><button>TEST</button></li>
+			<li class="action-button-small red"><button>OPEN</button></li>
 		</ul>
 </div>
-</div>
-</div>
 
-<p class="guide-text">SOME Simulations Found</p>
-<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
-<div class="snippet">
-
-<div class="pill some">
- <div class="pill">
-  <div class="state">
-   A
-  </div>
-  AND
-  <div class="state">
-   C
-  </div>
- </div>
- UNTIL
- <div class="pill">
-  <div class="state">
-   A
-  </div>
-  AND
-  <div class="state">
-   D
-  </div>
- </div>
-</div>
-<div class="LTL-test-results true">
-	True for some traces<br>
-	12 steps <div class="pill-button-box">
-	<div class="pill-button"><button>-</button></div>
-	<div class="pill-button"><button>+</button></div>
-</div><br>
-	<ul class="button-list">
-		<li><button class="LTL-sim-true"><img src="../images/small-tick.svg"> example</button></li>
-		<li><button class="LTL-sim-false"><img src="../images/small-cross.svg"> example</button></li>
-	</ul>
 </div>
 </div>
-</div>
-
-<p class="guide-text">SOME Simulations Found Collapsed</p>
-<div data-xrayhtml="flip" class="data-xrayhtml method-flip">
-<div class="snippet">
-
-<div class="pill some">
- <div class="pill">
-  <div class="state">
-   A
-  </div>
-  AND
-  <div class="state">
-   C
-  </div>
- </div>
- UNTIL
- <div class="pill">
-  <div class="state">
-   A
-  </div>
-  AND
-  <div class="state">
-   D
-  </div>
- </div>
-</div>
-<div class="closed-results true">
-12 steps<br>
-	<ul class="button-list LTL-test">
-			<li class="action-button-small green"><button>TEST</button></li>
-		</ul>
-</div>
-</div>
-</div>
-
 
 
 </div>

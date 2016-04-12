@@ -203,9 +203,10 @@
         }
 
         export function UpdateStatesWithModel(model: BMA.Model.BioModel, layout: BMA.Model.Layout, states: BMA.LTLOperations.Keyframe[]):
-            { states: BMA.LTLOperations.Keyframe[], isChanged: boolean } {
+            { states: BMA.LTLOperations.Keyframe[], isChanged: boolean, shouldNotify: boolean } {
             
             var isChanged = false;
+            var shouldNotify = false;
             var newStates = [];
             for (var i = 0; i < states.length; i++) {
                 var state = states[i];
@@ -221,19 +222,21 @@
                     }
                     if (variable instanceof BMA.LTLOperations.NameOperand) {
                         var variableId = variable.Id;
-                        if (variableId === undefined || !model.GetVariableById(variableId)) {
+                        if (variableId === undefined) {
                             var id = model.GetIdByName(variable.Name);
-                            if (id.length != 1) {
+                            if (id.length == 0) {
                                 isActual = false;
                                 isChanged = true;
                                 break;
                             }
+                            if (id.length > 1)
+                                shouldNotify = true;
                             variableId = parseFloat(id[0]);
                             isChanged = true;
                         }
 
                         var variableInModel = model.GetVariableById(variableId);
-                        if (variableInModel === undefined || !variableInModel.Name) {
+                        if (variableInModel === undefined/* || !variableInModel.Name*/) {
                             isActual = false;
                             isChanged = true;
                             break;
@@ -257,7 +260,8 @@
 
             return {
                 states: newStates,
-                isChanged: isChanged
+                isChanged: isChanged,
+                shouldNotify: shouldNotify
             };
         }
 

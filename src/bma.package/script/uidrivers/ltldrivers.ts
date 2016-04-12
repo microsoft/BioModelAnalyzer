@@ -332,7 +332,7 @@ module BMA {
                         if (f[0] && f[0].type == "variable" && f[0].value && f[0].value.variable && f[1] && f[1].value && f[2]) {
                             var operator = f[1].value;
                             var constant = parseFloat(f[2].value);
-                            var varName;
+                            var varName = undefined;
                             for (var k = 0; k < that.model.Variables.length; k++)
                                 if (that.model.Variables[k].Id == f[0].value.variable) {
                                     if ((f[0].value.container === undefined)
@@ -349,7 +349,7 @@ module BMA {
                             //        }
                             //}
 
-                            if (varName) {
+                            if (varName !== undefined) {
                                 op = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(varName, f[0].value.variable),
                                     operator, new BMA.LTLOperations.ConstOperand(constant));
                                 ops.push(op);
@@ -404,7 +404,7 @@ module BMA {
                             && (screenLocation.y > popupPosition.top && screenLocation.y < popupPosition.top + h)
                             && (params.dropObject.type == "variable")) {
                             var variable = that.model.GetVariableById(params.dropObject.id);
-                            if (variable && variable.Name && variable.Id !== undefined && variable.ContainerId !== undefined) {
+                            if (variable/* && variable.Name */&& variable.Id !== undefined && variable.ContainerId !== undefined) {
                                 that.statesEditor.stateseditor("checkDroppedItem", {
                                     screenLocation: params.screenLocation,
                                     variable: { container: variable.ContainerId, variable: variable.Id }
@@ -631,11 +631,17 @@ module BMA {
                 this.compactltlresult.compactltlresult({ "error": message });
             }
 
+            public GetMessage(): string {
+                return this.compactltlresult.compactltlresult("option", "error");
+            }
+
             public SetSteps(steps: number) {
-                if (steps && steps > 0)
+                if (steps && steps > 0) {
+                    //this.steps = steps;
                     this.compactltlresult.compactltlresult({
                         steps: steps
                     });
+                }
             }
 
             public GetSteps(): number {
@@ -921,11 +927,11 @@ module BMA {
                 var data = tableData.data;
                 var tags = that.PrepareTableTags(data, states, vars);
                 
-                var labelsHeight = Math.max.apply(Math, data.map(function (s) {
+                var labelsHeight = Math.max(1, (Math.max.apply(Math, data.map(function (s) {
                     return Math.max.apply(Math, s);
                 })) - Math.min.apply(Math, data.map(function (s) {
                     return Math.min.apply(Math, s);
-                }));
+                }))));
                 var labels = that.PreparePlotLabels(tags, labelsHeight);
                 
                 var interval = this.CreateInterval(vars);
@@ -1002,11 +1008,11 @@ module BMA {
 
                 var tags = this.PrepareTableTags(that.currentData.data, states, vars);
 
-                var labelsHeight = Math.max.apply(Math, that.currentData.data.map(function (s) {
+                var labelsHeight = Math.max(1, (Math.max.apply(Math, that.currentData.data.map(function (s) {
                     return Math.max.apply(Math, s);
                 })) - Math.min.apply(Math, that.currentData.data.map(function (s) {
                     return Math.min.apply(Math, s);
-                }));
+                }))));
                 var labels = this.PreparePlotLabels(tags, labelsHeight);
 
                 that.currentData.tags = tags;

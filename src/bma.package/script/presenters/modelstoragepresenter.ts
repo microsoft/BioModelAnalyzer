@@ -65,6 +65,7 @@
                                         button: 'Yes',
                                         callback: function () {
                                             userDialog.detach();
+                                            logService.LogImportModel();
                                             load();
                                         }
                                     },

@@ -380,6 +380,41 @@
 				background-color: transparent;
 			}
 		}
+
+		&.half-true{
+			background-image: url("../images/stripe-pattern-half-green.png");
+			&>div{
+				background-color: transparent;
+			}
+		}
+
+		&.true-stripes{
+			background-image: url("../images/stripe-pattern-green.png");
+			&>div{
+				background-color: transparent;
+			}
+		}
+
+		&.half-false{
+			background-image: url("../images/stripe-pattern-half-red.png");
+			&>div{
+				background-color: transparent;
+			}
+		}
+
+		&.false-stripes{
+			background-image: url("../images/stripe-pattern-red.png");
+			&>div{
+				background-color: transparent;
+			}
+		}
+
+		&.half-half{
+			background-image: url("../images/stripe-pattern-half-half.png");
+			&>div{
+				background-color: transparent;
+			}
+		}
 	
 		
 	}
@@ -416,6 +451,7 @@
 
 		.action-button-small{
 			margin: 0px;
+			
 		}
 
 		&.true{
@@ -453,6 +489,7 @@
 		&.some{
 			border: 1px solid @darkgrey;
 			color:@darkgrey;
+			width: 150px;
 		}
 		
 		.pill-button-box{
@@ -461,7 +498,10 @@
 				margin-bottom: 0px;
 			}
 		}
-
+		
+		.server-error{
+			color: @darkred;
+		}
 		
 		
 		.button-list{
@@ -486,6 +526,11 @@
 		}
 		.action-button-small{
 			margin: 5px 0px 5px 0px;
+
+			&.loading{
+			background-color: white;
+			border: 1px solid @darkgrey;
+			}
 		}
 
 	}

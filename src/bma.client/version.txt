@@ -1,1 +1,1 @@
-﻿{"major":"1","minor":"3","build":"0620"}
+﻿{"major":"1","minor":"3","build":"0641"}

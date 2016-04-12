@@ -254,6 +254,8 @@
     <Content Include="images\state-container.svg" />
     <Content Include="images\state-line-del.svg" />
     <Content Include="images\state-variable.svg" />
+    <Content Include="images\stripe-pattern.png" />
+    <Content Include="images\stripes.png" />
     <Content Include="images\succeeded.png" />
     <Content Include="images\succeeded.svg" />
     <Content Include="images\svgtest.txt" />
@@ -281,6 +283,7 @@
     <Content Include="images\zoomplus.png" />
     <Content Include="images\zoomplus.svg" />
     <Content Include="index.html" />
+    <Content Include="js\jquery.ui-touchpunch.js" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="js\jquery.svganim.js" />
     <Content Include="js\jquery.svganim.min.js" />

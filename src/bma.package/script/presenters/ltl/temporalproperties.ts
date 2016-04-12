@@ -260,11 +260,19 @@ module BMA {
                     }
                 });
 
-                commands.On("TemporalPropertiesEditorExport", (args: { top: number; left: number }) => {
+                commands.On("TemporalPropertiesEditorExportAsJson", (args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
                         var operationDescr = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
                         var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
-                        commands.Execute("ExportLTLFormula", { operation: clonned });
+                        commands.Execute("ExportLTLFormulaAsJson", { operation: clonned });
+                    }
+                });
+
+                commands.On("TemporalPropertiesEditorExportAsText", (args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        var operationDescr = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
+                        var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
+                        commands.Execute("ExportLTLFormulaAsText", { operation: (<BMA.LTLOperations.IOperand>clonned).GetFormula() });
                     }
                 });
 
@@ -712,19 +720,11 @@ module BMA {
                 var svg = this.driver.GetSVGRef();
                 var defs = svg.defs("ltlBmaDefs");
 
-                var pattern = svg.pattern(defs, "pattern-stripe", 0, 0, 8, 4, {
-                    patternUnits: "userSpaceOnUse",
-                    patternTransform: "rotate(45)"
-                });
-                svg.rect(pattern, 0, 0, 4, 4, {
-                    transform: "translate(0,0)",
-                    fill: "white"
+                var imgPattern = svg.pattern(defs, "pattern-stripe", undefined, undefined, 80, 40, {
+                    patternUnits: "userSpaceOnUse"
                 });
 
-                var mask = svg.mask(defs, "mask-stripe");
-                svg.rect(mask, "-50%", "-50%", "100%", "100%", {
-                    fill: "url(#pattern-stripe)"
-                });
+                svg.image(imgPattern, 0, 0, 80, 40, "images/stripe-pattern.png");
             }
 
             private CompareStatesToLocal(states: BMA.LTLOperations.Keyframe[]) {
@@ -800,6 +800,7 @@ module BMA {
                 if (appModel.Operations !== undefined && appModel.Operations.length > 0) {
                     for (var i = 0; i < appModel.Operations.length; i++) {
                         var position = { x: 0, y: 0 };
+                        var steps;
                         if (checkAppearance) {
                             var opAppearance = appModel.OperationAppearances[i];
                             if (opAppearance.x !== undefined) {
@@ -808,10 +809,17 @@ module BMA {
                             if (opAppearance.y !== undefined) {
                                 position.y = opAppearance.y;
                             }
+                            if (opAppearance.steps !== undefined) {
+                                steps = opAppearance.steps;
+                            }
                         }
 
                         var newOp = new BMA.LTLOperations.OperationLayout(this.driver.GetSVGRef(), appModel.Operations[i], position);
                         this.InitializeOperationTag(newOp);
+                        if (steps) {
+                            newOp.Tag.steps = steps;
+                            //newOp.Tag.driver.SetSteps(steps);
+                        }
 
                         if (!checkAppearance) {
                             height += newOp.BoundingBox.height / 2 + padding;
@@ -820,6 +828,11 @@ module BMA {
                         }
 
                         this.operations.push(newOp);
+                    }
+
+                    for (var i = 0; i < this.operations.length; i++) {
+                        var op = this.operations[i];
+                        op.Tag.driver.SetSteps(op.Tag.steps);
                     }
                 }
 
@@ -1086,10 +1099,11 @@ module BMA {
                 var appearances = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     operations.push(this.operations[i].Operation.Clone());
-                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus, steps: this.operations[i].Tag.steps });
+                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus, steps: this.operations[i].Tag.steps, message: this.operations[i].Tag.driver.GetMessage() });
                     appearances.push({
                         x: this.operations[i].Position.x,
-                        y: this.operations[i].Position.y
+                        y: this.operations[i].Position.y,
+                        steps: this.operations[i].Tag.steps,
                     });
                 }
 
@@ -1100,7 +1114,7 @@ module BMA {
                 if (updateAppModel) {
                     this.appModel.Operations = operations;
                     this.appModel.OperationAppearances = appearances;
-                }
+                } 
 
                 var bbox = that.CalcOperationsBBox();
                 if (bbox !== undefined) {
@@ -1208,7 +1222,7 @@ module BMA {
                         operation.AnalysisStatus = "nottested";
                         driver.SetMessage(undefined);
                     }
-                    that.OnOperationsChanged(false, false);
+                    that.OnOperationsChanged(false, true);
                 });
 
                 var bbox = operation.BoundingBox;

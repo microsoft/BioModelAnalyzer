@@ -160,7 +160,7 @@ $(document).ready(function () {
 
         loadVersion().done(function (version) {
             loadScript(version);
-            window.setInterval(function () { versionCheck(version); }, 3600000 /* 1 hour */);
+            window.setInterval(function () { versionCheck(version); }, 60 * 60 * 1000 /* 1 hour */);
             dfd.resolve();
 
         });
@@ -188,17 +188,26 @@ function versionCheck(version) {
     loadVersion().done(function (newVersion) {
         var v = <any>newVersion;
         if (v.major !== version.major || v.minor !== version.minor || v.build !== version.build) {
-            var userDialog = $('<div></div>').appendTo('body').userdialog({
-                message: "BMA client was updated on server. Refresh your browser to get latest version",
-                actions: [
-                    {
-                        button: 'Ok',
-                        callback: function () { userDialog.detach(); }
-                    }
-                ]
-            });
+            var userDialog = $("#versionUpdatedAttention");
+            if (!userDialog.length) {
+                userDialog = $('<div id="versionUpdatedAttention"></div>').appendTo('body');
+                userDialog.userdialog({
+                    message: "BMA client was updated on server. Refresh your browser to get latest version",
+                    actions: [
+                        {
+                            button: 'Ok',
+                            callback: function () { userDialog.hide(); }
+                        }
+                    ]
+                });
+            } else {
+                if (!userDialog.is(":visible")) {
+                    userDialog.userdialog("Show");
+                }
+            }
         } else {
             console.log("server version was succesfully checked: client is up to date");
+            userDialog.detach();
         }
     }).fail(function (err) {
         console.log("there was an error while trying to check server version: " + err);

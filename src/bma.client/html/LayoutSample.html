@@ -2,44 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>File API</title>
-
-    <!--<link rel="stylesheet" href="style.css">-->
+    <title>Statistics test</title>
+    <script src="../Scripts/jquery-2.1.4.min.js"></script>
 
     <script type="text/javascript">
-    window.onload = function () {
-        var fileInput = document.getElementById('fileInput');
-        var fileDisplayArea = document.getElementById('fileDisplayArea');
+        $(document).ready(function () {
 
-        fileInput.addEventListener('change', function (e) {
-            var file = fileInput.files[0];
-            var textType = /text.*/;
+            var data = JSON.stringify({
+                SessionID: "Test Session",
+                UserID: "Test User",
+                LogInTime: new Date(),
+                LogOutTime: new Date(),
+                FurtherTestingCount: 0,
+                ImportModelCount: 0,
+                RunSimulationCount: 0,
+                NewModelCount: 0,
+                RunProofCount: 0,
+                SaveModelCount: 0,
+                ProofErrorCount: 0,
+                SimulationErrorCount: 0,
+                FurtherTestingErrorCount: 0,
+                AnalyzeLTLCount: 0,
+                AnalyzeLTLErrorCount: 0,
+                ClientVersion: "BMA HTML5 TEST VERSION"
+            });
 
-                var reader = new FileReader();
+            $("#sendBeaconBtn").click(function () {
 
-                reader.onload = function (e) {
-                    fileDisplayArea.innerText = reader.result;
+                var sendBeacon = navigator['sendBeacon'];
+                if (sendBeacon) {
+                    sendBeacon('http://bmamath.cloudapp.net/api/ActivityLog', data);
+                } else {
+                    alert("sendBeacon unsupported");
                 }
+            });
 
-                reader.readAsText(file);
+
+            $("#sendBaseBtn").click(function () {
+                var xhr = new XMLHttpRequest();
+                xhr.open('post', 'http://bmamath.cloudapp.net/api/ActivityLog', false);
+                xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+                xhr.setRequestHeader("Content-length", data.length.toString());
+                xhr.setRequestHeader("Connection", "close");
+                xhr.send(data);
+            });
+
+            $("#sendAjaxBtn").click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "http://bmamath.cloudapp.net/api/ActivityLog",
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                }).done(function (res) {
+                    //that.currentActiveRequestCount--;
+                    //that.ShiftRequest();
+                    //request.deferred.resolve(res);
+                }).fail(function (xhr, textStatus, errorThrown) {
+                    //that.currentActiveRequestCount--;
+                    //that.ShiftRequest();
+                    //request.deferred.reject(xhr, textStatus, errorThrown);
+                });
+            });
+
+
         });
-    }
     </script>
 
 </head>
 <body>
-    <div id="page-wrapper">
+   <button id="sendBeaconBtn">Test SendBeacon</button>
+   <button id="sendBaseBtn">Test Basic Send</button>
+    <button id="sendAjaxBtn">Test JQuery Send</button>
 
-        <h1>Text File Reader</h1>
-        <div>
-            Select a text file:
-            <input type="file" id="fileInput">
-        </div>
-        <pre id="fileDisplayArea"><pre>
-
-    </div>
-
-    <script src="text.js"></script>
 </body>
 </html>
 

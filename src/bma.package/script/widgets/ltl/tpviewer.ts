@@ -3,6 +3,7 @@
         _svg: undefined,
         _pixelOffset: 10,
         _anims: [],
+        _stripesImg: undefined,
 
         options: {
             operations: [],
@@ -20,18 +21,39 @@
             $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
             
             that.canvasDiv = $("<div></div>").width(root.width()).appendTo(root);
-            that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).appendTo(that.canvasDiv);
+            that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).width(root.width()).appendTo(that.canvasDiv);
+
+            that._stripesImg = new Image();
+            that._stripesImg.src = "images/stripe-pattern.png";
+
+            that._stripesImg.onload = () => {
+            that.refresh();
+            }
+
             that.refresh();
         },
 
         refresh: function () {
             var that = this;
             var canvas = <HTMLCanvasElement>(this._canvas[0]);
-            var keyFrameSize = 25;
+            var keyFrameSize = 26;
             var padding = { x: 5, y: 10 };
-            var maxHeight = 25 * 4;
+            var maxHeight = keyFrameSize * 4;
             var context = canvas.getContext("2d");
+
+            var PIXEL_RATIO = (function () {
+                var dpr = window.devicePixelRatio || 1;
+                var bsr = (<any>context).webkitBackingStorePixelRatio ||
+                    (<any>context).mozBackingStorePixelRatio ||
+                    (<any>context).msBackingStorePixelRatio ||
+                    (<any>context).oBackingStorePixelRatio ||
+                    (<any>context).backingStorePixelRatio || 1;
+
+                return dpr / bsr;
+            })();
+
             canvas.height = canvas.height;
+
 
             var operations = this.options.operations;
             var currentPos = { x: 0, y: 0 };
@@ -75,14 +97,25 @@
                 sizes.push({ size: opSize, offset: offset, scale: scale });
                 height += opSize.height + this.options.padding.y;
             }
+            if (PIXEL_RATIO !== 1) {
+                canvas.height = height * PIXEL_RATIO;
+                canvas.width = that._canvas.width() * PIXEL_RATIO;
+                that._canvas.height(height);
+                context.setTransform(PIXEL_RATIO, 0, 0, PIXEL_RATIO, 0, 0);
+            } else {
             canvas.height = height;
+            }
+
+            //context.msImageSmoothingEnabled = true;
+            context.translate(0.5, 0.5);
+
 
             height = this.options.padding.y;
             for (var i = 0; i < operations.length; i++) {
                 var op = operations[i].operation;
                 var opSize = sizes[i].size;
                 var scale = sizes[i].scale;
-                var opPosition = { x: opSize.width / 2 + this.options.padding.x, y: height + opSize.height / 2 };
+                var opPosition = { x: opSize.width / 2 + this.options.padding.x, y: Math.floor(height + opSize.height / 2) };
 
                 BMA.LTLOperations.RenderOperation(canvas, op, opPosition, scale, {
                     padding: padding,
@@ -104,6 +137,19 @@
                 } else if (operations[i].status.indexOf("processing") > -1) {
                     var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7);
                     this._anims.push(anim);
+                } else if (operations[i].status === "nottested" && operations[i].message !== undefined && operations[i].message !== null) {
+                    context.font = "14px Segoe-UI";
+                    context.textBaseline = "middle";
+                    context.fillStyle = "rgb(254, 172, 158)";
+                    var text = <string>operations[i].message;
+                    if (text !== "Timed out" && text.length > 0) {
+                        if (text.indexOf("Incorrect Model") > -1) {
+                            text = "Incorrect model";
+                        } else {
+                            text = "Server error";
+                        }
+                    }
+                    context.fillText(text, opSize.width + 10, opPosition.y);
                 }
 
                 height += opSize.height + this.options.padding.y;
@@ -121,13 +167,7 @@
                 case "partialsuccess":
                     var canvas = <HTMLCanvasElement>(this._canvas[0]);
                     var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
-                    var n = 20;
-                    for (var i = 0; i < n; i++) {
-                        gradient.addColorStop(i / n, "rgb(217,255,182)");
-                        gradient.addColorStop((2 * i + 1) / (2 * n), "white");
-                    }
-                    return gradient;
+                    return context.createPattern(this._stripesImg, "repeat");
                 case "processing, partialsuccess":
                     var canvas = <HTMLCanvasElement>(this._canvas[0]);
                     var context = canvas.getContext("2d");
