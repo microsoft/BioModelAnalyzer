@@ -5390,6 +5390,9 @@ var BMA;
             LTLResultsCompactViewer.prototype.SetMessage = function (message) {
                 this.compactltlresult.compactltlresult({ "error": message });
             };
+            LTLResultsCompactViewer.prototype.GetMessage = function () {
+                return this.compactltlresult.compactltlresult("option", "error");
+            };
             LTLResultsCompactViewer.prototype.SetSteps = function (steps) {
                 if (steps && steps > 0) {
                     //this.steps = steps;
@@ -13911,6 +13914,21 @@ jQuery.fn.extend({
                     var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7);
                     this._anims.push(anim);
                 }
+                else if (operations[i].status === "nottested" && operations[i].message !== undefined && operations[i].message !== null) {
+                    context.font = "14px Segoe-UI";
+                    context.textBaseline = "middle";
+                    context.fillStyle = "rgb(254, 172, 158)";
+                    var text = operations[i].message;
+                    if (text !== "Timed out" && text.length > 0) {
+                        if (text.indexOf("Incorrect Model") > -1) {
+                            text = "Incorrect model";
+                        }
+                        else {
+                            text = "Server error";
+                        }
+                    }
+                    context.fillText(text, opSize.width + 10, opPosition.y);
+                }
                 height += opSize.height + this.options.padding.y;
             }
         },
@@ -14051,7 +14069,7 @@ var BMA;
                 });
                 window.Commands.On("InvalidStatesImported", function (args) {
                     var userDialog = $('<div></div>').appendTo('body').userdialog({
-                        message: "States was imported incorrectly.\nThere are used few variables with equal names, so check states",
+                        message: "States was imported incorrectly.",
                         actions: [
                             {
                                 button: 'Ok',
@@ -15183,7 +15201,7 @@ var BMA;
                 var appearances = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     operations.push(this.operations[i].Operation.Clone());
-                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus, steps: this.operations[i].Tag.steps });
+                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus, steps: this.operations[i].Tag.steps, message: this.operations[i].Tag.driver.GetMessage() });
                     appearances.push({
                         x: this.operations[i].Position.x,
                         y: this.operations[i].Position.y,

@@ -149,6 +149,19 @@
                 } else if (operations[i].status === "processing") {
                     var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7);
                     this._anims.push(anim);
+                } else if (operations[i].status === "nottested" && operations[i].message !== undefined && operations[i].message !== null) {
+                    context.font = "14px Segoe-UI";
+                    context.textBaseline = "middle";
+                    context.fillStyle = "rgb(254, 172, 158)";
+                    var text = <string>operations[i].message;
+                    if (text !== "Timed out" && text.length > 0) {
+                        if (text.indexOf("Incorrect Model") > -1) {
+                            text = "Incorrect model";
+                        } else {
+                            text = "Server error";
+                        }
+                    }
+                    context.fillText(text, opSize.width + 10, opPosition.y);
                 }
 
                 height += opSize.height + this.options.padding.y;

@@ -1063,7 +1063,7 @@ module BMA {
                 var appearances = [];
                 for (var i = 0; i < this.operations.length; i++) {
                     operations.push(this.operations[i].Operation.Clone());
-                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus, steps: this.operations[i].Tag.steps });
+                    ops.push({ operation: this.operations[i].Operation.Clone(), status: this.operations[i].AnalysisStatus, steps: this.operations[i].Tag.steps, message: this.operations[i].Tag.driver.GetMessage() });
                     appearances.push({
                         x: this.operations[i].Position.x,
                         y: this.operations[i].Position.y,
