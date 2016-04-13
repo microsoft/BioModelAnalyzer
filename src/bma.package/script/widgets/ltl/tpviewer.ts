@@ -3,7 +3,7 @@
         _svg: undefined,
         _pixelOffset: 10,
         _anims: [],
-        _stripesImg: undefined,
+        _images: [],
 
         options: {
             operations: [],
@@ -19,15 +19,26 @@
             this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
             $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
             $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
-            
+
             that.canvasDiv = $("<div></div>").width(root.width()).appendTo(root);
             that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).width(root.width()).appendTo(that.canvasDiv);
 
-            that._stripesImg = new Image();
-            that._stripesImg.src = "images/stripe-pattern.png";
 
-            that._stripesImg.onload = () => {
-            that.refresh();
+            var patterns = [
+                "stripe-pattern-green",
+                "stripe-pattern-half-green",
+                "stripe-pattern-half-half",
+                "stripe-pattern-half-red",
+                "stripe-pattern-red",
+            ];
+
+            for (var i = 0; i < patterns.length; i++) {
+                var img = new Image();
+                img.src = "images/" + patterns[i] + ".png";
+                img.onload = () => {
+                    that.refresh();
+                }
+                that._images.push(img);
             }
 
             that.refresh();
@@ -84,7 +95,7 @@
 
                 var offset = 80;
                 var w = opSize.width + offset;
-                
+
                 if (w > width) {
                     scale = {
                         x: (width - offset) / opSize.width,
@@ -103,7 +114,7 @@
                 that._canvas.height(height);
                 context.setTransform(PIXEL_RATIO, 0, 0, PIXEL_RATIO, 0, 0);
             } else {
-            canvas.height = height;
+                canvas.height = height;
             }
 
             //context.msImageSmoothingEnabled = true;
@@ -131,7 +142,15 @@
                 if (operations[i].status !== "nottested" && operations[i].status.indexOf("processing") < 0 && operations[i].steps !== undefined) {
                     context.font = "14px Segoe-UI";
                     context.textBaseline = "middle";
-                    context.fillStyle = operations[i].status.indexOf("fail") > -1 && operations[i].status !== "partialsuccespartialfail" ? "rgb(254, 172, 158)" : "green"
+
+                    if (operations[i].status === "partialsuccesspartialfail") {
+                        context.fillStyle = "darkgray";
+                    } else if (operations[i].status === "fail" || operations[i].status === "partialfail") {
+                        context.fillStyle = "rgb(254, 172, 158)";
+                    } else if (operations[i].status === "success" || operations[i].status === "partialsuccess") {
+                        context.fillStyle = "green";
+                    }
+
                     var text = operations[i].steps + " steps";
                     context.fillText(text, opSize.width + 10, opPosition.y);
                 } else if (operations[i].status.indexOf("processing") > -1) {
@@ -167,53 +186,23 @@
                 case "partialsuccess":
                     var canvas = <HTMLCanvasElement>(this._canvas[0]);
                     var context = canvas.getContext("2d");
-                    return context.createPattern(this._stripesImg, "repeat");
+                    return context.createPattern(this._images[0], "repeat");
                 case "processing, partialsuccess":
                     var canvas = <HTMLCanvasElement>(this._canvas[0]);
                     var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
-                    var n = 20;
-                    for (var i = 0; i < n; i++) {
-                        gradient.addColorStop(i / n, "rgb(217,255,182)");
-                        gradient.addColorStop((4 * i + 1) / (4 * n), "white");
-                        gradient.addColorStop((4 * i + 2) / (4 * n), "white");
-                        gradient.addColorStop((4 * i + 3) / (4 * n), "white");
-                    }
-                    return gradient;
+                    return context.createPattern(this._images[1], "repeat");
                 case "processing, partialfail":
                     var canvas = <HTMLCanvasElement>(this._canvas[0]);
                     var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
-                    var n = 20;
-                    for (var i = 0; i < n; i++) {
-                        gradient.addColorStop(i / n, "rgb(254, 172, 158)");
-                        gradient.addColorStop((4 * i + 1) / (4 * n), "white");
-                        gradient.addColorStop((4 * i + 2) / (4 * n), "white");
-                        gradient.addColorStop((4 * i + 3) / (4 * n), "white");
-                    }
-                    return gradient;
+                    return context.createPattern(this._images[3], "repeat");
                 case "partialfail":
                     var canvas = <HTMLCanvasElement>(this._canvas[0]);
                     var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
-                    var n = 20;
-                    for (var i = 0; i < n; i++) {
-                        gradient.addColorStop(i / n, "rgb(254, 172, 158)");
-                        gradient.addColorStop((2 * i + 1) / (2 * n), "white");
-                    }
-                    return gradient;
+                    return context.createPattern(this._images[4], "repeat");
                 case "partialsuccesspartialfail":
                     var canvas = <HTMLCanvasElement>(this._canvas[0]);
                     var context = canvas.getContext("2d");
-                    var gradient = context.createLinearGradient(-width / 2, 0, width, height);
-                    var n = 20;
-                    for (var i = 0; i < n; i++) {
-                        gradient.addColorStop(i / n, "rgb(217,255,182)");
-                        gradient.addColorStop((4 * i + 1) / (4 * n), "white");
-                        gradient.addColorStop((4 * i + 2) / (4 * n), "rgb(254, 172, 158)");
-                        gradient.addColorStop((4 * i + 3) / (4 * n), "white");
-                    }
-                    return gradient;
+                    return context.createPattern(this._images[2], "repeat");
                 case "fail":
                     return "rgb(254, 172, 158)";
                 default:

@@ -53,16 +53,6 @@
             }
 
             public set AnalysisStatus(value: string) {
-                /*
-                var patterns = [
-                    "stripe-pattern-green",
-                    "stripe-pattern-half-green",
-                    "stripe-pattern-half-half",
-                    "stripe-pattern-half-red",
-                    "stripe-pattern-red",
-                ];
-                */
-
                 switch (value) {
                     case "nottested":
                         this.status = value;
@@ -86,7 +76,7 @@
                         break;
                     case "partialsuccesspartialfail":
                         this.status = value;
-                        this.fill = "url(#stripe-pattern-half-half)";
+                        this.Fill = "url(#stripe-pattern-half-half)";
                         break;
                     case "processing, partialsuccess":
                         this.status = value;
