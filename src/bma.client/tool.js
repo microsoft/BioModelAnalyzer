@@ -12990,13 +12990,32 @@ jQuery.fn.extend({
                 case "nottested":
                     //if (this.options.isexpanded) {
                     var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    //var sr = $("<div></div>").appendTo(ltltestdiv);
                     if (that.options.error) {
                         var errorMessage = $("<div>" + that.options.error + "</div>").addClass("red").appendTo(ltltestdiv);
                     }
-                    var d = $("<div>" + that.options.steps + " steps</div>")
-                        .css("display", "inline-block").css("width", 55)
-                        .appendTo(ltltestdiv);
+                    var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(ltltestdiv);
+                    var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
+                    input.after("steps");
+                    input.bind("change", function () {
+                        this.value = this.value.replace(/\D+$/g, "");
+                        var parsed = parseFloat(this.value);
+                        if (isNaN(parsed))
+                            this.value = that.options.steps;
+                        else if (parsed > 999)
+                            this.value = 999;
+                        else if (parsed < 1)
+                            this.value = 1;
+                        if (that.options.steps !== parseFloat(this.value)) {
+                            that.options.steps = parseFloat(this.value);
+                            if (that.options.onstepschanged !== undefined) {
+                                that.options.onstepschanged(that.options.steps);
+                            }
+                        }
+                        if (that.options.steps == 1) {
+                            minusd.addClass("testing");
+                            minusb.addClass("testing");
+                        }
+                    });
                     var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
                     var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                     var minusb = $("<button>-</button>").appendTo(minusd);
@@ -13007,7 +13026,7 @@ jQuery.fn.extend({
                     minusb.click(function (e) {
                         if (that.options.steps > 1) {
                             that.options.steps--;
-                            d.text(that.options.steps + " steps");
+                            input.val(that.options.steps);
                             if (that.options.onstepschanged !== undefined) {
                                 that.options.onstepschanged(that.options.steps);
                             }
@@ -13021,7 +13040,7 @@ jQuery.fn.extend({
                     var plusb = $("<button>+</button>").appendTo(plusd);
                     plusb.click(function (e) {
                         that.options.steps++;
-                        d.text(that.options.steps + " steps");
+                        input.val(that.options.steps);
                         if (that.options.onstepschanged !== undefined) {
                             that.options.onstepschanged(that.options.steps);
                         }
@@ -13083,20 +13102,27 @@ jQuery.fn.extend({
                     break;
                 case "success":
                     if (this.options.isexpanded) {
-                        /*
-                         <div class="LTL-test-results true">
-                            Simulation Found<br>12 steps<br>
-                            <ul class="button-list">
-                            <li><button>OPEN</button></li>
-                            </ul>
-                            </div>
-                        */
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("true").appendTo(opDiv);
                         ltlresdiv.html("True for ALL traces<br>");
                         var sr = $("<div></div>").appendTo(ltlresdiv);
-                        var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block").css("width", 55)
-                            .appendTo(sr);
+                        var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(sr);
+                        var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
+                        input.after("steps");
+                        input.bind("input change", function () {
+                            if (parseFloat(this.value) > 999)
+                                this.value = 999;
+                            if (parseFloat(this.value) < 1)
+                                this.value = 1;
+                            that.options.steps = parseFloat(this.value);
+                            if (that.options.onstepschanged !== undefined) {
+                                that.options.onstepschanged(that.options.steps);
+                            }
+                            that.options.status = "nottested";
+                            that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
+                        });
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
@@ -13107,7 +13133,7 @@ jQuery.fn.extend({
                         minusb.click(function (e) {
                             if (that.options.steps > 1) {
                                 that.options.steps--;
-                                d.text(that.options.steps + " steps");
+                                input.val(that.options.steps);
                                 if (that.options.onstepschanged !== undefined) {
                                     that.options.onstepschanged(that.options.steps);
                                 }
@@ -13122,7 +13148,7 @@ jQuery.fn.extend({
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click(function (e) {
                             that.options.steps++;
-                            d.text(that.options.steps + " steps");
+                            input.val(that.options.steps);
                             if (that.options.onstepschanged !== undefined) {
                                 that.options.onstepschanged(that.options.steps);
                             }
@@ -13163,9 +13189,24 @@ jQuery.fn.extend({
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("true").appendTo(opDiv);
                         ltlresdiv.html("True for SOME traces<br>");
                         var sr = $("<div></div>").appendTo(ltlresdiv);
-                        var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block").css("width", 55)
-                            .appendTo(sr);
+                        var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(sr);
+                        var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
+                        input.after("steps");
+                        input.bind("input change", function () {
+                            if (parseFloat(this.value) > 999)
+                                this.value = 999;
+                            if (parseFloat(this.value) < 1)
+                                this.value = 1;
+                            that.options.steps = parseFloat(this.value);
+                            if (that.options.onstepschanged !== undefined) {
+                                that.options.onstepschanged(that.options.steps);
+                            }
+                            that.options.status = "nottested";
+                            that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
+                        });
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
@@ -13176,7 +13217,7 @@ jQuery.fn.extend({
                         minusb.click(function (e) {
                             if (that.options.steps > 1) {
                                 that.options.steps--;
-                                d.text(that.options.steps + " steps");
+                                input.val(that.options.steps);
                                 if (that.options.onstepschanged !== undefined) {
                                     that.options.onstepschanged(that.options.steps);
                                 }
@@ -13191,7 +13232,7 @@ jQuery.fn.extend({
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click(function (e) {
                             that.options.steps++;
-                            d.text(that.options.steps + " steps");
+                            input.val(that.options.steps);
                             if (that.options.onstepschanged !== undefined) {
                                 that.options.onstepschanged(that.options.steps);
                             }
@@ -13232,9 +13273,24 @@ jQuery.fn.extend({
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("some").appendTo(opDiv);
                         ltlresdiv.html("True/False for SOME traces<br>");
                         var sr = $("<div></div>").appendTo(ltlresdiv);
-                        var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block").css("width", 55)
-                            .appendTo(sr);
+                        var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(sr);
+                        var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
+                        input.after("steps");
+                        input.bind("input change", function () {
+                            if (parseFloat(this.value) > 999)
+                                this.value = 999;
+                            if (parseFloat(this.value) < 1)
+                                this.value = 1;
+                            that.options.steps = parseFloat(this.value);
+                            if (that.options.onstepschanged !== undefined) {
+                                that.options.onstepschanged(that.options.steps);
+                            }
+                            that.options.status = "nottested";
+                            that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
+                        });
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
@@ -13245,7 +13301,7 @@ jQuery.fn.extend({
                         minusb.click(function (e) {
                             if (that.options.steps > 1) {
                                 that.options.steps--;
-                                d.text(that.options.steps + " steps");
+                                input.val(that.options.steps);
                                 if (that.options.onstepschanged !== undefined) {
                                     that.options.onstepschanged(that.options.steps);
                                 }
@@ -13260,7 +13316,7 @@ jQuery.fn.extend({
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click(function (e) {
                             that.options.steps++;
-                            d.text(that.options.steps + " steps");
+                            input.val(that.options.steps);
                             if (that.options.onstepschanged !== undefined) {
                                 that.options.onstepschanged(that.options.steps);
                             }
@@ -13308,9 +13364,24 @@ jQuery.fn.extend({
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("false").appendTo(opDiv);
                         var fr = $("<div>False for SOME traces</div>").appendTo(ltlresdiv);
                         var sr = $("<div></div>").appendTo(ltlresdiv);
-                        var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block").css("width", 55)
-                            .appendTo(sr);
+                        var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(sr);
+                        var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
+                        input.after("steps");
+                        input.bind("input change", function () {
+                            if (parseFloat(this.value) > 999)
+                                this.value = 999;
+                            if (parseFloat(this.value) < 1)
+                                this.value = 1;
+                            that.options.steps = parseFloat(this.value);
+                            if (that.options.onstepschanged !== undefined) {
+                                that.options.onstepschanged(that.options.steps);
+                            }
+                            that.options.status = "nottested";
+                            that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
+                        });
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
@@ -13321,7 +13392,7 @@ jQuery.fn.extend({
                         minusb.click(function (e) {
                             if (that.options.steps > 1) {
                                 that.options.steps--;
-                                d.text(that.options.steps + " steps");
+                                input.val(that.options.steps);
                                 if (that.options.onstepschanged !== undefined) {
                                     that.options.onstepschanged(that.options.steps);
                                 }
@@ -13336,7 +13407,7 @@ jQuery.fn.extend({
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click(function (e) {
                             that.options.steps++;
-                            d.text(that.options.steps + " steps");
+                            input.val(that.options.steps);
                             if (that.options.onstepschanged !== undefined) {
                                 that.options.onstepschanged(that.options.steps);
                             }
@@ -13374,24 +13445,27 @@ jQuery.fn.extend({
                     break;
                 case "fail":
                     if (this.options.isexpanded) {
-                        /*
-                         <div class="LTL-test-results false">
-                            No Simulation Found<br>
-                            12 steps <div class="pill-button-box">
-                            <div class="pill-button"><button>-</button></div>
-                            <div class="pill-button"><button>+</button></div>
-                        </div><br>
-                            <ul class="button-list">
-                                <li><button>TEST AGAIN</button></li>
-                            </ul>
-                        </div>
-                         */
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("false").appendTo(opDiv);
                         var fr = $("<div>False for ALL traces</div>").appendTo(ltlresdiv);
                         var sr = $("<div></div>").appendTo(ltlresdiv);
-                        var d = $("<div>" + that.options.steps + " steps</div>")
-                            .css("display", "inline-block").css("width", 55)
-                            .appendTo(sr);
+                        var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(sr);
+                        var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
+                        input.after("steps");
+                        input.bind("input change", function () {
+                            if (parseFloat(this.value) > 999)
+                                this.value = 999;
+                            if (parseFloat(this.value) < 1)
+                                this.value = 1;
+                            that.options.steps = parseFloat(this.value);
+                            if (that.options.onstepschanged !== undefined) {
+                                that.options.onstepschanged(that.options.steps);
+                            }
+                            that.options.status = "nottested";
+                            that._createView();
+                            if (that.options.onexpanded !== undefined) {
+                                that.options.onexpanded();
+                            }
+                        });
                         var box = $("<div></div>").addClass("pill-button-box").appendTo(sr);
                         var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var minusb = $("<button>-</button>").appendTo(minusd);
@@ -13402,7 +13476,7 @@ jQuery.fn.extend({
                         minusb.click(function (e) {
                             if (that.options.steps > 1) {
                                 that.options.steps--;
-                                d.text(that.options.steps + " steps");
+                                input.val(that.options.steps);
                                 if (that.options.onstepschanged !== undefined) {
                                     that.options.onstepschanged(that.options.steps);
                                 }
@@ -13417,7 +13491,7 @@ jQuery.fn.extend({
                         var plusb = $("<button>+</button>").appendTo(plusd);
                         plusb.click(function (e) {
                             that.options.steps++;
-                            d.text(that.options.steps + " steps");
+                            input.val(that.options.steps);
                             if (that.options.onstepschanged !== undefined) {
                                 that.options.onstepschanged(that.options.steps);
                             }
@@ -13463,13 +13537,6 @@ jQuery.fn.extend({
             }
         },
         createWaitAnim: function () {
-            /*
-             <div class="spinner">
-                <div class="bounce1"></div>
-                <div class="bounce2"></div>
-                <div class="bounce3"></div>
-            </div>
-             */
             var anim = $("<div></div>").addClass("spinner");
             $("<div></div>").addClass("bounce1").appendTo(anim);
             $("<div></div>").addClass("bounce2").appendTo(anim);

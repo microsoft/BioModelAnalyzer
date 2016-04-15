@@ -4471,6 +4471,13 @@ ui-icon-arrowthickstop-1-n {
         }
     }
 }*/
+.LTL-test-results input {
+  border: none;
+  padding: 0px;
+  width: 25px;
+  background-color: transparent;
+  color: inherit;
+}
 .LTL-test-results .pill-button-box .pill-button {
   margin-top: 5px;
   margin-bottom: 0px;
