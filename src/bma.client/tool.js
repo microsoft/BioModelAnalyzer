@@ -451,8 +451,8 @@ var BMA;
     var SVGHelper;
     (function (SVGHelper) {
         function AddClass(elem, c) {
-            var s = elem.className.baseVal;
-            if (!s)
+            var s = (elem.className.baseVal);
+            if (!s || s.indexOf("null") > -1)
                 elem.className.baseVal = c;
             else if (!BMA.SVGHelper.StringInString(s, c))
                 elem.className.baseVal = s + " " + c;
@@ -466,6 +466,10 @@ var BMA;
             elem.className.baseVal = s;
         }
         SVGHelper.RemoveClass = RemoveClass;
+        function ChangeStrokeWidth(elem, width /* because usual width string is '2px'*/) {
+            elem.style.strokeWidth = width;
+        }
+        SVGHelper.ChangeStrokeWidth = ChangeStrokeWidth;
         function StringInString(s, find) {
             return s.match(new RegExp("(\\s|^)" + find + "(\\s|$)"));
         }
@@ -1620,8 +1624,8 @@ var BMA;
                         }
                     }
                     if (lineRef !== undefined) {
-                        $(lineRef).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-line-hover')");
-                        $(lineRef).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-line-hover')");
+                        $(lineRef).attr("onmouseover", "BMA.SVGHelper.ChangeStrokeWidth(this, '3px')");
+                        $(lineRef).attr("onmouseout", "BMA.SVGHelper.ChangeStrokeWidth(this, '2px')");
                     }
                     var svgElem = $(jqSvg.toSVG()).children();
                     return svgElem;
@@ -6380,6 +6384,9 @@ var BMA;
                             if (!that.TryAddVariable(x, y, type, id)) {
                                 that.RefreshOutput();
                             }
+                        }
+                        else {
+                            that.RefreshOutput();
                         }
                     }
                     if (that.stagingContainer !== undefined) {

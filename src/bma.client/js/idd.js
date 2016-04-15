@@ -6305,8 +6305,8 @@ function IDD($, Rx) {;/**
             resultRect = { x: newX - deltaWidth * panOffsetX / scale.x, y: newY + deltaHeight * panOffsetY / scale.y, width: constrainedRect.width, height: constrainedRect.height };
             resultRect.zoomOrigin = { x: coordinateTransform.screenToPlotX(zoomGesture.xOrigin), y: coordinateTransform.screenToPlotY(zoomGesture.yOrigin) };
 
-            console.log("Initial: " + plotRect.x + ", " + plotRect.y + ", " + plotRect.width + ", " + plotRect.height);
-            console.log("Finally Zoomed: " + resultRect.x + ", " + resultRect.y + ", " + resultRect.width + ", " + resultRect.height);
+            //console.log("Initial: " + plotRect.x + ", " + plotRect.y + ", " + plotRect.width + ", " + plotRect.height);
+            //console.log("Finally Zoomed: " + resultRect.x + ", " + resultRect.y + ", " + resultRect.width + ", " + resultRect.height);
             return resultRect;
 
         }

@@ -1,8 +1,8 @@
 ﻿module BMA {
     export module SVGHelper {
         export function AddClass(elem: SVGStylable, c: string) {
-            var s = elem.className.baseVal;
-            if (!s)
+            var s = <string>(elem.className.baseVal);
+            if (!s || s.indexOf("null") > -1)
                 elem.className.baseVal = c;
             else if (!BMA.SVGHelper.StringInString(s, c))
                 elem.className.baseVal = s + " " + c;
@@ -14,6 +14,10 @@
             if (s == " ")
                 s = null;
             elem.className.baseVal = s;
+        }
+
+        export function ChangeStrokeWidth(elem: SVGStylable, width: string /* because usual width string is '2px'*/) {
+            elem.style.strokeWidth = width;
         }
 
         export function StringInString(s: string, find: string) {
