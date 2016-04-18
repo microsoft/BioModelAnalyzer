@@ -201,7 +201,18 @@
                 };
             }
         }
-
+        /**
+         * Calculate updated states array according to model and layout
+         * 1) If variable was renamed, corresponding state would be updated
+         * 2) If variable was removed, corresponding state would be deleted
+         * 3) If name operands in state have no ids, they would receive them from model
+         * 4) If name operand in state has no id and there are multiple variables with same name in model, it would get first founded id 
+         * and it would be flagged in "shouldNotify"
+         * 5) If there were any changes from initial states array, it would be flagged in "isChanged"
+         * @param model
+         * @param layout
+         * @param states
+         */
         export function UpdateStatesWithModel(model: BMA.Model.BioModel, layout: BMA.Model.Layout, states: BMA.LTLOperations.Keyframe[]):
             { states: BMA.LTLOperations.Keyframe[], isChanged: boolean, shouldNotify: boolean } {
             
