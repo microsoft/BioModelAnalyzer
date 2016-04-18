@@ -451,8 +451,8 @@ var BMA;
     var SVGHelper;
     (function (SVGHelper) {
         function AddClass(elem, c) {
-            var s = elem.className.baseVal;
-            if (!s)
+            var s = (elem.className.baseVal);
+            if (!s || s.indexOf("null") > -1)
                 elem.className.baseVal = c;
             else if (!BMA.SVGHelper.StringInString(s, c))
                 elem.className.baseVal = s + " " + c;
@@ -466,6 +466,10 @@ var BMA;
             elem.className.baseVal = s;
         }
         SVGHelper.RemoveClass = RemoveClass;
+        function ChangeStrokeWidth(elem, width /* because usual width string is '2px'*/) {
+            elem.style.strokeWidth = width;
+        }
+        SVGHelper.ChangeStrokeWidth = ChangeStrokeWidth;
         function StringInString(s, find) {
             return s.match(new RegExp("(\\s|^)" + find + "(\\s|$)"));
         }
@@ -1620,8 +1624,8 @@ var BMA;
                         }
                     }
                     if (lineRef !== undefined) {
-                        $(lineRef).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-line-hover')");
-                        $(lineRef).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-line-hover')");
+                        $(lineRef).attr("onmouseover", "BMA.SVGHelper.ChangeStrokeWidth(this, '3px')");
+                        $(lineRef).attr("onmouseout", "BMA.SVGHelper.ChangeStrokeWidth(this, '2px')");
                     }
                     var svgElem = $(jqSvg.toSVG()).children();
                     return svgElem;
@@ -6381,6 +6385,9 @@ var BMA;
                                 that.RefreshOutput();
                             }
                         }
+                        else {
+                            that.RefreshOutput();
+                        }
                     }
                     if (that.stagingContainer !== undefined) {
                         var cx = that.stagingContainer.position.x;
@@ -9449,7 +9456,7 @@ var BMA;
                     var y0 = -cs.screenToDataY(md.originalEvent.pageY - plotDiv.offset().top);
                     return touchMove.select(function (mm) { return { x: x0, y: y0 }; }).first().takeUntil(touchEnd.merge(touchCancel));
                 });
-                return dragStarts;
+                return dragStarts.merge(touchDragStarts);
             };
             var createDragEndSubject = function (vc) {
                 var _doc = $(document);
@@ -9615,12 +9622,6 @@ var BMA;
                 case "rects":
                     this._rectsPlot.draw({ rects: value });
                     this._plot.requestUpdateLayout();
-                    break;
-                case "isLightSVGTop":
-                    if (value) {
-                    }
-                    else {
-                    }
                     break;
                 case "plotConstraint":
                     this._plotSettings = value;
@@ -13848,9 +13849,6 @@ jQuery.fn.extend({
                 drawingSurface.drawingsurface({ commands: that.options.commands });
             }
             drawingSurface.drawingsurface({ visibleRect: { x: 0, y: 0, width: drawingSurfaceCnt.width(), height: drawingSurfaceCnt.height() } });
-            drawingSurface.drawingsurface({
-                isLightSVGTop: true
-            });
             //Adding drop zones
             /*
              <div class="temporal-dropzones">

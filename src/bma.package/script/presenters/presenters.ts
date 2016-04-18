@@ -713,6 +713,8 @@ module BMA {
                                 if (!that.TryAddVariable(x, y, type, id)) {
                                     that.RefreshOutput();
                                 }
+                            } else {
+                                that.RefreshOutput();
                             }
                         }
 

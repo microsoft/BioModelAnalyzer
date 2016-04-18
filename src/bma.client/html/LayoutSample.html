@@ -3,11 +3,17 @@
 <head>
     <meta charset="utf-8">
     <title>Statistics test</title>
+    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
     <script src="../Scripts/jquery-2.1.4.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.11.4.js"></script>
+    <script src="../js/jquery.svg.min.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../tool.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
-
+            /*
             var data = JSON.stringify({
                 SessionID: "Test Session",
                 UserID: "Test User",
@@ -64,17 +70,34 @@
                     //request.deferred.reject(xhr, textStatus, errorThrown);
                 });
             });
+            */
 
-
+            var plot = InteractiveDataDisplay.asPlot($("#chart"));
         });
     </script>
 
 </head>
-<body>
+<body style="position:relative;">
+    <!--
    <button id="sendBeaconBtn">Test SendBeacon</button>
    <button id="sendBaseBtn">Test Basic Send</button>
     <button id="sendAjaxBtn">Test JQuery Send</button>
-
+        -->
+    <div id="chart" data-idd-plot="chart" style="width:800px;height:800px">
+        
+    </div>
+    <div style="overflow-y:scroll;width:200px;height:100px; position:absolute; top:0; z-index:9999999999999;">
+        <div>klasjdhf</div>
+        <div>klasjdhf</div>
+        <div>klasjdhf</div>
+        <div>klasjdhf</div>
+        <div>klasjdhf</div>
+        <div>klasjdhf</div>
+        <div>klasjdhf</div>
+        <div>klasjdhf</div>
+        <div>klasjdhf</div>
+        <div>klasjdhf</div>
+    </div>
 </body>
 </html>
 
