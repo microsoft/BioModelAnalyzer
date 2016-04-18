@@ -9456,7 +9456,7 @@ var BMA;
                     var y0 = -cs.screenToDataY(md.originalEvent.pageY - plotDiv.offset().top);
                     return touchMove.select(function (mm) { return { x: x0, y: y0 }; }).first().takeUntil(touchEnd.merge(touchCancel));
                 });
-                return dragStarts;
+                return dragStarts.merge(touchDragStarts);
             };
             var createDragEndSubject = function (vc) {
                 var _doc = $(document);
@@ -9622,12 +9622,6 @@ var BMA;
                 case "rects":
                     this._rectsPlot.draw({ rects: value });
                     this._plot.requestUpdateLayout();
-                    break;
-                case "isLightSVGTop":
-                    if (value) {
-                    }
-                    else {
-                    }
                     break;
                 case "plotConstraint":
                     this._plotSettings = value;
@@ -13699,9 +13693,6 @@ jQuery.fn.extend({
                 drawingSurface.drawingsurface({ commands: that.options.commands });
             }
             drawingSurface.drawingsurface({ visibleRect: { x: 0, y: 0, width: drawingSurfaceCnt.width(), height: drawingSurfaceCnt.height() } });
-            drawingSurface.drawingsurface({
-                isLightSVGTop: true
-            });
             //Adding drop zones
             /*
              <div class="temporal-dropzones">

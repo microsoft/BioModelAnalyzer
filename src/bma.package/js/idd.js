@@ -3,6 +3,7 @@ function IDD($, Rx) {;/**
 * @param {Object} down
 * @param {Object} preventDefault
 */
+    /*
     $.fn.extend({
         mousewheel: function (up, down, preventDefault) {
             return this.hover(
@@ -74,7 +75,9 @@ function IDD($, Rx) {;/**
             window.onmousewheel = document.onmousewheel = null;
             el._handleMousewheel = null;
         }
-    };; InteractiveDataDisplay = {
+    };;
+    */
+    InteractiveDataDisplay = {
         MinSizeToShow: 1, // minimum size in pixels of the element to be rendered
         Padding: 20, // extra padding in pixels which is added to padding computed by the plots
         maxTickArrangeIterations: 5, // max number of iterations in loop of ticks creating

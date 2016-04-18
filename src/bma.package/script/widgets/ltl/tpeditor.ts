@@ -208,9 +208,6 @@
             }
 
             drawingSurface.drawingsurface({ visibleRect: { x: 0, y: 0, width: drawingSurfaceCnt.width(), height: drawingSurfaceCnt.height() } });
-            drawingSurface.drawingsurface({
-                isLightSVGTop: true
-            }); 
             
             //Adding drop zones
             /*

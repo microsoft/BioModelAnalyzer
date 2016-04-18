@@ -252,7 +252,7 @@ declare var InteractiveDataDisplay: any;
                     return touchMove.select(function (mm) { return { x: x0, y: y0 }; }).first().takeUntil(touchEnd.merge(touchCancel));
                 });
 
-                return dragStarts;
+                return dragStarts.merge(touchDragStarts);
             }
 
             var createDragEndSubject = function (vc) {
@@ -445,13 +445,6 @@ declare var InteractiveDataDisplay: any;
                 case "rects":
                     this._rectsPlot.draw({ rects: value });
                     this._plot.requestUpdateLayout();
-                    break;
-                case "isLightSVGTop":
-                    if (value) {
-                        //this.lightSVGDiv.css("z-index", 1501);
-                    } else {
-                        //this.lightSVGDiv.css("z-index", undefined);
-                    }
                     break;
                 case "plotConstraint":
                     this._plotSettings = value;
