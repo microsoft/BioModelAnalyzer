@@ -9,7 +9,7 @@
             isexpanded: false,
             steps: 10,
             error: undefined,
-            maxsteps: 100,
+            maxsteps: Number.POSITIVE_INFINITY,
             ontestrequested: undefined,
             onstepschanged: undefined,
             onexpanded: undefined,

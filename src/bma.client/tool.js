@@ -950,6 +950,18 @@ var BMA;
             }
         }
         ModelHelper.GetModelBoundingBox = GetModelBoundingBox;
+        /**
+         * Calculate updated states array according to model and layout
+         * 1) If variable was renamed, corresponding state would be updated
+         * 2) If variable was removed, corresponding state would be deleted
+         * 3) If name operands in state have no ids, they would receive them from model
+         * 4) If name operand in state has no id and there are multiple variables with same name in model, it would get first founded id
+         * and it would be flagged in "shouldNotify"
+         * 5) If there were any changes from initial states array, it would be flagged in "isChanged"
+         * @param model
+         * @param layout
+         * @param states
+         */
         function UpdateStatesWithModel(model, layout, states) {
             var isChanged = false;
             var shouldNotify = false;
@@ -12970,7 +12982,7 @@ jQuery.fn.extend({
             isexpanded: false,
             steps: 10,
             error: undefined,
-            maxsteps: 100,
+            maxsteps: Number.POSITIVE_INFINITY,
             ontestrequested: undefined,
             onstepschanged: undefined,
             onexpanded: undefined,
