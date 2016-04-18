@@ -39,11 +39,17 @@
                     case "true success":
                         $("#compactresultsviewer").compactltlresult({ status: "success", isexpanded: true });
                         break;
+                    case "true partialsuccess":
+                        $("#compactresultsviewer").compactltlresult({ status: "partialsuccess", isexpanded: true });
+                        break;
                     case "true fail":
                         $("#compactresultsviewer").compactltlresult({ status: "fail", isexpanded: true });
                         break;
-                    case "true partial":
-                        $("#compactresultsviewer").compactltlresult({ status: "partial success", isexpanded: true });
+                    case "true partialfail":
+                        $("#compactresultsviewer").compactltlresult({ status: "partialfail", isexpanded: true });
+                        break;
+                    case "true partialsuccesspartialfail":
+                        $("#compactresultsviewer").compactltlresult({ status: "partialsuccesspartialfail", isexpanded: true });
                         break;
                     case "false nottested":
                         $("#compactresultsviewer").compactltlresult({ status: "nottested", isexpanded: false });
@@ -51,11 +57,17 @@
                     case "false success":
                         $("#compactresultsviewer").compactltlresult({ status: "success", isexpanded: false });
                         break;
+                    case "false partialsuccess":
+                        $("#compactresultsviewer").compactltlresult({ status: "partialsuccess", isexpanded: false });
+                        break;
                     case "false fail":
                         $("#compactresultsviewer").compactltlresult({ status: "fail", isexpanded: false });
                         break;
-                    case "false partial":
-                        $("#compactresultsviewer").compactltlresult({ status: "partial success", isexpanded: false });
+                    case "false partialfail":
+                        $("#compactresultsviewer").compactltlresult({ status: "partialfail", isexpanded: false });
+                        break;
+                    case "false partialsuccesspartialfail":
+                        $("#compactresultsviewer").compactltlresult({ status: "partialsuccesspartialfail", isexpanded: false });
                         break;
                     default: break;
                 }
@@ -72,8 +84,10 @@
                     <td></td>
                     <td>nottested</td>
                     <td>succes</td>
+                    <td>partialsuccess</td>
                     <td>fail</td>
-                    <td>partial success</td>
+                    <td>partialfail</td>
+                    <td>partialsuccesspartialfail</td>
                 </tr>
                 <tr>
                     <td>true</td>
@@ -84,10 +98,16 @@
                         <input type="radio" name="result" value="true success" />
                     </td>
                     <td>
+                        <input type="radio" name="result" value="true partialsuccess" />
+                    </td>
+                    <td>
                         <input type="radio" name="result" value="true fail" />
                     </td>
                     <td>
-                        <input type="radio" name="result" value="true partial" />
+                        <input type="radio" name="result" value="true partialfail" />
+                    </td>
+                    <td>
+                        <input type="radio" name="result" value="true partialsuccesspartialfail" />
                     </td>
                 </tr>
                 <tr>
@@ -99,10 +119,16 @@
                         <input type="radio" name="result" value="false success" />
                     </td>
                     <td>
+                        <input type="radio" name="result" value="false partialsuccess" />
+                    </td>
+                    <td>
                         <input type="radio" name="result" value="false fail" />
                     </td>
                     <td>
-                        <input type="radio" name="result" value="false partial" />
+                        <input type="radio" name="result" value="false partialfail" />
+                    </td>
+                    <td>
+                        <input type="radio" name="result" value="false partialsuccesspartialfail" />
                     </td>
                 </tr>
             </tbody>

@@ -9,6 +9,7 @@
             isexpanded: false,
             steps: 10,
             error: undefined,
+            maxsteps: 100,
             ontestrequested: undefined,
             onstepschanged: undefined,
             onexpanded: undefined,
@@ -24,6 +25,9 @@
             this.maindiv.click(function (e) {
                 e.stopPropagation();
             });
+        },
+
+        _createExpandedView: function () {
         },
 
         _createView: function () {
@@ -44,10 +48,10 @@
                         input.after("steps");
 
                         input.bind("change", function () {
-                            this.value = this.value.replace(/\D+$/g, "");
+                            this.value = this.value.replace(/\D+/g, "");
                             var parsed = parseFloat(this.value);
                             if (isNaN(parsed)) this.value = that.options.steps;
-                            else if (parsed > 100) this.value = 100;
+                            else if (parsed > that.options.maxsteps) this.value = that.options.maxsteps;
                             else if (parsed < 1) this.value = 1;
                             
                             if (that.options.steps !== parseFloat(this.value)) {
@@ -60,6 +64,11 @@
                             if (that.options.steps == 1) {
                                 minusd.addClass("testing");
                                 minusb.addClass("testing");
+                            }
+
+                            if (that.options.steps == that.options.maxsteps) {
+                                plusd.addClass("testing");
+                                plusb.addClass("testing");
                             }
                         });
 
@@ -79,16 +88,26 @@
                                 if (that.options.onstepschanged !== undefined) {
                                     that.options.onstepschanged(that.options.steps);
                                 }
+
+                                plusd.removeClass("testing");
+                                plusb.removeClass("testing");
                             }
                             if (that.options.steps == 1) {
                                 minusd.addClass("testing");
                                 minusb.addClass("testing");
                             }
                         });
+
                         var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
+
+                        if (that.options.steps == that.options.maxsteps) {
+                            plusd.addClass("testing");
+                            plusb.addClass("testing");
+                        }
+
                         plusb.click((e) => {
-                            if (that.options.steps < 100) {
+                            if (that.options.steps < that.options.maxsteps) {
                                 that.options.steps++;
                                 input.val(that.options.steps);
                                 if (that.options.onstepschanged !== undefined) {
@@ -96,6 +115,11 @@
                                 }
                                 minusd.removeClass("testing");
                                 minusb.removeClass("testing");
+                            }
+
+                            if (that.options.steps == that.options.maxsteps) {
+                                plusd.addClass("testing");
+                                plusb.addClass("testing");
                             }
                         });
 
@@ -167,18 +191,25 @@
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
                         input.after("steps");
 
-                        input.bind("input change", function () {
-                            if (parseFloat(this.value) > 999) this.value = 999;
-                            if (parseFloat(this.value) < 1) this.value = 1;
-                            that.options.steps = parseFloat(this.value);
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
+                        input.bind("change", function () {
+                            this.value = this.value.replace(/\D+/g, "");
+                            var parsed = parseFloat(this.value);
+                            if (isNaN(parsed)) this.value = that.options.steps;
+                            else if (parsed > that.options.maxsteps) this.value = that.options.maxsteps;
+                            else if (parsed < 1) this.value = 1;
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                            if (that.options.steps !== parseFloat(this.value)) {
+                                that.options.steps = parseFloat(this.value);
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
                             }
                         });
 
@@ -204,24 +235,36 @@
                                 if (that.options.onexpanded !== undefined) {
                                     that.options.onexpanded();
                                 }
+
+                                plusd.removeClass("testing");
+                                plusb.removeClass("testing");
                             }
                         });
+
                         var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
-                        plusb.click((e) => {
-                            that.options.steps++;
-                            input.val(that.options.steps);
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                        if (that.options.steps == that.options.maxsteps) {
+                            plusd.addClass("testing");
+                            plusb.addClass("testing").addClass("green");
+                        }
+
+                        plusb.click((e) => {
+                            if (that.options.steps < that.options.maxsteps) {
+                                that.options.steps++;
+                                input.val(that.options.steps);
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
+                                minusd.removeClass("testing");
+                                minusb.removeClass("testing");
                             }
-                            minusd.removeClass("testing");
-                            minusb.removeClass("testing");
                         });
 
                         var ul = $("<ul></ul>").addClass("button-list").css("margin", "5px 0 5px 0").appendTo(ltlresdiv);
@@ -261,18 +304,25 @@
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
                         input.after("steps");
 
-                        input.bind("input change", function () {
-                            if (parseFloat(this.value) > 999) this.value = 999;
-                            if (parseFloat(this.value) < 1) this.value = 1;
-                            that.options.steps = parseFloat(this.value);
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
+                        input.bind("change", function () {
+                            this.value = this.value.replace(/\D+/g, "");
+                            var parsed = parseFloat(this.value);
+                            if (isNaN(parsed)) this.value = that.options.steps;
+                            else if (parsed > that.options.maxsteps) this.value = that.options.maxsteps;
+                            else if (parsed < 1) this.value = 1;
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                            if (that.options.steps !== parseFloat(this.value)) {
+                                that.options.steps = parseFloat(this.value);
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
                             }
                         });
 
@@ -298,24 +348,36 @@
                                 if (that.options.onexpanded !== undefined) {
                                     that.options.onexpanded();
                                 }
+
+                               plusd.removeClass("testing");
+                               plusb.removeClass("testing");
                             }
                         });
+
                         var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
-                        plusb.click((e) => {
-                            that.options.steps++;
-                            input.val(that.options.steps);
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                        if (that.options.steps == that.options.maxsteps) {
+                            plusd.addClass("testing");
+                            plusb.addClass("testing").addClass("green");
+                        }
+
+                        plusb.click((e) => {
+                            if (that.options.steps < that.options.maxsteps) {
+                                that.options.steps++;
+                                input.val(that.options.steps);
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
+                                minusd.removeClass("testing");
+                                minusb.removeClass("testing");
                             }
-                            minusd.removeClass("testing");
-                            minusb.removeClass("testing");
                         });
 
                         var ul = $("<ul></ul>").addClass("button-list").css("margin", "5px 0 5px 0").appendTo(ltlresdiv);
@@ -354,18 +416,25 @@
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
                         input.after("steps");
 
-                        input.bind("input change", function () {
-                            if (parseFloat(this.value) > 999) this.value = 999;
-                            if (parseFloat(this.value) < 1) this.value = 1;
-                            that.options.steps = parseFloat(this.value);
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
+                        input.bind("change", function () {
+                            this.value = this.value.replace(/\D+/g, "");
+                            var parsed = parseFloat(this.value);
+                            if (isNaN(parsed)) this.value = that.options.steps;
+                            else if (parsed > that.options.maxsteps) this.value = that.options.maxsteps;
+                            else if (parsed < 1) this.value = 1;
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                            if (that.options.steps !== parseFloat(this.value)) {
+                                that.options.steps = parseFloat(this.value);
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
                             }
                         });
 
@@ -375,7 +444,7 @@
 
                         if (that.options.steps == 1) {
                             minusd.addClass("testing");
-                            minusb.addClass("testing").addClass("green");
+                            minusb.addClass("testing");
                         }
 
                         minusb.click((e) => {
@@ -391,24 +460,36 @@
                                 if (that.options.onexpanded !== undefined) {
                                     that.options.onexpanded();
                                 }
+
+                                plusd.removeClass("testing");
+                                plusb.removeClass("testing");
                             }
                         });
+
                         var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
-                        plusb.click((e) => {
-                            that.options.steps++;
-                            input.val(that.options.steps);
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                        if (that.options.steps == that.options.maxsteps) {
+                            plusd.addClass("testing");
+                            plusb.addClass("testing");
+                        }
+
+                        plusb.click((e) => {
+                            if (that.options.steps < that.options.maxsteps) {
+                                that.options.steps++;
+                                input.val(that.options.steps);
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
+                                minusd.removeClass("testing");
+                                minusb.removeClass("testing");
                             }
-                            minusd.removeClass("testing");
-                            minusb.removeClass("testing");
                         });
 
                         var ul = $("<ul></ul>").addClass("button-list").css("margin-top", 5).appendTo(ltlresdiv);
@@ -456,18 +537,25 @@
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
                         input.after("steps");
 
-                        input.bind("input change", function () {
-                            if (parseFloat(this.value) > 999) this.value = 999;
-                            if (parseFloat(this.value) < 1) this.value = 1;
-                            that.options.steps = parseFloat(this.value);
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
+                        input.bind("change", function () {
+                            this.value = this.value.replace(/\D+/g, "");
+                            var parsed = parseFloat(this.value);
+                            if (isNaN(parsed)) this.value = that.options.steps;
+                            else if (parsed > that.options.maxsteps) this.value = that.options.maxsteps;
+                            else if (parsed < 1) this.value = 1;
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                            if (that.options.steps !== parseFloat(this.value)) {
+                                that.options.steps = parseFloat(this.value);
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
                             }
                         });
 
@@ -493,25 +581,38 @@
                                 if (that.options.onexpanded !== undefined) {
                                     that.options.onexpanded();
                                 }
+
+                                plusd.removeClass("testing");
+                                plusb.removeClass("testing");
                             }
                         });
+
                         var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
-                        plusb.click((e) => {
-                            that.options.steps++;
-                            input.val(that.options.steps);
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                        if (that.options.steps == that.options.maxsteps) {
+                            plusd.addClass("testing");
+                            plusb.addClass("testing").addClass("red");
+                        }
+
+                        plusb.click((e) => {
+                            if (that.options.steps < that.options.maxsteps) {
+                                that.options.steps++;
+                                input.val(that.options.steps);
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
+                                minusd.removeClass("testing");
+                                minusb.removeClass("testing");
                             }
-                            minusd.removeClass("testing");
-                            minusb.removeClass("testing");
                         });
+
                         var ul = $("<ul></ul>").addClass("button-list").css("margin-top", 5).css("margin-bottom", 5).appendTo(ltlresdiv);
                         var li = $("<li></li>").appendTo(ul);
                         var btn = $("<button><img src='../images/small-cross.svg'> example</button>").addClass("LTL-sim-false").appendTo(li);
@@ -548,18 +649,25 @@
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
                         input.after("steps");
 
-                        input.bind("input change", function () {
-                            if (parseFloat(this.value) > 999) this.value = 999;
-                            if (parseFloat(this.value) < 1) this.value = 1;
-                            that.options.steps = parseFloat(this.value);
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
+                        input.bind("change", function () {
+                            this.value = this.value.replace(/\D+/g, "");
+                            var parsed = parseFloat(this.value);
+                            if (isNaN(parsed)) this.value = that.options.steps;
+                            else if (parsed > that.options.maxsteps) this.value = that.options.maxsteps;
+                            else if (parsed < 1) this.value = 1;
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                            if (that.options.steps !== parseFloat(this.value)) {
+                                that.options.steps = parseFloat(this.value);
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
                             }
                         });
 
@@ -585,25 +693,37 @@
                                 if (that.options.onexpanded !== undefined) {
                                     that.options.onexpanded();
                                 }
+                               plusd.removeClass("testing");
+                               plusb.removeClass("testing");
                             }
                         });
+
                         var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
                         var plusb = $("<button>+</button>").appendTo(plusd);
-                        plusb.click((e) => {
-                            that.options.steps++;
-                            input.val(that.options.steps);
-                            if (that.options.onstepschanged !== undefined) {
-                                that.options.onstepschanged(that.options.steps);
-                            }
 
-                            that.options.status = "nottested";
-                            that._createView();
-                            if (that.options.onexpanded !== undefined) {
-                                that.options.onexpanded();
+                        if (that.options.steps == that.options.maxsteps) {
+                            plusd.addClass("testing");
+                            plusb.addClass("testing").addClass("red");
+                        }
+
+                        plusb.click((e) => {
+                            if (that.options.steps < that.options.maxsteps) {
+                                that.options.steps++;
+                                input.val(that.options.steps);
+                                if (that.options.onstepschanged !== undefined) {
+                                    that.options.onstepschanged(that.options.steps);
+                                }
+
+                                that.options.status = "nottested";
+                                that._createView();
+                                if (that.options.onexpanded !== undefined) {
+                                    that.options.onexpanded();
+                                }
+                                minusd.removeClass("testing");
+                                minusb.removeClass("testing");
                             }
-                            minusd.removeClass("testing");
-                            minusb.removeClass("testing");
                         });
+
                         var ul = $("<ul></ul>").addClass("button-list").css("margin-top", 5).css("margin-bottom", 5).appendTo(ltlresdiv);
                         var li = $("<li></li>").appendTo(ul);
                         var btn = $("<button><img src='../images/small-cross.svg'> example</button>").addClass("LTL-sim-false").appendTo(li);

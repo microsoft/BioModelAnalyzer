@@ -1216,8 +1216,9 @@ module BMA {
                                 driverToCheck.Collapse();
                             } else {
                                 driverToCheck.MoveToTop();
-                                if (operation.AnalysisStatus !== "nottested" && operation.AnalysisStatus !== "partialsuccess") {
-                                    (<any>dom).set(opDiv[0], operation.BoundingBox.x + operation.BoundingBox.width + that.controlPanelPadding, -operation.Position.y, 0, 0, 0, 0.65);
+                                if (operation.AnalysisStatus !== "nottested") {
+                                    var anchor = operation.AnalysisStatus == "partialsuccesspartialfail" ? 0.55 : 0.65; 
+                                    (<any>dom).set(opDiv[0], operation.BoundingBox.x + operation.BoundingBox.width + that.controlPanelPadding, -operation.Position.y, 0, 0, 0, anchor);
                                 }
                             }
                         }
