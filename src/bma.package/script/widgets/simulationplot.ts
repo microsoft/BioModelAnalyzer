@@ -35,7 +35,7 @@
                 .appendTo(this.chartdiv);
 
             that._chart = InteractiveDataDisplay.asPlot(that.chartdiv);
-
+            that._chart.isToolTipEnabled = false;
             that._chart.isAutoFitEnabled = true;
             this._gridLinesPlot = that._chart.get(gridLinesPlotDiv[0]);
             this._gridLinesPlot.x0 = 0;
@@ -182,10 +182,15 @@
                 that._chart.removeDiv(this.leftAxis[0]);
                 this.leftAxis.remove();
                 this.leftAxis = that._chart.addAxis("left", "labels", { labels: leftLabels });
-                var bounds = that._chart.aggregateBounds();
+                
+                //var bounds = that._chart.aggregateBounds();
+                //console.log(bounds);
+                that._chart.fitToView();
+                /*
                 bounds.bounds.height += 0.04; // padding
                 bounds.bounds.y -= 0.02;      // padding
                 that._chart.navigation.setVisibleRect(bounds.bounds, false);
+                */
             }
         },
 
