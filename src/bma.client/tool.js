@@ -466,8 +466,8 @@ var BMA;
             elem.className.baseVal = s;
         }
         SVGHelper.RemoveClass = RemoveClass;
-        function ChangeStrokeWidth(elem, width /* because usual width string is '2px'*/) {
-            elem.style.strokeWidth = width;
+        function ChangeStrokeWidth(elem, width) {
+            elem.style.strokeWidth = width + "px";
         }
         SVGHelper.ChangeStrokeWidth = ChangeStrokeWidth;
         function StringInString(s, find) {
@@ -1636,8 +1636,10 @@ var BMA;
                         }
                     }
                     if (lineRef !== undefined) {
-                        $(lineRef).attr("onmouseover", "BMA.SVGHelper.ChangeStrokeWidth(this, '3px')");
-                        $(lineRef).attr("onmouseout", "BMA.SVGHelper.ChangeStrokeWidth(this, '2px')");
+                        //$(lineRef).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-line-hover')");
+                        //$(lineRef).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-line-hover')");
+                        $(lineRef).attr("onmouseover", "BMA.SVGHelper.ChangeStrokeWidth(this, window.ElementRegistry.LineWidth + 2)");
+                        $(lineRef).attr("onmouseout", "BMA.SVGHelper.ChangeStrokeWidth(this, window.ElementRegistry.LineWidth + 1)");
                     }
                     var svgElem = $(jqSvg.toSVG()).children();
                     return svgElem;
@@ -1713,8 +1715,10 @@ var BMA;
                         }
                     }
                     if (lineRef !== undefined) {
-                        $(lineRef).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-line-hover')");
-                        $(lineRef).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-line-hover')");
+                        //$(lineRef).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-line-hover')");
+                        //$(lineRef).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-line-hover')");
+                        $(lineRef).attr("onmouseover", "BMA.SVGHelper.ChangeStrokeWidth(this, window.VisualSettings.LineWidth + 2)");
+                        $(lineRef).attr("onmouseout", "BMA.SVGHelper.ChangeStrokeWidth(this, window.VisualSettings.LineWidth + 1)");
                     }
                     var svgElem = $(jqSvg.toSVG()).children();
                     return svgElem;

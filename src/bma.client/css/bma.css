@@ -1513,7 +1513,7 @@ ul.command-list li a span {
   position: absolute;
   width: 200px;
   margin: 0 0.2em;
-  z-index: 1;
+  z-index: 7;
 }
 .window.vis-options .option-name {
   width: 90px;

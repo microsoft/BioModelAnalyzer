@@ -405,6 +405,7 @@ function loadScript(version) {
     var expandedSimulation = $('<div></div>').simulationexpanded();
     //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
+    window.VisualSettings = visualSettings;
     window.Commands.On("Commands.ToggleLabels", function (param) {
         visualSettings.TextLabelVisibility = param;
         window.ElementRegistry.LabelVisibility = param;

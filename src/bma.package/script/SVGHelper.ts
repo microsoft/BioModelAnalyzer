@@ -16,8 +16,8 @@
             elem.className.baseVal = s;
         }
 
-        export function ChangeStrokeWidth(elem: SVGStylable, width: string /* because usual width string is '2px'*/) {
-            elem.style.strokeWidth = width;
+        export function ChangeStrokeWidth(elem: SVGStylable, width: number) {
+            elem.style.strokeWidth = width + "px";
         }
 
         export function StringInString(s: string, find: string) {

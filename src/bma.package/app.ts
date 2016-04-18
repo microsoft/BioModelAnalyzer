@@ -476,6 +476,7 @@ function loadScript(version) {
     
     //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
+    (<any>window).VisualSettings = visualSettings;
 
     window.Commands.On("Commands.ToggleLabels", function (param) {
         visualSettings.TextLabelVisibility = param;

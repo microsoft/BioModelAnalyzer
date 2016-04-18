@@ -604,8 +604,10 @@ module BMA {
                         }
 
                         if (lineRef !== undefined) {
-                            $(lineRef).attr("onmouseover", "BMA.SVGHelper.ChangeStrokeWidth(this, '3px')");
-                            $(lineRef).attr("onmouseout", "BMA.SVGHelper.ChangeStrokeWidth(this, '2px')");
+                            //$(lineRef).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-line-hover')");
+                            //$(lineRef).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-line-hover')");
+                            $(lineRef).attr("onmouseover", "BMA.SVGHelper.ChangeStrokeWidth(this, window.ElementRegistry.LineWidth + 2)");
+                            $(lineRef).attr("onmouseout", "BMA.SVGHelper.ChangeStrokeWidth(this, window.ElementRegistry.LineWidth + 1)");
                         }
 
                         var svgElem: any = $(jqSvg.toSVG()).children();
@@ -723,8 +725,10 @@ module BMA {
                         }
 
                         if (lineRef !== undefined) {
-                            $(lineRef).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-line-hover')");
-                            $(lineRef).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-line-hover')");
+                            //$(lineRef).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-line-hover')");
+                            //$(lineRef).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-line-hover')");
+                            $(lineRef).attr("onmouseover", "BMA.SVGHelper.ChangeStrokeWidth(this, window.VisualSettings.LineWidth + 2)");
+                            $(lineRef).attr("onmouseout", "BMA.SVGHelper.ChangeStrokeWidth(this, window.VisualSettings.LineWidth + 1)");
                         }
 
                         var svgElem: any = $(jqSvg.toSVG()).children();
