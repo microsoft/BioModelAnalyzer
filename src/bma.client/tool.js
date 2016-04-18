@@ -10576,6 +10576,7 @@ var BMA;
                     });
                 that.rectsPlot.draw({ rects: rects });
             }
+            this.highlightPlot.draw({ y: [] });
             if (that.options.colors !== undefined && that.options.colors !== null) {
                 var index = 0;
                 while (true) {
