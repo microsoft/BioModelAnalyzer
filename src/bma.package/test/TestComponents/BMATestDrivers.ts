@@ -142,7 +142,9 @@ module BMA {
             public MoveDraggableOnBottom() { }
 
             public GetNavigationSurface() {
-                return undefined;
+                return {
+                    master: undefined
+                };
             }
         }
     }

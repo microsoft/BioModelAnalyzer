@@ -6319,13 +6319,15 @@ var BMA;
                         that.isVariableEdited = false;
                     }
                 });
-                containerEditorDriver.SetOnClosingCallback(function () {
-                    if (that.isContainerEdited) {
-                        that.undoRedoPresenter.Dup(appModel.BioModel, that.editingLayout);
-                        that.editingLayout = undefined;
-                        that.isContainerEdited = false;
-                    }
-                });
+                if (containerEditorDriver !== undefined) {
+                    containerEditorDriver.SetOnClosingCallback(function () {
+                        if (that.isContainerEdited) {
+                            that.undoRedoPresenter.Dup(appModel.BioModel, that.editingLayout);
+                            that.editingLayout = undefined;
+                            that.isContainerEdited = false;
+                        }
+                    });
+                }
                 dragSubject.dragStart.subscribe(function (gesture) {
                     navigationDriver.MoveDraggableOnTop();
                     if ((that.selectedType === "Activator" || that.selectedType === "Inhibitor")) {
