@@ -1,0 +1,77 @@
+﻿<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Jasmine Spec Runner</title>
+    @@TestFrameworkDependencies@@
+    @@CodeCoverageDependencies@@
+    @@ReferencedCSSFiles@@
+    @@ReferencedJSFiles@@
+    @@TestJSFile@@
+    <script type="text/javascript">
+
+        (function () {
+
+            var jasmineEnv = jasmine.getEnv();
+            jasmineEnv.updateInterval = 1000;
+
+            var htmlReporter = new jasmine.HtmlReporter();
+
+            jasmineEnv.addReporter(htmlReporter);
+
+            jasmineEnv.specFilter = function (spec) {
+                return htmlReporter.specFilter(spec);
+            };
+
+            if (ddescribeIitSupport) {
+                ddescribeIitSupport.patch(jasmineEnv);
+            }
+
+            var amdTestPaths = [@@AMDTestPath@@];
+            window.chutzpah.boot(amdTestPaths);
+
+            if (window.chutzpah.usingModuleLoader) {
+
+                if("@@AMDBasePath@@") {
+                    window.chutzpah.amdConfig({
+                        baseUrl: "@@AMDBasePath@@"
+                    });
+                }
+
+                window.chutzpah.amdConfig({
+                    map: {
+                        '*': {
+                            @@AMDModuleMap@@
+                            }
+                    }
+                });
+
+                window.chutzpah.amdImport(amdTestPaths, function () {
+
+                    console.log("!!_!! Stating Jasmine from AMD callback...");
+                    jasmineEnv.execute();
+                });
+            }
+            else {
+                // If we are not running in chutzpah then run the tests onload
+                if (!window.chutzpah) {
+                    var currentWindowOnload = window.onload;
+
+                    window.onload = function() {
+                        if (currentWindowOnload) {
+                            currentWindowOnload();
+                        }
+
+                        jasmineEnv.execute();
+                    };
+                }
+            }
+
+        })();
+    </script>
+</head>
+<body>
+    @@TestHtmlTemplateFiles@@
+</body>
+</html>
