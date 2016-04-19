@@ -618,13 +618,15 @@ module BMA {
                     }
                 });
 
-                containerEditorDriver.SetOnClosingCallback(() => {
-                    if (that.isContainerEdited) {
-                        that.undoRedoPresenter.Dup(appModel.BioModel, that.editingLayout);
-                        that.editingLayout = undefined;
-                        that.isContainerEdited = false;
-                    }
-                });
+                if (containerEditorDriver !== undefined) {
+                    containerEditorDriver.SetOnClosingCallback(() => {
+                        if (that.isContainerEdited) {
+                            that.undoRedoPresenter.Dup(appModel.BioModel, that.editingLayout);
+                            that.editingLayout = undefined;
+                            that.isContainerEdited = false;
+                        }
+                    });
+                }
 
                 dragSubject.dragStart.subscribe(
                     (gesture) => {

@@ -25,7 +25,7 @@ module BMA {
         }
 
         export interface INavigationPanel {
-            GetNavigationSurface(): JQuery;
+            GetNavigationSurface(): any; //TODO: add proper type here
             TurnNavigation(isOn: boolean);
             SetZoom(zoom: number);
             SetCenter(x: number, y: number);

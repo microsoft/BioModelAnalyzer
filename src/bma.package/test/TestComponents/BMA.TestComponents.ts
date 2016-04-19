@@ -96,7 +96,9 @@ module BMA {
             }
 
             public GetNavigationSurface() {
-                return undefined;
+                return {
+                    master: undefined
+                };
             }
             
 
