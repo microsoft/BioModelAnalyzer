@@ -49,7 +49,12 @@
         var str = JSON.stringify(BMA.Model.ExportModelAndLayout(biomodel, layout));
         var imported = BMA.Model.ImportModelAndLayout(JSON.parse(str));
 
+        var newCL1 = new BMA.Model.ContainerLayout(7, "C0", 5, 1, 6);
+        var newCL2 = new BMA.Model.ContainerLayout(3, "C1", 24, 81, 56);
+        var newcontainers = [newCL1, newCL2];
+        var newlayout = new BMA.Model.Layout(newcontainers, layoutVariables);
+
         expect(imported.Model).toEqual(biomodel);
-        expect(imported.Layout).toEqual(layout);
+        expect(imported.Layout).toEqual(newlayout);
     });
 });
