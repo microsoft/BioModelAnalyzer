@@ -170,25 +170,35 @@ describe("ColoredTableViewer", () => {
     })
 
     it("creates graph-max table and clicks all button", () => {
-        spyOn(window.Commands, "Execute");
+        //spyOn(window.Commands, "Execute");
 
         var header = ["Graph", "Name", "Range"];
         var numericData = [];
         numericData[0] = ["rgb(255, 0, 0)",true, "name1", 0, 1];
         numericData[1] = [undefined,false, "name2", 1, 5];
-        numericData[2] = ["rgb(0, 0, 0)",true, "name3", 3, 6];
+        numericData[2] = ["rgb(0, 0, 0)", true, "name3", 3, 6];
+
+        var callcount = 0;
+        function changeVisibility(params) {
+            callcount++;
+            numericData[params.ind][1] = params.check;
+        };
 
         widget.coloredtableviewer({ header: header, numericData: numericData, type: "graph-max" });
-        var trs = widget.find("tr").not(":first-child").not(":last-child").find("td:eq(1)")
+        widget.coloredtableviewer({
+            "onChangePlotVariables": changeVisibility
+        });
+        
+        var trs = widget.find("tr").not(":first-child").not(":last-child").find("td:eq(1)");
         var all = widget.coloredtableviewer("getAllButton");
         expect(all.hasClass("plot-check")).toBeTruthy();
         all.click();
         expect(all.hasClass("plot-check")).toBeTruthy();
         expect(trs.hasClass("plot-check")).toBeTruthy();
-        expect(window.Commands.Execute).toHaveBeenCalled();
+        expect(callcount).toEqual(1);
         all.click();
         expect(trs.hasClass("plot-check")).toBeFalsy();
-        expect(window.Commands.Execute).toHaveBeenCalled();
+        expect(callcount).toEqual(4);
     })
 
 
@@ -200,16 +210,26 @@ describe("ColoredTableViewer", () => {
         numericData[0] = ["rgb(255, 0, 0)", "name1", 0, 1];
         numericData[1] = [undefined, "name2", 1, 5];
         numericData[2] = ["rgb(0, 0, 0)", "name3", 3, 6];
+        
+        var obj1 = jasmine.createSpyObj("obj1", ["changeVisibility"]);
+        obj1.changeVisibility = function(params) {
+            numericData[params.ind][1] = params.check;
+        };
+
+        spyOn(obj1, "changeVisibility");
 
         widget.coloredtableviewer({ header: header, numericData: numericData, type: "graph-max" });
+        widget.coloredtableviewer({
+            "onChangePlotVariables": obj1.changeVisibility
+        });
         var buttons = widget.find("tr").not(":first-child").not(":last-child").find("td:eq(1)")
         
         buttons.eq(0).click();
         expect(buttons.eq(0).hasClass("plot-check")).toBeFalsy();
-        expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 0, check: false });
+        expect(obj1.changeVisibility).toHaveBeenCalledWith({ ind: 0, check: false });
         buttons.eq(1).click();
         expect(buttons.eq(1).hasClass("plot-check")).toBeTruthy();
-        expect(window.Commands.Execute).toHaveBeenCalledWith("ChangePlotVariables", { ind: 1, check: true });
+        expect(obj1.changeVisibility).toHaveBeenCalledWith({ ind: 1, check: true });
     })
 
 

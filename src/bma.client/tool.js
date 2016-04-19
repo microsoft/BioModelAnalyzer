@@ -1717,8 +1717,8 @@ var BMA;
                     if (lineRef !== undefined) {
                         //$(lineRef).attr("onmouseover", "BMA.SVGHelper.AddClass(this, 'modeldesigner-line-hover')");
                         //$(lineRef).attr("onmouseout", "BMA.SVGHelper.RemoveClass(this, 'modeldesigner-line-hover')");
-                        $(lineRef).attr("onmouseover", "BMA.SVGHelper.ChangeStrokeWidth(this, window.VisualSettings.LineWidth + 2)");
-                        $(lineRef).attr("onmouseout", "BMA.SVGHelper.ChangeStrokeWidth(this, window.VisualSettings.LineWidth + 1)");
+                        $(lineRef).attr("onmouseover", "BMA.SVGHelper.ChangeStrokeWidth(this, window.ElementRegistry.LineWidth + 2)");
+                        $(lineRef).attr("onmouseout", "BMA.SVGHelper.ChangeStrokeWidth(this, window.ElementRegistry.LineWidth + 1)");
                     }
                     var svgElem = $(jqSvg.toSVG()).children();
                     return svgElem;
@@ -12989,7 +12989,7 @@ jQuery.fn.extend({
             isexpanded: false,
             steps: 10,
             error: undefined,
-            maxsteps: Number.POSITIVE_INFINITY,
+            maxsteps: 999,
             ontestrequested: undefined,
             onstepschanged: undefined,
             onexpanded: undefined,

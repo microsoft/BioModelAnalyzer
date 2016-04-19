@@ -126,7 +126,7 @@
     });
     
 
-    it("state with finished keyframe equation with '='",() => {
+    it("state with finished keyframe equation with wrong variables value type",() => {
         states.push(
             {
                 name: "state7",
@@ -145,7 +145,7 @@
         expect(statesEditorDriver.Convert(states)).toEqual([]);
     });
 
-    it("state with finished keyframe equation with '='",() => {
+    it("state with finished keyframe equation with wrong container id",() => {
         states.push(
             {
                 name: "state9",
@@ -154,15 +154,13 @@
                     [
                         undefined,
                         undefined,
-                        { type: "variable", value: { container: "cell", variable: "var1" } },
+                        { type: "variable", value: { container: 0, variable: 38 } },
                         { type: "operator", value: "!=" },
                         { type: "const", value: 56 },
                     ],
                 ],
             });
-        equation = [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("var1"), "!=", new BMA.LTLOperations.ConstOperand(55)),];
-        keyframes.push(new BMA.LTLOperations.Keyframe("state9", "", equation));
-        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
+        expect(statesEditorDriver.Convert(states)).toEqual([]);
     });
 
     it("state with finished and unfinished keyframe equations",() => {
@@ -190,7 +188,7 @@
         expect(statesEditorDriver.Convert(states)).toEqual([]);
     });
 
-    it("states with finished and unfinished keyframe equations",() => {
+    it("one wrong state, one right state",() => {
         states.push(
             {
                 name: "state11",
@@ -211,21 +209,18 @@
                 description: "",
                 formula: [
                     [
-                        { type: "const", value: 4 },
-                        { type: "operator", value: "<" },
-                        { type: "variable", value: { container: "cell", variable: "var1" } },
+                        { type: "variable", value: { container: 10, variable: 38 } },
                         { type: "operator", value: "<=" },
                         { type: "const", value: 56 },
                     ],
                 ],
             });
-        equation = [new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(4), "<",
-            new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57))];
+        equation = [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("name2", 38), "<=", new BMA.LTLOperations.ConstOperand(56))];
         keyframes.push(new BMA.LTLOperations.Keyframe("state112", "", equation));
         expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
     });
 
-    it("unfinished equation",() => {
+    it("unfinished equations",() => {
         states.push(
             {
                 name: "state131",
@@ -269,49 +264,5 @@
             });
         expect(statesEditorDriver.Convert(states)).toEqual([]);
     });
-
-    it("state with double finished keyframe equation with two '='",() => {
-        states.push(
-            {
-                name: "state14",
-                description: "",
-                formula: [
-                    [
-                        { type: "const", value: 56 },
-                        { type: "operator", value: "=" },
-                        { type: "variable", value: { container: "cell", variable: "var1" } },
-                        { type: "operator", value: "=" },
-                        { type: "const", value: 56 },
-                    ],
-                ],
-            });
-        doubleEquation = [new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(55), "<",
-            new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57)),
-            new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(55), "<",
-            new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(57))];
-        keyframes.push(new BMA.LTLOperations.Keyframe("state14", "", doubleEquation));
-        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
-    });
-
-    it("state with double finished keyframe equation with '=' and '>='",() => {
-        states.push(
-            {
-                name: "state15",
-                description: "",
-                formula: [
-                    [
-                        { type: "const", value: 4 },
-                        { type: "operator", value: ">" },
-                        { type: "variable", value: { container: "cell", variable: "var1" } },
-                        { type: "operator", value: "=" },
-                        { type: "const", value: 56 },
-                    ],
-                ],
-            });
-        doubleEquation = [new BMA.LTLOperations.DoubleKeyframeEquation(new BMA.LTLOperations.ConstOperand(3), "<",
-            new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(5)),
-            new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("var1"), "<", new BMA.LTLOperations.ConstOperand(55))];
-        keyframes.push(new BMA.LTLOperations.Keyframe("state6", "", doubleEquation));
-        expect(statesEditorDriver.Convert(states)).toEqual(keyframes);
-    });
+   
 }); 
