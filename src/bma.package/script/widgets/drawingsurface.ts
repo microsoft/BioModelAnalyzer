@@ -540,8 +540,9 @@ declare var InteractiveDataDisplay: any;
         },
 
         updateLayout: function () {
+            this._plot.host.width(this.element.width()).height(this.element.height());
             this._plot.updateLayout();
-            this._domPlot.updateLayout();
+            //this._domPlot.updateLayout();
         },
 
         setConstraint: function (constraint) {

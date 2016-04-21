@@ -186,10 +186,39 @@
                         that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
                     }
                 });
+
+                //Separating advanced operators
+                if (i === registry.Operators.length - 3) {
+                    $("<br\>").appendTo(operatorsDiv);
+                }
             }
+
+            //Adding operators toggle basic/advanced
+            var toggle = $("<div></div>").addClass("toggle").width(0).text("Advanced").appendTo(toolbar);
+            toggle.click((args) => {
+                if (toggle.text() === "Advanced") {
+                    toggle.text("Basic");
+                    operatorsDiv.height(98);
+                    this.statesbtns.height(98);
+                    if (this.drawingSurfaceContainerRef !== undefined) {
+                        this.drawingSurfaceContainerRef.height("calc(100% - 113px - 30px - 34px)");
+                    }
+                } else {
+                    toggle.text("Advanced");
+                    operatorsDiv.height(64);
+                    this.statesbtns.height(64);
+                    if (this.drawingSurfaceContainerRef !== undefined) {
+                        this.drawingSurfaceContainerRef.height("calc(100% - 113px - 30px)");
+                    }
+                }
+                //$('body,html').css("zoom", 1.0000001);
+                //root.height(root.height() + 1);
+                this.updateLayout();
+            });
 
             //Adding drawing surface
             var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").css("min-height", "200px").height(this.options.drawingSurfaceHeight).width("100%").appendTo(root);
+            this.drawingSurfaceContainerRef = drawingSurfaceCnt;
 
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface({ useContraints: false });

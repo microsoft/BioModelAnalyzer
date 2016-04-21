@@ -3527,11 +3527,11 @@ textarea:focus {
 .temporal-toolbar .temporal-operators {
   display: table-cell;
   vertical-align: top;
-  width: 450px;
+  width: 420px;
 }
 .temporal-toolbar .temporal-operators .operators {
   height: 64px;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 .temporal-toolbar .temporal-operators .operator {
   display: inline-block;
@@ -3556,6 +3556,11 @@ textarea:focus {
   border-radius: 25px;
   width: 15px;
   height: 15px;
+}
+.temporal-toolbar .toggle {
+  display: table-cell;
+  vertical-align: top;
+  cursor: pointer;
 }
 ui-icon-arrowthickstop-1-s {
   background-image: url('../images/open.svg') !important;

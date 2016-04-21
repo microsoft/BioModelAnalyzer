@@ -9715,8 +9715,9 @@ var BMA;
             return this._domPlot;
         },
         updateLayout: function () {
+            this._plot.host.width(this.element.width()).height(this.element.height());
             this._plot.updateLayout();
-            this._domPlot.updateLayout();
+            //this._domPlot.updateLayout();
         },
         setConstraint: function (constraint) {
             this._plot.visibleRectConstraint = constraint;
@@ -10413,7 +10414,7 @@ var BMA;
                     minHeight: 600,
                     resize: function (event, ui) {
                         if (that.options.onresize !== undefined) {
-                            that.options.onresize !== undefined;
+                            that.options.onresize();
                         }
                     }
                 });
@@ -10475,7 +10476,7 @@ var BMA;
                                 minHeight: 600,
                                 resize: function (event, ui) {
                                     if (that.options.onresize !== undefined) {
-                                        that.options.onresize !== undefined;
+                                        that.options.onresize();
                                     }
                                 }
                             });
@@ -13804,6 +13805,7 @@ jQuery.fn.extend({
             return state;
         },
         _create: function () {
+            var _this = this;
             var that = this;
             var root = this.element;
             //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
@@ -13850,9 +13852,37 @@ jQuery.fn.extend({
                         that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
                     }
                 });
+                //Separating advanced operators
+                if (i === registry.Operators.length - 3) {
+                    $("<br\>").appendTo(operatorsDiv);
+                }
             }
+            //Adding operators toggle basic/advanced
+            var toggle = $("<div></div>").addClass("toggle").width(0).text("Advanced").appendTo(toolbar);
+            toggle.click(function (args) {
+                if (toggle.text() === "Advanced") {
+                    toggle.text("Basic");
+                    operatorsDiv.height(98);
+                    _this.statesbtns.height(98);
+                    if (_this.drawingSurfaceContainerRef !== undefined) {
+                        _this.drawingSurfaceContainerRef.height("calc(100% - 113px - 30px - 34px)");
+                    }
+                }
+                else {
+                    toggle.text("Advanced");
+                    operatorsDiv.height(64);
+                    _this.statesbtns.height(64);
+                    if (_this.drawingSurfaceContainerRef !== undefined) {
+                        _this.drawingSurfaceContainerRef.height("calc(100% - 113px - 30px)");
+                    }
+                }
+                //$('body,html').css("zoom", 1.0000001);
+                //root.height(root.height() + 1);
+                _this.updateLayout();
+            });
             //Adding drawing surface
             var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").css("min-height", "200px").height(this.options.drawingSurfaceHeight).width("100%").appendTo(root);
+            this.drawingSurfaceContainerRef = drawingSurfaceCnt;
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface({ useContraints: false });
             var drawingSurface = this._drawingSurface;

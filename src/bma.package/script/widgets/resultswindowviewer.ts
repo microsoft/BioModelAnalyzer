@@ -58,7 +58,7 @@
                     minHeight: 600,
                     resize: function (event, ui) {
                         if (that.options.onresize !== undefined) {
-                            that.options.onresize !== undefined;
+                            that.options.onresize();
                         }
                     }
                 });
@@ -124,7 +124,7 @@
                                 minHeight: 600,
                                 resize: function (event, ui) {
                                     if (that.options.onresize !== undefined) {
-                                        that.options.onresize !== undefined;
+                                        that.options.onresize();
                                     }
                                 }
                             });
