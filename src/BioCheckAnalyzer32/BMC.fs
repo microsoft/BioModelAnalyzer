@@ -141,16 +141,33 @@ let change_to_right_length (simulation : Map<QN.var, int> list) (loop : int) (de
         (simulation, loop)
 
 
+//let SimulationBasedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var, int list> list) = 
+//    let initial_ranges = paths.Head
+//    let initial_values = Map.fold (fun m k (l : int list) -> Map.add k l.Head m) Map.empty initial_ranges
+//    let (simulation, loop) = Simulate.simulate_up_to_loop network initial_values
+//    let (right_length_sim, right_length_loop) = change_to_right_length simulation loop paths.Length
+//    let list_simulation = List.map (fun elem -> (Map.map (fun key t -> [t]) elem)) right_length_sim 
+//    let (res, model) = SingleSideBoundedMC ltl_formula network list_simulation right_length_loop true
+//    if res then (res, model)
+//    else (res, (simulation_to_loop right_length_loop right_length_sim))
+
 let SimulationBasedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var, int list> list) = 
     let initial_ranges = paths.Head
     let initial_values = Map.fold (fun m k (l : int list) -> Map.add k l.Head m) Map.empty initial_ranges
     let (simulation, loop) = Simulate.simulate_up_to_loop network initial_values
     let (right_length_sim, right_length_loop) = change_to_right_length simulation loop paths.Length
-    let list_simulation = List.map (fun elem -> (Map.map (fun key t -> [t]) elem)) right_length_sim 
-    let (res, model) = SingleSideBoundedMC ltl_formula network list_simulation right_length_loop true
-    if res then (res, model)
-    else (res, (simulation_to_loop right_length_loop right_length_sim))
 
+    if right_length_sim.Length = paths.Length then 
+       let list_simulation = List.map (fun elem -> (Map.map (fun key t -> [t]) elem)) right_length_sim 
+       let (res, model) = SingleSideBoundedMC ltl_formula network list_simulation right_length_loop true
+       if res then (res, model)
+       else (res, (simulation_to_loop right_length_loop right_length_sim))
+    else
+        let (res, model) = SingleSideBoundedMC ltl_formula network paths -1 true
+        if res then (res, model)
+        else 
+            let (res, model) = SingleSideBoundedMC ltl_formula network paths -1 false
+            (false, model)
 
 let PolarityBoundedMC ltl_formula network paths previous_res previous_model =
     if previous_res then

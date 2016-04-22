@@ -122,7 +122,7 @@ $(document).ready(function () {
         var dfd = $.Deferred();
         loadVersion().done(function (version) {
             loadScript(version);
-            window.setInterval(function () { versionCheck(version); }, 60 * 60 * 1000);
+            window.setInterval(function () { versionCheck(version); }, 60 * 60 * 1000 /* 1 hour */);
             dfd.resolve();
         });
         return dfd.promise();
@@ -137,6 +137,7 @@ $(document).ready(function () {
     });
     $(window).resize(function () {
         popup_position();
+        //resize_header_tools();
     });
 });
 function versionCheck(version) {
@@ -188,12 +189,17 @@ function loadVersion() {
 function loadScript(version) {
     var version_key = 'bma-version';
     $('.version-number').text('v. ' + version.major + '.' + version.minor + '.' + version.build);
+    //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
     var ltlCommands = new BMA.CommandRegistry();
+    //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
+    //Creating FunctionsRegistry
     window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
+    //Creating KeyframesRegistry
     window.KeyframesRegistry = new BMA.Keyframes.KeyframesRegistry();
     window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
+    //Creating model and layout
     var appModel = new BMA.Model.AppModel();
     window.PlotSettings = {
         MaxWidth: 3200,
@@ -205,6 +211,7 @@ function loadScript(version) {
         xStep: 250,
         yStep: 280
     };
+    //Loading widgets
     var drawingSurface = $("#drawingSurface");
     drawingSurface.drawingsurface();
     $("#zoomslider").bmazoomslider({ value: 50 });
@@ -236,6 +243,7 @@ function loadScript(version) {
         autoFocus: true,
         preventContextMenuForPopup: true,
         preventSelect: true,
+        //taphold: true,
         menu: [
             { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
             { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
@@ -257,6 +265,8 @@ function loadScript(version) {
             var y = holdCords.holdX || event.pageY;
             var left = x - $(".bma-drawingsurface").offset().left;
             var top = y - $(".bma-drawingsurface").offset().top;
+            //console.log("top " + top);
+            //console.log("left " + left);
             window.Commands.Execute("DrawingSurfaceContextMenuOpening", {
                 left: left,
                 top: top
@@ -323,6 +333,7 @@ function loadScript(version) {
         });
     }
     $("#analytics").bmaaccordion({ position: "right", z_index: 4 });
+    //Preparing elements panel
     var elementPanel = $("#modelelemtoolbar");
     var elements = window.ElementRegistry.Elements;
     for (var i = 0; i < elements.length; i++) {
@@ -354,6 +365,7 @@ function loadScript(version) {
         window.Commands.Execute("AddElementSelect", $(this).attr("data-type"));
     });
     elementPanel.buttonset();
+    //undo/redo panel
     $("#button-pointer").click(function () {
         window.Commands.Execute("AddElementSelect", undefined);
     });
@@ -391,6 +403,7 @@ function loadScript(version) {
         .resultswindowviewer({ icon: "min" });
     popup.draggable({ handle: ".analysis-title", scroll: false });
     var expandedSimulation = $('<div></div>').simulationexpanded();
+    //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
     window.VisualSettings = visualSettings;
     window.Commands.On("Commands.ToggleLabels", function (param) {
@@ -403,6 +416,12 @@ function loadScript(version) {
         window.ElementRegistry.LabelSize = param;
         window.Commands.Execute("DrawingSurfaceRefreshOutput", {});
     });
+    //window.Commands.On("Commands.ToggleIcons", function (param) {
+    //    visualSettings.IconsVisibility = param;
+    //});
+    //window.Commands.On("Commands.IconsSize", function (param) {
+    //    visualSettings.IconsSize = param;
+    //});
     window.Commands.On("Commands.LineWidth", function (param) {
         visualSettings.LineWidth = param;
         window.ElementRegistry.LineWidth = param;
@@ -415,6 +434,9 @@ function loadScript(version) {
     window.Commands.On("ZoomSliderBind", function (value) {
         $("#zoomslider").bmazoomslider({ value: value });
     });
+    //window.Commands.On('ZoomConfigure',(value: { min; max }) => {
+    //    $("#zoomslider").bmazoomslider({ min: value.min, max: value.max });
+    //});
     window.Commands.On('SetPlotSettings', function (value) {
         if (value.MaxWidth !== undefined) {
             window.PlotSettings.MaxWidth = value.MaxWidth;
@@ -435,6 +457,7 @@ function loadScript(version) {
         popupDriver.Collapse();
         accordionHider.Hide();
     });
+    //Loading Drivers
     var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
     var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
     var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
@@ -449,14 +472,18 @@ function loadScript(version) {
     var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
     var accordionHider = new BMA.UIDrivers.AccordionHider($("#analytics"));
     var localStorageDriver = new BMA.UIDrivers.LocalStorageDriver(localStorageWidget);
+    //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
+    //var keyframecompactDriver = new BMA.UIDrivers.KeyframesList($('#tabs-3').find('.keyframe-compact'));
     var ltlDriver = new BMA.UIDrivers.LTLViewer($("#analytics"), $('#tabs-3'));
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);
+    //LTL Drivers
     var tpeditordriver = new BMA.UIDrivers.TemporalPropertiesEditorDriver(ltlCommands, popup);
     var stateseditordriver = new BMA.UIDrivers.StatesEditorDriver(ltlCommands, popup);
     var ltlresultsdriver = new BMA.UIDrivers.LTLResultsViewer(ltlCommands, popup);
+    //Loaing ServiсeDrivers 
     var exportService = new BMA.UIDrivers.ExportService();
     var formulaValidationService = new BMA.UIDrivers.FormulaValidationService();
     var furtherTestingServiсe = new BMA.UIDrivers.FurtherTestingService();
@@ -467,6 +494,7 @@ function loadScript(version) {
     var ltlPolarityService = new BMA.UIDrivers.LTLAnalyzeService("http://bmamath.cloudapp.net/api/AnalyzeLTLPolarity", 1);
     var waitScreen = new BMA.UIDrivers.LoadingWaitScreen($('.page-loading'));
     var dragndropextender = new BMA.UIDrivers.DrawingSurfaceDragnDropExtender(drawingSurface, popup);
+    //Loading presenters
     var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver, exportService, dragndropextender);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver, proofAnalyzeService, messagebox, logService);
@@ -475,7 +503,9 @@ function loadScript(version) {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService, waitScreen);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
+    //LTL Presenters
     var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlSimulationService, ltlPolarityService, popupDriver, exportService, fileLoaderDriver, logService);
+    //Loading model from URL
     var reserved_key = "InitialModel";
     var params = getSearchParameters();
     if (params.Model !== undefined) {
@@ -485,6 +515,7 @@ function loadScript(version) {
                 dataType: "text",
                 success: function (fileContent) {
                     appModel.Deserialize(fileContent);
+                    //appModel._Reset(fileContent);
                 }
             });
         }
@@ -553,3 +584,4 @@ function loadScript(version) {
     };
     $("label[for='button-pointer']").click();
 }
+//# sourceMappingURL=app.js.map
