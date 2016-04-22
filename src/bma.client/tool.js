@@ -13865,7 +13865,7 @@ jQuery.fn.extend({
                     }
                 });
                 //Separating advanced operators
-                if (i === registry.Operators.length - 3) {
+                if (i === registry.Operators.length - 4) {
                     $("<br\>").appendTo(operatorsDiv);
                 }
             }
@@ -15771,8 +15771,6 @@ var BMA;
                         return f + ')';
                     };
                 };
-                this.operators.push(new LTLOperations.Operator('UNTIL', 2, formulacreator('Until')));
-                this.operators.push(new LTLOperations.Operator('RELEASE', 2, formulacreator('Release')));
                 this.operators.push(new LTLOperations.Operator('AND', 2, formulacreator('And')));
                 this.operators.push(new LTLOperations.Operator('OR', 2, formulacreator('Or')));
                 this.operators.push(new LTLOperations.Operator('IMPLIES', 2, formulacreator('Implies')));
@@ -15780,8 +15778,10 @@ var BMA;
                 this.operators.push(new LTLOperations.Operator('NEXT', 1, formulacreator('Next')));
                 this.operators.push(new LTLOperations.Operator('ALWAYS', 1, formulacreator('Always')));
                 this.operators.push(new LTLOperations.Operator('EVENTUALLY', 1, formulacreator('Eventually')));
-                this.operators.push(new LTLOperations.Operator('WEAKUNTIL', 2, formulacreator('Weakuntil')));
                 this.operators.push(new LTLOperations.Operator('UPTO', 2, formulacreator('Upto')));
+                this.operators.push(new LTLOperations.Operator('WEAKUNTIL', 2, formulacreator('Weakuntil')));
+                this.operators.push(new LTLOperations.Operator('UNTIL', 2, formulacreator('Until')));
+                this.operators.push(new LTLOperations.Operator('RELEASE', 2, formulacreator('Release')));
             }
             Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
                 get: function () {

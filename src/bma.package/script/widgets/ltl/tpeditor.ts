@@ -188,7 +188,7 @@
                 });
 
                 //Separating advanced operators
-                if (i === registry.Operators.length - 3) {
+                if (i === registry.Operators.length - 4) {
                     $("<br\>").appendTo(operatorsDiv);
                 }
             }
