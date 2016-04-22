@@ -606,6 +606,9 @@ module BMA {
                     window.Commands.Execute("ZoomSliderBind", zoom);
                 });
 
+                window.Commands.On("AccordeonTabOpening", () => {
+                    variableEditorDriver.Hide();
+                });
 
                 variableEditorDriver.SetOnClosingCallback(() => {
                     if (that.isVariableEdited) {

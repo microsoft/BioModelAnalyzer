@@ -124,6 +124,7 @@ module BMA {
 
         export class VariableEditorDriver implements IVariableEditor {
             private variableEditor: JQuery;
+            private onclosingCallback: Function;
 
             constructor(variableEditor: JQuery) {
                 this.variableEditor = variableEditor;
@@ -171,15 +172,20 @@ module BMA {
 
             public Hide() {
                 this.variableEditor.hide();
+                if (this.onclosingCallback !== undefined) {
+                    this.onclosingCallback();
+                }
             }
 
             public SetOnClosingCallback(callback: Function) {
+                this.onclosingCallback = callback;
                 this.variableEditor.bmaeditor({ oneditorclosing: callback });
             }
         }
 
         export class ContainerEditorDriver implements IContainerEditor {
             private containerEditor: JQuery;
+            private onClosingCallback: Function;
 
             constructor(containerEditor: JQuery) {
                 this.containerEditor = containerEditor;
@@ -204,9 +210,13 @@ module BMA {
 
             public Hide() {
                 this.containerEditor.hide();
+                if (this.onClosingCallback !== undefined) {
+                    this.onClosingCallback();
+                }
             }
 
             public SetOnClosingCallback(callback: Function) {
+                this.onClosingCallback = callback;
                 this.containerEditor.containernameeditor({ oneditorclosing: callback });
             }
         }

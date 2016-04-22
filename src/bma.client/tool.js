@@ -4407,8 +4407,12 @@ var BMA;
             };
             VariableEditorDriver.prototype.Hide = function () {
                 this.variableEditor.hide();
+                if (this.onclosingCallback !== undefined) {
+                    this.onclosingCallback();
+                }
             };
             VariableEditorDriver.prototype.SetOnClosingCallback = function (callback) {
+                this.onclosingCallback = callback;
                 this.variableEditor.bmaeditor({ oneditorclosing: callback });
             };
             return VariableEditorDriver;
@@ -4433,8 +4437,12 @@ var BMA;
             };
             ContainerEditorDriver.prototype.Hide = function () {
                 this.containerEditor.hide();
+                if (this.onClosingCallback !== undefined) {
+                    this.onClosingCallback();
+                }
             };
             ContainerEditorDriver.prototype.SetOnClosingCallback = function (callback) {
+                this.onClosingCallback = callback;
                 this.containerEditor.containernameeditor({ oneditorclosing: callback });
             };
             return ContainerEditorDriver;
@@ -6309,6 +6317,9 @@ var BMA;
                     //}
                     var zoom = (param - window.PlotSettings.MinWidth) / 24;
                     window.Commands.Execute("ZoomSliderBind", zoom);
+                });
+                window.Commands.On("AccordeonTabOpening", function () {
+                    variableEditorDriver.Hide();
                 });
                 variableEditorDriver.SetOnClosingCallback(function () {
                     if (that.isVariableEdited) {
@@ -8722,6 +8733,7 @@ var BMA;
             }
             if (toShow.is(":hidden")) {
                 //toShow.show();
+                window.Commands.Execute("AccordeonTabOpening", {});
                 window.Commands.Execute(clicked.attr("data-command"), {});
             }
             eventData.newHeader.css("z-index", this.options.z_index + 2);

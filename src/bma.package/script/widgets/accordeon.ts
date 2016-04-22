@@ -401,6 +401,7 @@
 
             if (toShow.is(":hidden")) {// && !this.loadingList[this.headers.index(clicked)]) {
                 //toShow.show();
+                window.Commands.Execute("AccordeonTabOpening", {});
                 window.Commands.Execute(clicked.attr("data-command"), {});
             }
 
