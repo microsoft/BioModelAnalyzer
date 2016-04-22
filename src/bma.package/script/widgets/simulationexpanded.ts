@@ -77,13 +77,13 @@
             exportCSV.bind('click', function () {
                 window.Commands.Execute('ExportCSV', {});
             })
-            var add10 = $('<button></button>').text('+ ' + step).appendTo(li0);
+            var add10 = $('<button></button>').text('+ ' + step).appendTo(li2);
             add10.bind("click", function () {
                 that._setOption("num", that.options.num + step);
             });
 
             this.num = $('<button></button>').text('STEPS: ' + that.options.num).appendTo(li1);
-            var min10 = $('<button></button>').text('- ' + step).appendTo(li2);
+            var min10 = $('<button></button>').text('- ' + step).appendTo(li0);
             min10.bind("click", function () {
                 that._setOption("num", that.options.num - step);
             })
