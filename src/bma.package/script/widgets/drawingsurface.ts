@@ -540,7 +540,19 @@ declare var InteractiveDataDisplay: any;
         },
 
         updateLayout: function () {
-            this._plot.host.width(this.element.width()).height(this.element.height());
+            var host = this._plot.host;
+            if (host.width() !== this.element.width() || host.height() !== this.element.height()) {
+                var plotRect = this._plot.visibleRect;
+                var center = {
+                    x: plotRect.x + plotRect.width / 2,
+                    y: plotRect.y + plotRect.height / 2
+                };
+                this._plot.host.width(this.element.width()).height(this.element.height());
+                this._plot.updateLayout();
+                plotRect = this._plot.visibleRect;
+                this._plot.navigation.setVisibleRect({ x: center.x - plotRect.width / 2, y: center.y - plotRect.height / 2, width: plotRect.width, height: plotRect.height }, false);
+            }
+
             this._plot.updateLayout();
             //this._domPlot.updateLayout();
         },

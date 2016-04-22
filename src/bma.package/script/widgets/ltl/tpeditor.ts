@@ -194,7 +194,7 @@
             }
 
             //Adding operators toggle basic/advanced
-            var toggle = $("<div></div>").addClass("toggle").width(0).text("Advanced").appendTo(toolbar);
+            var toggle = $("<div></div>").addClass("toggle").width(60).attr("align", "right").text("Advanced").appendTo(toolbar);
             toggle.click((args) => {
                 if (toggle.text() === "Advanced") {
                     toggle.text("Basic");
