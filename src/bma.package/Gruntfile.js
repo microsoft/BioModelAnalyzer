@@ -89,7 +89,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: {
-                    'tool.min.js': ['<%= concat.tool.dest %>']
+                    'tool.min.js': ['tool.js']
                 }
             }
         },
@@ -97,6 +97,7 @@ module.exports = function (grunt) {
             main: {
                 files: [
                     { src: 'tool.js', dest: '../bma.client/tool.js' },
+                    { src: 'tool.min.js', dest: '../bma.client/tool.min.js' },
                     { src: 'app.js', dest: '../bma.client/app.js' },
                     { src: 'css/bma.css', dest: '../bma.client/css/bma.css' },
                     { src: 'js/idd.js', dest: '../bma.client/js/idd.js' },
@@ -137,5 +138,5 @@ module.exports = function (grunt) {
     //grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks("grunt-contrib-less");
 
-    grunt.registerTask('default', ['concat:tool', 'less:development', 'copy:main']);
+    grunt.registerTask('default', ['concat:tool', 'less:development', 'uglify:dist', 'copy:main']);
 };
