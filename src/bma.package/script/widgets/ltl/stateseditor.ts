@@ -577,9 +577,9 @@
                             divVariables.find(".active").removeClass("active");
                             $(this).addClass("active");
 
-                            var containerId = $(container).attr("data-container-id");
-                            var variablesId = $(this).attr("data-variable-id");
-                            if (containerId == "0")
+                            var containerId = parseFloat($(container).attr("data-container-id"));
+                            var variablesId = parseFloat($(this).attr("data-variable-id"));
+                            if (containerId == 0)
                                 containerId = that.findContainer(variablesId);
 
                             currSymbol.value = { container: containerId, variable: variablesId };
@@ -591,7 +591,7 @@
                     if (currSymbol.value != 0 && currSymbol.value.container == $(container).attr("data-container-id")
                         && currSymbol.value.variable == that.options.variables[idx].vars[j].id) {
                         variable.addClass("active");
-                        setSelectedValue({ container: $(container).attr("data-container-id"), variable: that.options.variables[idx].vars[j].id});
+                        setSelectedValue({ container: parseFloat($(container).attr("data-container-id")), variable: that.options.variables[idx].vars[j].id});
                     }
                 }
             }
