@@ -8,6 +8,7 @@
         _table: undefined,
         tablesContainer: undefined,
         loading: undefined,
+        scrollBarSize: undefined,
 
         options: {
             data: [],
@@ -35,7 +36,7 @@
             this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer);//root);
             //this._table.height(that._table.height() + 10);
 
-            var scrollBarSize = BMA.ModelHelper.GetScrollBarSize();            
+            this.scrollBarSize = BMA.ModelHelper.GetScrollBarSize();            
 
             this._table.on('scroll', function () {
                 that._variables.scrollTop($(this).scrollTop());
@@ -45,7 +46,7 @@
             //    that._table.scrollTop($(this).scrollTop());
             //});
 
-            this._variables.css("max-height", 322 - scrollBarSize.height);
+            this._variables.css("max-height", 322 - that.scrollBarSize.height);
             //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
@@ -189,33 +190,41 @@
 
         _setOptions: function (options) {
             var that = this;
+            var needRefresh = false;
             $.each(options, function (key, value) {
                 switch (key) {
                     case "tags": {
+                        needRefresh = true;
                         that.options.tags = value;
                         break;
                     }
                     case "labels": {
+                        needRefresh = true;
                         that.options.labels = value;
                         break;
                     }
                     case "data": {
+                        needRefresh = true;
                         that.options.data = value;
                         break;
                     }
                     case "init": {
+                        needRefresh = true;
                         that.options.init = value;
                         break;
                     }
                     case "interval": {
+                        needRefresh = true;
                         that.options.interval = value;
                         break;
                     }
                     case "variables": {
+                        needRefresh = true;
                         that.options.variables = value;
                         break;
                     }
                     case "id": {
+                        needRefresh = true;
                         that.options.id = value;
                         break;
                     }
@@ -223,7 +232,8 @@
                         break;
                 }
             });
-            this.refresh();
+            if (needRefresh)
+                this.refresh();
         },
         
         
@@ -249,6 +259,12 @@
                         tags: that.options.tags,
                         init: that.options.init,
                     });
+
+                    //var width = $(this._table).width();
+
+                    //if (width < 245) {
+                    //    this._variables.css("max-height", 322);
+                    //}
                     
                     if (this.options.colors === undefined || this.options.colors.length == 0)
                         this.createPlotData();
