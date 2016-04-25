@@ -13,7 +13,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            /*
+            
             var data = JSON.stringify({
                 SessionID: "Test Session",
                 UserID: "Test User",
@@ -39,7 +39,7 @@
                 if (sendBeacon) {
                     sendBeacon('http://bmamath.cloudapp.net/api/ActivityLog', data);
                 } else {
-                    alert("sendBeacon unsupported");
+                    alert("sendBeacon is unsupported");
                 }
             });
 
@@ -70,20 +70,20 @@
                     //request.deferred.reject(xhr, textStatus, errorThrown);
                 });
             });
-            */
+            
 
-            var plot = InteractiveDataDisplay.asPlot($("#chart"));
+            //var plot = InteractiveDataDisplay.asPlot($("#chart"));
         });
     </script>
 
 </head>
 <body style="position:relative;">
-    <!--
+    
    <button id="sendBeaconBtn">Test SendBeacon</button>
    <button id="sendBaseBtn">Test Basic Send</button>
     <button id="sendAjaxBtn">Test JQuery Send</button>
-        -->
-    <div id="chart" data-idd-plot="chart" style="width:800px;height:800px">
+        
+    <!--<div id="chart" data-idd-plot="chart" style="width:800px;height:800px">
         
     </div>
     <div style="overflow-y:scroll;width:200px;height:100px; position:absolute; top:0; z-index:9999999999999;">
@@ -97,7 +97,7 @@
         <div>klasjdhf</div>
         <div>klasjdhf</div>
         <div>klasjdhf</div>
-    </div>
+    </div>-->
 </body>
 </html>
 
