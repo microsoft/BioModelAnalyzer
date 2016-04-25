@@ -4074,7 +4074,7 @@ ui-icon-arrowthickstop-1-n {
   display: inline-block;
   float: left;
   vertical-align: top;
-  max-width: 250px;
+  width: 250px;
   max-height: 322px;
   overflow-x: auto;
 }

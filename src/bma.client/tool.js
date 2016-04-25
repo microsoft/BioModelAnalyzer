@@ -12091,10 +12091,13 @@ jQuery.fn.extend({
                         tags: that.options.tags,
                         init: that.options.init,
                     });
-                    //var width = $(this._table).width();
-                    //if (width < 245) {
-                    //    this._variables.css("max-height", 322);
-                    //}
+                    var width = this._table.children().eq(1).width();
+                    if (width + that.scrollBarSize.width < 160) {
+                        this._variables.css("max-height", 322);
+                    }
+                    else {
+                        this._variables.css("max-height", 322 - that.scrollBarSize.height);
+                    }
                     if (this.options.colors === undefined || this.options.colors.length == 0)
                         this.createPlotData();
                 }
@@ -14481,8 +14484,8 @@ var BMA;
                         model: appModel.BioModel.Clone(),
                         layout: appModel.Layout.Clone()
                     };
-                    ltlresultsviewer.SetData(appModel.BioModel, appModel.Layout, args.ticks, appModel.States);
                     ltlresultsviewer.Show();
+                    ltlresultsviewer.SetData(appModel.BioModel, appModel.Layout, args.ticks, appModel.States);
                 });
                 ltlresultsviewer.SetOnExportCSV(function () {
                     if (ltlDataToExport !== undefined) {
