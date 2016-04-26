@@ -768,12 +768,16 @@ module BMA {
                                 ind = n;
                                 break;
                             }
+                        if (ind === undefined)
+                            throw "Variable was not found in model";
                         var curVal = value[ind];
+                        if (typeof curVal !== "number")
+                            return false;
                         var rightOp = (op.RightOperand instanceof BMA.LTLOperations.ConstOperand) ? (<BMA.LTLOperations.ConstOperand>op.RightOperand).Value :
                             undefined;
                         return that.Compare(curVal, rightOp, op.Operator);
                     } else {
-                        throw "Variable must be first in equation";
+                        throw "Variable are to be first in equation";
                     }
                 } else {
                     throw "Unknown equation type";
@@ -835,7 +839,6 @@ module BMA {
                 var labels = [];
                 var count = (tags.length > 0) ? 1 : 0;
                 var firstTime = 0;
-                //var currState = [];
 
                 var compareTags = function (prev, curr) {
                     if (prev === undefined || curr === undefined)
@@ -850,22 +853,10 @@ module BMA {
                     return false;
                 }
 
-
-                //for (var i = 0; i < tags.length - 1; i++) {
-                //    currState.push([]);
-                //    for (var j = 0; j < tags[i].length; j++) {
-                //        for (var k = 0; k < tags[i + 1].length; k++)
-                //            if (tags[i][j] == tags[i + 1][k]) {
-                //                currState[i].push(tags[i][j]);
-                //                break;
-                //            }
-                //    }
-                //}
-
-                var prevState = tags[0];//currState[0];
+                var prevState = tags[0];
 
                 for (var i = 1; i < tags.length; i++) {
-                    if (!compareTags(prevState, /*currState*/tags[i])) {
+                    if (!compareTags(prevState, tags[i])) {
                         if (prevState && prevState.length !== 0)
                             labels.push({
                                 text: prevState,
@@ -874,7 +865,7 @@ module BMA {
                                 x: firstTime - 0.5,
                                 y: 0,
                             });
-                        prevState = tags/*currState*/[i];
+                        prevState = tags[i];
                         firstTime = i;
                         count = 1;
                     } else {
@@ -882,7 +873,7 @@ module BMA {
                     }
                 }
 
-                if (i == /*currState*/tags.length && prevState.length !== 0)
+                if (i == tags.length && prevState.length !== 0)
                     labels.push({
                         text: prevState,
                         width: count,
