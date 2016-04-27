@@ -27,6 +27,8 @@
         function makeMin13() { b13.innerHTML = (b13.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
         function makeMin14() { b14.innerHTML = (b14.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
         function makeMin15() { b15.innerHTML = (b15.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
+        function makeMin16() { b16.innerHTML = (b16.innerHTML == "[+]") ? "[&minus;]" : "[+]"; }
+
 
     </script>
 
@@ -101,7 +103,8 @@
                 <div class="FAQ_question">
                     <a onclick="makeMin4();(toggleInfo('#q4'))"><span id="b4">[+]</span></a> <span class="bold">How do I name and give ranges to variables?</span><br>
                     <p style="display:none" id="q4">
-                        Clicking on a variable opens up a dialogue box in the bottom left corner. Here you can specify a name and descriptive range for variables. As usual it is good practice not to include symbols in names of variables (or files). For example, a ‘-‘ symbols in the name of a variable increases the likelihood of getting a failed analysis run as the tool processes subtraction relationships too, specified by ‘-‘. Typical qualitatively descriptive ranges are as follows: 0-1 for ‘off’ and ‘on’; 0-3 for ‘off’, ‘low’, ‘medium’ and ‘high’ concentrations; 1-1 for a ‘low concentration constant’; 3-3 for a ‘high concentration constant’; etc.
+                        Clicking on a variable opens up a dialogue box in the bottom left corner. Here you can specify a name and descriptive range for variables. As usual it is good practice not to include symbols in names of variables (or files). For example, a ‘-‘ symbols in the name of a variable increases the likelihood of getting a failed analysis run as the tool processes subtraction relationships too, specified by ‘-‘. Typical qualitatively descriptive ranges are as follows: 0-1 for ‘off’ and ‘on’; 0-3 for ‘off’, ‘low’, ‘medium’ and ‘high’ concentrations; 1-1 for a ‘low concentration constant’; 3-3 for a ‘high concentration constant’; etc.<br />
+                        If you include variables with different ranges in the same model please have a look at "What happens with variables with different ranges?". 
                     </p>
                 </div>
 
@@ -127,6 +130,15 @@
                         2. min(2-var(a),1)*var(b) :  this function is calibrated for variables ranging between 0 and 2. It stipulates that if variable a is either 0 or 1 then the target is the value of b but if variable a is 2 then the target is 0. This models a threshold of inhibition by variable a. Where, as long as the level of a is below the maximum, variable b is copied. But once variable a is 2 it inhibits very strongly.<br><br>
                         3. max(0,2-((2-var(a))*max(var(b)-1,0)+1)) : this is one of the most complex target functions we have encountered. It is similar to the previous one except that it includes a more complex condition. Again calibrated for the range 0-2. If variable b is 2 and variable a is not 2 then the target is 0, otherwise the target is the value of variable a. This expresses an inhibition that occurs only when b is at its maximum value and when a is not at its maximum value.<br><br>
                         It is important to include in target functions only variables that have a relationship with the variable. If multiple variables of the same name have a relationship with the same variable, Bio Model Analyzer assumes that they affect it in a symmetric way. E.g., in var(a) + var(a) the association between the different a’s and the variables they represent is symmetric. In var(a)-var(a) it is not symmetric. Such an a-symmetric function could lead to problems with analysis. Similarly, if a variable has one relationship with one variable named b, then b cannot appear twice in the target function.
+                    </p>
+                </div>
+
+                <div class="FAQ_question">
+                    <a onclick="makeMin16();(toggleInfo('#q16'))"><span id="b16">[+]</span></a> <span class="bold">What happens with variables with different ranges?</span><br>
+                    <p style="display:none" id="q16">
+                        BioModelAnalyzer is built to facilitate the usage of the default target function. What should happen if I have a variable X with range [0,1] activating a variable Y with range [0,2] (and no other influences)? In this case, it makes sense that the maximal value of X should lead to Y having maximal value as well. This means that the ranges of X and Y need to be adjusted when they affect each other. So BioModelAnalyzer does an automatic range conversion when X appears in the target function of Y (or vice versa). If you just use the default target functions this is not something you have to worry about. It essentially means that the entire range of Y will be possible in the example above (and similar cases). However, if you are building your own target functions this may lead to unexpected behaviour.<br />
+                        The exact range conversion that BioModelAnalyzer applies is as follows. If a constant with range [n,n] appears in the target function of a variable with a different range, then no range conversion is applied. If a variable X with range [a,b] appears in the target function of a variable Y with range [c,d], then whenever X appears in the target function of Y it will be modified to (X-a)*(d-c)/(b-a)+c.<br />
+                        If you want to create a model with different ranges that bypasses this automatic range conversion there is a simple solution. You have to define the ranges of all variables to be the same and use the target functions to practically restrict the range to what you want. In the example above, change the range of X to [0,2] and it's target function to be min(1,old_target_function). In general, if the maximal range in the model is [a,b] and you want a range of [c,d], where a<=c<=d<=b you will have to change to use the range [a,b] and the target function min(d,max(c,old_target_function)). 
                     </p>
                 </div>
 
@@ -182,7 +194,7 @@
                         Bio Model Analyzer is a model that abstracts the biological meanings that differentiate genes, transcription factors, proteins and the like. As the biologist, you need to identify your variables so they make sense to you (e.g. via their naming) but the actual analysis that Bio Model Analyzer provides does not account for differences between variables, beyond how they are named, connected, and given ranges and target functions.
                     </p>
                 </div>
-
+                <!--
                 <div class="FAQ_question">
                     <a onclick="makeMin14();(toggleInfo('#q14'))"><span id="b14">[+]</span></a> <span class="bold">BioModelAnalyzer fails to export files with Safari on Macs; how do I make this work?</span><br>
                     <p style="display:none" id="q14">
@@ -197,6 +209,7 @@
                         A workaround, suggested <a href="http://connect.microsoft.com/VisualStudio/feedback/details/750664/silverlight-forum-cannot-type-in-chrome-browser-on-mac-silverlight-5">here</a> is to type the text in some other application and then copy &amp; paste it into the app. Probably easier to use another browser, sorry.
                     </p>
                 </div>
+                -->
 
             </div>
 
