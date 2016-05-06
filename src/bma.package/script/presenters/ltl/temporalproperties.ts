@@ -385,10 +385,8 @@ module BMA {
                         that.operations[i].Refresh();
                     }
 
-                    //if (that.isUpdateControlRequested) {
                     that.UpdateControlPanels();
                     that.isUpdateControlRequested = false;
-                    //}
                 });
 
                 window.Commands.On("ModelReset", (args) => {
@@ -419,7 +417,7 @@ module BMA {
                         this.FitToView();
                         this.OnOperationsChanged(true, false);
                         that.isUpdateControlRequested = true;
-                        this.RunAllQueries();
+                        //this.RunAllQueries();
                     }
                 });
 
@@ -949,7 +947,7 @@ module BMA {
 
                     var result = that.simulationService.Invoke(proofInput)
                         .done(function (res) {
-                            if (operation.AnalysisStatus.indexOf("processing") < 0)
+                            if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                 return;
 
                             if (res.Ticks == null) {
@@ -1002,7 +1000,7 @@ module BMA {
                                 var polarity = !res.Status;
                                 (<any>proofInput).Polarity = polarity;
                                 that.polarityService.Invoke(proofInput).done(function (polarityResult) {
-                                    if (operation.AnalysisStatus.indexOf("processing") < 0)
+                                    if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                         return;
 
                                     if (polarityResult.Ticks == null) {
@@ -1050,7 +1048,7 @@ module BMA {
                                     }
 
                                 }).fail(function (xhr, textStatus, errorThrown) {
-                                    if (operation.AnalysisStatus.indexOf("processing") < 0)
+                                    if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                         return;
                                     that.log.LogLTLError();
                                     operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
@@ -1061,7 +1059,7 @@ module BMA {
                             }
                         })
                         .fail(function (xhr, textStatus, errorThrown) {
-                            if (operation.AnalysisStatus.indexOf("processing") < 0)
+                            if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                 return;
 
                             that.log.LogLTLError();
@@ -1249,7 +1247,7 @@ module BMA {
                 };
             }
 
-            private RunAllQueries() {
+            public RunAllQueries() {
                 var that = this;
                 for (var i = 0; i < that.operations.length; i++) {
                     var op = that.operations[i];

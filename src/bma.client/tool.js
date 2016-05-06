@@ -14409,6 +14409,7 @@ var BMA;
                     }
                     else {
                         ltlviewer.GetTemporalPropertiesViewer().Refresh();
+                        _this.tppresenter.RunAllQueries();
                         ltlviewer.HideTabWaitIcon();
                     }
                 });
@@ -15021,10 +15022,8 @@ var BMA;
                     for (var i = 0; i < that.operations.length; i++) {
                         that.operations[i].Refresh();
                     }
-                    //if (that.isUpdateControlRequested) {
                     that.UpdateControlPanels();
                     that.isUpdateControlRequested = false;
-                    //}
                 });
                 window.Commands.On("ModelReset", function (args) {
                     for (var i = 0; i < _this.operations.length; i++) {
@@ -15051,7 +15050,6 @@ var BMA;
                         _this.FitToView();
                         _this.OnOperationsChanged(true, false);
                         that.isUpdateControlRequested = true;
-                        _this.RunAllQueries();
                     }
                 });
                 tpEditorDriver.SetFitToViewCallback(function () {
@@ -15495,7 +15493,7 @@ var BMA;
                     };
                     var result = that.simulationService.Invoke(proofInput)
                         .done(function (res) {
-                        if (operation.AnalysisStatus.indexOf("processing") < 0)
+                        if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                             return;
                         if (res.Ticks == null) {
                             that.log.LogLTLError();
@@ -15538,7 +15536,7 @@ var BMA;
                             var polarity = !res.Status;
                             proofInput.Polarity = polarity;
                             that.polarityService.Invoke(proofInput).done(function (polarityResult) {
-                                if (operation.AnalysisStatus.indexOf("processing") < 0)
+                                if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                     return;
                                 if (polarityResult.Ticks == null) {
                                     that.log.LogLTLError();
@@ -15585,7 +15583,7 @@ var BMA;
                                     that.OnOperationsChanged(false);
                                 }
                             }).fail(function (xhr, textStatus, errorThrown) {
-                                if (operation.AnalysisStatus.indexOf("processing") < 0)
+                                if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                     return;
                                 that.log.LogLTLError();
                                 operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
@@ -15596,7 +15594,7 @@ var BMA;
                         }
                     })
                         .fail(function (xhr, textStatus, errorThrown) {
-                        if (operation.AnalysisStatus.indexOf("processing") < 0)
+                        if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                             return;
                         that.log.LogLTLError();
                         driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));

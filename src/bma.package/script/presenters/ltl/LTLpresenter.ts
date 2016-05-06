@@ -56,6 +56,7 @@
 
                     } else {
                         ltlviewer.GetTemporalPropertiesViewer().Refresh();
+                        this.tppresenter.RunAllQueries();
                         ltlviewer.HideTabWaitIcon();
                     }
 
