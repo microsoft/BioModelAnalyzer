@@ -20,6 +20,8 @@
             private useMask = false;
             private mask = "url(#mask-stripe)";
 
+            private version = 0;
+
             constructor(svg: any, operation: IOperand, position: { x: number; y: number }) {
                 this.svg = svg;
                 this.operation = operation;
@@ -27,6 +29,10 @@
                 this.position = position;
 
                 this.Render();
+            }
+
+            public get Version(): number {
+                return this.version;
             }
 
             public get IsCompleted(): boolean {
@@ -708,8 +714,10 @@
 
             public RefreshStates(states: BMA.LTLOperations.Keyframe[]) {
                 var wasUpdated = BMA.LTLOperations.RefreshStatesInOperation(this.operation, states);
-                if (wasUpdated)
+                if (wasUpdated) {
                     this.AnalysisStatus = "nottested";
+                    this.UpdateVersion();
+                }
                 
                 //this.Refresh();
             }
@@ -725,6 +733,10 @@
                     return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
                 });
                 return uuid;
+            }
+
+            public UpdateVersion() {
+                this.version++;
             }
         }
     }

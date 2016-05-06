@@ -3619,6 +3619,7 @@ var BMA;
                 this.tag = undefined;
                 this.useMask = false;
                 this.mask = "url(#mask-stripe)";
+                this.version = 0;
                 this.renderGroup = undefined;
                 this.majorRect = undefined;
                 this.svg = svg;
@@ -3627,6 +3628,13 @@ var BMA;
                 this.position = position;
                 this.Render();
             }
+            Object.defineProperty(OperationLayout.prototype, "Version", {
+                get: function () {
+                    return this.version;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(OperationLayout.prototype, "IsCompleted", {
                 get: function () {
                     return this.checkIsCompleted(this.operation);
@@ -4249,8 +4257,10 @@ var BMA;
             };
             OperationLayout.prototype.RefreshStates = function (states) {
                 var wasUpdated = BMA.LTLOperations.RefreshStatesInOperation(this.operation, states);
-                if (wasUpdated)
+                if (wasUpdated) {
                     this.AnalysisStatus = "nottested";
+                    this.UpdateVersion();
+                }
                 //this.Refresh();
             };
             OperationLayout.prototype.GenerateUUID = function () {
@@ -4265,6 +4275,9 @@ var BMA;
                     return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
                 });
                 return uuid;
+            };
+            OperationLayout.prototype.UpdateVersion = function () {
+                this.version++;
             };
             return OperationLayout;
         })();
@@ -15299,6 +15312,7 @@ var BMA;
             };
             TemporalPropertiesPresenter.prototype.ResetOperation = function (operation) {
                 operation.AnalysisStatus = "nottested";
+                operation.UpdateVersion();
                 if (operation.Tag !== undefined && operation.Tag.driver !== undefined) {
                     operation.Tag.driver.SetStatus("nottested");
                     operation.Tag.driver.SetMessage(undefined);
@@ -15491,9 +15505,10 @@ var BMA;
                         "Formula": formula,
                         "Number_of_steps": driver.GetSteps()
                     };
+                    var opVersion = operation.Version;
                     var result = that.simulationService.Invoke(proofInput)
                         .done(function (res) {
-                        if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
+                        if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                             return;
                         if (res.Ticks == null) {
                             that.log.LogLTLError();
@@ -15536,7 +15551,7 @@ var BMA;
                             var polarity = !res.Status;
                             proofInput.Polarity = polarity;
                             that.polarityService.Invoke(proofInput).done(function (polarityResult) {
-                                if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
+                                if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                     return;
                                 if (polarityResult.Ticks == null) {
                                     that.log.LogLTLError();
@@ -15583,7 +15598,7 @@ var BMA;
                                     that.OnOperationsChanged(false);
                                 }
                             }).fail(function (xhr, textStatus, errorThrown) {
-                                if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
+                                if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                     return;
                                 that.log.LogLTLError();
                                 operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
@@ -15594,7 +15609,7 @@ var BMA;
                         }
                     })
                         .fail(function (xhr, textStatus, errorThrown) {
-                        if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
+                        if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                             return;
                         that.log.LogLTLError();
                         driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));

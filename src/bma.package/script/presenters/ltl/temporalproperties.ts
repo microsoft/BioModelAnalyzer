@@ -708,6 +708,7 @@ module BMA {
 
             private ResetOperation(operation: BMA.LTLOperations.OperationLayout) {
                 operation.AnalysisStatus = "nottested";
+                operation.UpdateVersion();
                 if (operation.Tag !== undefined && operation.Tag.driver !== undefined) {
                     operation.Tag.driver.SetStatus("nottested");
                     operation.Tag.driver.SetMessage(undefined);
@@ -945,9 +946,11 @@ module BMA {
                         "Number_of_steps": driver.GetSteps()
                     }
 
+                    var opVersion = operation.Version;
+
                     var result = that.simulationService.Invoke(proofInput)
                         .done(function (res) {
-                            if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
+                            if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                 return;
 
                             if (res.Ticks == null) {
@@ -1000,7 +1003,7 @@ module BMA {
                                 var polarity = !res.Status;
                                 (<any>proofInput).Polarity = polarity;
                                 that.polarityService.Invoke(proofInput).done(function (polarityResult) {
-                                    if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
+                                    if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                         return;
 
                                     if (polarityResult.Ticks == null) {
@@ -1048,7 +1051,7 @@ module BMA {
                                     }
 
                                 }).fail(function (xhr, textStatus, errorThrown) {
-                                    if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
+                                    if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                         return;
                                     that.log.LogLTLError();
                                     operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
@@ -1059,7 +1062,7 @@ module BMA {
                             }
                         })
                         .fail(function (xhr, textStatus, errorThrown) {
-                            if (operation === undefined || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
+                            if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                 return;
 
                             that.log.LogLTLError();
