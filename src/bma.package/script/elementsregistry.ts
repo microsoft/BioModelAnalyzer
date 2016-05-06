@@ -114,7 +114,7 @@ module BMA {
             }
 
             public set LineWidth(value: number) {
-                this.lineWidth = value;
+                this.lineWidth = Math.max(1, value);
                 //console.log(this.lineWidth);
             }
 

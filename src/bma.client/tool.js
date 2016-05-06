@@ -681,7 +681,7 @@ var BMA;
                             context.font = "16px Segoe-UI";
                             var width = context.measureText(name).width;
                             if (width > hks) {
-                                fs = hks / width;
+                                fs = fs * hks / width;
                                 context.font = fs + "px Segoe-UI";
                             }
                             context.fillStyle = "rgb(96,96,96)";
@@ -1756,7 +1756,7 @@ var BMA;
                     return this.lineWidth;
                 },
                 set: function (value) {
-                    this.lineWidth = value;
+                    this.lineWidth = Math.max(1, value);
                     //console.log(this.lineWidth);
                 },
                 enumerable: true,
@@ -5600,7 +5600,6 @@ var BMA;
                 var labels = [];
                 var count = (tags.length > 0) ? 1 : 0;
                 var firstTime = 0;
-                //var currState = [];
                 var compareTags = function (prev, curr) {
                     if (prev === undefined || curr === undefined)
                         return false;
@@ -5613,19 +5612,9 @@ var BMA;
                     }
                     return false;
                 };
-                //for (var i = 0; i < tags.length - 1; i++) {
-                //    currState.push([]);
-                //    for (var j = 0; j < tags[i].length; j++) {
-                //        for (var k = 0; k < tags[i + 1].length; k++)
-                //            if (tags[i][j] == tags[i + 1][k]) {
-                //                currState[i].push(tags[i][j]);
-                //                break;
-                //            }
-                //    }
-                //}
-                var prevState = tags[0]; //currState[0];
+                var prevState = tags[0];
                 for (var i = 1; i < tags.length; i++) {
-                    if (!compareTags(prevState, /*currState*/ tags[i])) {
+                    if (!compareTags(prevState, tags[i])) {
                         if (prevState && prevState.length !== 0)
                             labels.push({
                                 text: prevState,
@@ -5634,7 +5623,7 @@ var BMA;
                                 x: firstTime - 0.5,
                                 y: 0,
                             });
-                        prevState = tags /*currState*/[i];
+                        prevState = tags[i];
                         firstTime = i;
                         count = 1;
                     }
@@ -11581,8 +11570,10 @@ jQuery.fn.extend({
                                         window.Commands.Execute(command, that.listOptions[ind].increment);
                                     });
                                     minus.bind("click", function () {
-                                        that.listOptions[ind].increment--;
-                                        window.Commands.Execute(command, that.listOptions[ind].increment);
+                                        if (that.listOptions[ind].increment > 1) {
+                                            that.listOptions[ind].increment--;
+                                            window.Commands.Execute(command, Math.max(1, that.listOptions[ind].increment));
+                                        }
                                     });
                                 }
                                 break;

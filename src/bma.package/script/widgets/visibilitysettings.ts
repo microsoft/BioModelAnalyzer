@@ -89,8 +89,10 @@
                                         window.Commands.Execute(command, that.listOptions[ind].increment);
                                     })
                                     minus.bind("click", function () {
-                                        that.listOptions[ind].increment--;
-                                        window.Commands.Execute(command, that.listOptions[ind].increment);
+                                        if (that.listOptions[ind].increment > 1) {
+                                            that.listOptions[ind].increment--;
+                                            window.Commands.Execute(command, Math.max(1, that.listOptions[ind].increment));
+                                        }
                                     })
                                 }
                                 break;

@@ -129,7 +129,7 @@
                             
                             var width = context.measureText(name).width;
                             if (width > hks) {
-                                fs = hks / width;
+                                fs = fs * hks / width;
                                 context.font = fs + "px Segoe-UI";
                             }
                             context.fillStyle = "rgb(96,96,96)";
