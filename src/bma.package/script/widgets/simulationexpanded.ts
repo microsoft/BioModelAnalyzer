@@ -35,7 +35,16 @@
                 .appendTo(tables);
 
             var stepsdiv = $('<div></div>').addClass('steps-container').appendTo(that.element);
-            this.big_table.progressiontable();
+
+            var onContextMenuItemSelected = function (args) {
+                if (args.command == "CreateState" && that.options.createStateRequested !== undefined)
+                    that.options.createStateRequested(args);
+            };
+
+            this.big_table.progressiontable({
+                columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                onContextMenuItemSelected: onContextMenuItemSelected
+            });
 
             randomise.click(function () {
                 that.big_table.progressiontable("Randomise");
@@ -51,7 +60,7 @@
                     this.big_table.progressiontable({
                         init: options.init,
                         interval: options.interval,
-                        data: options.data
+                        data: options.data, 
                     });
                 }
             }

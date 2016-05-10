@@ -49,6 +49,19 @@
                     that.compactViewer.ChangeVisibility(param);
                 });
 
+                simulationExpanded.SetOnCreateStateRequested((param) => {
+                    var columnData = [];
+                    for (var i = 0; i < that.variables.length; i++) {
+                        columnData.push({
+                            variable: that.variables[i].Name,
+                            variableId: that.variables[i].Id,
+                            value: that.variables[i].Plot[param.column + 1]
+                        });
+                    }
+
+                    window.Commands.Execute("CreateStateFromTable", columnData);
+                });
+
                 //window.Commands.On("ChangePlotVariables", function (param) {
                 //    that.variables[param.ind].Seen = param.check;
                 //    that.compactViewer.ChangeVisibility(param);

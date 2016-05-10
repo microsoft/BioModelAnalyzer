@@ -358,6 +358,7 @@ module BMA {
         export class SimulationExpandedDriver implements ISimulationExpanded {
             private viewer;
             private onplotvariablesselectionchanged;
+            private createStateRequested;
 
             constructor(view: JQuery) {
                 this.viewer = view;
@@ -366,6 +367,17 @@ module BMA {
             public SetOnPlotVariablesSelectionChanged(callback) {
                 this.onplotvariablesselectionchanged = callback;
                 this.viewer.simulationexpanded({ onChangePlotVariables: callback });
+            }
+
+            public SetOnCreateStateRequested(callback) {
+                if (this.viewer !== undefined) {
+                    this.viewer.simulationexpanded({
+                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        createStateRequested: callback
+                    });
+                } else {
+                    this.createStateRequested = callback;
+                }
             }
 
             public Set(data: { variables; colors; init }) {
