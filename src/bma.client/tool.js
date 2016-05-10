@@ -4580,17 +4580,6 @@ var BMA;
                 this.onplotvariablesselectionchanged = callback;
                 this.viewer.simulationexpanded({ onChangePlotVariables: callback });
             };
-            SimulationExpandedDriver.prototype.SetOnCreateStateRequested = function (callback) {
-                if (this.viewer !== undefined) {
-                    this.viewer.simulationexpanded({
-                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
-                        createStateRequested: callback
-                    });
-                }
-                else {
-                    this.createStateRequested = callback;
-                }
-            };
             SimulationExpandedDriver.prototype.Set = function (data) {
                 var table = this.CreateExpandedTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
@@ -5193,11 +5182,10 @@ var BMA;
                             var varName = undefined;
                             for (var k = 0; k < that.model.Variables.length; k++)
                                 if (that.model.Variables[k].Id == f[0].value.variable) {
-                                    if ((f[0].value.container === undefined)
-                                        || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
-                                        varName = that.model.Variables[k].Name;
-                                        break;
-                                    }
+                                    //if ((f[0].value.container === undefined)
+                                    //    || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
+                                    varName = that.model.Variables[k].Name;
+                                    break;
                                 }
                             //if (id === undefined) {
                             //    for (var k = 0; k < that.model.Variables.length; k++)
@@ -5516,10 +5504,7 @@ var BMA;
                         this.exportCSVcallback = undefined;
                     }
                     if (this.createStateRequested !== undefined) {
-                        this.ltlResultsViewer.ltlresultsviewer({
-                            columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
-                            createStateRequested: that.createStateRequested
-                        });
+                        this.ltlResultsViewer.ltlresultsviewer({ createStateRequested: that.createStateRequested });
                         this.createStateRequested = undefined;
                     }
                 }
@@ -5747,10 +5732,7 @@ var BMA;
             };
             LTLResultsViewer.prototype.SetOnCreateStateRequested = function (callback) {
                 if (this.ltlResultsViewer !== undefined) {
-                    this.ltlResultsViewer.ltlresultsviewer({
-                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
-                        createStateRequested: callback
-                    });
+                    this.ltlResultsViewer.ltlresultsviewer({ createStateRequested: callback });
                 }
                 else {
                     this.createStateRequested = callback;
@@ -7487,17 +7469,6 @@ var BMA;
                 simulationExpanded.SetOnPlotVariablesSelectionChanged(function (param) {
                     that.variables[param.ind].Seen = param.check;
                     that.compactViewer.ChangeVisibility(param);
-                });
-                simulationExpanded.SetOnCreateStateRequested(function (param) {
-                    var columnData = [];
-                    for (var i = 0; i < that.variables.length; i++) {
-                        columnData.push({
-                            variable: that.variables[i].Name,
-                            variableId: that.variables[i].Id,
-                            value: that.variables[i].Plot[param.column + 1]
-                        });
-                    }
-                    window.Commands.Execute("CreateStateFromTable", columnData);
                 });
                 //window.Commands.On("ChangePlotVariables", function (param) {
                 //    that.variables[param.ind].Seen = param.check;
@@ -9981,7 +9952,6 @@ var BMA;
                         }
                     }
                 }
-                that.createColumnContextMenu();
             }
         },
         Highlight: function (ind) {
@@ -10004,7 +9974,7 @@ var BMA;
                     autoFocus: true,
                     preventContextMenuForPopup: true,
                     preventSelect: true,
-                    menu: that.options.columnContextMenuItems,
+                    menu: [{ title: "Create State", cmd: "CreateState" }],
                     beforeOpen: function (event, ui) {
                         ui.menu.zIndex(50);
                         if ($(ui.target.context.parentElement).index() == 0)
@@ -10800,14 +10770,7 @@ var BMA;
                 .addClass('big-simulation-popout-table')
                 .appendTo(tables);
             var stepsdiv = $('<div></div>').addClass('steps-container').appendTo(that.element);
-            var onContextMenuItemSelected = function (args) {
-                if (args.command == "CreateState" && that.options.createStateRequested !== undefined)
-                    that.options.createStateRequested(args);
-            };
-            this.big_table.progressiontable({
-                columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
-                onContextMenuItemSelected: onContextMenuItemSelected
-            });
+            this.big_table.progressiontable();
             randomise.click(function () {
                 that.big_table.progressiontable("Randomise");
             });
@@ -10821,7 +10784,7 @@ var BMA;
                     this.big_table.progressiontable({
                         init: options.init,
                         interval: options.interval,
-                        data: options.data,
+                        data: options.data
                     });
                 }
             }
@@ -11921,22 +11884,29 @@ jQuery.fn.extend({
             visibleItems: [],
             colors: [],
             onExportCSV: undefined,
-            createStateRequested: undefined,
-            columnContextMenuItems: undefined
+            createStateRequested: undefined
         },
         _create: function () {
             var that = this;
             this.element.empty();
             this.element.addClass("ltlresultsviewer");
             var root = this.element;
+            //this.loading = $("<div></div>").addClass("page-loading").css("position", "absolute").css("top", "27").css("height", 470- 47).hide().appendTo(that.element);
+            //var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
+            //this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(root);
             this.tablesContainer = $("<div></div>").addClass('ltl-simplot-container').appendTo(root);
-            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer);
-            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer);
+            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer); //root);
+            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer); //root);
+            //this._table.height(that._table.height() + 10);
             this.scrollBarSize = BMA.ModelHelper.GetScrollBarSize();
             this._table.on('scroll', function () {
                 that._variables.scrollTop($(this).scrollTop());
             });
+            //this._variables.on('scroll', function () {
+            //    that._table.scrollTop($(this).scrollTop());
+            //});
             this._variables.css("max-height", 322 - that.scrollBarSize.height);
+            //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
             this.loading = $("<div></div>").addClass("page-loading").css("position", "inherit").css("height", 322).appendTo(this._plot);
             var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
@@ -11962,12 +11932,14 @@ jQuery.fn.extend({
                     that.options.visibleItems[params.ind] = params.check;
                 if (that.options.variables !== undefined && that.options.variables.length != 0)
                     that.options.variables[params.ind][1] = params.check;
+                //that._setOption("visibleItems", visibility);
             };
             this._variables.coloredtableviewer({
                 onChangePlotVariables: changeVisibility
             });
             var onContextMenuItemSelected = function (args) {
                 if (that.options.data !== undefined && that.options.data.length !== 0) {
+                    //that.loading.show();
                     var columnData = [];
                     for (var i = 0; i < that.options.data[args.column].length; i++) {
                         columnData.push({
@@ -11979,10 +11951,14 @@ jQuery.fn.extend({
                     if (args.command == "CreateState" && that.options.createStateRequested !== undefined)
                         that.options.createStateRequested(columnData);
                 }
+                //that.loading.hide();
+                //that.tablesContainer.show();
+                //that._plot.show();
             };
             this._table.progressiontable({
                 canEditInitialValue: false,
                 showInitialValue: false,
+                columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
                 onContextMenuItemSelected: onContextMenuItemSelected
             });
             var after = $("<div></div>").css("height", 23).css("width", "100%").appendTo(this._table);
@@ -12049,13 +12025,6 @@ jQuery.fn.extend({
                         this._plot.simulationplot({
                             colors: value,
                         });
-                    break;
-                }
-                case "columnContextMenuItems": {
-                    needUpdate = false;
-                    this._table.progressiontable({
-                        columnContextMenuItems: that.options.columnContextMenuItems,
-                    });
                     break;
                 }
                 default: break;
@@ -12552,7 +12521,18 @@ jQuery.fn.extend({
                         }
                         break;
                     }
-                containerName = containerName ? containerName : "ALL";
+                if (!containerName) {
+                    value.container = 0;
+                    containerName = "ALL";
+                    if (!variableName) {
+                        for (var j = 0; j < that.options.variables[0].vars.length; j++) {
+                            if (that.options.variables[0].vars[j].id == value.variable) {
+                                variableName = that.options.variables[0].vars[j].name;
+                                break;
+                            }
+                        }
+                    }
+                }
                 if (variableName === "") {
                     variableName = "Unnamed";
                     expandButton.addClass("hidden");
@@ -12721,10 +12701,27 @@ jQuery.fn.extend({
                 var stateIdx = that.options.states.indexOf(that._activeState);
                 if (that.options.states[stateIdx].formula.length == idx)
                     that.addFormula();
-                that.options.states[stateIdx].formula[idx][0] = { type: "variable", value: itemParams.variable };
-                that._activeState.formula[idx][0] = { type: "variable", value: itemParams.variable };
-                that.refresh();
-                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+                var value = itemParams.variable;
+                var isVariableExist = false;
+                for (var i = 0; i < that.options.variables.length; i++)
+                    if (that.options.variables[i].id == value.container) {
+                        isVariableExist = true;
+                        break;
+                    }
+                if (!isVariableExist) {
+                    value.container = 0;
+                    for (var j = 0; j < that.options.variables[0].vars.length; j++)
+                        if (that.options.variables[0].vars[j].id == value.variable) {
+                            isVariableExist = true;
+                            break;
+                        }
+                }
+                if (isVariableExist) {
+                    that.options.states[stateIdx].formula[idx][0] = { type: "variable", value: value };
+                    that._activeState.formula[idx][0] = { type: "variable", value: value };
+                    that.refresh();
+                    that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+                }
             }
         },
         refresh: function () {
@@ -14532,11 +14529,19 @@ var BMA;
                     }
                 });
                 ltlresultsviewer.SetOnCreateStateRequested(function (args) {
-                    that.CreateStateFromTableData(args);
-                    ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
-                });
-                window.Commands.On("CreateStateFromTable", function (args) {
-                    that.CreateStateFromTableData(args);
+                    if (args !== undefined) {
+                        var keyframeEqs = [];
+                        for (var i = 0; i < args.length; i++) {
+                            keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId), "=", new BMA.LTLOperations.ConstOperand(args[i].value)));
+                        }
+                        var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
+                        var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
+                        var merged = that.MergeStates(that.appModel.States, [newState]);
+                        that.appModel.States = merged.states;
+                        that.statespresenter.UpdateStatesFromModel();
+                        that.tppresenter.UpdateStatesFromModel();
+                        ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
+                    }
                 });
                 commands.On("ExportLTLFormulaAsJson", function (args) {
                     if (args.operation !== undefined) {
@@ -14583,21 +14588,6 @@ var BMA;
                     }
                 });
             }
-            LTLPresenter.prototype.CreateStateFromTableData = function (args) {
-                var that = this;
-                if (args !== undefined) {
-                    var keyframeEqs = [];
-                    for (var i = 0; i < args.length; i++) {
-                        keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId), "=", new BMA.LTLOperations.ConstOperand(args[i].value)));
-                    }
-                    var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
-                    var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
-                    var merged = that.MergeStates(that.appModel.States, [newState]);
-                    that.appModel.States = merged.states;
-                    that.statespresenter.UpdateStatesFromModel();
-                    that.tppresenter.UpdateStatesFromModel();
-                }
-            };
             LTLPresenter.prototype.UpdateOperations = function (states) {
                 var operations = this.appModel.Operations.slice(0);
                 var opsWithStatus = [];

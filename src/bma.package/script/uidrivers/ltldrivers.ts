@@ -335,11 +335,11 @@ module BMA {
                             var varName = undefined;
                             for (var k = 0; k < that.model.Variables.length; k++)
                                 if (that.model.Variables[k].Id == f[0].value.variable) {
-                                    if ((f[0].value.container === undefined)
-                                        || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
+                                    //if ((f[0].value.container === undefined)
+                                    //    || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
                                         varName = that.model.Variables[k].Name;
                                         break;
-                                    } 
+                                    //} 
                                 }
                             //if (id === undefined) {
                             //    for (var k = 0; k < that.model.Variables.length; k++)
