@@ -552,6 +552,17 @@ module BMA {
                     }
                 });
 
+                window.Commands.On("HighlightContent", (args) => {
+                    if (this.svg !== undefined && this.undoRedoPresenter.Current !== undefined) {
+                        var drawingSvg = <SVGElement>this.CreateSvg(args);
+                        this.driver.Draw(drawingSvg);
+                    }
+                });
+
+                window.Commands.On("UnhighlightContent", (args) => {
+                    that.RefreshOutput();
+                });
+
                 var plotHost = (<any>this.navigationDriver.GetNavigationSurface()).master;
                 svgPlotDriver.SetConstraintFunc((plotRect) => {
 
@@ -1467,10 +1478,23 @@ module BMA {
                 for (var i = 0; i < containerLayouts.length; i++) {
                     var containerLayout = containerLayouts[i];
                     var element = window.ElementRegistry.GetElementByType("Container");
+
+                    var isHighlighted = undefined;
+                    if (args !== undefined && args.containerHighlightIds !== undefined) {
+                        isHighlighted = false;
+                        for (var j = 0; j < args.containerHighlightIds.length; j++) {
+                            if (containerLayout.Id === args.containerHighlightIds[j]) {
+                                isHighlighted = true;
+                                break;
+                            }
+                        }
+                    }
+
                     svgElements.push(element.RenderToSvg({
                         layout: containerLayout,
                         grid: this.Grid,
-                        background: args === undefined || args.containersStability === undefined ? undefined : this.GetContainerColorByStatus(args.containersStability[containerLayout.Id])
+                        background: args === undefined || args.containersStability === undefined ? undefined : this.GetContainerColorByStatus(args.containersStability[containerLayout.Id]),
+                        isHighlighted: isHighlighted
                     }));
                 }
 
@@ -1481,7 +1505,26 @@ module BMA {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
-                    var additionalInfo = args === undefined ? undefined : this.GetItemById(args.variablesStability, variable.Id);
+                    var additionalInfo = args === undefined || args.variablesStability === undefined ? undefined : this.GetItemById(args.variablesStability, variable.Id);
+
+                    var isHighlighted = undefined;
+                    if (args !== undefined && args.variableHighlightIds !== undefined) {
+                        isHighlighted = false;
+                        for (var j = 0; j < args.variableHighlightIds.length; j++) {
+                            if (variable.Id === args.variableHighlightIds[j]) {
+                                isHighlighted = true;
+                                break;
+                            }
+                        }
+                        if (!isHighlighted) {
+                            for (var j = 0; j < args.containerHighlightIds.length; j++) {
+                                if (variable.ContainerId === args.containerHighlightIds[j]) {
+                                    isHighlighted = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
                     var container: any = variable.Type === "MembraneReceptor" ? /*this.undoRedoPresenter.Current.layout*/layout.GetContainerById(variable.ContainerId) : undefined;
                     var sizeCoef = undefined;
@@ -1497,7 +1540,8 @@ module BMA {
                         gridCell: gridCell,
                         sizeCoef: sizeCoef,
                         valueText: additionalInfo === undefined ? undefined : additionalInfo.range,
-                        labelColor: additionalInfo === undefined ? undefined : this.GetVariableColorByStatus(additionalInfo.state)
+                        labelColor: additionalInfo === undefined ? undefined : this.GetVariableColorByStatus(additionalInfo.state),
+                        isHighlighted: isHighlighted
                     }));
                 }
 

@@ -88,7 +88,7 @@
                 menu: [{ title: "Delete", cmd: "DeleteState", uiIcon: "ui-icon-trash" }],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);
-                    
+
                 },
                 select: function (event, ui) {
                     var args: any = {};
@@ -168,7 +168,7 @@
                 that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
             this._activeState = this.options.states[idx];
             state.insertBefore(this._stateButtons.children().last());
-            
+
             this.refresh();
         },
 
@@ -198,7 +198,7 @@
             if (formula == null) {
                 that.options.states[stateIdx].formula.push(formula);
                 formulaIdx = that.options.states[stateIdx].formula.length - 1;
-            } 
+            }
 
             formula = formula && formula[0] && formula[1] && formula[2] ? formula : [
                 {
@@ -246,17 +246,17 @@
                     { type: "operator", value: formula[1] && formula[1].value ? formula[1].value : ">" },
                     { type: "const", value: formula[0] && formula[0].value ? formula[0].value : 0 },
                 ];
-            } 
+            }
 
             that.options.states[stateIdx].formula[formulaIdx] = formula;
 
             var table = $("<table></table>").addClass("state-condition").attr("data-row-type", "formula");
             var tbody = $("<tbody></tbody>").appendTo(table);
             var tr = $("<tr></tr>").appendTo(tbody);
-            
+
             var variableTd = $("<td></td>").addClass("variable").appendTo(tr);
             that.createVariablePicker(variableTd, formula[0]);
-           
+
 
             var operatorTd = $("<td></td>").addClass("operator").appendTo(tr);
             that.createOperatorPicker(operatorTd, formula[1], { variable: formula[0], stateIdx: stateIdx, formulaIdx: formulaIdx });
@@ -282,7 +282,7 @@
             });
 
             var removeIcon = $("<img>").attr("src", "../images/state-line-del.svg").appendTo(removeTd);
-            
+
             table.insertBefore(this._ltlStates.children().last());
         },
 
@@ -418,7 +418,7 @@
             var firstLeft = $(variableTd).offset().left;
             var firstTop = $(variableTd).offset().top + 47;
 
-           
+
             var setSelectedValue = function (value) {
 
                 if (value.container === undefined) {
@@ -427,7 +427,7 @@
 
                 var containerName;
                 var variableName = undefined;
-                for (var i = 0; i < that.options.variables.length; i++) 
+                for (var i = 0; i < that.options.variables.length; i++)
                     if (that.options.variables[i].id == value.container) {
                         containerName = that.options.variables[i].name;
                         for (var j = 0; j < that.options.variables[i].vars.length; j++) {
@@ -438,7 +438,7 @@
                         }
                         break;
                     }
-                
+
                 containerName = containerName ? containerName : "ALL";
 
                 if (variableName === "") {
@@ -447,7 +447,7 @@
                 } else {
                     expandButton.removeClass("hidden");
                 }
-                
+
                 $(selectedContainer).text(containerName);
                 $(selectedVariable).text(variableName);
                 selectedVariable.removeClass("not-selected");
@@ -505,7 +505,7 @@
                 }
             });
         },
-        
+
         updateVariablePicker: function (position, setSelectedValue, currSymbol) {
             var that = this;
 
@@ -535,14 +535,25 @@
 
             for (var i = 0; i < this.options.variables.length; i++) {
                 //if (this.options.variables[i].name) {
-                    var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
-                        .appendTo(divContainers).click(function () {
-                            that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
-                        });
-                    if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id) {
-                        that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
+                var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
+                    .appendTo(divContainers).click(function () {
+                        that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
+                    });
+
+                container.hover(function (e) {
+                    var containerId = parseFloat($(this).attr("data-container-id"));
+                    if (containerId > 0) {
+                        window.Commands.Execute("HighlightContent", { variableHighlightIds: [], containerHighlightIds: [containerId] });
                     }
-               // }
+                }, (e) => {
+                    window.Commands.Execute("UnhighlightContent", undefined);
+                });
+
+
+                if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id) {
+                    that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
+                }
+                // }
             }
             if (currSymbol.value == 0) {
                 that.setActiveContainer(divContainers, divVariables, divContainers.children().eq(0), setSelectedValue, currSymbol);
@@ -588,10 +599,16 @@
                             that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                         });
 
+                    variable.hover(function(e) {
+                        window.Commands.Execute("HighlightContent", { variableHighlightIds: [parseFloat($(this).attr("data-variable-id"))], containerHighlightIds: [] });
+                    }, (e) => {
+                        window.Commands.Execute("UnhighlightContent", undefined);
+                    });
+
                     if (currSymbol.value != 0 && currSymbol.value.container == $(container).attr("data-container-id")
                         && currSymbol.value.variable == that.options.variables[idx].vars[j].id) {
                         variable.addClass("active");
-                        setSelectedValue({ container: parseFloat($(container).attr("data-container-id")), variable: that.options.variables[idx].vars[j].id});
+                        setSelectedValue({ container: parseFloat($(container).attr("data-container-id")), variable: that.options.variables[idx].vars[j].id });
                     }
                 }
             }
@@ -646,7 +663,7 @@
             if (idx > -1) {
                 var stateIdx = that.options.states.indexOf(that._activeState);
 
-                if (that.options.states[stateIdx].formula.length == idx) 
+                if (that.options.states[stateIdx].formula.length == idx)
                     that.addFormula();
 
                 that.options.states[stateIdx].formula[idx][0] = { type: "variable", value: itemParams.variable };
@@ -701,7 +718,7 @@
                         if (value[i].formula.length == 0)
                             value[i].formula.push([undefined, undefined, undefined, undefined, undefined]);
                     }
-                    
+
                     if (this.options.states.length == 0) {
                         that.addState();
                     } else {
