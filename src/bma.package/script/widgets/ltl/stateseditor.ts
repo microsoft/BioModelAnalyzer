@@ -438,8 +438,19 @@
                         }
                         break;
                     }
-                
-                containerName = containerName ? containerName : "ALL";
+
+                if (!containerName) {
+                    value.container = 0;
+                    containerName = "ALL";
+                    if (!variableName) {
+                        for (var j = 0; j < that.options.variables[0].vars.length; j++) {
+                            if (that.options.variables[0].vars[j].id == value.variable) {
+                                variableName = that.options.variables[0].vars[j].name;
+                                break;
+                            }
+                        }
+                    }
+                }
 
                 if (variableName === "") {
                     variableName = "Unnamed";
