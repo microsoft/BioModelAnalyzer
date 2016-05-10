@@ -5182,11 +5182,10 @@ var BMA;
                             var varName = undefined;
                             for (var k = 0; k < that.model.Variables.length; k++)
                                 if (that.model.Variables[k].Id == f[0].value.variable) {
-                                    if ((f[0].value.container === undefined)
-                                        || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
-                                        varName = that.model.Variables[k].Name;
-                                        break;
-                                    }
+                                    //if ((f[0].value.container === undefined)
+                                    //    || (f[0].value.container !== undefined && that.model.Variables[k].ContainerId == f[0].value.container)) {
+                                    varName = that.model.Variables[k].Name;
+                                    break;
                                 }
                             //if (id === undefined) {
                             //    for (var k = 0; k < that.model.Variables.length; k++)
@@ -12702,10 +12701,27 @@ jQuery.fn.extend({
                 var stateIdx = that.options.states.indexOf(that._activeState);
                 if (that.options.states[stateIdx].formula.length == idx)
                     that.addFormula();
-                that.options.states[stateIdx].formula[idx][0] = { type: "variable", value: itemParams.variable };
-                that._activeState.formula[idx][0] = { type: "variable", value: itemParams.variable };
-                that.refresh();
-                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+                var value = itemParams.variable;
+                var isVariableExist = false;
+                for (var i = 0; i < that.options.variables.length; i++)
+                    if (that.options.variables[i].id == value.container) {
+                        isVariableExist = true;
+                        break;
+                    }
+                if (!isVariableExist) {
+                    value.container = 0;
+                    for (var j = 0; j < that.options.variables[0].vars.length; j++)
+                        if (that.options.variables[0].vars[j].id == value.variable) {
+                            isVariableExist = true;
+                            break;
+                        }
+                }
+                if (isVariableExist) {
+                    that.options.states[stateIdx].formula[idx][0] = { type: "variable", value: value };
+                    that._activeState.formula[idx][0] = { type: "variable", value: value };
+                    that.refresh();
+                    that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+                }
             }
         },
         refresh: function () {

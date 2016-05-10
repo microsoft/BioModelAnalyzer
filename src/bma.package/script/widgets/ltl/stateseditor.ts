@@ -660,11 +660,31 @@
                 if (that.options.states[stateIdx].formula.length == idx) 
                     that.addFormula();
 
-                that.options.states[stateIdx].formula[idx][0] = { type: "variable", value: itemParams.variable };
-                that._activeState.formula[idx][0] = { type: "variable", value: itemParams.variable };
+                var value = itemParams.variable;
+                var isVariableExist = false;
+                for (var i = 0; i < that.options.variables.length; i++)
+                    if (that.options.variables[i].id == value.container) {
+                        isVariableExist = true;
+                        break;
+                    }
 
-                that.refresh();
-                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+                if (!isVariableExist) {
+                    value.container = 0;
+                    for (var j = 0; j < that.options.variables[0].vars.length; j++)
+                        if (that.options.variables[0].vars[j].id == value.variable) {
+                            isVariableExist = true;
+                            break;
+                        }
+                }
+
+                if (isVariableExist) {
+                    that.options.states[stateIdx].formula[idx][0] = { type: "variable", value: value };
+                    that._activeState.formula[idx][0] = { type: "variable", value: value };
+
+                    that.refresh();
+                    that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+                }
+                
             }
         },
 
