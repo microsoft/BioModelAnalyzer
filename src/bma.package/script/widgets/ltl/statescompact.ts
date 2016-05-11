@@ -31,11 +31,6 @@
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
             //that.addContextMenu();
 
-            for (var i = 0; i < this.options.states.length; i++) {
-                var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons);
-                //that.createToolTip(this.options.states[i], stateButton);
-            }
-
             if (this.options.states.length == 0) {
                 this._stateButtons.hide();
             } else {
@@ -53,9 +48,7 @@
                     for (var i = 0; i < value.length; i++) {
                         if (value[i].formula.length != 0) {
                             this.options.states.push(value[i]);
-                            var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name)
-                                .addClass("state-button").appendTo(this._stateButtons);
-                            stateButton.statetooltip({ state: that.convertForTooltip(value[i]) });
+                            this.createStateButton(value[i]);
                             //that.createToolTip(value[i], stateButton);
                         }
                     }
@@ -83,10 +76,29 @@
                 default: break;
             }
         },
-
-        _setOptions: function (options) {
-            this._super(options);
-        }, 
+        
+        createStateButton: function (value) {
+            var that = this;
+            var stateButton = $("<div>" + value.name + "</div>").attr("data-state-name", value.name)
+                .addClass("state-button").appendTo(this._stateButtons);
+            var convertedState = that.convertForTooltip(value);
+            stateButton.statetooltip({ state: convertedState });
+            stateButton.hover(function (e) {
+                var variablesIds = [];
+                for (var i = 0; i < convertedState.formula.length; i++) {
+                    var variableId = parseFloat(convertedState.formula[i].id);
+                    if (variableId)
+                        variablesIds.push(variableId);
+                }
+                
+                window.Commands.Execute("HighlightContent", {
+                    variableHighlightIds: variablesIds,
+                    containerHighlightIds: [],
+                });
+            }, (e) => {
+                window.Commands.Execute("UnhighlightContent", undefined);
+            });
+        },
 
         executeCommand: function (commandName, args) {
             if (this.options.commands) {
@@ -154,6 +166,7 @@
                 var formula = state.formula[j];
                 var newFormula = {
                     variable: undefined,
+                    id: undefined,
                     operator: undefined,
                     const: undefined
                 };
@@ -161,7 +174,8 @@
                     if (formula[i] !== undefined) {
                         switch (formula[i].type) {
                             case "variable": {
-                                newFormula.variable = formula[i].value;                                
+                                newFormula.variable = formula[i].value.name;
+                                newFormula.id = formula[i].value.id;                            
                                 break;
                             }
                             case "const": {

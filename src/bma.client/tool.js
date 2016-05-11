@@ -5162,7 +5162,10 @@ var BMA;
                         var formula = [];
                         formula.push({
                             type: opnd.LeftOperand.Name === undefined ? "const" : "variable",
-                            value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : opnd.LeftOperand.Name
+                            value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : {
+                                name: opnd.LeftOperand.Name,
+                                id: opnd.LeftOperand.Id
+                            }
                         });
                         if (opnd.MiddleOperand !== undefined) {
                             var leftop = opnd.LeftOperator;
@@ -5173,7 +5176,10 @@ var BMA;
                             var middle = opnd.MiddleOperand;
                             formula.push({
                                 type: middle.Name === undefined ? "const" : "variable",
-                                value: middle.Name === undefined ? middle.Value : middle.Name
+                                value: middle.Name === undefined ? middle.Value : {
+                                    name: middle.Name,
+                                    id: middle.Id
+                                }
                             });
                             var rightop = opnd.RightOperator;
                             formula.push({
@@ -5189,7 +5195,10 @@ var BMA;
                         }
                         formula.push({
                             type: opnd.RightOperand.Name === undefined ? "const" : "variable",
-                            value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : opnd.RightOperand.Name
+                            value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : {
+                                name: opnd.RightOperand.Name,
+                                id: opnd.RightOperand.Id
+                            }
                         });
                         ws.formula.push(formula);
                     }
@@ -12921,9 +12930,6 @@ jQuery.fn.extend({
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
             //that.addContextMenu();
-            for (var i = 0; i < this.options.states.length; i++) {
-                var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons);
-            }
             if (this.options.states.length == 0) {
                 this._stateButtons.hide();
             }
@@ -12941,9 +12947,7 @@ jQuery.fn.extend({
                     for (var i = 0; i < value.length; i++) {
                         if (value[i].formula.length != 0) {
                             this.options.states.push(value[i]);
-                            var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name)
-                                .addClass("state-button").appendTo(this._stateButtons);
-                            stateButton.statetooltip({ state: that.convertForTooltip(value[i]) });
+                            this.createStateButton(value[i]);
                         }
                     }
                     if (this.options.states.length == 0) {
@@ -12970,8 +12974,26 @@ jQuery.fn.extend({
                 default: break;
             }
         },
-        _setOptions: function (options) {
-            this._super(options);
+        createStateButton: function (value) {
+            var that = this;
+            var stateButton = $("<div>" + value.name + "</div>").attr("data-state-name", value.name)
+                .addClass("state-button").appendTo(this._stateButtons);
+            var convertedState = that.convertForTooltip(value);
+            stateButton.statetooltip({ state: convertedState });
+            stateButton.hover(function (e) {
+                var variablesIds = [];
+                for (var i = 0; i < convertedState.formula.length; i++) {
+                    var variableId = parseFloat(convertedState.formula[i].id);
+                    if (variableId)
+                        variablesIds.push(variableId);
+                }
+                window.Commands.Execute("HighlightContent", {
+                    variableHighlightIds: variablesIds,
+                    containerHighlightIds: [],
+                });
+            }, function (e) {
+                window.Commands.Execute("UnhighlightContent", undefined);
+            });
         },
         executeCommand: function (commandName, args) {
             if (this.options.commands) {
@@ -13029,6 +13051,7 @@ jQuery.fn.extend({
                 var formula = state.formula[j];
                 var newFormula = {
                     variable: undefined,
+                    id: undefined,
                     operator: undefined,
                     const: undefined
                 };
@@ -13036,7 +13059,8 @@ jQuery.fn.extend({
                     if (formula[i] !== undefined) {
                         switch (formula[i].type) {
                             case "variable": {
-                                newFormula.variable = formula[i].value;
+                                newFormula.variable = formula[i].value.name;
+                                newFormula.id = formula[i].value.id;
                                 break;
                             }
                             case "const": {
