@@ -243,7 +243,7 @@
                     menu: that.options.columnContextMenuItems,
                     beforeOpen: function (event, ui) {
                         ui.menu.zIndex(50);
-                        if ($(ui.target.context.parentElement).index() == 0)
+                        if ($(ui.target.context.parentElement).hasClass("table-tags"))
                             return false;
                     },
                     select: function (event, ui) {

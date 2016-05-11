@@ -225,7 +225,7 @@
                     for (var i = 0; i < args.length; i++) {
                         keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(
                             new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId),
-                            "=",
+                            args[i].operator ? args[i].operator : "=",
                             new BMA.LTLOperations.ConstOperand(args[i].value)
                         ));
                     }

@@ -7495,7 +7495,7 @@ var BMA;
                 var full = $('<div></div>').coloredtableviewer({
                     numericData: variablesData.numericData,
                     colorData: variablesData.colorData,
-                    header: ["Name", "Formula", "Range"]
+                    header: ["Name", "Formula", "Range"],
                 });
                 full.addClass('scrollable-results');
                 return full;
@@ -7533,7 +7533,43 @@ var BMA;
                         }
                     }
                 }
-                container.coloredtableviewer({ header: header, numericData: table, colorData: color });
+                var createStateRequested = function (args) {
+                    var columnData = [];
+                    var variables = that.appModel.BioModel.Variables;
+                    for (var i = 0; i < variables.length; i++) {
+                        var value = table[i][args.column];
+                        if (typeof value == "string") {
+                            var values = value.split("-");
+                            columnData.push({
+                                variable: variables[i].Name,
+                                variableId: variables[i].Id,
+                                value: parseFloat(values[0]),
+                                operator: ">="
+                            });
+                            columnData.push({
+                                variable: variables[i].Name,
+                                variableId: variables[i].Id,
+                                value: parseFloat(values[1]),
+                                operator: "<="
+                            });
+                        }
+                        else {
+                            columnData.push({
+                                variable: variables[i].Name,
+                                variableId: variables[i].Id,
+                                value: table[i][args.column]
+                            });
+                        }
+                    }
+                    window.Commands.Execute("CreateStateFromTable", columnData);
+                };
+                container.coloredtableviewer({
+                    onContextMenuItemSelected: createStateRequested,
+                    columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                    header: header,
+                    numericData: table,
+                    colorData: color
+                });
                 container.addClass('scrollable-results');
                 container.children('table').removeClass('variables-table').addClass('proof-propagation-table');
                 container.find("td").eq(0).width(150);
@@ -9109,6 +9145,8 @@ var BMA;
             colorData: undefined,
             type: "standart",
             onChangePlotVariables: undefined,
+            onContextMenuItemSelected: undefined,
+            columnContextMenuItems: undefined,
         },
         _create: function () {
             this.refresh();
@@ -9127,6 +9165,7 @@ var BMA;
                         this.arrayToTable(options.numericData);
                         if (options.colorData !== undefined)
                             this.paintTable(options.colorData);
+                        this.createColumnContextMenu();
                     }
                     break;
                 case "color":
@@ -9351,7 +9390,31 @@ var BMA;
                 }
             }
             return table;
-        }
+        },
+        createColumnContextMenu: function () {
+            var that = this;
+            if (this.options.numericData !== undefined && this.options.numericData.length != 0) {
+                this.table.contextmenu({
+                    delegate: "td",
+                    autoFocus: true,
+                    preventContextMenuForPopup: true,
+                    preventSelect: true,
+                    menu: that.options.columnContextMenuItems,
+                    beforeOpen: function (event, ui) {
+                        ui.menu.zIndex(50);
+                        if ($(ui.target.context.parentElement).index() == 0 || $(ui.target.context).index() == 0)
+                            return false;
+                    },
+                    select: function (event, ui) {
+                        var args = {};
+                        args.command = ui.cmd;
+                        args.column = $(ui.target.context).index();
+                        if (that.options.onContextMenuItemSelected !== undefined)
+                            that.options.onContextMenuItemSelected(args);
+                    }
+                });
+            }
+        },
     });
 }(jQuery));
 //# sourceMappingURL=coloredtableviewer.js.map
@@ -10084,7 +10147,7 @@ var BMA;
                     menu: that.options.columnContextMenuItems,
                     beforeOpen: function (event, ui) {
                         ui.menu.zIndex(50);
-                        if ($(ui.target.context.parentElement).index() == 0)
+                        if ($(ui.target.context.parentElement).hasClass("table-tags"))
                             return false;
                     },
                     select: function (event, ui) {
@@ -10857,7 +10920,8 @@ var BMA;
             num: 10,
             buttonMode: "ActiveMode",
             step: 10,
-            onChangePlotVariables: undefined
+            onChangePlotVariables: undefined,
+            createStateRequested: undefined,
         },
         _create: function () {
             var that = this;
@@ -14749,7 +14813,7 @@ var BMA;
                 if (args !== undefined) {
                     var keyframeEqs = [];
                     for (var i = 0; i < args.length; i++) {
-                        keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId), "=", new BMA.LTLOperations.ConstOperand(args[i].value)));
+                        keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId), args[i].operator ? args[i].operator : "=", new BMA.LTLOperations.ConstOperand(args[i].value)));
                     }
                     var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
                     var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);

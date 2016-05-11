@@ -11,7 +11,8 @@
             num: 10,
             buttonMode: "ActiveMode",
             step: 10,
-            onChangePlotVariables: undefined
+            onChangePlotVariables: undefined,
+            createStateRequested: undefined,
         },
 
         _create: function () {
