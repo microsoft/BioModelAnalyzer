@@ -256,6 +256,16 @@
             
             var variableTd = $("<td></td>").addClass("variable").appendTo(tr);
             that.createVariablePicker(variableTd, formula[0]);
+
+            variableTd.hover(function (e) {
+                var variableId = parseFloat(formula[0].value.variable);
+                window.Commands.Execute("HighlightContent", {
+                    variableHighlightIds: [variableId],
+                    containerHighlightIds: [],
+                });
+            }, (e) => {
+                window.Commands.Execute("UnhighlightContent", undefined);
+            });
            
 
             var operatorTd = $("<td></td>").addClass("operator").appendTo(tr);
@@ -348,7 +358,6 @@
                 if (operatorSelector) {
                     if (!operatorSelector.is(e.target) && operatorSelector.has(e.target).length === 0) {
                         operatorSelector.remove();
-                        //operatorExpandButton.removeClass('inputs-list-header-expanded');
                     }
                 }
             });
@@ -359,11 +368,9 @@
                     firstTop = $(operatorTd).offset().top + 47;
 
                     operatorSelector = that.updateOperatorPicker({ top: firstTop, left: firstLeft }, setOperatorValue);
-                    //operatorExpandButton.addClass('inputs-list-header-expanded');
                 } else {
                     operatorSelector.remove();
                     operatorSelector = undefined;
-                    //operatorExpandButton.removeClass('inputs-list-header-expanded');
                 }
             });
         },
@@ -397,7 +404,6 @@
             operatorSelector.children().bind("click", function () {
                 var newOperator = $(this).attr("data-operator-type");
                 setOperatorValue(newOperator);
-                //operatorExpandButton.removeClass('inputs-list-header-expanded');
 
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
@@ -467,8 +473,7 @@
                     variablePicker.remove();
                     variablePicker = undefined;
                 }
-
-                //expandButton.removeClass('inputs-list-header-expanded');
+                
                 if (containerName !== "ALL") {
                     containerImg.removeClass("hidden");
                     selectedContainer.removeClass("hidden");
@@ -486,33 +491,26 @@
             var variablePicker = undefined;
             setSelectedValue(variable.value);
 
-            //var trDivs = this.updateVariablePicker(trList, setSelectedValue, variable);
-
             $(document).mousedown(function (e) {
                 if (variablePicker) {
                     if (/*!variableTd.is(e.target) && variableTd.has(e.target).length === 0*/
                         !variablePicker.is(e.target) && variablePicker.has(e.target).length === 0) {
                         variablePicker.remove();
-                        //expandButton.removeClass('inputs-list-header-expanded');
                     }
                 }
             });
 
             expandButton.bind("click", function () {
                 if (!variablePicker) {
-                    //var offLeft = $(variableTd).offset().left - firstLeft;
-                    //var offTop = $(variableTd).offset().top - firstTop;
 
                     firstLeft = $(variableTd).offset().left;
                     firstTop = $(variableTd).offset().top + 47;
 
                     that.executeonComboBoxOpen();
                     variablePicker = that.updateVariablePicker({ top: firstTop, left: firstLeft }, setSelectedValue, variable);
-                    //expandButton.addClass('inputs-list-header-expanded');
                 } else {
                     variablePicker.remove();
                     variablePicker = undefined;
-                    //expandButton.removeClass('inputs-list-header-expanded');
                 }
             });
         },
@@ -545,11 +543,10 @@
             }
 
             for (var i = 0; i < this.options.variables.length; i++) {
-                //if (this.options.variables[i].name) {
-                    var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
-                        .appendTo(divContainers).click(function () {
-                            that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
-                        });
+                var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
+                    .appendTo(divContainers).click(function () {
+                        that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
+                    });
 
                 container.hover(function (e) {
                     var containerId = parseFloat($(this).attr("data-container-id"));
@@ -561,10 +558,9 @@
                 });
 
 
-                    if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id) {
-                        that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
-                    }
-               // }
+                if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id) {
+                    that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
+                }
             }
             if (currSymbol.value == 0) {
                 that.setActiveContainer(divContainers, divVariables, divContainers.children().eq(0), setSelectedValue, currSymbol);

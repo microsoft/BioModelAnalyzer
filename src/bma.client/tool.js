@@ -1352,9 +1352,13 @@ var BMA;
                     var scale = 0.45 * renderParams.layout.Size;
                     var cellData = "M249,577 C386.518903,577 498,447.83415 498,288.5 C498,129.16585 386.518903,0 249,0 C111.481097,0 0,129.16585 0,288.5 C0,447.83415 111.481097,577 249,577 Z M262,563 C387.368638,563 489,440.102164 489,288.5 C489,136.897836 387.368638,14 262,14 C136.631362,14 35,136.897836 35,288.5 C35,440.102164 136.631362,563 262,563 Z";
                     var cellPath = jqSvg.createPath();
+                    var pathFill = "#FAAF40";
+                    if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
+                        pathFill = "#808080";
+                    }
                     var op = jqSvg.path(g, cellPath, {
                         stroke: 'transparent',
-                        fill: "#FAAF40",
+                        fill: pathFill,
                         "fill-rule": "evenodd",
                         d: cellData,
                         transform: "scale(" + scale + ") translate(-250, -290)"
@@ -1426,11 +1430,21 @@ var BMA;
                     var g = jqSvg.group({
                         transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ")",
                     });
+                    var pathFill = "#BBBDBF";
+                    if (renderParams.isHighlighted !== undefined) {
+                        if (!renderParams.isHighlighted) {
+                            pathFill = "#808080";
+                        }
+                    }
+                    if (renderParams.isHighlighted) {
+                        var rad = 1.3 * Math.max(that.variableHeightConstant, that.variableWidthConstant) / 2;
+                        jqSvg.ellipse(g, 0, 0, rad, rad, { stroke: "#EF4137", fill: "transparent" });
+                    }
                     var data = "M27.3,43.4l-2.2-0.8c-12-4.4-19.3-11.5-20-19.7c0-0.5-0.1-0.9-0.1-1.4c-5.4-2.6-9-7.3-10.5-12.3c-0.6-2-0.9-4.1-0.8-6.3c-4.7-1.7-8.2-4.7-10.3-8.2c-2.1-3.4-3.2-8.1-2.1-13.4c-6.7-1.8-12.5-4.3-15.9-5.8l-7.4,19.9l26.7,7.9L-17,9.1l-32.8-9.7l11.9-32l3,1.5c3.9,1.9,10.8,4.9,18.1,6.9c1.9-4,5.1-8.1,10-12.1c10.8-8.9,19.7-8.1,23.8-3.4c3.5,4,3.6,11.6-4.2,18.7c-6.3,5.7-16.2,5.7-25.7,3.8c-0.6,3.2-0.2,6.2,1.4,8.9c1.3,2.2,3.4,4,6.3,5.3C-3.4-8.3,0.7-13.2,8-16c15.9-6.1,19.9,0.2,20.7,2.2c2.1,5.2-2.4,11.8-10.1,15C11.5,4.2,5.1,5-0.3,4.4C-0.2,5.5,0,6.5,0.3,7.5c0.9,3.2,3,6.1,6.2,8C8,12.1,11,9,15,6.7C25,1,32.2,1.6,35.7,4.2c2.3,1.7,3.3,4.3,2.7,7.1c-1.1,5.3-7.6,9.7-17.5,11.8c-3.6,0.8-6.8,0.8-9.7,0.4c1,4.9,6,9.5,13.9,12.8l7.4-10.7l17.4,10.1l-3,5.1l-12.6-7.4L27.3,43.4L27.3,43.4z M12.1,17.5c2.2,0.3,4.8,0.3,7.6-0.3c9.4-2,12.6-5.6,12.9-7.2c0.1-0.4,0-0.7-0.4-1c-1.4-1-6.2-1.7-14.1,2.9C15.2,13.4,13.2,15.4,12.1,17.5L12.1,17.5z M0.6-1.5C5-1,10.3-1.7,16.3-4.2c5.4-2.3,7.4-6,6.9-7.3c-0.4-1-4.3-2.2-13,1.1C5-8.5,2-5.1,0.6-1.5L0.6-1.5z M-10.8-22.8c7.8,1.4,15.2,1.3,19.5-2.6c4.7-4.2,5.4-8.4,3.7-10.4c-2.1-2.5-8.3-1.9-15.5,4.1C-6.5-28.9-9.1-25.9-10.8-22.8L-10.8-22.8z";
                     var path = jqSvg.createPath();
                     var variable = jqSvg.path(g, path, {
                         stroke: 'transparent',
-                        fill: "#BBBDBF",
+                        fill: pathFill,
                         "stroke-width": 8,
                         d: data,
                         transform: "scale(0.36)"
@@ -1482,11 +1496,19 @@ var BMA;
                     var g = jqSvg.group({
                         transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ")",
                     });
+                    var pathFill = "#EF4137";
+                    if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
+                        pathFill = "#808080";
+                    }
+                    if (renderParams.isHighlighted) {
+                        var rad = Math.max(that.variableHeightConstant, that.variableWidthConstant) / 2;
+                        jqSvg.ellipse(g, 0, 0, rad, rad, { stroke: "#EF4137", fill: "transparent" });
+                    }
                     var data = "M27.3,43.4l-2.2-0.8c-12-4.4-19.3-11.5-20-19.7c0-0.5-0.1-0.9-0.1-1.4c-5.4-2.6-9-7.3-10.5-12.3c-0.6-2-0.9-4.1-0.8-6.3c-4.7-1.7-8.2-4.7-10.3-8.2c-2.1-3.4-3.2-8.1-2.1-13.4c-6.7-1.8-12.5-4.3-15.9-5.8l-7.4,19.9l26.7,7.9L-17,9.1l-32.8-9.7l11.9-32l3,1.5c3.9,1.9,10.8,4.9,18.1,6.9c1.9-4,5.1-8.1,10-12.1c10.8-8.9,19.7-8.1,23.8-3.4c3.5,4,3.6,11.6-4.2,18.7c-6.3,5.7-16.2,5.7-25.7,3.8c-0.6,3.2-0.2,6.2,1.4,8.9c1.3,2.2,3.4,4,6.3,5.3C-3.4-8.3,0.7-13.2,8-16c15.9-6.1,19.9,0.2,20.7,2.2c2.1,5.2-2.4,11.8-10.1,15C11.5,4.2,5.1,5-0.3,4.4C-0.2,5.5,0,6.5,0.3,7.5c0.9,3.2,3,6.1,6.2,8C8,12.1,11,9,15,6.7C25,1,32.2,1.6,35.7,4.2c2.3,1.7,3.3,4.3,2.7,7.1c-1.1,5.3-7.6,9.7-17.5,11.8c-3.6,0.8-6.8,0.8-9.7,0.4c1,4.9,6,9.5,13.9,12.8l7.4-10.7l17.4,10.1l-3,5.1l-12.6-7.4L27.3,43.4L27.3,43.4z M12.1,17.5c2.2,0.3,4.8,0.3,7.6-0.3c9.4-2,12.6-5.6,12.9-7.2c0.1-0.4,0-0.7-0.4-1c-1.4-1-6.2-1.7-14.1,2.9C15.2,13.4,13.2,15.4,12.1,17.5L12.1,17.5z M0.6-1.5C5-1,10.3-1.7,16.3-4.2c5.4-2.3,7.4-6,6.9-7.3c-0.4-1-4.3-2.2-13,1.1C5-8.5,2-5.1,0.6-1.5L0.6-1.5z M-10.8-22.8c7.8,1.4,15.2,1.3,19.5-2.6c4.7-4.2,5.4-8.4,3.7-10.4c-2.1-2.5-8.3-1.9-15.5,4.1C-6.5-28.9-9.1-25.9-10.8-22.8L-10.8-22.8z";
                     var path = jqSvg.createPath();
                     var variable = jqSvg.path(g, path, {
                         stroke: 'transparent',
-                        fill: "#EF4137",
+                        fill: pathFill,
                         strokeWidth: 8,
                         d: data,
                         transform: "scale(0.25)"
@@ -1544,11 +1566,19 @@ var BMA;
                         if (angle < 0)
                             angle += 360;
                     }
+                    var pathFill = "#3BB34A";
+                    if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
+                        pathFill = "#808080";
+                    }
+                    if (renderParams.isHighlighted) {
+                        var rad = 1.1 * Math.max(that.variableHeightConstant, that.variableWidthConstant) / 2;
+                        jqSvg.ellipse(g, 0, 0, rad, rad, { stroke: "#EF4137", fill: "transparent" });
+                    }
                     var data = "M9.9-10.5c-1.4-1.9-2.3,0.1-5.1,0.8C2.6-9.2,2.4-13.2,0-13.2c-2.4,0-2.4,3.5-4.8,3.5c-2.4,0-3.8-2.7-5.2-0.8l8.2,11.8v12.1c0,1,0.8,1.7,1.7,1.7c1,0,1.7-0.8,1.7-1.7V1.3L9.9-10.5z";
                     var path = jqSvg.createPath();
                     var variable = jqSvg.path(g, path, {
                         stroke: 'transparent',
-                        fill: "#3BB34A",
+                        fill: pathFill,
                         strokeWidth: 8,
                         d: data,
                         transform: "scale(1.2) rotate(" + angle + ")"
@@ -4580,6 +4610,17 @@ var BMA;
                 this.onplotvariablesselectionchanged = callback;
                 this.viewer.simulationexpanded({ onChangePlotVariables: callback });
             };
+            SimulationExpandedDriver.prototype.SetOnCreateStateRequested = function (callback) {
+                if (this.viewer !== undefined) {
+                    this.viewer.simulationexpanded({
+                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        createStateRequested: callback
+                    });
+                }
+                else {
+                    this.createStateRequested = callback;
+                }
+            };
             SimulationExpandedDriver.prototype.Set = function (data) {
                 var table = this.CreateExpandedTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
@@ -5504,7 +5545,10 @@ var BMA;
                         this.exportCSVcallback = undefined;
                     }
                     if (this.createStateRequested !== undefined) {
-                        this.ltlResultsViewer.ltlresultsviewer({ createStateRequested: that.createStateRequested });
+                        this.ltlResultsViewer.ltlresultsviewer({
+                            columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                            createStateRequested: that.createStateRequested
+                        });
                         this.createStateRequested = undefined;
                     }
                 }
@@ -5732,7 +5776,10 @@ var BMA;
             };
             LTLResultsViewer.prototype.SetOnCreateStateRequested = function (callback) {
                 if (this.ltlResultsViewer !== undefined) {
-                    this.ltlResultsViewer.ltlresultsviewer({ createStateRequested: callback });
+                    this.ltlResultsViewer.ltlresultsviewer({
+                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        createStateRequested: callback
+                    });
                 }
                 else {
                     this.createStateRequested = callback;
@@ -6272,6 +6319,15 @@ var BMA;
                         var value = args.value * 24 + 800;
                         navigationDriver.SetZoom(value);
                     }
+                });
+                window.Commands.On("HighlightContent", function (args) {
+                    if (_this.svg !== undefined && _this.undoRedoPresenter.Current !== undefined) {
+                        var drawingSvg = _this.CreateSvg(args);
+                        _this.driver.Draw(drawingSvg);
+                    }
+                });
+                window.Commands.On("UnhighlightContent", function (args) {
+                    that.RefreshOutput();
                 });
                 var plotHost = this.navigationDriver.GetNavigationSurface().master;
                 svgPlotDriver.SetConstraintFunc(function (plotRect) {
@@ -7031,10 +7087,21 @@ var BMA;
                 for (var i = 0; i < containerLayouts.length; i++) {
                     var containerLayout = containerLayouts[i];
                     var element = window.ElementRegistry.GetElementByType("Container");
+                    var isHighlighted = undefined;
+                    if (args !== undefined && args.containerHighlightIds !== undefined) {
+                        isHighlighted = false;
+                        for (var j = 0; j < args.containerHighlightIds.length; j++) {
+                            if (containerLayout.Id === args.containerHighlightIds[j]) {
+                                isHighlighted = true;
+                                break;
+                            }
+                        }
+                    }
                     svgElements.push(element.RenderToSvg({
                         layout: containerLayout,
                         grid: this.Grid,
-                        background: args === undefined || args.containersStability === undefined ? undefined : this.GetContainerColorByStatus(args.containersStability[containerLayout.Id])
+                        background: args === undefined || args.containersStability === undefined ? undefined : this.GetContainerColorByStatus(args.containersStability[containerLayout.Id]),
+                        isHighlighted: isHighlighted
                     }));
                 }
                 var variables = model.Variables; //this.undoRedoPresenter.Current.model.Variables;
@@ -7043,7 +7110,25 @@ var BMA;
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
-                    var additionalInfo = args === undefined ? undefined : this.GetItemById(args.variablesStability, variable.Id);
+                    var additionalInfo = args === undefined || args.variablesStability === undefined ? undefined : this.GetItemById(args.variablesStability, variable.Id);
+                    var isHighlighted = undefined;
+                    if (args !== undefined && args.variableHighlightIds !== undefined) {
+                        isHighlighted = false;
+                        for (var j = 0; j < args.variableHighlightIds.length; j++) {
+                            if (variable.Id === args.variableHighlightIds[j]) {
+                                isHighlighted = true;
+                                break;
+                            }
+                        }
+                        if (!isHighlighted) {
+                            for (var j = 0; j < args.containerHighlightIds.length; j++) {
+                                if (variable.ContainerId === args.containerHighlightIds[j]) {
+                                    isHighlighted = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     var container = variable.Type === "MembraneReceptor" ? layout.GetContainerById(variable.ContainerId) : undefined;
                     var sizeCoef = undefined;
                     var gridCell = undefined;
@@ -7058,7 +7143,8 @@ var BMA;
                         gridCell: gridCell,
                         sizeCoef: sizeCoef,
                         valueText: additionalInfo === undefined ? undefined : additionalInfo.range,
-                        labelColor: additionalInfo === undefined ? undefined : this.GetVariableColorByStatus(additionalInfo.state)
+                        labelColor: additionalInfo === undefined ? undefined : this.GetVariableColorByStatus(additionalInfo.state),
+                        isHighlighted: isHighlighted
                     }));
                 }
                 var relationships = model.Relationships; //this.undoRedoPresenter.Current.model.Relationships;
@@ -7469,6 +7555,17 @@ var BMA;
                 simulationExpanded.SetOnPlotVariablesSelectionChanged(function (param) {
                     that.variables[param.ind].Seen = param.check;
                     that.compactViewer.ChangeVisibility(param);
+                });
+                simulationExpanded.SetOnCreateStateRequested(function (param) {
+                    var columnData = [];
+                    for (var i = 0; i < that.variables.length; i++) {
+                        columnData.push({
+                            variable: that.variables[i].Name,
+                            variableId: that.variables[i].Id,
+                            value: that.variables[i].Plot[param.column + 1]
+                        });
+                    }
+                    window.Commands.Execute("CreateStateFromTable", columnData);
                 });
                 //window.Commands.On("ChangePlotVariables", function (param) {
                 //    that.variables[param.ind].Seen = param.check;
@@ -9952,6 +10049,7 @@ var BMA;
                         }
                     }
                 }
+                that.createColumnContextMenu();
             }
         },
         Highlight: function (ind) {
@@ -9974,7 +10072,7 @@ var BMA;
                     autoFocus: true,
                     preventContextMenuForPopup: true,
                     preventSelect: true,
-                    menu: [{ title: "Create State", cmd: "CreateState" }],
+                    menu: that.options.columnContextMenuItems,
                     beforeOpen: function (event, ui) {
                         ui.menu.zIndex(50);
                         if ($(ui.target.context.parentElement).index() == 0)
@@ -10770,7 +10868,14 @@ var BMA;
                 .addClass('big-simulation-popout-table')
                 .appendTo(tables);
             var stepsdiv = $('<div></div>').addClass('steps-container').appendTo(that.element);
-            this.big_table.progressiontable();
+            var onContextMenuItemSelected = function (args) {
+                if (args.command == "CreateState" && that.options.createStateRequested !== undefined)
+                    that.options.createStateRequested(args);
+            };
+            this.big_table.progressiontable({
+                columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                onContextMenuItemSelected: onContextMenuItemSelected
+            });
             randomise.click(function () {
                 that.big_table.progressiontable("Randomise");
             });
@@ -10784,7 +10889,7 @@ var BMA;
                     this.big_table.progressiontable({
                         init: options.init,
                         interval: options.interval,
-                        data: options.data
+                        data: options.data,
                     });
                 }
             }
@@ -11884,29 +11989,22 @@ jQuery.fn.extend({
             visibleItems: [],
             colors: [],
             onExportCSV: undefined,
-            createStateRequested: undefined
+            createStateRequested: undefined,
+            columnContextMenuItems: undefined
         },
         _create: function () {
             var that = this;
             this.element.empty();
             this.element.addClass("ltlresultsviewer");
             var root = this.element;
-            //this.loading = $("<div></div>").addClass("page-loading").css("position", "absolute").css("top", "27").css("height", 470- 47).hide().appendTo(that.element);
-            //var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
-            //this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(root);
             this.tablesContainer = $("<div></div>").addClass('ltl-simplot-container').appendTo(root);
-            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer); //root);
-            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer); //root);
-            //this._table.height(that._table.height() + 10);
+            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer);
+            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer);
             this.scrollBarSize = BMA.ModelHelper.GetScrollBarSize();
             this._table.on('scroll', function () {
                 that._variables.scrollTop($(this).scrollTop());
             });
-            //this._variables.on('scroll', function () {
-            //    that._table.scrollTop($(this).scrollTop());
-            //});
             this._variables.css("max-height", 322 - that.scrollBarSize.height);
-            //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
             this.loading = $("<div></div>").addClass("page-loading").css("position", "inherit").css("height", 322).appendTo(this._plot);
             var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
@@ -11932,14 +12030,12 @@ jQuery.fn.extend({
                     that.options.visibleItems[params.ind] = params.check;
                 if (that.options.variables !== undefined && that.options.variables.length != 0)
                     that.options.variables[params.ind][1] = params.check;
-                //that._setOption("visibleItems", visibility);
             };
             this._variables.coloredtableviewer({
                 onChangePlotVariables: changeVisibility
             });
             var onContextMenuItemSelected = function (args) {
                 if (that.options.data !== undefined && that.options.data.length !== 0) {
-                    //that.loading.show();
                     var columnData = [];
                     for (var i = 0; i < that.options.data[args.column].length; i++) {
                         columnData.push({
@@ -11951,14 +12047,10 @@ jQuery.fn.extend({
                     if (args.command == "CreateState" && that.options.createStateRequested !== undefined)
                         that.options.createStateRequested(columnData);
                 }
-                //that.loading.hide();
-                //that.tablesContainer.show();
-                //that._plot.show();
             };
             this._table.progressiontable({
                 canEditInitialValue: false,
                 showInitialValue: false,
-                columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
                 onContextMenuItemSelected: onContextMenuItemSelected
             });
             var after = $("<div></div>").css("height", 23).css("width", "100%").appendTo(this._table);
@@ -12025,6 +12117,13 @@ jQuery.fn.extend({
                         this._plot.simulationplot({
                             colors: value,
                         });
+                    break;
+                }
+                case "columnContextMenuItems": {
+                    needUpdate = false;
+                    this._table.progressiontable({
+                        columnContextMenuItems: that.options.columnContextMenuItems,
+                    });
                     break;
                 }
                 default: break;
@@ -12375,6 +12474,15 @@ jQuery.fn.extend({
             var tr = $("<tr></tr>").appendTo(tbody);
             var variableTd = $("<td></td>").addClass("variable").appendTo(tr);
             that.createVariablePicker(variableTd, formula[0]);
+            variableTd.hover(function (e) {
+                var variableId = parseFloat(formula[0].value.variable);
+                window.Commands.Execute("HighlightContent", {
+                    variableHighlightIds: [variableId],
+                    containerHighlightIds: [],
+                });
+            }, function (e) {
+                window.Commands.Execute("UnhighlightContent", undefined);
+            });
             var operatorTd = $("<td></td>").addClass("operator").appendTo(tr);
             that.createOperatorPicker(operatorTd, formula[1], { variable: formula[0], stateIdx: stateIdx, formulaIdx: formulaIdx });
             var constTd = $("<td></td>").addClass("const").appendTo(tr);
@@ -12490,7 +12598,6 @@ jQuery.fn.extend({
             operatorSelector.children().bind("click", function () {
                 var newOperator = $(this).attr("data-operator-type");
                 setOperatorValue(newOperator);
-                //operatorExpandButton.removeClass('inputs-list-header-expanded');
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
             return operatorSelector;
@@ -12547,7 +12654,6 @@ jQuery.fn.extend({
                     variablePicker.remove();
                     variablePicker = undefined;
                 }
-                //expandButton.removeClass('inputs-list-header-expanded');
                 if (containerName !== "ALL") {
                     containerImg.removeClass("hidden");
                     selectedContainer.removeClass("hidden");
@@ -12563,7 +12669,6 @@ jQuery.fn.extend({
                 selectedVariable.addClass("not-selected");
             var variablePicker = undefined;
             setSelectedValue(variable.value);
-            //var trDivs = this.updateVariablePicker(trList, setSelectedValue, variable);
             $(document).mousedown(function (e) {
                 if (variablePicker) {
                     if (!variablePicker.is(e.target) && variablePicker.has(e.target).length === 0) {
@@ -12573,8 +12678,6 @@ jQuery.fn.extend({
             });
             expandButton.bind("click", function () {
                 if (!variablePicker) {
-                    //var offLeft = $(variableTd).offset().left - firstLeft;
-                    //var offTop = $(variableTd).offset().top - firstTop;
                     firstLeft = $(variableTd).offset().left;
                     firstTop = $(variableTd).offset().top + 47;
                     that.executeonComboBoxOpen();
@@ -12606,10 +12709,17 @@ jQuery.fn.extend({
                 currSymbol.value.container = that.findContainer(currSymbol.value.variable);
             }
             for (var i = 0; i < this.options.variables.length; i++) {
-                //if (this.options.variables[i].name) {
                 var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
                     .appendTo(divContainers).click(function () {
                     that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
+                });
+                container.hover(function (e) {
+                    var containerId = parseFloat($(this).attr("data-container-id"));
+                    if (containerId > 0) {
+                        window.Commands.Execute("HighlightContent", { variableHighlightIds: [], containerHighlightIds: [containerId] });
+                    }
+                }, function (e) {
+                    window.Commands.Execute("UnhighlightContent", undefined);
                 });
                 if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id) {
                     that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
@@ -12646,6 +12756,11 @@ jQuery.fn.extend({
                         currSymbol.value = { container: containerId, variable: variablesId };
                         setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable });
                         that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+                    });
+                    variable.hover(function (e) {
+                        window.Commands.Execute("HighlightContent", { variableHighlightIds: [parseFloat($(this).attr("data-variable-id"))], containerHighlightIds: [] });
+                    }, function (e) {
+                        window.Commands.Execute("UnhighlightContent", undefined);
                     });
                     if (currSymbol.value != 0 && currSymbol.value.container == $(container).attr("data-container-id")
                         && currSymbol.value.variable == that.options.variables[idx].vars[j].id) {
@@ -14529,19 +14644,11 @@ var BMA;
                     }
                 });
                 ltlresultsviewer.SetOnCreateStateRequested(function (args) {
-                    if (args !== undefined) {
-                        var keyframeEqs = [];
-                        for (var i = 0; i < args.length; i++) {
-                            keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId), "=", new BMA.LTLOperations.ConstOperand(args[i].value)));
-                        }
-                        var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
-                        var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
-                        var merged = that.MergeStates(that.appModel.States, [newState]);
-                        that.appModel.States = merged.states;
-                        that.statespresenter.UpdateStatesFromModel();
-                        that.tppresenter.UpdateStatesFromModel();
-                        ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
-                    }
+                    that.CreateStateFromTableData(args);
+                    ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
+                });
+                window.Commands.On("CreateStateFromTable", function (args) {
+                    that.CreateStateFromTableData(args);
                 });
                 commands.On("ExportLTLFormulaAsJson", function (args) {
                     if (args.operation !== undefined) {
@@ -14588,6 +14695,21 @@ var BMA;
                     }
                 });
             }
+            LTLPresenter.prototype.CreateStateFromTableData = function (args) {
+                var that = this;
+                if (args !== undefined) {
+                    var keyframeEqs = [];
+                    for (var i = 0; i < args.length; i++) {
+                        keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId), "=", new BMA.LTLOperations.ConstOperand(args[i].value)));
+                    }
+                    var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
+                    var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
+                    var merged = that.MergeStates(that.appModel.States, [newState]);
+                    that.appModel.States = merged.states;
+                    that.statespresenter.UpdateStatesFromModel();
+                    that.tppresenter.UpdateStatesFromModel();
+                }
+            };
             LTLPresenter.prototype.UpdateOperations = function (states) {
                 var operations = this.appModel.Operations.slice(0);
                 var opsWithStatus = [];
