@@ -77,21 +77,24 @@ let print_paths (network : QN.node list) (paths : Map<QN.var, int list> list) =
 // If the list of paths is longer than needed remove the prefix of the list
 let change_list_to_length (paths : Map<QN.var, int list> list) (length : int) =
     let changed_length_paths = 
-        if (length < 0)
+        if (length < 0) or (length = paths.Length)
         then
             paths
         elif (length > paths.Length) 
         then 
             let mutable (temp_paths : Map<QN.var, int list> list) = paths
+            let path_last = List.head (List.rev temp_paths)
             while (length > temp_paths.Length) do
-                temp_paths <- temp_paths @ [ List.head (List.rev temp_paths) ]
+                temp_paths <- temp_paths @ [ path_last ]
             temp_paths
         elif (length < paths.Length)
         then
-            let mutable (temp_paths : Map<QN.var, int list> list) = paths
-            while (length < temp_paths.Length) do
-                temp_paths <- List.rev (List.tail (List.rev temp_paths))
-            temp_paths
+            let mutable (inverse_path : Map<QN.var, int list> list) = (List.rev paths)
+            let path_last = List.head inverse_path
+            inverse_path <- List.tail inverse_path
+            while (length-1 < inverse_path.Length) do
+                inverse_path <- List.tail inverse_path
+            (List.rev inverse_path) @ [ path_last ]
         else
             paths        
 
