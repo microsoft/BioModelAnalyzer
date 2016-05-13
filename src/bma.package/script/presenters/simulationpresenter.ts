@@ -77,8 +77,10 @@
                         that.StartSimulation({ model: stableModel, variables: variables, num: param.num });
                     }
                     catch (ex) {
-                        that.messagebox.Show(ex);
+                        //that.messagebox.Show(ex);
+                        that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: ex } });
                         that.expandedViewer.ActiveMode();
+                        that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
                     }
                 });
 
@@ -264,7 +266,8 @@
                             }
                             else {
                                 that.expandedViewer.ActiveMode();
-                                that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: res.ErrorMessage } });
+                                that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: res.ErrorMessages } });
+                                that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
                                 //alert("Simulation Error: " + res.ErrorMessages);
                             }
                         })
@@ -277,10 +280,11 @@
                                     setTimeout(() => { that.StartSimulation({ model: param.model, variables: param.variables, num: param.num, attempt: param.attempt + 1 }); }, time * 1000);
 
                                 } else {
-                                    this.logService.LogSimulationError();
+                                    that.logService.LogSimulationError();
                                     console.log(textStatus);
                                     that.expandedViewer.ActiveMode();
                                     that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: errorThrown } });
+                                    that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
                                     //alert("Simulate error: " + errorThrown);
                                 }
 
