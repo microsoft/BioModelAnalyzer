@@ -74,33 +74,39 @@
                         }
                         that.refresh();
                     });
-                stateButton.hover(function (e) {
-                    var variablesIds = [];
-                    var stateIdx;
-                    for (var j = 0; j < that.options.states.length; j++) {
-                        if (that.options.states[j].name == $(this).attr("data-state-name")) {
-                            stateIdx = j;
-                            break;
-                        }
-                    }
-                    if (stateIdx !== undefined) {
-                        var formulas = that.options.states[stateIdx].formula;
-                        for (var i = 0; i < formulas.length; i++) {
-                            var variableId = formulas[i] && formulas[i][0] && formulas[i][0].value && formulas[i][0].value.variable !== undefined ?
-                                formulas[i][0].value.variable : undefined;
-                            if (variableId !== undefined)
-                                variablesIds.push(variableId);
-                        }
-
-                            window.Commands.Execute("HighlightContent", {
-                                variableHighlightIds: variablesIds,
-                                containerHighlightIds: [],
-                            });
-                    }
-                }, (e) => {
-                    window.Commands.Execute("UnhighlightContent", undefined);
-                });
+                this.addStatesHighlighting(stateButton);
             }
+        },
+
+        addStatesHighlighting: function (stateButton) {
+            var that = this;
+
+            stateButton.hover(function (e) {
+                var variablesIds = [];
+                var stateIdx;
+                for (var j = 0; j < that.options.states.length; j++) {
+                    if (that.options.states[j].name == $(this).attr("data-state-name")) {
+                        stateIdx = j;
+                        break;
+                    }
+                }
+                if (stateIdx !== undefined) {
+                    var formulas = that.options.states[stateIdx].formula;
+                    for (var i = 0; i < formulas.length; i++) {
+                        var variableId = formulas[i] && formulas[i][0] && formulas[i][0].value && formulas[i][0].value.variable !== undefined ?
+                            formulas[i][0].value.variable : undefined;
+                        if (variableId !== undefined)
+                            variablesIds.push(variableId);
+                    }
+
+                    window.Commands.Execute("HighlightContent", {
+                        variableHighlightIds: variablesIds,
+                        containerHighlightIds: [],
+                    });
+                }
+            }, (e) => {
+                window.Commands.Execute("UnhighlightContent", undefined);
+            });
         },
 
         addContextMenu: function () {
@@ -189,6 +195,7 @@
                 }
                 that.refresh();
             });
+            this.addStatesHighlighting(state);
 
             if (this._activeState != null)
                 that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
