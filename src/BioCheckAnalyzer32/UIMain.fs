@@ -119,9 +119,13 @@ type Analyzer () =
                     // SI: right now, we're just dumping res,model back to the UI.
                     // We should structure the data that res,model,model_checked are.
                     //let (res,model) = BMC.BoundedMC formula network range padded_paths
-                    let (res,model) = BMC.SimulationBasedMC formula network padded_paths
+                    let outcome = BMC.SimulationBasedMC formula network padded_paths
+                    let (res1, model1) = 
+                        match outcome with
+                        | Some (res, model) -> (res, model)
+                        | None -> (false, (0, Map.empty)) // 
 
-                    Marshal.ltl_result_full res model
+                    Marshal.ltl_result_full res1 model1
 
             with Marshal.MarshalInFailed(id,msg) -> Marshal.LTLAnalysisResultDTO_of_error id msg
 
