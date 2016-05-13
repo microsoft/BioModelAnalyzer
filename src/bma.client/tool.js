@@ -7796,7 +7796,7 @@ var BMA;
                             }
                             else {
                                 that.expandedViewer.ActiveMode();
-                                alert("Simulation Error: " + res.ErrorMessages);
+                                that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: res.ErrorMessage } });
                             }
                         })
                             .fail(function (XMLHttpRequest, textStatus, errorThrown) {
@@ -7809,7 +7809,7 @@ var BMA;
                                 this.logService.LogSimulationError();
                                 console.log(textStatus);
                                 that.expandedViewer.ActiveMode();
-                                alert("Simulate error: " + errorThrown);
+                                that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: errorThrown } });
                             }
                             return;
                         });
@@ -12745,10 +12745,6 @@ jQuery.fn.extend({
                 }
                 if (variableName === "") {
                     variableName = "Unnamed";
-                    expandButton.addClass("hidden");
-                }
-                else {
-                    expandButton.removeClass("hidden");
                 }
                 $(selectedContainer).text(containerName);
                 $(selectedVariable).text(variableName);
@@ -12847,7 +12843,8 @@ jQuery.fn.extend({
             $(container).addClass("active");
             for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
                 var variableName = that.options.variables[idx].vars[j].name;
-                if (variableName && that.options.variables[idx].vars[j].id !== undefined) {
+                variableName = variableName ? variableName : "Unnamed";
+                if (that.options.variables[idx].vars[j].id !== undefined) {
                     var variable = $("<a>" + variableName + "</a>").attr("data-variable-id", that.options.variables[idx].vars[j].id)
                         .appendTo(divVariables).click(function () {
                         divVariables.find(".active").removeClass("active");
@@ -13153,7 +13150,7 @@ jQuery.fn.extend({
                     if (formula[i] !== undefined) {
                         switch (formula[i].type) {
                             case "variable": {
-                                newFormula.variable = formula[i].value.name;
+                                newFormula.variable = formula[i].value.name ? formula[i].value.name : "Unnamed";
                                 newFormula.id = formula[i].value.id;
                                 break;
                             }

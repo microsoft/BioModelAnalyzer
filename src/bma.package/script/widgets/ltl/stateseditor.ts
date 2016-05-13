@@ -493,10 +493,7 @@
 
                 if (variableName === "") {
                     variableName = "Unnamed";
-                    expandButton.addClass("hidden");
-                } else {
-                    expandButton.removeClass("hidden");
-                }
+                } 
                 
                 $(selectedContainer).text(containerName);
                 $(selectedVariable).text(variableName);
@@ -621,8 +618,9 @@
             for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
 
                 var variableName = that.options.variables[idx].vars[j].name;
-                if (variableName && that.options.variables[idx].vars[j].id !== undefined) {
-
+                variableName = variableName ? variableName : "Unnamed";
+                if (that.options.variables[idx].vars[j].id !== undefined) {
+                    
                     var variable = $("<a>" + variableName + "</a>").attr("data-variable-id", that.options.variables[idx].vars[j].id)
                         .appendTo(divVariables).click(function () {
                             divVariables.find(".active").removeClass("active");

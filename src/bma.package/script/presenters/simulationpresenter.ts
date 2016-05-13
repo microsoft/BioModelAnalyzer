@@ -264,7 +264,8 @@
                             }
                             else {
                                 that.expandedViewer.ActiveMode();
-                                alert("Simulation Error: " + res.ErrorMessages);
+                                that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: res.ErrorMessage } });
+                                //alert("Simulation Error: " + res.ErrorMessages);
                             }
                         })
                             .fail(function (XMLHttpRequest, textStatus, errorThrown) {
@@ -279,7 +280,8 @@
                                     this.logService.LogSimulationError();
                                     console.log(textStatus);
                                     that.expandedViewer.ActiveMode();
-                                    alert("Simulate error: " + errorThrown);
+                                    that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: errorThrown } });
+                                    //alert("Simulate error: " + errorThrown);
                                 }
 
                             return;

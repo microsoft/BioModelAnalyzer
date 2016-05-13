@@ -174,7 +174,7 @@
                     if (formula[i] !== undefined) {
                         switch (formula[i].type) {
                             case "variable": {
-                                newFormula.variable = formula[i].value.name;
+                                newFormula.variable = formula[i].value.name ? formula[i].value.name: "Unnamed";
                                 newFormula.id = formula[i].value.id;                            
                                 break;
                             }
