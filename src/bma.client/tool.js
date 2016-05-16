@@ -649,18 +649,32 @@ var BMA;
                                 //context.fill();
                                 break;
                             case 2:
-                                renderLayoutPart(operands[0], {
-                                    x: pos.x - halfWidth + operands[0].width / 2 + paddingX,
-                                    y: pos.y
-                                }, undefined);
-                                renderLayoutPart(operands[1], {
-                                    x: pos.x + halfWidth - operands[1].width / 2 - paddingX,
-                                    y: pos.y
-                                }, undefined);
-                                context.font = "10px Segoe-UI";
-                                context.fillStyle = "rgb(96,96,96)";
-                                context.fillText(operation.operator, pos.x - halfWidth + operands[0].width + 2 * paddingX, pos.y);
-                                //context.fill();
+                                if (!layoutPart.isFunction) {
+                                    renderLayoutPart(operands[0], {
+                                        x: pos.x - halfWidth + operands[0].width / 2 + paddingX,
+                                        y: pos.y
+                                    }, undefined);
+                                    renderLayoutPart(operands[1], {
+                                        x: pos.x + halfWidth - operands[1].width / 2 - paddingX,
+                                        y: pos.y
+                                    }, undefined);
+                                    context.font = "10px Segoe-UI";
+                                    context.fillStyle = "rgb(96,96,96)";
+                                    context.fillText(operation.operator, pos.x - halfWidth + operands[0].width + 2 * paddingX, pos.y);
+                                }
+                                else {
+                                    renderLayoutPart(operands[0], {
+                                        x: pos.x + halfWidth - operands[1].width - paddingX - operands[0].width / 2 - paddingX,
+                                        y: pos.y
+                                    }, undefined);
+                                    renderLayoutPart(operands[1], {
+                                        x: pos.x + halfWidth - operands[1].width / 2 - paddingX,
+                                        y: pos.y
+                                    }, undefined);
+                                    context.font = "10px Segoe-UI";
+                                    context.fillStyle = "rgb(96,96,96)";
+                                    context.fillText(operation.operator, pos.x - halfWidth + paddingX, pos.y);
+                                }
                                 break;
                             default:
                                 break;
@@ -731,6 +745,7 @@ var BMA;
             if (operator !== undefined) {
                 layout.operands = [];
                 layout.operator = operator.Name;
+                layout.isFunction = operator.isFunction;
                 var operands = op.Operands;
                 var layer = 0;
                 var width = getOperatorWidth(operator.Name, 10);
@@ -3524,11 +3539,20 @@ var BMA;
         })();
         LTLOperations.Keyframe = Keyframe;
         var Operator = (function () {
-            function Operator(name, operandsCount, fun) {
+            function Operator(name, operandsCount, fun, isFunction) {
+                if (isFunction === void 0) { isFunction = true; }
                 this.name = name;
                 this.fun = fun;
                 this.operandsNumber = operandsCount;
+                this.isFunction = isFunction;
             }
+            Object.defineProperty(Operator.prototype, "IsFunction", {
+                get: function () {
+                    return this.isFunction;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(Operator.prototype, "Name", {
                 get: function () {
                     return this.name;
@@ -3951,7 +3975,7 @@ var BMA;
                         case 2:
                             var x1 = position.x + layout.width / 2 - layout.operands[1].width / 2 - padding.x;
                             this.SetPositionOffsets(layout.operands[1], { x: x1, y: position.y });
-                            var x2 = position.x - layout.width / 2 + layout.operands[0].width / 2 + padding.x;
+                            var x2 = layout.isFunction ? position.x + layout.width / 2 - layout.operands[1].width - padding.x - layout.operands[0].width / 2 - padding.x : position.x - layout.width / 2 + layout.operands[0].width / 2 + padding.x;
                             this.SetPositionOffsets(layout.operands[0], { x: x2, y: position.y });
                             break;
                         default:
@@ -4042,18 +4066,34 @@ var BMA;
                                 }, operands[0], undefined);
                                 break;
                             case 2:
-                                this.RenderLayoutPart(svg, {
-                                    x: position.x - halfWidth + operands[0].width / 2 + paddingX,
-                                    y: position.y
-                                }, operands[0], undefined);
-                                this.RenderLayoutPart(svg, {
-                                    x: position.x + halfWidth - operands[1].width / 2 - paddingX,
-                                    y: position.y
-                                }, operands[1], undefined);
-                                svg.text(this.renderGroup, position.x - halfWidth + operands[0].width + 2 * paddingX, position.y + 3, operation.operator, {
-                                    "font-size": 10,
-                                    "fill": "rgb(96,96,96)"
-                                });
+                                if (!layoutPart.isFunction) {
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x - halfWidth + operands[0].width / 2 + paddingX,
+                                        y: position.y
+                                    }, operands[0], undefined);
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x + halfWidth - operands[1].width / 2 - paddingX,
+                                        y: position.y
+                                    }, operands[1], undefined);
+                                    svg.text(this.renderGroup, position.x - halfWidth + operands[0].width + 2 * paddingX, position.y + 3, operation.operator, {
+                                        "font-size": 10,
+                                        "fill": "rgb(96,96,96)"
+                                    });
+                                }
+                                else {
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x + halfWidth - operands[1].width - paddingX - operands[0].width / 2 - paddingX,
+                                        y: position.y
+                                    }, operands[0], undefined);
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x + halfWidth - operands[1].width / 2 - paddingX,
+                                        y: position.y
+                                    }, operands[1], undefined);
+                                    svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
+                                        "font-size": 10,
+                                        "fill": "rgb(96,96,96)"
+                                    });
+                                }
                                 break;
                             default:
                                 break;
@@ -4138,12 +4178,6 @@ var BMA;
                 if (this.isVisible)
                     this.Render();
             };
-            OperationLayout.prototype.CopyOperandFromCursor = function (x, y, withCut) {
-                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y + this.bbox.height) {
-                    return undefined;
-                }
-                return undefined;
-            };
             OperationLayout.prototype.GetIntersectedChild = function (x, y, position, layoutPart, accountEmpty) {
                 var width = layoutPart.width;
                 var halfWidth = width / 2;
@@ -4177,8 +4211,9 @@ var BMA;
                         break;
                     case 2:
                         if (!operands[0].isEmpty) {
+                            var xPos = layoutPart.isFunction ? position.x + halfWidth - operands[0].width / 2 - paddingX - operands[1].width - paddingX : position.x - halfWidth + operands[0].width / 2 + paddingX;
                             var highlighted1 = this.GetIntersectedChild(x, y, {
-                                x: position.x - halfWidth + operands[0].width / 2 + paddingX,
+                                x: xPos,
                                 y: position.y
                             }, operands[0], accountEmpty);
                             if (highlighted1 !== undefined) {
@@ -4188,7 +4223,7 @@ var BMA;
                         else {
                             if (accountEmpty) {
                                 var pos = {
-                                    x: position.x - halfWidth + operands[0].width / 2 + paddingX,
+                                    x: layoutPart.isFunction ? position.x + halfWidth - operands[0].width / 2 - paddingX - operands[1].width - paddingX : position.x - halfWidth + operands[0].width / 2 + paddingX,
                                     y: position.y
                                 };
                                 if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
@@ -11776,6 +11811,105 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=visibilitysettings.js.map
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
+    $.widget("BMA.formulaeditor", {
+        _create: function () {
+            var that = this;
+            var root = this.element;
+            //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
+            var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
+            //Adding states
+            var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("Variables<br>").appendTo(toolbar);
+            this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
+            //this._refreshStates();
+            //Adding operators
+            var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
+            operators.width(350);
+            var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
+            var operatorsArr = [
+                { Name: "&nbsp;+&nbsp;", OperandsCount: 2, isFunction: false },
+                { Name: "&nbsp;-&nbsp;", OperandsCount: 2, isFunction: false },
+                { Name: "&nbsp;*&nbsp;", OperandsCount: 2, isFunction: false },
+                { Name: "&nbsp;/&nbsp;", OperandsCount: 2, isFunction: false },
+                { Name: "AVG", OperandsCount: 2, isFunction: true },
+                { Name: "MIN", OperandsCount: 2, isFunction: true },
+                { Name: "MAX", OperandsCount: 2, isFunction: true },
+                { Name: "CEIL", OperandsCount: 1, isFunction: false },
+                { Name: "FLOOR", OperandsCount: 1, isFunction: false },
+            ];
+            for (var i = 0; i < operatorsArr.length; i++) {
+                var operator = operatorsArr[i];
+                var opDiv = $("<div></div>")
+                    .addClass("operator")
+                    .addClass("ltl-tp-droppable")
+                    .attr("data-operator", operator.Name)
+                    .css("z-index", 6)
+                    .css("cursor", "pointer")
+                    .appendTo(operatorsDiv);
+                var spaceStr = "&nbsp;&nbsp;";
+                if (operator.OperandsCount > 1 && !operator.isFunction) {
+                    $("<div></div>").addClass("hole").appendTo(opDiv);
+                    spaceStr = "";
+                }
+                var label = $("<div></div>").addClass("label").html(spaceStr + operator.Name).appendTo(opDiv);
+                $("<div></div>").addClass("hole").appendTo(opDiv);
+                if (operator.OperandsCount > 1 && operator.isFunction) {
+                    //$("<div>&nbsp;&nbsp;</div>").appendTo(opDiv);
+                    $("<div></div>").addClass("hole").appendTo(opDiv);
+                }
+                opDiv.draggable({
+                    helper: "clone",
+                    cursorAt: { left: 0, top: 0 },
+                    opacity: 0.4,
+                    cursor: "pointer",
+                    start: function (event, ui) {
+                        //that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
+                    }
+                });
+            }
+            //Adding operators toggle basic/advanced
+            /*
+            var toggle = $("<div></div>").addClass("toggle").width(60).attr("align", "right").text("Advanced").appendTo(toolbar);
+            toggle.click((args) => {
+                if (toggle.text() === "Advanced") {
+                    toggle.text("Basic");
+                    operatorsDiv.height(98);
+                    this.statesbtns.height(98);
+                    if (this.drawingSurfaceContainerRef !== undefined) {
+                        this.drawingSurfaceContainerRef.height("calc(100% - 113px - 30px - 34px)");
+                    }
+                } else {
+                    toggle.text("Advanced");
+                    operatorsDiv.height(64);
+                    this.statesbtns.height(64);
+                    if (this.drawingSurfaceContainerRef !== undefined) {
+                        this.drawingSurfaceContainerRef.height("calc(100% - 113px - 30px)");
+                    }
+                }
+                //$('body,html').css("zoom", 1.0000001);
+                //root.height(root.height() + 1);
+                this.updateLayout();
+            });
+            */
+            //Adding drawing surface
+            var svgDiv = $("<div></div>").css("background-color", "white").height(200).width("100%").appendTo(root);
+        },
+        _setOption: function (key, value) {
+            var that = this;
+            var needRefreshStates = false;
+            switch (key) {
+                default:
+                    break;
+            }
+        },
+        destroy: function () {
+            this.element.empty();
+        }
+    });
+}(jQuery));
+//# sourceMappingURL=formulaeditor.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {

@@ -91,20 +91,35 @@
                                 break;
                             case 2:
 
-                                renderLayoutPart(operands[0], {
-                                    x: pos.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
-                                    y: pos.y
-                                }, undefined);
+                                if (!layoutPart.isFunction) {
+                                    renderLayoutPart(operands[0], {
+                                        x: pos.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
+                                        y: pos.y
+                                    }, undefined);
 
-                                renderLayoutPart(operands[1], {
-                                    x: pos.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
-                                    y: pos.y
-                                }, undefined);
+                                    renderLayoutPart(operands[1], {
+                                        x: pos.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
+                                        y: pos.y
+                                    }, undefined);
 
-                                context.font = "10px Segoe-UI";
-                                context.fillStyle = "rgb(96,96,96)";
-                                context.fillText(operation.operator, pos.x - halfWidth + (<any>operands[0]).width + 2 * paddingX, pos.y);
-                                //context.fill();
+                                    context.font = "10px Segoe-UI";
+                                    context.fillStyle = "rgb(96,96,96)";
+                                    context.fillText(operation.operator, pos.x - halfWidth + (<any>operands[0]).width + 2 * paddingX, pos.y);
+                                } else {
+                                    renderLayoutPart(operands[0], {
+                                        x: pos.x + halfWidth - (<any>operands[1]).width - paddingX - (<any>operands[0]).width / 2 - paddingX,
+                                        y: pos.y
+                                    }, undefined);
+
+                                    renderLayoutPart(operands[1], {
+                                        x: pos.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
+                                        y: pos.y
+                                    }, undefined);
+
+                                    context.font = "10px Segoe-UI";
+                                    context.fillStyle = "rgb(96,96,96)";
+                                    context.fillText(operation.operator, pos.x - halfWidth + paddingX, pos.y);
+                                }
 
                                 break;
                             default:
@@ -186,6 +201,7 @@
             if (operator !== undefined) {
                 layout.operands = [];
                 layout.operator = operator.Name;
+                layout.isFunction = operator.isFunction;
 
                 var operands = (<BMA.LTLOperations.Operation>op).Operands;
                 var layer = 0;
