@@ -3540,7 +3540,7 @@ var BMA;
         LTLOperations.Keyframe = Keyframe;
         var Operator = (function () {
             function Operator(name, operandsCount, fun, isFunction) {
-                if (isFunction === void 0) { isFunction = true; }
+                if (isFunction === void 0) { isFunction = false; }
                 this.name = name;
                 this.fun = fun;
                 this.operandsNumber = operandsCount;
@@ -11895,14 +11895,78 @@ jQuery.fn.extend({
             */
             //Adding drawing surface
             var svgDiv = $("<div></div>").css("background-color", "white").height(200).width("100%").appendTo(root);
+            that.svgDiv = svgDiv;
+            var pixofs = 0;
+            svgDiv.svg({
+                onLoad: function (svg) {
+                    that._svg = svg;
+                    svg.configure({
+                        width: svgDiv.width() - pixofs,
+                        height: svgDiv.height() - pixofs,
+                        viewBox: "0 0 " + (svgDiv.width() - pixofs) + " " + (svgDiv.height() - pixofs),
+                        preserveAspectRatio: "none meet"
+                    }, true);
+                    that._refresh();
+                }
+            });
+            svgDiv.mousemove(function (arg) {
+                if (that.operationLayout !== undefined) {
+                    var opL = that.operationLayout;
+                    var parentOffset = $(this).offset();
+                    var relX = arg.pageX - parentOffset.left;
+                    var relY = arg.pageY - parentOffset.top;
+                    var svgCoords = that._getSVGCoords(relX, relY);
+                    opL.HighlightAtPosition(svgCoords.x, svgCoords.y);
+                }
+            });
+            svgDiv.droppable();
+        },
+        _getSVGCoords: function (x, y) {
+            var bbox = this.operationLayout.BoundingBox;
+            var aspect = this.svgDiv.width() / this.svgDiv.height();
+            var bboxx = -bbox.width / 2 - 10;
+            var width = bbox.width + 20;
+            var height = width / aspect;
+            var bboxy = -height / 2;
+            var svgX = width * x / this.svgDiv.width() + bboxx;
+            var svgY = height * y / this.svgDiv.height() + bboxy;
+            return {
+                x: svgX,
+                y: svgY
+            };
+        },
+        _refresh: function () {
+            var that = this;
+            if (that._svg === undefined)
+                return;
+            if (that.options.operation !== undefined) {
+                this.operationLayout = new BMA.LTLOperations.OperationLayout(that._svg, that.options.operation, { x: 0, y: 0 });
+                var bbox = this.operationLayout.BoundingBox;
+                var aspect = that.svgDiv.width() / that.svgDiv.height();
+                var x = -bbox.width / 2 - 10;
+                var width = bbox.width + 20;
+                var height = width / aspect;
+                var y = -height / 2;
+                that._svg.configure({
+                    viewBox: x + " " + y + " " + width + " " + height,
+                }, true);
+            }
+            else {
+                if (that.operationLayout !== undefined) {
+                    that.operationLayout.IsVisible = false;
+                }
+            }
         },
         _setOption: function (key, value) {
             var that = this;
             var needRefreshStates = false;
             switch (key) {
+                case "operation":
+                    break;
                 default:
                     break;
             }
+            that._refresh();
         },
         destroy: function () {
             this.element.empty();
