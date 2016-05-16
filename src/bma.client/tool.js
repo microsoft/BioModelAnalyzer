@@ -4789,51 +4789,23 @@ var BMA;
             return AccordionHider;
         })();
         UIDrivers.AccordionHider = AccordionHider;
-        var FormulaValidationService = (function () {
-            function FormulaValidationService() {
+        var BMAProcessingService = (function () {
+            function BMAProcessingService(serviceURL) {
+                this.serviceURL = serviceURL;
             }
-            FormulaValidationService.prototype.Invoke = function (data) {
+            BMAProcessingService.prototype.Invoke = function (data) {
+                var that = this;
                 return $.ajax({
                     type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/Validate",
+                    url: that.serviceURL,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 });
             };
-            return FormulaValidationService;
+            return BMAProcessingService;
         })();
-        UIDrivers.FormulaValidationService = FormulaValidationService;
-        var FurtherTestingService = (function () {
-            function FurtherTestingService() {
-            }
-            FurtherTestingService.prototype.Invoke = function (data) {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/FurtherTesting",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
-            };
-            return FurtherTestingService;
-        })();
-        UIDrivers.FurtherTestingService = FurtherTestingService;
-        var ProofAnalyzeService = (function () {
-            function ProofAnalyzeService() {
-            }
-            ProofAnalyzeService.prototype.Invoke = function (data) {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/Analyze",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
-            };
-            return ProofAnalyzeService;
-        })();
-        UIDrivers.ProofAnalyzeService = ProofAnalyzeService;
+        UIDrivers.BMAProcessingService = BMAProcessingService;
         var LTLAnalyzeService = (function () {
             function LTLAnalyzeService(url, maxRequestCount) {
                 this.maxRequestCount = 1;
@@ -4880,21 +4852,6 @@ var BMA;
             return LTLAnalyzeService;
         })();
         UIDrivers.LTLAnalyzeService = LTLAnalyzeService;
-        var SimulationService = (function () {
-            function SimulationService() {
-            }
-            SimulationService.prototype.Invoke = function (data) {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/Simulate",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
-            };
-            return SimulationService;
-        })();
-        UIDrivers.SimulationService = SimulationService;
         var MessageBoxDriver = (function () {
             function MessageBoxDriver() {
             }
