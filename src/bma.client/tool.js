@@ -1354,7 +1354,7 @@ var BMA;
                     var cellPath = jqSvg.createPath();
                     var pathFill = "#FAAF40";
                     if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
-                        pathFill = "#808080";
+                        pathFill = "#EDEDED";
                     }
                     var op = jqSvg.path(g, cellPath, {
                         stroke: 'transparent',
@@ -1433,7 +1433,7 @@ var BMA;
                     var pathFill = "#BBBDBF";
                     if (renderParams.isHighlighted !== undefined) {
                         if (!renderParams.isHighlighted) {
-                            pathFill = "#808080";
+                            pathFill = "#EDEDED";
                         }
                     }
                     if (renderParams.isHighlighted) {
@@ -1498,7 +1498,7 @@ var BMA;
                     });
                     var pathFill = "#EF4137";
                     if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
-                        pathFill = "#808080";
+                        pathFill = "#EDEDED";
                     }
                     if (renderParams.isHighlighted) {
                         var rad = Math.max(that.variableHeightConstant, that.variableWidthConstant) / 2;
@@ -1568,7 +1568,7 @@ var BMA;
                     }
                     var pathFill = "#3BB34A";
                     if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
-                        pathFill = "#808080";
+                        pathFill = "#EDEDED";
                     }
                     if (renderParams.isHighlighted) {
                         var rad = 1.1 * Math.max(that.variableHeightConstant, that.variableWidthConstant) / 2;
@@ -1637,9 +1637,13 @@ var BMA;
                         var ew = w * 0.6;
                         var eh = h * 1.6;
                         var x1 = ew * (1 - Math.sqrt(1 - h * h / (eh * eh))) + x0;
+                        var pathFill = "#808080";
+                        if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
+                            pathFill = "#EDEDED";
+                        }
                         var path = jqSvg.createPath();
                         lineRef = jqSvg.path(path.move(x1, y0 - h)
-                            .arc(ew, eh, 0, true, true, x1, y0 + h), { fill: 'none', stroke: '#808080', strokeWidth: lw + 1, "marker-end": "url(#Activator)" });
+                            .arc(ew, eh, 0, true, true, x1, y0 + h), { fill: 'none', stroke: pathFill, strokeWidth: lw + 1, "marker-end": "url(#Activator)" });
                     }
                     else {
                         var dir = {
@@ -1716,9 +1720,13 @@ var BMA;
                         var ew = w * 0.6;
                         var eh = h * 1.6;
                         var x1 = ew * (1 - Math.sqrt(1 - h * h / (eh * eh))) + x0;
+                        var pathFill = "#808080";
+                        if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
+                            pathFill = "#EDEDED";
+                        }
                         var path = jqSvg.createPath();
                         lineRef = jqSvg.path(path.move(x1, y0 - h)
-                            .arc(ew, eh, 0, true, true, x1, y0 + h), { fill: 'none', stroke: '#808080', strokeWidth: lw + 1, "marker-end": "url(#Inhibitor)" });
+                            .arc(ew, eh, 0, true, true, x1, y0 + h), { fill: 'none', stroke: pathFill, strokeWidth: lw + 1, "marker-end": "url(#Inhibitor)" });
                     }
                     else {
                         var dir = {
