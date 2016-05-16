@@ -575,8 +575,18 @@ module BMA {
                 this.acc = acc;
             }
 
+            public ContentLoaded(index, value) {
+                this.acc.bmaaccordion({ contentLoaded: { ind: index, val: value } });
+            }
+
             public Hide() {
                 var coll = this.acc.children().filter('[aria-selected="true"]').trigger("click");
+            }
+
+            public HideTab(ind) {
+                var searchString = "[aria-controls = 'tabs-" + ind + "']";
+                var tab = this.acc.find(searchString);
+                tab.trigger("click");
             }
         }
 

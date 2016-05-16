@@ -4783,8 +4783,16 @@ var BMA;
             function AccordionHider(acc) {
                 this.acc = acc;
             }
+            AccordionHider.prototype.ContentLoaded = function (index, value) {
+                this.acc.bmaaccordion({ contentLoaded: { ind: index, val: value } });
+            };
             AccordionHider.prototype.Hide = function () {
                 var coll = this.acc.children().filter('[aria-selected="true"]').trigger("click");
+            };
+            AccordionHider.prototype.HideTab = function (ind) {
+                var searchString = "[aria-controls = 'tabs-" + ind + "']";
+                var tab = this.acc.find(searchString);
+                tab.trigger("click");
             };
             return AccordionHider;
         })();
@@ -7588,6 +7596,7 @@ var BMA;
         var SimulationPresenter = (function () {
             function SimulationPresenter(appModel, simulationAccordeon, simulationExpanded, simulationViewer, popupViewer, ajax, logService, exportService, messagebox) {
                 var _this = this;
+                this.simulationStatus = "NotStarted";
                 this.appModel = appModel;
                 this.compactViewer = simulationViewer;
                 this.expandedViewer = simulationExpanded;
@@ -7616,6 +7625,13 @@ var BMA;
                 //    that.variables[param.ind].Seen = param.check;
                 //    that.compactViewer.ChangeVisibility(param);
                 //});
+                window.Commands.On("ModelReset", function (param) {
+                    if (that.simulationStatus == "Processing") {
+                        that.simulationStatus = "NotStarted";
+                        that.expandedViewer.ActiveMode();
+                        that.simulationAccordeon.HideTab(2);
+                    }
+                });
                 window.Commands.On("RunSimulation", function (param) {
                     that.expandedViewer.StandbyMode();
                     that.ClearPlot(param.data);
@@ -7623,13 +7639,15 @@ var BMA;
                         var stableModel = BMA.Model.ExportBioModel(that.appModel.BioModel);
                         var variables = that.ConvertParam(param.data);
                         logService.LogSimulationRun();
+                        that.simulationStatus = "Processing";
                         that.StartSimulation({ model: stableModel, variables: variables, num: param.num });
                     }
                     catch (ex) {
                         //that.messagebox.Show(ex);
                         that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: ex } });
                         that.expandedViewer.ActiveMode();
-                        that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
+                        that.simulationStatus = "Ended";
+                        that.simulationAccordeon.ContentLoaded("#icon2", true);
                     }
                 });
                 window.Commands.On("SimulationRequested", function (args) {
@@ -7641,7 +7659,7 @@ var BMA;
                             that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: ex } });
                             return;
                         }
-                        that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
+                        that.simulationAccordeon.ContentLoaded("#icon2", false);
                         that.expandedSimulationVariables = undefined;
                         that.UpdateVariables();
                         that.compactView = that.CreateVariablesCompactView();
@@ -7659,6 +7677,7 @@ var BMA;
                             colors: that.variables,
                             init: initValues
                         });
+                        that.simulationStatus = "NotStarted";
                         window.Commands.Execute("RunSimulation", { num: 10, data: initValues });
                     }
                     else {
@@ -7767,6 +7786,7 @@ var BMA;
             SimulationPresenter.prototype.StartSimulation = function (param) {
                 var that = this;
                 if (param.num === undefined || param.num === 0) {
+                    that.simulationStatus = "Ended";
                     var colorData = that.CreateProgressionMinTable();
                     that.compactViewer.SetData({
                         data: {
@@ -7779,7 +7799,7 @@ var BMA;
                     that.expandedSimulationVariables = that.expandedViewer.GetViewer();
                     that.expandedViewer.ActiveMode();
                     that.Snapshot();
-                    that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
+                    that.simulationAccordeon.ContentLoaded("#icon2", true);
                     return;
                 }
                 else {
@@ -7790,16 +7810,22 @@ var BMA;
                     if (param.variables !== undefined && param.variables !== null) {
                         var result = that.ajax.Invoke(simulate)
                             .done(function (res) {
-                            if (res.Variables !== null) {
-                                that.expandedViewer.AddResult(res);
-                                var d = that.ConvertResult(res);
-                                that.AddData(d);
-                                that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1, attempt: 1 });
+                            if (that.simulationStatus == "Processing") {
+                                if (res.Variables !== null) {
+                                    that.expandedViewer.AddResult(res);
+                                    var d = that.ConvertResult(res);
+                                    that.AddData(d);
+                                    that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1, attempt: 1 });
+                                }
+                                else {
+                                    that.expandedViewer.ActiveMode();
+                                    that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: res.ErrorMessages } });
+                                    that.simulationAccordeon.ContentLoaded("#icon2", true);
+                                }
                             }
                             else {
                                 that.expandedViewer.ActiveMode();
-                                that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: res.ErrorMessages } });
-                                that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
+                                that.simulationAccordeon.ContentLoaded("#icon2", false);
                             }
                         })
                             .fail(function (XMLHttpRequest, textStatus, errorThrown) {
@@ -7813,7 +7839,7 @@ var BMA;
                                 console.log(textStatus);
                                 that.expandedViewer.ActiveMode();
                                 that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: errorThrown } });
-                                that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
+                                that.simulationAccordeon.ContentLoaded("#icon2", true);
                             }
                             return;
                         });
@@ -15782,6 +15808,8 @@ var BMA;
                             that.log.LogLTLError();
                             if (res.Error.indexOf("Operation is not completed in") > -1)
                                 driver.SetStatus("nottested", "Timed out");
+                            else if (res.Error)
+                                driver.SetStatus("nottested", res.Error);
                             else
                                 driver.SetStatus("nottested", "Server error");
                             operation.AnalysisStatus = "nottested";
