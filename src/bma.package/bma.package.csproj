@@ -173,6 +173,7 @@
     <TypeScriptCompile Include="script\widgets\containernameeditor.ts" />
     <TypeScriptCompile Include="script\widgets\drawingsurface.ts" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
+    <TypeScriptCompile Include="script\widgets\formulaeditor.ts" />
     <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
     <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\compactltlresult.ts" />

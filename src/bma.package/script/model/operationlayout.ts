@@ -292,7 +292,7 @@
                             var x1 = position.x + layout.width / 2 - layout.operands[1].width / 2 - padding.x;
                             this.SetPositionOffsets(layout.operands[1], { x: x1, y: position.y });
 
-                            var x2 = position.x - layout.width / 2 + layout.operands[0].width / 2 + padding.x;
+                            var x2 = layout.isFunction ? position.x + layout.width / 2 - layout.operands[1].width - padding.x - layout.operands[0].width / 2 - padding.x : position.x - layout.width / 2 + layout.operands[0].width / 2 + padding.x;
                             this.SetPositionOffsets(layout.operands[0], { x: x2, y: position.y });
                             break;
                         default:
@@ -398,23 +398,47 @@
                                 break;
                             case 2:
 
-                                this.RenderLayoutPart(svg, {
-                                    x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
-                                    y: position.y
-                                },
-                                    operands[0], undefined);
+                                if (!layoutPart.isFunction) {
+
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
+                                        y: position.y
+                                    },
+                                        operands[0], undefined);
 
 
-                                this.RenderLayoutPart(svg, {
-                                    x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
-                                    y: position.y
-                                },
-                                    operands[1], undefined);
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
+                                        y: position.y
+                                    },
+                                        operands[1], undefined);
 
-                                svg.text(this.renderGroup, position.x - halfWidth + (<any>operands[0]).width + 2 * paddingX, position.y + 3, operation.operator, {
-                                    "font-size": 10,
-                                    "fill": "rgb(96,96,96)"
-                                });
+                                    svg.text(this.renderGroup, position.x - halfWidth + (<any>operands[0]).width + 2 * paddingX, position.y + 3, operation.operator, {
+                                        "font-size": 10,
+                                        "fill": "rgb(96,96,96)"
+                                    });
+
+                                } else {
+
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x + halfWidth - (<any>operands[1]).width - paddingX - (<any>operands[0]).width / 2 - paddingX,
+                                        y: position.y
+                                    },
+                                        operands[0], undefined);
+
+
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
+                                        y: position.y
+                                    },
+                                        operands[1], undefined);
+
+                                    svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
+                                        "font-size": 10,
+                                        "fill": "rgb(96,96,96)"
+                                    });
+
+                                }
 
                                 break;
                             default:
@@ -527,15 +551,6 @@
                     this.Render();
             }
 
-            public CopyOperandFromCursor(x: number, y: number, withCut: boolean): BMA.LTLOperations.IOperand {
-                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y + this.bbox.height) {
-                    return undefined;
-                }
-
-
-                return undefined;
-            }
-
             private GetIntersectedChild(x: number, y: number, position: { x: number; y: number }, layoutPart: any, accountEmpty: boolean): any {
                 var width = layoutPart.width;
                 var halfWidth = width / 2;
@@ -580,8 +595,9 @@
                     case 2:
 
                         if (!operands[0].isEmpty) {
+                            var xPos = layoutPart.isFunction ? position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX - (<any>operands[1]).width - paddingX : position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX
                             var highlighted1 = this.GetIntersectedChild(x, y, {
-                                x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
+                                x: xPos,
                                 y: position.y
                             }, operands[0], accountEmpty);
 
@@ -591,7 +607,7 @@
                         } else {
                             if (accountEmpty) {
                                 var pos = {
-                                    x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
+                                    x: layoutPart.isFunction ? position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX - (<any>operands[1]).width - paddingX : position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
                                     y: position.y
                                 };
 

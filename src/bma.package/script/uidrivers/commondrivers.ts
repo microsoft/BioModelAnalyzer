@@ -590,35 +590,18 @@ module BMA {
             }
         }
 
-        export class FormulaValidationService implements IServiceDriver {
-            public Invoke(data): JQueryPromise<any> {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/Validate",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
-            }
-        }
+        export class BMAProcessingService implements IServiceDriver {
+            protected serviceURL: string;
 
-        export class FurtherTestingService implements IServiceDriver {
-            public Invoke(data): JQueryPromise<any> {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/FurtherTesting",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
+            constructor(serviceURL: string) {
+                this.serviceURL = serviceURL;
             }
-        }
 
-        export class ProofAnalyzeService implements IServiceDriver {
             public Invoke(data): JQueryPromise<any> {
+                var that = this;
                 return $.ajax({
                     type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/Analyze",
+                    url: that.serviceURL,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json"
@@ -675,19 +658,7 @@ module BMA {
                 }
             }
         }
-
-        export class SimulationService implements IServiceDriver {
-            public Invoke(data): JQueryPromise<any> {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/Simulate",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
-            }
-        }
-
+       
         export class MessageBoxDriver implements IMessageServiсe {
 
             public Show(message: string) {
