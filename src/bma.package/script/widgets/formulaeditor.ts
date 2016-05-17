@@ -22,10 +22,10 @@
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
 
             var operatorsArr = [
-                { Name: "&nbsp;+&nbsp;", OperandsCount: 2, isFunction: false },
-                { Name: "&nbsp;-&nbsp;", OperandsCount: 2, isFunction: false },
-                { Name: "&nbsp;*&nbsp;", OperandsCount: 2, isFunction: false },
-                { Name: "&nbsp;/&nbsp;", OperandsCount: 2, isFunction: false },
+                { Name: "+", OperandsCount: 2, isFunction: false },
+                { Name: "-", OperandsCount: 2, isFunction: false },
+                { Name: "*", OperandsCount: 2, isFunction: false },
+                { Name: "/", OperandsCount: 2, isFunction: false },
                 { Name: "AVG", OperandsCount: 2, isFunction: true },
                 { Name: "MIN", OperandsCount: 2, isFunction: true },
                 { Name: "MAX", OperandsCount: 2, isFunction: true },
@@ -50,7 +50,11 @@
                     spaceStr = "";
                 }
                 
-                var label = $("<div></div>").addClass("label").html(spaceStr + operator.Name).appendTo(opDiv);
+                var opStr = operator.Name;
+                if (opStr === "+" || opStr === "+" || opStr === "+" || opStr === "+") {
+                    opStr = "&nbsp;" + opStr + "&nbsp;";
+                }
+                var label = $("<div></div>").addClass("label").html(spaceStr + opStr).appendTo(opDiv);
                 $("<div></div>").addClass("hole").appendTo(opDiv);
                 if (operator.OperandsCount > 1 && operator.isFunction) {
                     //$("<div>&nbsp;&nbsp;</div>").appendTo(opDiv);
@@ -126,15 +130,91 @@
                 }
             });
 
-            svgDiv.droppable();
+            svgDiv.droppable({
+                drop: function (arg, ui) {
+                    var op = new BMA.LTLOperations.Operation();
+                    var operator = undefined;
+                    for (var i = 0; i < operatorsArr.length; i++) {
+                        if (operatorsArr[i].Name === ui.draggable.attr("data-operator")) {
+                            op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].OperandsCount, undefined, operatorsArr[i].isFunction);
+                            break;
+                        }
+                    }
+                    op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
+                    var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+                    if (opL === undefined) {
+                        that.options.operation = op;
+                        that._refresh();
+                    } else {
+                        var parentOffset = $(this).offset();
+                        var relX = arg.pageX - parentOffset.left;
+                        var relY = arg.pageY - parentOffset.top;
+                        var svgCoords = that._getSVGCoords(relX, relY);
+                        var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                        if (emptyCell !== undefined) {
+                            emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                            that._refresh();
+                        }
+                    }
+                }
+            });
+
+            //Context menu
+            var holdCords = {
+                holdX: 0,
+                holdY: 0
+            };
+
+            $(document).on('vmousedown', function (event) {
+                holdCords.holdX = event.pageX;
+                holdCords.holdY = event.pageY;
+            });
+
+            svgDiv.contextmenu({
+                addClass: "temporal-properties-contextmenu",
+                delegate: root,
+                autoFocus: true,
+                preventContextMenuForPopup: true,
+                preventSelect: true,
+                //taphold: true,
+                menu: [
+                    { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
+                    { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
+                    { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
+                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
+                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }] },
+                    { title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
+                ],
+                beforeOpen: function (event, ui) {
+                    ui.menu.zIndex(50);
+                    var x = holdCords.holdX || event.pageX;
+                    var y = holdCords.holdX || event.pageY;
+                    var left = x - svgDiv.offset().left;
+                    var top = y - svgDiv.offset().top;
+
+                },
+                select: function (event, ui) {
+                    var args: any = {};
+                    var x = holdCords.holdX || event.pageX;
+                    var y = holdCords.holdX || event.pageY;
+                    args.left = x - svgDiv.offset().left;
+                    args.top = y - svgDiv.offset().top;
+
+                    //ui.cmd
+                }
+            });
         },
 
         _getSVGCoords: function (x, y) {
             var bbox = this.operationLayout.BoundingBox;
             var aspect = this.svgDiv.width() / this.svgDiv.height();
-            var bboxx = -bbox.width / 2 - 10;
             var width = bbox.width + 20;
             var height = width / aspect;
+            if (height < bbox.height + 20) {
+                height = bbox.height + 20;
+                width = height * aspect;
+            }
+            var bboxx = -width / 2;
             var bboxy = -height / 2;
             var svgX = width * x / this.svgDiv.width() + bboxx;
             var svgY = height * y / this.svgDiv.height() + bboxy;
@@ -154,9 +234,13 @@
                 this.operationLayout = new BMA.LTLOperations.OperationLayout(that._svg, that.options.operation, { x: 0, y: 0 });
                 var bbox = this.operationLayout.BoundingBox;
                 var aspect = that.svgDiv.width() / that.svgDiv.height();
-                var x = -bbox.width / 2 - 10;
                 var width = bbox.width + 20;
                 var height = width / aspect;
+                if (height < bbox.height + 20) {
+                    height = bbox.height + 20;
+                    width = height * aspect;
+                }
+                var x = -width / 2;
                 var y = -height / 2;
                 that._svg.configure({
                     viewBox: x + " " + y + " " + width + " " + height,
