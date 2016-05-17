@@ -69,6 +69,13 @@
                     else
                         input.val(init);
 
+                    input.bind("change", function () {
+                        var index = $($(this).parent()).parent().index() - 1;
+                        var interval = that.options.interval[index];
+                        if (this.value < interval[0]) this.value = interval[0];
+                        if (this.value > interval[1]) this.value = interval[1];
+                    });
+
                     if (that.options.canEditInitialValue) {
                         var random = $('<td></td>')
                             .addClass("random-small bma-random-icon2 hoverable")
