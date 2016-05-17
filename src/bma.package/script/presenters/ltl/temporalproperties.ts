@@ -958,10 +958,8 @@ module BMA {
 
                                 if (res.Error.indexOf("Operation is not completed in") > -1)
                                     driver.SetStatus("nottested", "Timed out");
-                                else if (res.Error)
-                                    driver.SetStatus("nottested", res.Error);
                                 else
-                                    driver.SetStatus("nottested", "Server error");
+                                    driver.SetStatus("nottested", "Server error: " + res.Error);
 
                                 operation.AnalysisStatus = "nottested";
                                 operation.Tag.data = undefined;
