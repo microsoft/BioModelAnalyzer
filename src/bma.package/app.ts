@@ -672,7 +672,7 @@ function loadScript(version) {
         });
 
         var xhr = new XMLHttpRequest();
-        xhr.open('post', 'http://bmamath.cloudapp.net/api/ActivityLog', false);
+        xhr.open('post', window.BMAServiceURL + '/api/ActivityLog', false);
         xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
         //xhr.setRequestHeader("Content-length", data.length.toString());
         //xhr.setRequestHeader("Connection", "close");
