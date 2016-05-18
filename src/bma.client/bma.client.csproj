@@ -362,6 +362,10 @@
     <Content Include="js\jquery.svg.js" />
     <Content Include="js\jquery.svg.min.js" />
     <Content Include="js\jquery.svgdom.min.js" />
+    <Content Include="videos\.QT-0d4a-d0f6841e-bffff608-00" />
+    <Content Include="videos\BMA.mp4" />
+    <Content Include="videos\BMA-trailer.mp4" />
+
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\rx.aggregates.d.ts" />
