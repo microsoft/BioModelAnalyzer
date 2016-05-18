@@ -49,6 +49,19 @@
                     that.compactViewer.ChangeVisibility(param);
                 });
 
+                simulationExpanded.SetOnCreateStateRequested((param) => {
+                    var columnData = [];
+                    for (var i = 0; i < that.variables.length; i++) {
+                        columnData.push({
+                            variable: that.variables[i].Name,
+                            variableId: that.variables[i].Id,
+                            value: that.variables[i].Plot[param.column + 1]
+                        });
+                    }
+
+                    window.Commands.Execute("CreateStateFromTable", columnData);
+                });
+
                 //window.Commands.On("ChangePlotVariables", function (param) {
                 //    that.variables[param.ind].Seen = param.check;
                 //    that.compactViewer.ChangeVisibility(param);
@@ -64,8 +77,10 @@
                         that.StartSimulation({ model: stableModel, variables: variables, num: param.num });
                     }
                     catch (ex) {
-                        that.messagebox.Show(ex);
+                        //that.messagebox.Show(ex);
+                        that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: ex } });
                         that.expandedViewer.ActiveMode();
+                        that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
                     }
                 });
 
@@ -251,7 +266,9 @@
                             }
                             else {
                                 that.expandedViewer.ActiveMode();
-                                alert("Simulation Error: " + res.ErrorMessages);
+                                that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: res.ErrorMessages } });
+                                that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
+                                //alert("Simulation Error: " + res.ErrorMessages);
                             }
                         })
                             .fail(function (XMLHttpRequest, textStatus, errorThrown) {
@@ -263,10 +280,12 @@
                                     setTimeout(() => { that.StartSimulation({ model: param.model, variables: param.variables, num: param.num, attempt: param.attempt + 1 }); }, time * 1000);
 
                                 } else {
-                                    this.logService.LogSimulationError();
+                                    that.logService.LogSimulationError();
                                     console.log(textStatus);
                                     that.expandedViewer.ActiveMode();
-                                    alert("Simulate error: " + errorThrown);
+                                    that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: errorThrown } });
+                                    that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
+                                    //alert("Simulate error: " + errorThrown);
                                 }
 
                             return;

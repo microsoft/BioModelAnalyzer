@@ -159,24 +159,12 @@
                 });
 
                 ltlresultsviewer.SetOnCreateStateRequested(function (args) {
-                    if (args !== undefined) {
-                        var keyframeEqs = [];
-                        for (var i = 0; i < args.length; i++) {
-                            keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(
-                                new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId),
-                                "=",
-                                new BMA.LTLOperations.ConstOperand(args[i].value)
-                            ));
-                        }
+                    that.CreateStateFromTableData(args);
+                    ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
+                });
 
-                        var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
-                        var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
-                        var merged = that.MergeStates(that.appModel.States, [newState]);
-                        that.appModel.States = merged.states;
-                        that.statespresenter.UpdateStatesFromModel();
-                        that.tppresenter.UpdateStatesFromModel();
-                        ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
-                    }
+                window.Commands.On("CreateStateFromTable", (args) => {
+                    that.CreateStateFromTableData(args);
                 });
 
                 commands.On("ExportLTLFormulaAsJson", (args) => {
@@ -228,6 +216,27 @@
                         this.UpdateOperations(args.states);
                     }
                 });
+            }
+
+            private CreateStateFromTableData(args) {
+                var that = this;
+                if (args !== undefined) {
+                    var keyframeEqs = [];
+                    for (var i = 0; i < args.length; i++) {
+                        keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(
+                            new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId),
+                            args[i].operator ? args[i].operator : "=",
+                            new BMA.LTLOperations.ConstOperand(args[i].value)
+                        ));
+                    }
+
+                    var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
+                    var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
+                    var merged = that.MergeStates(that.appModel.States, [newState]);
+                    that.appModel.States = merged.states;
+                    that.statespresenter.UpdateStatesFromModel();
+                    that.tppresenter.UpdateStatesFromModel();
+                }
             }
 
             private UpdateOperations(states) {

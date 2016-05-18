@@ -318,7 +318,7 @@
                 var full = $('<div></div>').coloredtableviewer({
                     numericData: variablesData.numericData,
                     colorData: variablesData.colorData,
-                    header: ["Name", "Formula", "Range"]
+                    header: ["Name", "Formula", "Range"],
                 });
 
                 full.addClass('scrollable-results');
@@ -358,7 +358,46 @@
                     }
                 }
 
-                container.coloredtableviewer({ header: header, numericData: table, colorData: color });
+                var createStateRequested = function (args) {
+                    var columnData = [];
+                    var variables = that.appModel.BioModel.Variables;
+                    for (var i = 0; i < variables.length; i++) {
+                        var value = table[i][args.column];
+                        if (typeof value == "string") {
+                            var values = value.split("-");
+                            columnData.push({
+                                variable: variables[i].Name,
+                                variableId: variables[i].Id,
+                                value: parseFloat(values[0]),
+                                operator: ">="
+                            });
+
+                            columnData.push({
+                                variable: variables[i].Name,
+                                variableId: variables[i].Id,
+                                value: parseFloat(values[1]),
+                                operator: "<="
+                            });
+
+                        } else {
+                            columnData.push({
+                                variable: variables[i].Name,
+                                variableId: variables[i].Id,
+                                value: table[i][args.column]
+                            });
+                        }
+                    }
+
+                    window.Commands.Execute("CreateStateFromTable", columnData);
+                }
+
+                container.coloredtableviewer({
+                    onContextMenuItemSelected: createStateRequested,
+                    columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                    header: header,
+                    numericData: table,
+                    colorData: color
+                });
                 container.addClass('scrollable-results');
                 container.children('table').removeClass('variables-table').addClass('proof-propagation-table');
                 container.find("td").eq(0).width(150);

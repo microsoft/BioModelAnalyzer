@@ -649,18 +649,32 @@ var BMA;
                                 //context.fill();
                                 break;
                             case 2:
-                                renderLayoutPart(operands[0], {
-                                    x: pos.x - halfWidth + operands[0].width / 2 + paddingX,
-                                    y: pos.y
-                                }, undefined);
-                                renderLayoutPart(operands[1], {
-                                    x: pos.x + halfWidth - operands[1].width / 2 - paddingX,
-                                    y: pos.y
-                                }, undefined);
-                                context.font = "10px Segoe-UI";
-                                context.fillStyle = "rgb(96,96,96)";
-                                context.fillText(operation.operator, pos.x - halfWidth + operands[0].width + 2 * paddingX, pos.y);
-                                //context.fill();
+                                if (!layoutPart.isFunction) {
+                                    renderLayoutPart(operands[0], {
+                                        x: pos.x - halfWidth + operands[0].width / 2 + paddingX,
+                                        y: pos.y
+                                    }, undefined);
+                                    renderLayoutPart(operands[1], {
+                                        x: pos.x + halfWidth - operands[1].width / 2 - paddingX,
+                                        y: pos.y
+                                    }, undefined);
+                                    context.font = "10px Segoe-UI";
+                                    context.fillStyle = "rgb(96,96,96)";
+                                    context.fillText(operation.operator, pos.x - halfWidth + operands[0].width + 2 * paddingX, pos.y);
+                                }
+                                else {
+                                    renderLayoutPart(operands[0], {
+                                        x: pos.x + halfWidth - operands[1].width - paddingX - operands[0].width / 2 - paddingX,
+                                        y: pos.y
+                                    }, undefined);
+                                    renderLayoutPart(operands[1], {
+                                        x: pos.x + halfWidth - operands[1].width / 2 - paddingX,
+                                        y: pos.y
+                                    }, undefined);
+                                    context.font = "10px Segoe-UI";
+                                    context.fillStyle = "rgb(96,96,96)";
+                                    context.fillText(operation.operator, pos.x - halfWidth + paddingX, pos.y);
+                                }
                                 break;
                             default:
                                 break;
@@ -731,6 +745,7 @@ var BMA;
             if (operator !== undefined) {
                 layout.operands = [];
                 layout.operator = operator.Name;
+                layout.isFunction = operator.isFunction;
                 var operands = op.Operands;
                 var layer = 0;
                 var width = getOperatorWidth(operator.Name, 10);
@@ -1352,9 +1367,13 @@ var BMA;
                     var scale = 0.45 * renderParams.layout.Size;
                     var cellData = "M249,577 C386.518903,577 498,447.83415 498,288.5 C498,129.16585 386.518903,0 249,0 C111.481097,0 0,129.16585 0,288.5 C0,447.83415 111.481097,577 249,577 Z M262,563 C387.368638,563 489,440.102164 489,288.5 C489,136.897836 387.368638,14 262,14 C136.631362,14 35,136.897836 35,288.5 C35,440.102164 136.631362,563 262,563 Z";
                     var cellPath = jqSvg.createPath();
+                    var pathFill = "#FAAF40";
+                    if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
+                        pathFill = "#EDEDED";
+                    }
                     var op = jqSvg.path(g, cellPath, {
                         stroke: 'transparent',
-                        fill: "#FAAF40",
+                        fill: pathFill,
                         "fill-rule": "evenodd",
                         d: cellData,
                         transform: "scale(" + scale + ") translate(-250, -290)"
@@ -1426,11 +1445,21 @@ var BMA;
                     var g = jqSvg.group({
                         transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ")",
                     });
+                    var pathFill = "#BBBDBF";
+                    if (renderParams.isHighlighted !== undefined) {
+                        if (!renderParams.isHighlighted) {
+                            pathFill = "#EDEDED";
+                        }
+                    }
+                    if (renderParams.isHighlighted) {
+                        var rad = 1.3 * Math.max(that.variableHeightConstant, that.variableWidthConstant) / 2;
+                        jqSvg.ellipse(g, 0, 0, rad, rad, { stroke: "#EF4137", fill: "transparent" });
+                    }
                     var data = "M27.3,43.4l-2.2-0.8c-12-4.4-19.3-11.5-20-19.7c0-0.5-0.1-0.9-0.1-1.4c-5.4-2.6-9-7.3-10.5-12.3c-0.6-2-0.9-4.1-0.8-6.3c-4.7-1.7-8.2-4.7-10.3-8.2c-2.1-3.4-3.2-8.1-2.1-13.4c-6.7-1.8-12.5-4.3-15.9-5.8l-7.4,19.9l26.7,7.9L-17,9.1l-32.8-9.7l11.9-32l3,1.5c3.9,1.9,10.8,4.9,18.1,6.9c1.9-4,5.1-8.1,10-12.1c10.8-8.9,19.7-8.1,23.8-3.4c3.5,4,3.6,11.6-4.2,18.7c-6.3,5.7-16.2,5.7-25.7,3.8c-0.6,3.2-0.2,6.2,1.4,8.9c1.3,2.2,3.4,4,6.3,5.3C-3.4-8.3,0.7-13.2,8-16c15.9-6.1,19.9,0.2,20.7,2.2c2.1,5.2-2.4,11.8-10.1,15C11.5,4.2,5.1,5-0.3,4.4C-0.2,5.5,0,6.5,0.3,7.5c0.9,3.2,3,6.1,6.2,8C8,12.1,11,9,15,6.7C25,1,32.2,1.6,35.7,4.2c2.3,1.7,3.3,4.3,2.7,7.1c-1.1,5.3-7.6,9.7-17.5,11.8c-3.6,0.8-6.8,0.8-9.7,0.4c1,4.9,6,9.5,13.9,12.8l7.4-10.7l17.4,10.1l-3,5.1l-12.6-7.4L27.3,43.4L27.3,43.4z M12.1,17.5c2.2,0.3,4.8,0.3,7.6-0.3c9.4-2,12.6-5.6,12.9-7.2c0.1-0.4,0-0.7-0.4-1c-1.4-1-6.2-1.7-14.1,2.9C15.2,13.4,13.2,15.4,12.1,17.5L12.1,17.5z M0.6-1.5C5-1,10.3-1.7,16.3-4.2c5.4-2.3,7.4-6,6.9-7.3c-0.4-1-4.3-2.2-13,1.1C5-8.5,2-5.1,0.6-1.5L0.6-1.5z M-10.8-22.8c7.8,1.4,15.2,1.3,19.5-2.6c4.7-4.2,5.4-8.4,3.7-10.4c-2.1-2.5-8.3-1.9-15.5,4.1C-6.5-28.9-9.1-25.9-10.8-22.8L-10.8-22.8z";
                     var path = jqSvg.createPath();
                     var variable = jqSvg.path(g, path, {
                         stroke: 'transparent',
-                        fill: "#BBBDBF",
+                        fill: pathFill,
                         "stroke-width": 8,
                         d: data,
                         transform: "scale(0.36)"
@@ -1482,11 +1511,19 @@ var BMA;
                     var g = jqSvg.group({
                         transform: "translate(" + renderParams.layout.PositionX + ", " + renderParams.layout.PositionY + ")",
                     });
+                    var pathFill = "#EF4137";
+                    if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
+                        pathFill = "#EDEDED";
+                    }
+                    if (renderParams.isHighlighted) {
+                        var rad = Math.max(that.variableHeightConstant, that.variableWidthConstant) / 2;
+                        jqSvg.ellipse(g, 0, 0, rad, rad, { stroke: "#EF4137", fill: "transparent" });
+                    }
                     var data = "M27.3,43.4l-2.2-0.8c-12-4.4-19.3-11.5-20-19.7c0-0.5-0.1-0.9-0.1-1.4c-5.4-2.6-9-7.3-10.5-12.3c-0.6-2-0.9-4.1-0.8-6.3c-4.7-1.7-8.2-4.7-10.3-8.2c-2.1-3.4-3.2-8.1-2.1-13.4c-6.7-1.8-12.5-4.3-15.9-5.8l-7.4,19.9l26.7,7.9L-17,9.1l-32.8-9.7l11.9-32l3,1.5c3.9,1.9,10.8,4.9,18.1,6.9c1.9-4,5.1-8.1,10-12.1c10.8-8.9,19.7-8.1,23.8-3.4c3.5,4,3.6,11.6-4.2,18.7c-6.3,5.7-16.2,5.7-25.7,3.8c-0.6,3.2-0.2,6.2,1.4,8.9c1.3,2.2,3.4,4,6.3,5.3C-3.4-8.3,0.7-13.2,8-16c15.9-6.1,19.9,0.2,20.7,2.2c2.1,5.2-2.4,11.8-10.1,15C11.5,4.2,5.1,5-0.3,4.4C-0.2,5.5,0,6.5,0.3,7.5c0.9,3.2,3,6.1,6.2,8C8,12.1,11,9,15,6.7C25,1,32.2,1.6,35.7,4.2c2.3,1.7,3.3,4.3,2.7,7.1c-1.1,5.3-7.6,9.7-17.5,11.8c-3.6,0.8-6.8,0.8-9.7,0.4c1,4.9,6,9.5,13.9,12.8l7.4-10.7l17.4,10.1l-3,5.1l-12.6-7.4L27.3,43.4L27.3,43.4z M12.1,17.5c2.2,0.3,4.8,0.3,7.6-0.3c9.4-2,12.6-5.6,12.9-7.2c0.1-0.4,0-0.7-0.4-1c-1.4-1-6.2-1.7-14.1,2.9C15.2,13.4,13.2,15.4,12.1,17.5L12.1,17.5z M0.6-1.5C5-1,10.3-1.7,16.3-4.2c5.4-2.3,7.4-6,6.9-7.3c-0.4-1-4.3-2.2-13,1.1C5-8.5,2-5.1,0.6-1.5L0.6-1.5z M-10.8-22.8c7.8,1.4,15.2,1.3,19.5-2.6c4.7-4.2,5.4-8.4,3.7-10.4c-2.1-2.5-8.3-1.9-15.5,4.1C-6.5-28.9-9.1-25.9-10.8-22.8L-10.8-22.8z";
                     var path = jqSvg.createPath();
                     var variable = jqSvg.path(g, path, {
                         stroke: 'transparent',
-                        fill: "#EF4137",
+                        fill: pathFill,
                         strokeWidth: 8,
                         d: data,
                         transform: "scale(0.25)"
@@ -1544,11 +1581,19 @@ var BMA;
                         if (angle < 0)
                             angle += 360;
                     }
+                    var pathFill = "#3BB34A";
+                    if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
+                        pathFill = "#EDEDED";
+                    }
+                    if (renderParams.isHighlighted) {
+                        var rad = 1.1 * Math.max(that.variableHeightConstant, that.variableWidthConstant) / 2;
+                        jqSvg.ellipse(g, 0, 0, rad, rad, { stroke: "#EF4137", fill: "transparent" });
+                    }
                     var data = "M9.9-10.5c-1.4-1.9-2.3,0.1-5.1,0.8C2.6-9.2,2.4-13.2,0-13.2c-2.4,0-2.4,3.5-4.8,3.5c-2.4,0-3.8-2.7-5.2-0.8l8.2,11.8v12.1c0,1,0.8,1.7,1.7,1.7c1,0,1.7-0.8,1.7-1.7V1.3L9.9-10.5z";
                     var path = jqSvg.createPath();
                     var variable = jqSvg.path(g, path, {
                         stroke: 'transparent',
-                        fill: "#3BB34A",
+                        fill: pathFill,
                         strokeWidth: 8,
                         d: data,
                         transform: "scale(1.2) rotate(" + angle + ")"
@@ -1607,9 +1652,13 @@ var BMA;
                         var ew = w * 0.6;
                         var eh = h * 1.6;
                         var x1 = ew * (1 - Math.sqrt(1 - h * h / (eh * eh))) + x0;
+                        var pathFill = "#808080";
+                        if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
+                            pathFill = "#EDEDED";
+                        }
                         var path = jqSvg.createPath();
                         lineRef = jqSvg.path(path.move(x1, y0 - h)
-                            .arc(ew, eh, 0, true, true, x1, y0 + h), { fill: 'none', stroke: '#808080', strokeWidth: lw + 1, "marker-end": "url(#Activator)" });
+                            .arc(ew, eh, 0, true, true, x1, y0 + h), { fill: 'none', stroke: pathFill, strokeWidth: lw + 1, "marker-end": "url(#Activator)" });
                     }
                     else {
                         var dir = {
@@ -1686,9 +1735,13 @@ var BMA;
                         var ew = w * 0.6;
                         var eh = h * 1.6;
                         var x1 = ew * (1 - Math.sqrt(1 - h * h / (eh * eh))) + x0;
+                        var pathFill = "#808080";
+                        if (renderParams.isHighlighted !== undefined && !renderParams.isHighlighted) {
+                            pathFill = "#EDEDED";
+                        }
                         var path = jqSvg.createPath();
                         lineRef = jqSvg.path(path.move(x1, y0 - h)
-                            .arc(ew, eh, 0, true, true, x1, y0 + h), { fill: 'none', stroke: '#808080', strokeWidth: lw + 1, "marker-end": "url(#Inhibitor)" });
+                            .arc(ew, eh, 0, true, true, x1, y0 + h), { fill: 'none', stroke: pathFill, strokeWidth: lw + 1, "marker-end": "url(#Inhibitor)" });
                     }
                     else {
                         var dir = {
@@ -3486,11 +3539,20 @@ var BMA;
         })();
         LTLOperations.Keyframe = Keyframe;
         var Operator = (function () {
-            function Operator(name, operandsCount, fun) {
+            function Operator(name, operandsCount, fun, isFunction) {
+                if (isFunction === void 0) { isFunction = false; }
                 this.name = name;
                 this.fun = fun;
                 this.operandsNumber = operandsCount;
+                this.isFunction = isFunction;
             }
+            Object.defineProperty(Operator.prototype, "IsFunction", {
+                get: function () {
+                    return this.isFunction;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Object.defineProperty(Operator.prototype, "Name", {
                 get: function () {
                     return this.name;
@@ -3913,7 +3975,7 @@ var BMA;
                         case 2:
                             var x1 = position.x + layout.width / 2 - layout.operands[1].width / 2 - padding.x;
                             this.SetPositionOffsets(layout.operands[1], { x: x1, y: position.y });
-                            var x2 = position.x - layout.width / 2 + layout.operands[0].width / 2 + padding.x;
+                            var x2 = layout.isFunction ? position.x + layout.width / 2 - layout.operands[1].width - padding.x - layout.operands[0].width / 2 - padding.x : position.x - layout.width / 2 + layout.operands[0].width / 2 + padding.x;
                             this.SetPositionOffsets(layout.operands[0], { x: x2, y: position.y });
                             break;
                         default:
@@ -4004,18 +4066,34 @@ var BMA;
                                 }, operands[0], undefined);
                                 break;
                             case 2:
-                                this.RenderLayoutPart(svg, {
-                                    x: position.x - halfWidth + operands[0].width / 2 + paddingX,
-                                    y: position.y
-                                }, operands[0], undefined);
-                                this.RenderLayoutPart(svg, {
-                                    x: position.x + halfWidth - operands[1].width / 2 - paddingX,
-                                    y: position.y
-                                }, operands[1], undefined);
-                                svg.text(this.renderGroup, position.x - halfWidth + operands[0].width + 2 * paddingX, position.y + 3, operation.operator, {
-                                    "font-size": 10,
-                                    "fill": "rgb(96,96,96)"
-                                });
+                                if (!layoutPart.isFunction) {
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x - halfWidth + operands[0].width / 2 + paddingX,
+                                        y: position.y
+                                    }, operands[0], undefined);
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x + halfWidth - operands[1].width / 2 - paddingX,
+                                        y: position.y
+                                    }, operands[1], undefined);
+                                    svg.text(this.renderGroup, position.x - halfWidth + operands[0].width + 2 * paddingX, position.y + 3, operation.operator, {
+                                        "font-size": 10,
+                                        "fill": "rgb(96,96,96)"
+                                    });
+                                }
+                                else {
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x + halfWidth - operands[1].width - paddingX - operands[0].width / 2 - paddingX,
+                                        y: position.y
+                                    }, operands[0], undefined);
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x + halfWidth - operands[1].width / 2 - paddingX,
+                                        y: position.y
+                                    }, operands[1], undefined);
+                                    svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
+                                        "font-size": 10,
+                                        "fill": "rgb(96,96,96)"
+                                    });
+                                }
                                 break;
                             default:
                                 break;
@@ -4100,12 +4178,6 @@ var BMA;
                 if (this.isVisible)
                     this.Render();
             };
-            OperationLayout.prototype.CopyOperandFromCursor = function (x, y, withCut) {
-                if (x < this.bbox.x || x > this.bbox.x + this.bbox.width || y < this.bbox.y || y > this.bbox.y + this.bbox.height) {
-                    return undefined;
-                }
-                return undefined;
-            };
             OperationLayout.prototype.GetIntersectedChild = function (x, y, position, layoutPart, accountEmpty) {
                 var width = layoutPart.width;
                 var halfWidth = width / 2;
@@ -4139,8 +4211,9 @@ var BMA;
                         break;
                     case 2:
                         if (!operands[0].isEmpty) {
+                            var xPos = layoutPart.isFunction ? position.x + halfWidth - operands[0].width / 2 - paddingX - operands[1].width - paddingX : position.x - halfWidth + operands[0].width / 2 + paddingX;
                             var highlighted1 = this.GetIntersectedChild(x, y, {
-                                x: position.x - halfWidth + operands[0].width / 2 + paddingX,
+                                x: xPos,
                                 y: position.y
                             }, operands[0], accountEmpty);
                             if (highlighted1 !== undefined) {
@@ -4150,7 +4223,7 @@ var BMA;
                         else {
                             if (accountEmpty) {
                                 var pos = {
-                                    x: position.x - halfWidth + operands[0].width / 2 + paddingX,
+                                    x: layoutPart.isFunction ? position.x + halfWidth - operands[0].width / 2 - paddingX - operands[1].width - paddingX : position.x - halfWidth + operands[0].width / 2 + paddingX,
                                     y: position.y
                                 };
                                 if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
@@ -4580,6 +4653,17 @@ var BMA;
                 this.onplotvariablesselectionchanged = callback;
                 this.viewer.simulationexpanded({ onChangePlotVariables: callback });
             };
+            SimulationExpandedDriver.prototype.SetOnCreateStateRequested = function (callback) {
+                if (this.viewer !== undefined) {
+                    this.viewer.simulationexpanded({
+                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        createStateRequested: callback
+                    });
+                }
+                else {
+                    this.createStateRequested = callback;
+                }
+            };
             SimulationExpandedDriver.prototype.Set = function (data) {
                 var table = this.CreateExpandedTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
@@ -4748,51 +4832,23 @@ var BMA;
             return AccordionHider;
         })();
         UIDrivers.AccordionHider = AccordionHider;
-        var FormulaValidationService = (function () {
-            function FormulaValidationService() {
+        var BMAProcessingService = (function () {
+            function BMAProcessingService(serviceURL) {
+                this.serviceURL = serviceURL;
             }
-            FormulaValidationService.prototype.Invoke = function (data) {
+            BMAProcessingService.prototype.Invoke = function (data) {
+                var that = this;
                 return $.ajax({
                     type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/Validate",
+                    url: that.serviceURL,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 });
             };
-            return FormulaValidationService;
+            return BMAProcessingService;
         })();
-        UIDrivers.FormulaValidationService = FormulaValidationService;
-        var FurtherTestingService = (function () {
-            function FurtherTestingService() {
-            }
-            FurtherTestingService.prototype.Invoke = function (data) {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/FurtherTesting",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
-            };
-            return FurtherTestingService;
-        })();
-        UIDrivers.FurtherTestingService = FurtherTestingService;
-        var ProofAnalyzeService = (function () {
-            function ProofAnalyzeService() {
-            }
-            ProofAnalyzeService.prototype.Invoke = function (data) {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/Analyze",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
-            };
-            return ProofAnalyzeService;
-        })();
-        UIDrivers.ProofAnalyzeService = ProofAnalyzeService;
+        UIDrivers.BMAProcessingService = BMAProcessingService;
         var LTLAnalyzeService = (function () {
             function LTLAnalyzeService(url, maxRequestCount) {
                 this.maxRequestCount = 1;
@@ -4839,21 +4895,6 @@ var BMA;
             return LTLAnalyzeService;
         })();
         UIDrivers.LTLAnalyzeService = LTLAnalyzeService;
-        var SimulationService = (function () {
-            function SimulationService() {
-            }
-            SimulationService.prototype.Invoke = function (data) {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/Simulate",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
-            };
-            return SimulationService;
-        })();
-        UIDrivers.SimulationService = SimulationService;
         var MessageBoxDriver = (function () {
             function MessageBoxDriver() {
             }
@@ -5121,7 +5162,10 @@ var BMA;
                         var formula = [];
                         formula.push({
                             type: opnd.LeftOperand.Name === undefined ? "const" : "variable",
-                            value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : opnd.LeftOperand.Name
+                            value: opnd.LeftOperand.Name === undefined ? opnd.LeftOperand.Value : {
+                                name: opnd.LeftOperand.Name,
+                                id: opnd.LeftOperand.Id
+                            }
                         });
                         if (opnd.MiddleOperand !== undefined) {
                             var leftop = opnd.LeftOperator;
@@ -5132,7 +5176,10 @@ var BMA;
                             var middle = opnd.MiddleOperand;
                             formula.push({
                                 type: middle.Name === undefined ? "const" : "variable",
-                                value: middle.Name === undefined ? middle.Value : middle.Name
+                                value: middle.Name === undefined ? middle.Value : {
+                                    name: middle.Name,
+                                    id: middle.Id
+                                }
                             });
                             var rightop = opnd.RightOperator;
                             formula.push({
@@ -5148,7 +5195,10 @@ var BMA;
                         }
                         formula.push({
                             type: opnd.RightOperand.Name === undefined ? "const" : "variable",
-                            value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : opnd.RightOperand.Name
+                            value: opnd.RightOperand.Name === undefined ? opnd.RightOperand.Value : {
+                                name: opnd.RightOperand.Name,
+                                id: opnd.RightOperand.Id
+                            }
                         });
                         ws.formula.push(formula);
                     }
@@ -5504,7 +5554,10 @@ var BMA;
                         this.exportCSVcallback = undefined;
                     }
                     if (this.createStateRequested !== undefined) {
-                        this.ltlResultsViewer.ltlresultsviewer({ createStateRequested: that.createStateRequested });
+                        this.ltlResultsViewer.ltlresultsviewer({
+                            columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                            createStateRequested: that.createStateRequested
+                        });
                         this.createStateRequested = undefined;
                     }
                 }
@@ -5732,7 +5785,10 @@ var BMA;
             };
             LTLResultsViewer.prototype.SetOnCreateStateRequested = function (callback) {
                 if (this.ltlResultsViewer !== undefined) {
-                    this.ltlResultsViewer.ltlresultsviewer({ createStateRequested: callback });
+                    this.ltlResultsViewer.ltlresultsviewer({
+                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        createStateRequested: callback
+                    });
                 }
                 else {
                     this.createStateRequested = callback;
@@ -6272,6 +6328,15 @@ var BMA;
                         var value = args.value * 24 + 800;
                         navigationDriver.SetZoom(value);
                     }
+                });
+                window.Commands.On("HighlightContent", function (args) {
+                    if (_this.svg !== undefined && _this.undoRedoPresenter.Current !== undefined) {
+                        var drawingSvg = _this.CreateSvg(args);
+                        _this.driver.Draw(drawingSvg);
+                    }
+                });
+                window.Commands.On("UnhighlightContent", function (args) {
+                    that.RefreshOutput();
                 });
                 var plotHost = this.navigationDriver.GetNavigationSurface().master;
                 svgPlotDriver.SetConstraintFunc(function (plotRect) {
@@ -7031,10 +7096,21 @@ var BMA;
                 for (var i = 0; i < containerLayouts.length; i++) {
                     var containerLayout = containerLayouts[i];
                     var element = window.ElementRegistry.GetElementByType("Container");
+                    var isHighlighted = undefined;
+                    if (args !== undefined && args.containerHighlightIds !== undefined) {
+                        isHighlighted = false;
+                        for (var j = 0; j < args.containerHighlightIds.length; j++) {
+                            if (containerLayout.Id === args.containerHighlightIds[j]) {
+                                isHighlighted = true;
+                                break;
+                            }
+                        }
+                    }
                     svgElements.push(element.RenderToSvg({
                         layout: containerLayout,
                         grid: this.Grid,
-                        background: args === undefined || args.containersStability === undefined ? undefined : this.GetContainerColorByStatus(args.containersStability[containerLayout.Id])
+                        background: args === undefined || args.containersStability === undefined ? undefined : this.GetContainerColorByStatus(args.containersStability[containerLayout.Id]),
+                        isHighlighted: isHighlighted
                     }));
                 }
                 var variables = model.Variables; //this.undoRedoPresenter.Current.model.Variables;
@@ -7043,7 +7119,25 @@ var BMA;
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
                     var element = window.ElementRegistry.GetElementByType(variable.Type);
-                    var additionalInfo = args === undefined ? undefined : this.GetItemById(args.variablesStability, variable.Id);
+                    var additionalInfo = args === undefined || args.variablesStability === undefined ? undefined : this.GetItemById(args.variablesStability, variable.Id);
+                    var isHighlighted = undefined;
+                    if (args !== undefined && args.variableHighlightIds !== undefined) {
+                        isHighlighted = false;
+                        for (var j = 0; j < args.variableHighlightIds.length; j++) {
+                            if (variable.Id === args.variableHighlightIds[j]) {
+                                isHighlighted = true;
+                                break;
+                            }
+                        }
+                        if (!isHighlighted) {
+                            for (var j = 0; j < args.containerHighlightIds.length; j++) {
+                                if (variable.ContainerId === args.containerHighlightIds[j]) {
+                                    isHighlighted = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     var container = variable.Type === "MembraneReceptor" ? layout.GetContainerById(variable.ContainerId) : undefined;
                     var sizeCoef = undefined;
                     var gridCell = undefined;
@@ -7058,7 +7152,8 @@ var BMA;
                         gridCell: gridCell,
                         sizeCoef: sizeCoef,
                         valueText: additionalInfo === undefined ? undefined : additionalInfo.range,
-                        labelColor: additionalInfo === undefined ? undefined : this.GetVariableColorByStatus(additionalInfo.state)
+                        labelColor: additionalInfo === undefined ? undefined : this.GetVariableColorByStatus(additionalInfo.state),
+                        isHighlighted: isHighlighted
                     }));
                 }
                 var relationships = model.Relationships; //this.undoRedoPresenter.Current.model.Relationships;
@@ -7400,7 +7495,7 @@ var BMA;
                 var full = $('<div></div>').coloredtableviewer({
                     numericData: variablesData.numericData,
                     colorData: variablesData.colorData,
-                    header: ["Name", "Formula", "Range"]
+                    header: ["Name", "Formula", "Range"],
                 });
                 full.addClass('scrollable-results');
                 return full;
@@ -7438,7 +7533,43 @@ var BMA;
                         }
                     }
                 }
-                container.coloredtableviewer({ header: header, numericData: table, colorData: color });
+                var createStateRequested = function (args) {
+                    var columnData = [];
+                    var variables = that.appModel.BioModel.Variables;
+                    for (var i = 0; i < variables.length; i++) {
+                        var value = table[i][args.column];
+                        if (typeof value == "string") {
+                            var values = value.split("-");
+                            columnData.push({
+                                variable: variables[i].Name,
+                                variableId: variables[i].Id,
+                                value: parseFloat(values[0]),
+                                operator: ">="
+                            });
+                            columnData.push({
+                                variable: variables[i].Name,
+                                variableId: variables[i].Id,
+                                value: parseFloat(values[1]),
+                                operator: "<="
+                            });
+                        }
+                        else {
+                            columnData.push({
+                                variable: variables[i].Name,
+                                variableId: variables[i].Id,
+                                value: table[i][args.column]
+                            });
+                        }
+                    }
+                    window.Commands.Execute("CreateStateFromTable", columnData);
+                };
+                container.coloredtableviewer({
+                    onContextMenuItemSelected: createStateRequested,
+                    columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                    header: header,
+                    numericData: table,
+                    colorData: color
+                });
                 container.addClass('scrollable-results');
                 container.children('table').removeClass('variables-table').addClass('proof-propagation-table');
                 container.find("td").eq(0).width(150);
@@ -7470,6 +7601,17 @@ var BMA;
                     that.variables[param.ind].Seen = param.check;
                     that.compactViewer.ChangeVisibility(param);
                 });
+                simulationExpanded.SetOnCreateStateRequested(function (param) {
+                    var columnData = [];
+                    for (var i = 0; i < that.variables.length; i++) {
+                        columnData.push({
+                            variable: that.variables[i].Name,
+                            variableId: that.variables[i].Id,
+                            value: that.variables[i].Plot[param.column + 1]
+                        });
+                    }
+                    window.Commands.Execute("CreateStateFromTable", columnData);
+                });
                 //window.Commands.On("ChangePlotVariables", function (param) {
                 //    that.variables[param.ind].Seen = param.check;
                 //    that.compactViewer.ChangeVisibility(param);
@@ -7484,8 +7626,10 @@ var BMA;
                         that.StartSimulation({ model: stableModel, variables: variables, num: param.num });
                     }
                     catch (ex) {
-                        that.messagebox.Show(ex);
+                        //that.messagebox.Show(ex);
+                        that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: ex } });
                         that.expandedViewer.ActiveMode();
+                        that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
                     }
                 });
                 window.Commands.On("SimulationRequested", function (args) {
@@ -7654,7 +7798,8 @@ var BMA;
                             }
                             else {
                                 that.expandedViewer.ActiveMode();
-                                alert("Simulation Error: " + res.ErrorMessages);
+                                that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: res.ErrorMessages } });
+                                that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
                             }
                         })
                             .fail(function (XMLHttpRequest, textStatus, errorThrown) {
@@ -7664,10 +7809,11 @@ var BMA;
                                 setTimeout(function () { that.StartSimulation({ model: param.model, variables: param.variables, num: param.num, attempt: param.attempt + 1 }); }, time * 1000);
                             }
                             else {
-                                this.logService.LogSimulationError();
+                                that.logService.LogSimulationError();
                                 console.log(textStatus);
                                 that.expandedViewer.ActiveMode();
-                                alert("Simulate error: " + errorThrown);
+                                that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: errorThrown } });
+                                that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
                             }
                             return;
                         });
@@ -9003,6 +9149,8 @@ var BMA;
             colorData: undefined,
             type: "standart",
             onChangePlotVariables: undefined,
+            onContextMenuItemSelected: undefined,
+            columnContextMenuItems: undefined,
         },
         _create: function () {
             this.refresh();
@@ -9021,6 +9169,7 @@ var BMA;
                         this.arrayToTable(options.numericData);
                         if (options.colorData !== undefined)
                             this.paintTable(options.colorData);
+                        this.createColumnContextMenu();
                     }
                     break;
                 case "color":
@@ -9245,7 +9394,31 @@ var BMA;
                 }
             }
             return table;
-        }
+        },
+        createColumnContextMenu: function () {
+            var that = this;
+            if (this.options.numericData !== undefined && this.options.numericData.length != 0) {
+                this.table.contextmenu({
+                    delegate: "td",
+                    autoFocus: true,
+                    preventContextMenuForPopup: true,
+                    preventSelect: true,
+                    menu: that.options.columnContextMenuItems,
+                    beforeOpen: function (event, ui) {
+                        ui.menu.zIndex(50);
+                        if ($(ui.target.context.parentElement).index() == 0 || $(ui.target.context).index() == 0)
+                            return false;
+                    },
+                    select: function (event, ui) {
+                        var args = {};
+                        args.command = ui.cmd;
+                        args.column = $(ui.target.context).index();
+                        if (that.options.onContextMenuItemSelected !== undefined)
+                            that.options.onContextMenuItemSelected(args);
+                    }
+                });
+            }
+        },
     });
 }(jQuery));
 //# sourceMappingURL=coloredtableviewer.js.map
@@ -9952,6 +10125,7 @@ var BMA;
                         }
                     }
                 }
+                that.createColumnContextMenu();
             }
         },
         Highlight: function (ind) {
@@ -9974,10 +10148,10 @@ var BMA;
                     autoFocus: true,
                     preventContextMenuForPopup: true,
                     preventSelect: true,
-                    menu: [{ title: "Create State", cmd: "CreateState" }],
+                    menu: that.options.columnContextMenuItems,
                     beforeOpen: function (event, ui) {
                         ui.menu.zIndex(50);
-                        if ($(ui.target.context.parentElement).index() == 0)
+                        if ($(ui.target.context.parentElement).hasClass("table-tags"))
                             return false;
                     },
                     select: function (event, ui) {
@@ -10750,7 +10924,8 @@ var BMA;
             num: 10,
             buttonMode: "ActiveMode",
             step: 10,
-            onChangePlotVariables: undefined
+            onChangePlotVariables: undefined,
+            createStateRequested: undefined,
         },
         _create: function () {
             var that = this;
@@ -10770,7 +10945,14 @@ var BMA;
                 .addClass('big-simulation-popout-table')
                 .appendTo(tables);
             var stepsdiv = $('<div></div>').addClass('steps-container').appendTo(that.element);
-            this.big_table.progressiontable();
+            var onContextMenuItemSelected = function (args) {
+                if (args.command == "CreateState" && that.options.createStateRequested !== undefined)
+                    that.options.createStateRequested(args);
+            };
+            this.big_table.progressiontable({
+                columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                onContextMenuItemSelected: onContextMenuItemSelected
+            });
             randomise.click(function () {
                 that.big_table.progressiontable("Randomise");
             });
@@ -10784,7 +10966,7 @@ var BMA;
                     this.big_table.progressiontable({
                         init: options.init,
                         interval: options.interval,
-                        data: options.data
+                        data: options.data,
                     });
                 }
             }
@@ -11629,6 +11811,249 @@ jQuery.fn.extend({
     });
 }(jQuery));
 //# sourceMappingURL=visibilitysettings.js.map
+/// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
+/// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+(function ($) {
+    $.widget("BMA.formulaeditor", {
+        _create: function () {
+            var that = this;
+            var root = this.element;
+            //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
+            var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
+            //Adding states
+            var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("Variables<br>").appendTo(toolbar);
+            this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
+            //this._refreshStates();
+            //Adding operators
+            var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
+            operators.width(350);
+            var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
+            var operatorsArr = [
+                { Name: "+", OperandsCount: 2, isFunction: false },
+                { Name: "-", OperandsCount: 2, isFunction: false },
+                { Name: "*", OperandsCount: 2, isFunction: false },
+                { Name: "/", OperandsCount: 2, isFunction: false },
+                { Name: "AVG", OperandsCount: 2, isFunction: true },
+                { Name: "MIN", OperandsCount: 2, isFunction: true },
+                { Name: "MAX", OperandsCount: 2, isFunction: true },
+                { Name: "CEIL", OperandsCount: 1, isFunction: false },
+                { Name: "FLOOR", OperandsCount: 1, isFunction: false },
+            ];
+            for (var i = 0; i < operatorsArr.length; i++) {
+                var operator = operatorsArr[i];
+                var opDiv = $("<div></div>")
+                    .addClass("operator")
+                    .addClass("ltl-tp-droppable")
+                    .attr("data-operator", operator.Name)
+                    .css("z-index", 6)
+                    .css("cursor", "pointer")
+                    .appendTo(operatorsDiv);
+                var spaceStr = "&nbsp;&nbsp;";
+                if (operator.OperandsCount > 1 && !operator.isFunction) {
+                    $("<div></div>").addClass("hole").appendTo(opDiv);
+                    spaceStr = "";
+                }
+                var opStr = operator.Name;
+                if (opStr === "+" || opStr === "+" || opStr === "+" || opStr === "+") {
+                    opStr = "&nbsp;" + opStr + "&nbsp;";
+                }
+                var label = $("<div></div>").addClass("label").html(spaceStr + opStr).appendTo(opDiv);
+                $("<div></div>").addClass("hole").appendTo(opDiv);
+                if (operator.OperandsCount > 1 && operator.isFunction) {
+                    //$("<div>&nbsp;&nbsp;</div>").appendTo(opDiv);
+                    $("<div></div>").addClass("hole").appendTo(opDiv);
+                }
+                opDiv.draggable({
+                    helper: "clone",
+                    cursorAt: { left: 0, top: 0 },
+                    opacity: 0.4,
+                    cursor: "pointer",
+                    start: function (event, ui) {
+                        //that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
+                    }
+                });
+            }
+            //Adding operators toggle basic/advanced
+            /*
+            var toggle = $("<div></div>").addClass("toggle").width(60).attr("align", "right").text("Advanced").appendTo(toolbar);
+            toggle.click((args) => {
+                if (toggle.text() === "Advanced") {
+                    toggle.text("Basic");
+                    operatorsDiv.height(98);
+                    this.statesbtns.height(98);
+                    if (this.drawingSurfaceContainerRef !== undefined) {
+                        this.drawingSurfaceContainerRef.height("calc(100% - 113px - 30px - 34px)");
+                    }
+                } else {
+                    toggle.text("Advanced");
+                    operatorsDiv.height(64);
+                    this.statesbtns.height(64);
+                    if (this.drawingSurfaceContainerRef !== undefined) {
+                        this.drawingSurfaceContainerRef.height("calc(100% - 113px - 30px)");
+                    }
+                }
+                //$('body,html').css("zoom", 1.0000001);
+                //root.height(root.height() + 1);
+                this.updateLayout();
+            });
+            */
+            //Adding drawing surface
+            var svgDiv = $("<div></div>").css("background-color", "white").height(200).width("100%").appendTo(root);
+            that.svgDiv = svgDiv;
+            var pixofs = 0;
+            svgDiv.svg({
+                onLoad: function (svg) {
+                    that._svg = svg;
+                    svg.configure({
+                        width: svgDiv.width() - pixofs,
+                        height: svgDiv.height() - pixofs,
+                        viewBox: "0 0 " + (svgDiv.width() - pixofs) + " " + (svgDiv.height() - pixofs),
+                        preserveAspectRatio: "none meet"
+                    }, true);
+                    that._refresh();
+                }
+            });
+            svgDiv.mousemove(function (arg) {
+                if (that.operationLayout !== undefined) {
+                    var opL = that.operationLayout;
+                    var parentOffset = $(this).offset();
+                    var relX = arg.pageX - parentOffset.left;
+                    var relY = arg.pageY - parentOffset.top;
+                    var svgCoords = that._getSVGCoords(relX, relY);
+                    opL.HighlightAtPosition(svgCoords.x, svgCoords.y);
+                }
+            });
+            svgDiv.droppable({
+                drop: function (arg, ui) {
+                    var op = new BMA.LTLOperations.Operation();
+                    var operator = undefined;
+                    for (var i = 0; i < operatorsArr.length; i++) {
+                        if (operatorsArr[i].Name === ui.draggable.attr("data-operator")) {
+                            op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].OperandsCount, undefined, operatorsArr[i].isFunction);
+                            break;
+                        }
+                    }
+                    op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
+                    var opL = that.operationLayout;
+                    if (opL === undefined) {
+                        that.options.operation = op;
+                        that._refresh();
+                    }
+                    else {
+                        var parentOffset = $(this).offset();
+                        var relX = arg.pageX - parentOffset.left;
+                        var relY = arg.pageY - parentOffset.top;
+                        var svgCoords = that._getSVGCoords(relX, relY);
+                        var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                        if (emptyCell !== undefined) {
+                            emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                            that._refresh();
+                        }
+                    }
+                }
+            });
+            //Context menu
+            var holdCords = {
+                holdX: 0,
+                holdY: 0
+            };
+            $(document).on('vmousedown', function (event) {
+                holdCords.holdX = event.pageX;
+                holdCords.holdY = event.pageY;
+            });
+            svgDiv.contextmenu({
+                addClass: "temporal-properties-contextmenu",
+                delegate: root,
+                autoFocus: true,
+                preventContextMenuForPopup: true,
+                preventSelect: true,
+                //taphold: true,
+                menu: [
+                    { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
+                    { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
+                    { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
+                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
+                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }] },
+                    { title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
+                ],
+                beforeOpen: function (event, ui) {
+                    ui.menu.zIndex(50);
+                    var x = holdCords.holdX || event.pageX;
+                    var y = holdCords.holdX || event.pageY;
+                    var left = x - svgDiv.offset().left;
+                    var top = y - svgDiv.offset().top;
+                },
+                select: function (event, ui) {
+                    var args = {};
+                    var x = holdCords.holdX || event.pageX;
+                    var y = holdCords.holdX || event.pageY;
+                    args.left = x - svgDiv.offset().left;
+                    args.top = y - svgDiv.offset().top;
+                    //ui.cmd
+                }
+            });
+        },
+        _getSVGCoords: function (x, y) {
+            var bbox = this.operationLayout.BoundingBox;
+            var aspect = this.svgDiv.width() / this.svgDiv.height();
+            var width = bbox.width + 20;
+            var height = width / aspect;
+            if (height < bbox.height + 20) {
+                height = bbox.height + 20;
+                width = height * aspect;
+            }
+            var bboxx = -width / 2;
+            var bboxy = -height / 2;
+            var svgX = width * x / this.svgDiv.width() + bboxx;
+            var svgY = height * y / this.svgDiv.height() + bboxy;
+            return {
+                x: svgX,
+                y: svgY
+            };
+        },
+        _refresh: function () {
+            var that = this;
+            if (that._svg === undefined)
+                return;
+            if (that.options.operation !== undefined) {
+                this.operationLayout = new BMA.LTLOperations.OperationLayout(that._svg, that.options.operation, { x: 0, y: 0 });
+                var bbox = this.operationLayout.BoundingBox;
+                var aspect = that.svgDiv.width() / that.svgDiv.height();
+                var width = bbox.width + 20;
+                var height = width / aspect;
+                if (height < bbox.height + 20) {
+                    height = bbox.height + 20;
+                    width = height * aspect;
+                }
+                var x = -width / 2;
+                var y = -height / 2;
+                that._svg.configure({
+                    viewBox: x + " " + y + " " + width + " " + height,
+                }, true);
+            }
+            else {
+                if (that.operationLayout !== undefined) {
+                    that.operationLayout.IsVisible = false;
+                }
+            }
+        },
+        _setOption: function (key, value) {
+            var that = this;
+            var needRefreshStates = false;
+            switch (key) {
+                case "operation":
+                    break;
+                default:
+                    break;
+            }
+            that._refresh();
+        },
+        destroy: function () {
+            this.element.empty();
+        }
+    });
+}(jQuery));
+//# sourceMappingURL=formulaeditor.js.map
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
@@ -11884,29 +12309,22 @@ jQuery.fn.extend({
             visibleItems: [],
             colors: [],
             onExportCSV: undefined,
-            createStateRequested: undefined
+            createStateRequested: undefined,
+            columnContextMenuItems: undefined
         },
         _create: function () {
             var that = this;
             this.element.empty();
             this.element.addClass("ltlresultsviewer");
             var root = this.element;
-            //this.loading = $("<div></div>").addClass("page-loading").css("position", "absolute").css("top", "27").css("height", 470- 47).hide().appendTo(that.element);
-            //var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
-            //this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(root);
             this.tablesContainer = $("<div></div>").addClass('ltl-simplot-container').appendTo(root);
-            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer); //root);
-            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer); //root);
-            //this._table.height(that._table.height() + 10);
+            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer);
+            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer);
             this.scrollBarSize = BMA.ModelHelper.GetScrollBarSize();
             this._table.on('scroll', function () {
                 that._variables.scrollTop($(this).scrollTop());
             });
-            //this._variables.on('scroll', function () {
-            //    that._table.scrollTop($(this).scrollTop());
-            //});
             this._variables.css("max-height", 322 - that.scrollBarSize.height);
-            //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
             this.loading = $("<div></div>").addClass("page-loading").css("position", "inherit").css("height", 322).appendTo(this._plot);
             var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
@@ -11932,14 +12350,12 @@ jQuery.fn.extend({
                     that.options.visibleItems[params.ind] = params.check;
                 if (that.options.variables !== undefined && that.options.variables.length != 0)
                     that.options.variables[params.ind][1] = params.check;
-                //that._setOption("visibleItems", visibility);
             };
             this._variables.coloredtableviewer({
                 onChangePlotVariables: changeVisibility
             });
             var onContextMenuItemSelected = function (args) {
                 if (that.options.data !== undefined && that.options.data.length !== 0) {
-                    //that.loading.show();
                     var columnData = [];
                     for (var i = 0; i < that.options.data[args.column].length; i++) {
                         columnData.push({
@@ -11951,14 +12367,10 @@ jQuery.fn.extend({
                     if (args.command == "CreateState" && that.options.createStateRequested !== undefined)
                         that.options.createStateRequested(columnData);
                 }
-                //that.loading.hide();
-                //that.tablesContainer.show();
-                //that._plot.show();
             };
             this._table.progressiontable({
                 canEditInitialValue: false,
                 showInitialValue: false,
-                columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
                 onContextMenuItemSelected: onContextMenuItemSelected
             });
             var after = $("<div></div>").css("height", 23).css("width", "100%").appendTo(this._table);
@@ -12025,6 +12437,13 @@ jQuery.fn.extend({
                         this._plot.simulationplot({
                             colors: value,
                         });
+                    break;
+                }
+                case "columnContextMenuItems": {
+                    needUpdate = false;
+                    this._table.progressiontable({
+                        columnContextMenuItems: that.options.columnContextMenuItems,
+                    });
                     break;
                 }
                 default: break;
@@ -12213,7 +12632,36 @@ jQuery.fn.extend({
                     }
                     that.refresh();
                 });
+                this.addStatesHighlighting(stateButton);
             }
+        },
+        addStatesHighlighting: function (stateButton) {
+            var that = this;
+            stateButton.hover(function (e) {
+                var variablesIds = [];
+                var stateIdx;
+                for (var j = 0; j < that.options.states.length; j++) {
+                    if (that.options.states[j].name == $(this).attr("data-state-name")) {
+                        stateIdx = j;
+                        break;
+                    }
+                }
+                if (stateIdx !== undefined) {
+                    var formulas = that.options.states[stateIdx].formula;
+                    for (var i = 0; i < formulas.length; i++) {
+                        var variableId = formulas[i] && formulas[i][0] && formulas[i][0].value && formulas[i][0].value.variable !== undefined ?
+                            formulas[i][0].value.variable : undefined;
+                        if (variableId !== undefined)
+                            variablesIds.push(variableId);
+                    }
+                    window.Commands.Execute("HighlightContent", {
+                        variableHighlightIds: variablesIds,
+                        containerHighlightIds: [],
+                    });
+                }
+            }, function (e) {
+                window.Commands.Execute("UnhighlightContent", undefined);
+            });
         },
         addContextMenu: function () {
             var that = this;
@@ -12295,6 +12743,7 @@ jQuery.fn.extend({
                 }
                 that.refresh();
             });
+            this.addStatesHighlighting(state);
             if (this._activeState != null)
                 that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
             this._activeState = this.options.states[idx];
@@ -12375,6 +12824,15 @@ jQuery.fn.extend({
             var tr = $("<tr></tr>").appendTo(tbody);
             var variableTd = $("<td></td>").addClass("variable").appendTo(tr);
             that.createVariablePicker(variableTd, formula[0]);
+            variableTd.hover(function (e) {
+                var variableId = parseFloat(formula[0].value.variable);
+                window.Commands.Execute("HighlightContent", {
+                    variableHighlightIds: [variableId],
+                    containerHighlightIds: [],
+                });
+            }, function (e) {
+                window.Commands.Execute("UnhighlightContent", undefined);
+            });
             var operatorTd = $("<td></td>").addClass("operator").appendTo(tr);
             that.createOperatorPicker(operatorTd, formula[1], { variable: formula[0], stateIdx: stateIdx, formulaIdx: formulaIdx });
             var constTd = $("<td></td>").addClass("const").appendTo(tr);
@@ -12490,7 +12948,6 @@ jQuery.fn.extend({
             operatorSelector.children().bind("click", function () {
                 var newOperator = $(this).attr("data-operator-type");
                 setOperatorValue(newOperator);
-                //operatorExpandButton.removeClass('inputs-list-header-expanded');
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
             return operatorSelector;
@@ -12535,10 +12992,6 @@ jQuery.fn.extend({
                 }
                 if (variableName === "") {
                     variableName = "Unnamed";
-                    expandButton.addClass("hidden");
-                }
-                else {
-                    expandButton.removeClass("hidden");
                 }
                 $(selectedContainer).text(containerName);
                 $(selectedVariable).text(variableName);
@@ -12547,7 +13000,6 @@ jQuery.fn.extend({
                     variablePicker.remove();
                     variablePicker = undefined;
                 }
-                //expandButton.removeClass('inputs-list-header-expanded');
                 if (containerName !== "ALL") {
                     containerImg.removeClass("hidden");
                     selectedContainer.removeClass("hidden");
@@ -12563,7 +13015,6 @@ jQuery.fn.extend({
                 selectedVariable.addClass("not-selected");
             var variablePicker = undefined;
             setSelectedValue(variable.value);
-            //var trDivs = this.updateVariablePicker(trList, setSelectedValue, variable);
             $(document).mousedown(function (e) {
                 if (variablePicker) {
                     if (!variablePicker.is(e.target) && variablePicker.has(e.target).length === 0) {
@@ -12573,8 +13024,6 @@ jQuery.fn.extend({
             });
             expandButton.bind("click", function () {
                 if (!variablePicker) {
-                    //var offLeft = $(variableTd).offset().left - firstLeft;
-                    //var offTop = $(variableTd).offset().top - firstTop;
                     firstLeft = $(variableTd).offset().left;
                     firstTop = $(variableTd).offset().top + 47;
                     that.executeonComboBoxOpen();
@@ -12606,10 +13055,17 @@ jQuery.fn.extend({
                 currSymbol.value.container = that.findContainer(currSymbol.value.variable);
             }
             for (var i = 0; i < this.options.variables.length; i++) {
-                //if (this.options.variables[i].name) {
                 var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
                     .appendTo(divContainers).click(function () {
                     that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
+                });
+                container.hover(function (e) {
+                    var containerId = parseFloat($(this).attr("data-container-id"));
+                    if (containerId > 0) {
+                        window.Commands.Execute("HighlightContent", { variableHighlightIds: [], containerHighlightIds: [containerId] });
+                    }
+                }, function (e) {
+                    window.Commands.Execute("UnhighlightContent", undefined);
                 });
                 if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id) {
                     that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
@@ -12634,7 +13090,8 @@ jQuery.fn.extend({
             $(container).addClass("active");
             for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
                 var variableName = that.options.variables[idx].vars[j].name;
-                if (variableName && that.options.variables[idx].vars[j].id !== undefined) {
+                variableName = variableName ? variableName : "Unnamed";
+                if (that.options.variables[idx].vars[j].id !== undefined) {
                     var variable = $("<a>" + variableName + "</a>").attr("data-variable-id", that.options.variables[idx].vars[j].id)
                         .appendTo(divVariables).click(function () {
                         divVariables.find(".active").removeClass("active");
@@ -12646,6 +13103,11 @@ jQuery.fn.extend({
                         currSymbol.value = { container: containerId, variable: variablesId };
                         setSelectedValue({ container: currSymbol.value.container, variable: currSymbol.value.variable });
                         that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+                    });
+                    variable.hover(function (e) {
+                        window.Commands.Execute("HighlightContent", { variableHighlightIds: [parseFloat($(this).attr("data-variable-id"))], containerHighlightIds: [] });
+                    }, function (e) {
+                        window.Commands.Execute("UnhighlightContent", undefined);
                     });
                     if (currSymbol.value != 0 && currSymbol.value.container == $(container).attr("data-container-id")
                         && currSymbol.value.variable == that.options.variables[idx].vars[j].id) {
@@ -12806,9 +13268,6 @@ jQuery.fn.extend({
             this._emptyStatePlaceholder = $("<div>start by defining some model states</div>").addClass("state-placeholder").appendTo(this.element);
             this._stateButtons = $("<div></div>").addClass("state-buttons").appendTo(this.element);
             //that.addContextMenu();
-            for (var i = 0; i < this.options.states.length; i++) {
-                var stateButton = $("<div>" + this.options.states[i].name + "</div>").addClass("state-button").appendTo(this._stateButtons);
-            }
             if (this.options.states.length == 0) {
                 this._stateButtons.hide();
             }
@@ -12826,9 +13285,7 @@ jQuery.fn.extend({
                     for (var i = 0; i < value.length; i++) {
                         if (value[i].formula.length != 0) {
                             this.options.states.push(value[i]);
-                            var stateButton = $("<div>" + value[i].name + "</div>").attr("data-state-name", value[i].name)
-                                .addClass("state-button").appendTo(this._stateButtons);
-                            stateButton.statetooltip({ state: that.convertForTooltip(value[i]) });
+                            this.createStateButton(value[i]);
                         }
                     }
                     if (this.options.states.length == 0) {
@@ -12855,8 +13312,26 @@ jQuery.fn.extend({
                 default: break;
             }
         },
-        _setOptions: function (options) {
-            this._super(options);
+        createStateButton: function (value) {
+            var that = this;
+            var stateButton = $("<div>" + value.name + "</div>").attr("data-state-name", value.name)
+                .addClass("state-button").appendTo(this._stateButtons);
+            var convertedState = that.convertForTooltip(value);
+            stateButton.statetooltip({ state: convertedState });
+            stateButton.hover(function (e) {
+                var variablesIds = [];
+                for (var i = 0; i < convertedState.formula.length; i++) {
+                    var variableId = parseFloat(convertedState.formula[i].id);
+                    if (variableId)
+                        variablesIds.push(variableId);
+                }
+                window.Commands.Execute("HighlightContent", {
+                    variableHighlightIds: variablesIds,
+                    containerHighlightIds: [],
+                });
+            }, function (e) {
+                window.Commands.Execute("UnhighlightContent", undefined);
+            });
         },
         executeCommand: function (commandName, args) {
             if (this.options.commands) {
@@ -12914,6 +13389,7 @@ jQuery.fn.extend({
                 var formula = state.formula[j];
                 var newFormula = {
                     variable: undefined,
+                    id: undefined,
                     operator: undefined,
                     const: undefined
                 };
@@ -12921,7 +13397,8 @@ jQuery.fn.extend({
                     if (formula[i] !== undefined) {
                         switch (formula[i].type) {
                             case "variable": {
-                                newFormula.variable = formula[i].value;
+                                newFormula.variable = formula[i].value.name ? formula[i].value.name : "Unnamed";
+                                newFormula.id = formula[i].value.id;
                                 break;
                             }
                             case "const": {
@@ -14529,19 +15006,11 @@ var BMA;
                     }
                 });
                 ltlresultsviewer.SetOnCreateStateRequested(function (args) {
-                    if (args !== undefined) {
-                        var keyframeEqs = [];
-                        for (var i = 0; i < args.length; i++) {
-                            keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId), "=", new BMA.LTLOperations.ConstOperand(args[i].value)));
-                        }
-                        var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
-                        var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
-                        var merged = that.MergeStates(that.appModel.States, [newState]);
-                        that.appModel.States = merged.states;
-                        that.statespresenter.UpdateStatesFromModel();
-                        that.tppresenter.UpdateStatesFromModel();
-                        ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
-                    }
+                    that.CreateStateFromTableData(args);
+                    ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
+                });
+                window.Commands.On("CreateStateFromTable", function (args) {
+                    that.CreateStateFromTableData(args);
                 });
                 commands.On("ExportLTLFormulaAsJson", function (args) {
                     if (args.operation !== undefined) {
@@ -14588,6 +15057,21 @@ var BMA;
                     }
                 });
             }
+            LTLPresenter.prototype.CreateStateFromTableData = function (args) {
+                var that = this;
+                if (args !== undefined) {
+                    var keyframeEqs = [];
+                    for (var i = 0; i < args.length; i++) {
+                        keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId), args[i].operator ? args[i].operator : "=", new BMA.LTLOperations.ConstOperand(args[i].value)));
+                    }
+                    var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
+                    var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
+                    var merged = that.MergeStates(that.appModel.States, [newState]);
+                    that.appModel.States = merged.states;
+                    that.statespresenter.UpdateStatesFromModel();
+                    that.tppresenter.UpdateStatesFromModel();
+                }
+            };
             LTLPresenter.prototype.UpdateOperations = function (states) {
                 var operations = this.appModel.Operations.slice(0);
                 var opsWithStatus = [];

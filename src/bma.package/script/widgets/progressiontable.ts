@@ -214,6 +214,7 @@
                         }
                     }
                 }
+                that.createColumnContextMenu();
             }
         },
 
@@ -239,16 +240,17 @@
                     autoFocus: true,
                     preventContextMenuForPopup: true,
                     preventSelect: true,
-                    menu: [{ title: "Create State", cmd: "CreateState" }],//that.options.columnContextMenuItems,
+                    menu: that.options.columnContextMenuItems,
                     beforeOpen: function (event, ui) {
                         ui.menu.zIndex(50);
-                        if ($(ui.target.context.parentElement).index() == 0)
+                        if ($(ui.target.context.parentElement).hasClass("table-tags"))
                             return false;
                     },
                     select: function (event, ui) {
                         var args: any = {};
                         args.command = ui.cmd;
                         args.column = $(ui.target.context).index();
+
                         if (that.options.onContextMenuItemSelected !== undefined)
                             that.options.onContextMenuItemSelected(args);
                     }

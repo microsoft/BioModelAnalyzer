@@ -123,6 +123,7 @@
     <Content Include="html\BandPlotSample.html" />
     <Content Include="html\callback.html" />
     <Content Include="html\chartSample.html" />
+    <Content Include="html\FormulaEditorSample.html" />
     <Content Include="html\LayoutSample.html" />
     <Content Include="html\LTLFormulaViewSample.html" />
     <Content Include="html\LTLResultsCompactViewerSample.html" />

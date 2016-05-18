@@ -9,6 +9,8 @@
             colorData: undefined,
             type: "standart", // "color","graph-min","graph-max", "simulation-min", "simulation-max"
             onChangePlotVariables: undefined,
+            onContextMenuItemSelected: undefined,
+            columnContextMenuItems: undefined,
         },
 
         _create: function () {
@@ -34,6 +36,8 @@
 
                         if (options.colorData !== undefined)
                             this.paintTable(options.colorData);
+
+                        this.createColumnContextMenu();
                     }
                     break;
 
@@ -276,7 +280,33 @@
                 }
             }
             return table;
-        }
+        },
+
+        createColumnContextMenu: function () {
+            var that = this;
+            if (this.options.numericData !== undefined && this.options.numericData.length != 0) {
+                this.table.contextmenu({
+                    delegate: "td",
+                    autoFocus: true,
+                    preventContextMenuForPopup: true,
+                    preventSelect: true,
+                    menu: that.options.columnContextMenuItems,
+                    beforeOpen: function (event, ui) {
+                        ui.menu.zIndex(50);
+                        if ($(ui.target.context.parentElement).index() == 0 || $(ui.target.context).index() == 0)
+                            return false;
+                    },
+                    select: function (event, ui) {
+                        var args: any = {};
+                        args.command = ui.cmd;
+                        args.column = $(ui.target.context).index();
+
+                        if (that.options.onContextMenuItemSelected !== undefined)
+                            that.options.onContextMenuItemSelected(args);
+                    }
+                });
+            }
+        },
     });
 } (jQuery));
 
