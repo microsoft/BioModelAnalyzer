@@ -431,5 +431,8 @@
 
             return { width: width, height: height };
         }
+
+        export function FormulaParser(formula: string) {
+        }
     }
 } 

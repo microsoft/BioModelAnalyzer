@@ -1155,6 +1155,9 @@ var BMA;
             return { width: width, height: height };
         }
         ModelHelper.GetScrollBarSize = GetScrollBarSize;
+        function FormulaParser(formula) {
+        }
+        ModelHelper.FormulaParser = FormulaParser;
     })(ModelHelper = BMA.ModelHelper || (BMA.ModelHelper = {}));
 })(BMA || (BMA = {}));
 //# sourceMappingURL=ModelHelper.js.map
