@@ -23,9 +23,48 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
+            function ConvertFormulaToOperation(formula, states) {
+                var parsedFormula;
+                try {
+                    var parsedFormula = parser.parse(formula);
+                    return ConvertToOperation(parsedFormula, states);
+                } catch (ex) {
+                    alert(ex);
+                }
+                return;
+            }
+
+            function ConvertToOperation(formula, states) {
+                if (formula && formula.state && states) {
+                    for (var i = 0; i < states.length; i++) {
+                        if (states[i].Name == formula.state)
+                            return states[i].Clone();
+                    }
+                    return undefined;
+                } else {
+                    if (formula && formula.operator) {
+                        var operation = new BMA.LTLOperations.Operation();
+                        var operands = [];
+                        var operator = window.OperatorsRegistry.GetOperatorByName(formula.operator);
+                        if (operator.OperandsCount == 2) {
+                            operands.push(ConvertToOperation(formula.operand1, states));
+                            operands.push(ConvertToOperation(formula.operand2, states));
+                        } else {
+                            operands.push(ConvertToOperation(formula.operand, states));
+                        }
+                        operation.Operator = operator;
+                        operation.Operands = operands;
+                        return operation;
+                    }
+                }
+                return undefined;
+            }
+
+            window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
+
             $("#inp").change(function () {
                 try {
-                    var parsed = parser.parse($("#inp").val());
+                    var parsed = ConvertFormulaToOperation($("#inp").val(), []);
                     $("#textoutput").text(JSON.stringify(parsed));
                 } catch (ex) {
                     $("#textoutput").text(ex);

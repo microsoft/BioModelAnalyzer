@@ -432,7 +432,41 @@
             return { width: width, height: height };
         }
 
-        export function FormulaParser(formula: string) {
-        }
+        //export function ConvertFormulaToOperation(formula: string, states: BMA.LTLOperations.Keyframe[]) {
+        //    var parsedFormula;
+        //    try {
+        //        var parsedFormula = parser.parse(formula);
+        //        return ConvertToOperation(parsedFormula, states);
+        //    } catch (ex) {
+        //        alert(ex);
+        //    }
+        //    return;
+        //}
+
+        //export function ConvertToOperation(formula: any, states: BMA.LTLOperations.Keyframe[]): BMA.LTLOperations.IOperand  {
+        //    if (formula && formula.state && states) {
+        //        for (var i = 0; i < states.length; i++) {
+        //            if (states[i].Name == formula.state)
+        //                return states[i].Clone();
+        //        }
+        //        return undefined;
+        //    } else {
+        //        if (formula && formula.operator) {
+        //            var operation = new BMA.LTLOperations.Operation();
+        //            var operands = [];
+        //            var operator = window.OperatorsRegistry.GetOperatorByName(formula.operator);
+        //            if (operator.OperandsCount == 2) {
+        //                operands.push(ConvertToOperation(formula.operand1, states));
+        //                operands.push(ConvertToOperation(formula.operand2, states));
+        //            } else {
+        //                operands.push(ConvertToOperation(formula.operand, states));
+        //            }
+        //            operation.Operator = operator;
+        //            operation.Operands = operands;
+        //            return operation;
+        //        }
+        //    }
+        //    return undefined;
+        //}
     }
 } 
