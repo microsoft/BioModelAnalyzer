@@ -127,6 +127,7 @@
     <Content Include="html\LayoutSample.html" />
     <Content Include="html\LTLFormulaViewSample.html" />
     <Content Include="html\LTLResultsCompactViewerSample.html" />
+    <Content Include="html\LTLFormulaParserSample.html" />
     <Content Include="html\MemoryLeakTestPage.html" />
     <Content Include="html\OneDriveSample.html" />
     <Content Include="html\StatesEditorSample.html" />

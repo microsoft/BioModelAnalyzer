@@ -6,6 +6,39 @@
 ////DoubleLTLOperator ->  AND | OR | IMPLIES | UPTO | WEAKUNTIL | UNTIL | RELEASE
 ////SingleLTLOperator -> NEXT | NOT | ALWAYS | EVENTUALLY
 
+//
+//%lex
+//%%
+
+//\s+                  { /* skip whitespace */}
+//"("                  { return '('; }
+//")"                  { return ')'; }
+//"AND"               { return 'DOUBLELTLOPERATOR'; }
+//"OR"                { return 'DOUBLELTLOPERATOR'; }
+//"IMPLIES"           { return 'DOUBLELTLOPERATOR'; }
+//"UPTO"              { return 'DOUBLELTLOPERATOR'; }
+//"WEAKUNTIL"         { return 'DOUBLELTLOPERATOR'; }
+//"UNTIL"             { return 'DOUBLELTLOPERATOR'; }
+//"RELEASE"           { return 'DOUBLELTLOPERATOR'; }
+//"NEXT"              { return 'SINGLELTLOPERATOR'; }
+//"NOT"               { return 'SINGLELTLOPERATOR'; }
+//"ALWAYS"            { return 'SINGLELTLOPERATOR'; }
+//"EVENTUALLY"        { return 'SINGLELTLOPERATOR'; }
+//[a-zA-z0-9]+         { return 'STATE'; }
+//<<EOF>>         {return 'EOF';}
+
+///lex
+
+//%%
+//EXPRESSION
+//    : FORMULA EOF { print($1);    return $1;};
+
+//FORMULA
+//    : "(" DOUBLELTLOPERATOR FORMULA FORMULA ")" { $$ =  { operator: $2, operand1: $3, operand2: $4}; }  
+//    | "(" SINGLELTLOPERATOR FORMULA ")"    { $$ = { operator: $2, operand: $3 }; }
+//    | STATE    { $$ = { state: $1} }    ;
+
+
 
 //var grammar = {
 //    "lex": {
@@ -33,11 +66,10 @@
 //        "expressions" :[[ "formula EOF",
 //                           "print($1); return $1;"  ]],
 
-//        "formula" :[["( e )",   "$$ = $2;" ],
-//              [ "DOUBLELTLOPERATOR FORMULA FORMULA",  
-//                 "$$ = { operator: $1, operand1: $2, operand2: $3};" ],
-//              [ "SINGLELTLOPERATOR FORMULA",
-//                 "$$ = { operator: $1, operand: $2 };" ],
+//        "formula" :[[ "( DOUBLELTLOPERATOR FORMULA FORMULA )",  
+//                 "$$ = { operator: $2, operand1: $3, operand2: $4};" ],
+//              [ "( SINGLELTLOPERATOR FORMULA )",
+//                 "$$ = { operator: $2, operand: $3 };" ],
 //              [ "STATE",
 //                 "$$ = { state: $1 }"]]
 //    }
@@ -124,30 +156,27 @@ var parser = (function () {
     var parser = {
         trace: function trace() { },
         yy: {},
-        symbols_: { "error": 2, "EXPRESSION": 3, "FORMULA": 4, "EOF": 5, "(": 6, ")": 7, "DOUBLELTLOPERATOR": 8, "SINGLELTLOPERATOR": 9, "STATE": 10, "$accept": 0, "$end": 1 },
-        terminals_: { 2: "error", 5: "EOF", 6: "(", 7: ")", 8: "DOUBLELTLOPERATOR", 9: "SINGLELTLOPERATOR", 10: "STATE" },
-        productions_: [0, [3, 2], [4, 3], [4, 3], [4, 2], [4, 1]],
+        symbols_: { "error": 2, "EXPRESSION": 3, "FORMULA": 4, "EOF": 5, "(": 6, "DOUBLELTLOPERATOR": 7, ")": 8, "SINGLELTLOPERATOR": 9, "STATE": 10, "$accept": 0, "$end": 1 },
+        terminals_: { 2: "error", 5: "EOF", 6: "(", 7: "DOUBLELTLOPERATOR", 8: ")", 9: "SINGLELTLOPERATOR", 10: "STATE" },
+        productions_: [0, [3, 2], [4, 5], [4, 4], [4, 1]],
         performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */
             /**/) {
             /* this == yyval */
 
             var $0 = $$.length - 1;
             switch (yystate) {
-                case 1: print($$[$0 - 1]);
-                    return $$[$0 - 1];
+                case 1: return $$[$0 - 1];
                     break;
-                case 2: this.$ = $$[$0 - 1];
+                case 2: this.$ = { operator: $$[$0 - 3], operand1: $$[$0 - 2], operand2: $$[$0 - 1] };
                     break;
-                case 3: this.$ = { operator: $$[$0 - 2], operand1: $$[$0 - 1], operand2: $$[$0] };
+                case 3: this.$ = { operator: $$[$0 - 2], operand: $$[$0 - 1] };
                     break;
-                case 4: this.$ = { operator: $$[$0 - 1], operand: $$[$0] };
-                    break;
-                case 5: this.$ = { state: $$[$0] }
+                case 4: this.$ = { state: $$[$0] }
                     break;
             }
         },
-        table: [{ 3: 1, 4: 2, 6: [1, 3], 8: [1, 4], 9: [1, 5], 10: [1, 6] }, { 1: [3] }, { 5: [1, 7] }, { 4: 8, 6: [1, 3], 8: [1, 4], 9: [1, 5], 10: [1, 6] }, { 4: 9, 6: [1, 3], 8: [1, 4], 9: [1, 5], 10: [1, 6] }, { 4: 10, 6: [1, 3], 8: [1, 4], 9: [1, 5], 10: [1, 6] }, { 5: [2, 5], 6: [2, 5], 7: [2, 5], 8: [2, 5], 9: [2, 5], 10: [2, 5] }, { 1: [2, 1] }, { 7: [1, 11] }, { 4: 12, 6: [1, 3], 8: [1, 4], 9: [1, 5], 10: [1, 6] }, { 5: [2, 4], 6: [2, 4], 7: [2, 4], 8: [2, 4], 9: [2, 4], 10: [2, 4] }, { 5: [2, 2], 6: [2, 2], 7: [2, 2], 8: [2, 2], 9: [2, 2], 10: [2, 2] }, { 5: [2, 3], 6: [2, 3], 7: [2, 3], 8: [2, 3], 9: [2, 3], 10: [2, 3] }],
-        defaultActions: { 7: [2, 1] },
+        table: [{ 3: 1, 4: 2, 6: [1, 3], 10: [1, 4] }, { 1: [3] }, { 5: [1, 5] }, { 7: [1, 6], 9: [1, 7] }, { 5: [2, 4], 6: [2, 4], 8: [2, 4], 10: [2, 4] }, { 1: [2, 1] }, { 4: 8, 6: [1, 3], 10: [1, 4] }, { 4: 9, 6: [1, 3], 10: [1, 4] }, { 4: 10, 6: [1, 3], 10: [1, 4] }, { 8: [1, 11] }, { 8: [1, 12] }, { 5: [2, 3], 6: [2, 3], 8: [2, 3], 10: [2, 3] }, { 5: [2, 2], 6: [2, 2], 8: [2, 2], 10: [2, 2] }],
+        defaultActions: { 5: [2, 1] },
         parseError: function parseError(str, hash) { if (hash.recoverable) { this.trace(str) } else { throw new Error(str) } },
         parse: function parse(input) {
             var self = this, stack = [0], vstack = [null], lstack = [], table = this.table, yytext = '', yylineno = 0, yyleng = 0, recovering = 0, TERROR = 2, EOF = 1;
@@ -351,21 +380,21 @@ var parser = (function () {
                         break;
                     case 1: return 6;
                         break;
-                    case 2: return 7;
+                    case 2: return 8;
                         break;
-                    case 3: return 8;
+                    case 3: return 7;
                         break;
-                    case 4: return 8;
+                    case 4: return 7;
                         break;
-                    case 5: return 8;
+                    case 5: return 7;
                         break;
-                    case 6: return 8;
+                    case 6: return 7;
                         break;
-                    case 7: return 8;
+                    case 7: return 7;
                         break;
-                    case 8: return 8;
+                    case 8: return 7;
                         break;
-                    case 9: return 8;
+                    case 9: return 7;
                         break;
                     case 10: return 9;
                         break;

@@ -23,93 +23,25 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
-            window.Commands = new BMA.CommandRegistry();
-
-            var GetRandomInt = function (min, max) {
-                return Math.floor(Math.random() * (max - min + 1) + min);
-            };
-
-            var getRandomColor = function () {
-                var r = GetRandomInt(0, 255);
-                var g = GetRandomInt(0, 255);
-                var b = GetRandomInt(0, 255);
-                return "rgb(" + r + ", " + g + ", " + b + ")";
-            };
-
-            var init = [];
-            var data = [];
-            var interval = [];
-            var vars = [];
-            var pData = [];
-
-            for (var j = 0; j < 30; j++) {
-                data.push([]);
-            }
-
-            for (var i = 0; i < 20; i++) {
-
-                init.push(i);
-                interval.push([0, 1]);
-
-                var plotData = [];
-                for (var j = 0; j < 30; j++) {
-                    var d = Math.floor(Math.random() * 5);
-                    plotData.push(d);
-                    data[j].push(d);
+            $("#inp").change(function () {
+                try {
+                    var parsed = parser.parse($("#inp").val());
+                    $("#textoutput").text(JSON.stringify(parsed));
+                } catch (ex) {
+                    $("#textoutput").text(ex);
                 }
-                var color = getRandomColor();
-                pData.push({
-                    Id: i,
-                    Color: color,
-                    Seen: true,
-                    Plot: plotData,
-                    Init: i,
-                    Name: "var" + i,
-                });
-
-                vars.push([color, true, "var" + i, 0, 1]);
-            }
-
-            pData[5].Seen = false;
-            vars[5][1] = false;
-
-            //$("#ltlresultsviewer").ltlresultsviewer();
-
-            $("#ltlresultsviewer").ltlresultsviewer({
-                interval: interval,
-                data: data,
-                init: init,
-                variables: vars,
-                //colors: pData,
             });
-
-            //$("#coloredTable").coloredtableviewer({
-            //    header: ["Graph", "Name", "Range"],
-            //    type: "graph-max",
-            //    numericData: vars
-            //});
-            //$("#progressionTable").progressiontable({
-            //    data: data,
-            //    init: init,
-            //    interval: interval,
-            //    canEditInitialValue: false
-            //});
-
-            //$("#simulationPlot").simulationplot({
-            //    colors: pData
-            //});
         });
 
     </script>
 </head>
 <body style="background-color: white;">
-
-    <div id="ltlresultsviewer" >
-        <!--<div id="coloredTable" class="small-simulation-popout-table"></div>
-        <div id="progressionTable" class="big-simulation-popout-table simulation-progression-table-container"></div>
-        <div class="ltl-simplot-container">
-            <div id="simulationPlot" class="ltl-results"></div>
-        </div>-->
+    <div style="width:450px; height: 250px;">
+        <div id="textbox" style="width:200px;height: 200px;float:left;background-color: aliceblue;">
+            <input type="text" value="Enter formula" id="inp" style="border:none; background-color:transparent;" />
+        </div>
+        <div id="textoutput" style="width:200px;height: 200px;float:left;background-color: cornsilk;">
+        </div>
     </div>
 </body>
 </html>
