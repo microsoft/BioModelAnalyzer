@@ -86,7 +86,7 @@ let stabilize_lazy (network : QN.node list) =
                 else
                     Some ((false,bounds),(false,frontier,bounds,outputs))
                 //          ^                           indicate to client that this is the last proof step
-                //                                    ^ indicate to next Seq.unfold that we're done
+                //                         ^ indicate to next Seq.unfold that we're done
             else 
                 None)
         initial_state

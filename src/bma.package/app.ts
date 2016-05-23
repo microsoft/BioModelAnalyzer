@@ -240,7 +240,7 @@ function loadScript(version) {
     var ltlCommands = new BMA.CommandRegistry();
 
     //Defining processing service URL
-    window.BMAServiceURL = "http://bmamath.cloudapp.net";
+    window.BMAServiceURL = "http://bmamathnew.cloudapp.net";
 
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
@@ -672,7 +672,7 @@ function loadScript(version) {
         });
 
         var xhr = new XMLHttpRequest();
-        xhr.open('post', 'http://bmamath.cloudapp.net/api/ActivityLog', false);
+        xhr.open('post', window.BMAServiceURL + '/api/ActivityLog', false);
         xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
         //xhr.setRequestHeader("Content-length", data.length.toString());
         //xhr.setRequestHeader("Connection", "close");

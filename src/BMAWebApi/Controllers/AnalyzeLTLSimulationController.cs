@@ -102,7 +102,8 @@ namespace bma.client.Controllers
                 //  azureLogService.Debug("Analyze Exception", ex.ToString());
 
                 log.LogError(ex.ToString());
-                faultLogger.Add(DateTime.Now, "2.0", input, log);
+                var version = typeof(AnalyzeController).Assembly.GetName().Version;
+                faultLogger.Add(DateTime.Now, version.ToString(), input, log);
                 // Return an Unknown if fails
                 return new LTLAnalysisResult
                 {
