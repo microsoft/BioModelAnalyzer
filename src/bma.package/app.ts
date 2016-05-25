@@ -44,6 +44,7 @@
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
+/// <reference path="script\jisonparser.ts"/>
 
 declare var saveTextAs: any;
 declare var Silverlight: any;

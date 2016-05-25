@@ -276,9 +276,17 @@ module BMA {
                     }
                 });
 
-                commands.On("TemporalPropertiesEditorImport", (args: { top: number; left: number }) => {
+                commands.On("TemporalPropertiesEditorImportAsJson", (args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
-                        commands.Execute("ImportLTLFormula", {
+                        commands.Execute("ImportLTLFormulaAsJson", {
+                            position: { x: this.contextElement.x, y: this.contextElement.y }
+                        });
+                    }
+                });
+
+                commands.On("TemporalPropertiesEditorImportAsText", (args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        commands.Execute("ImportLTLFormulaAsText", {
                             position: { x: this.contextElement.x, y: this.contextElement.y }
                         });
                     }

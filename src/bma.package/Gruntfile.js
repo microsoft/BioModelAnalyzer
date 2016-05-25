@@ -18,6 +18,7 @@ module.exports = function (grunt) {
                 src: [
                     "js/svgplot.js",
                     "js/scalablegridlinesplot.js",
+                    "Scripts/formulaParser.js",
                     "script/XmlModelParser.js" ,
                     "script/SVGHelper.js",
                     "script/LTLHelper.js",

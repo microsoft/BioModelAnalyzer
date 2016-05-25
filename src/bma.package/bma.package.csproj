@@ -138,6 +138,7 @@
     <TypeScriptCompile Include="script\Commands.ts" />
     <TypeScriptCompile Include="script\elementsregistry.ts" />
     <TypeScriptCompile Include="script\functionsregistry.ts" />
+    <TypeScriptCompile Include="script\jisonparser.ts" />
     <TypeScriptCompile Include="script\jqextensions.ts" />
     <TypeScriptCompile Include="script\keyframesregistry.ts" />
     <TypeScriptCompile Include="script\localRepository.ts" />

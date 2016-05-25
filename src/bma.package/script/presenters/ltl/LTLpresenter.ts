@@ -179,13 +179,43 @@
                     }
                 });
 
-                commands.On("ImportLTLFormula", (args) => {
+                commands.On("ImportLTLFormulaAsJson", (args) => {
                     fileLoaderDriver.OpenFileDialog().done(function (fileName) {
                         var fileReader: any = new FileReader();
                         fileReader.onload = function () {
                             var fileContent = fileReader.result;
                             var obj = JSON.parse(fileContent);
                             var operation = BMA.Model.ImportOperand(obj, undefined);
+
+                            if (operation instanceof BMA.LTLOperations.Operation) {
+                                var op = <BMA.LTLOperations.Operation>operation;
+                                var states = that.GetStates(op);
+                                var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(that.appModel.BioModel, that.appModel.Layout, states);
+                                if (statesChanged.isChanged) {
+                                    states = statesChanged.states;
+                                    BMA.LTLOperations.RefreshStatesInOperation(op, states);
+                                }
+                                if (statesChanged.shouldNotify) window.Commands.Execute("InvalidStatesImported", {});
+                                var merged = that.MergeStates(that.appModel.States, states);
+                                that.appModel.States = merged.states;
+                                that.UpdateOperationStates(op, merged.map);
+                                that.statespresenter.UpdateStatesFromModel();
+                                that.tppresenter.UpdateStatesFromModel();
+                                that.tppresenter.AddOperation(op, args.position);
+                            }
+
+                        };
+                        fileReader.readAsText(fileName);
+
+                    });
+                });
+
+                commands.On("ImportLTLFormulaAsText", (args) => {
+                    fileLoaderDriver.OpenFileDialog().done(function (fileName) {
+                        var fileReader: any = new FileReader();
+                        fileReader.onload = function () {
+                            var fileContent = fileReader.result;
+                            var operation = BMA.ModelHelper.ConvertFormulaToOperation(fileContent, that.appModel.States);
 
                             if (operation instanceof BMA.LTLOperations.Operation) {
                                 var op = <BMA.LTLOperations.Operation>operation;

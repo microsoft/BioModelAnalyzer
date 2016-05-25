@@ -44,6 +44,7 @@
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
+/// <reference path="script\jisonparser.ts"/>
 function onSilverlightError(sender, args) {
     var appSource = "";
     if (sender != null && sender != 0) {
