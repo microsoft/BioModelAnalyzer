@@ -763,6 +763,17 @@ let ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) = //(ne
 
     ltlresult
 
+let ltl_double_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) (negative: Option<bool * (int * Map<int,Map<QN.var,int>>)>) = 
+    let ltlresult = ltl_result_full result model
+    
+    let secondltlresult = 
+        match negative with
+        | Some(resultneg, modelneg) -> Some(ltl_result_full resultneg modelneg)
+        | None -> None
+
+    (ltlresult, secondltlresult)
+
+
 let xml_of_ltl_result_full (result:bool) (model:int * Map<int,Map<QN.var,int>>) = 
     let (loop,model_map) = model
     let doc = new XDocument()

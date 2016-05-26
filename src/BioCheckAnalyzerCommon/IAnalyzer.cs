@@ -91,7 +91,7 @@ namespace BioCheckAnalyzerCommon
         // 2. CAV interface
         //LTLAnalysisResultDTO checkLTL(Model input_model, string formula, string num_of_steps);
         FSharpOption<LTLAnalysisResultDTO> checkLTLSimulation(Model input_model, string formula, string num_of_steps);
-        LTLAnalysisResultDTO checkLTLPolarity(Model input_model, string formula, string num_of_steps, bool polarity);
+        Tuple<LTLAnalysisResultDTO, FSharpOption<LTLAnalysisResultDTO>> checkLTLPolarity(Model input_model, string formula, string num_of_steps, FSharpOption<bool> polarity);
 
         ////// 3. SYN interface
         ////XDocument checkSynth(Model input_model);

@@ -1,6 +1,7 @@
 ﻿using BioCheckAnalyzerCommon;
 using BioModelAnalyzer;
 using BMAWebApi;
+using Microsoft.FSharp.Core;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using System;
@@ -64,7 +65,7 @@ namespace bma.client.Controllers
         }
 
         // POST api/AnalyzeLTL
-        public LTLAnalysisResult Post([FromBody]LTLPolarityAnalysisInputDTO input)
+        public Tuple<LTLAnalysisResult, LTLAnalysisResult> Post([FromBody]LTLPolarityAnalysisInputDTO input)
         {
 
             var log = new DefaultLogService();
@@ -92,7 +93,7 @@ namespace bma.client.Controllers
 
                 var model = (Model)input;
                 //var result = analyzer.checkLTL((Model)input, formula, num_of_steps); 
-                var result = Utilities.RunWithTimeLimit(() => analyzer.checkLTLPolarity((Model)input, formula, num_of_steps, polarity), TimeSpan.FromMinutes(1));//, Utilities.GetTimeLimitFromConfig());
+                var result = Utilities.RunWithTimeLimit(() => analyzer.checkLTLPolarity((Model)input, formula, num_of_steps, new FSharpOption<bool>(polarity)), TimeSpan.FromMinutes(1));//, Utilities.GetTimeLimitFromConfig());
 
                 // Log the output XML each time it's run
                 // DEBUG: Sam - to check why the output is returning is null
@@ -109,23 +110,39 @@ namespace bma.client.Controllers
                 //    outputData.Error = error != null ? error.AttributeString("Msg") : "There was an error during the LTL analysis";
                 //}
 
-                var status = result.Status;
-                //if (result.Status == StatusType.True && result.NegStatus == StatusType.True)
-                //    status = StatusType.PartiallyTrue;
-
-                return new LTLAnalysisResult
+                var positive = new LTLAnalysisResult
                 {
-                    Error = result.Error,
-                    Ticks = result.Ticks,
+                    Error = result.Item1.Error,
+                    Ticks = result.Item1.Ticks,
                     //NegTicks = result.NegTicks,
-                    Status = status,
+                    Status = result.Item1.Status ? LTLStatus.True : LTLStatus.False,
                     //Time = (int)time,
-                    Loop = result.Loop,
+                    Loop = result.Item1.Loop,
                     ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
                     DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
                     //outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
                     //outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
                 };
+
+                LTLAnalysisResult negative = null;
+                if (FSharpOption<LTLAnalysisResultDTO>.get_IsNone(result.Item2))
+                {
+                    negative = new LTLAnalysisResult
+                    {
+                        Error = result.Item2.Value.Error,
+                        Ticks = result.Item2.Value.Ticks,
+                        //NegTicks = result.NegTicks,
+                        Status = result.Item2.Value.Status ? LTLStatus.True : LTLStatus.False,
+                        //Time = (int)time,
+                        Loop = result.Item2.Value.Loop,
+                        ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
+                        DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
+                        //outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
+                        //outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
+                    };
+                }
+
+                return new Tuple<LTLAnalysisResult, LTLAnalysisResult>(positive, negative);
             }
             catch (Exception ex)
             {
@@ -134,12 +151,12 @@ namespace bma.client.Controllers
                 log.LogError(ex.ToString());
                 faultLogger.Add(DateTime.Now, "2.0", input, log);
                 // Return an Unknown if fails
-                return new LTLAnalysisResult
+                return new Tuple<LTLAnalysisResult, LTLAnalysisResult>(new LTLAnalysisResult
                 {
                     Error = ex.Message,
                     ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
                     DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
-                };
+                }, null);
             }
         }
     }

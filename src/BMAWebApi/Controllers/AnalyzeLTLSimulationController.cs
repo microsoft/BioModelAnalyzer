@@ -1,6 +1,7 @@
 ﻿using BioCheckAnalyzerCommon;
 using BioModelAnalyzer;
 using BMAWebApi;
+using Microsoft.FSharp.Core;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using System;
@@ -80,22 +81,42 @@ namespace bma.client.Controllers
                 //    outputData.Error = error != null ? error.AttributeString("Msg") : "There was an error during the LTL analysis";
                 //}
 
-                var status = result.Status;
-                //if (result.Status == StatusType.True && result.NegStatus == StatusType.True)
-                //    status = StatusType.PartiallyTrue;
-
-                return new LTLAnalysisResult
+                if (FSharpOption<LTLAnalysisResultDTO>.get_IsNone(result))
                 {
-                    Error = result.Error,
-                    Ticks = result.Ticks,
-                    Status = status,
-                    //Time = (int)time,
-                    Loop = result.Loop,
-                    ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
-                    DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
-                    //outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
-                    //outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
-                };
+                    return new LTLAnalysisResult
+                    {
+                        Error = null,
+                        Ticks = null,
+                        Status = LTLStatus.Unknown,
+                        //Time = (int)time,
+                        Loop = -1,
+                        ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
+                        DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
+                        //outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
+                        //outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
+                    };
+                }
+                else
+                {
+                    var res = result.Value;
+
+                    var status = res.Status;
+                    //if (result.Status == StatusType.True && result.NegStatus == StatusType.True)
+                    //    status = StatusType.PartiallyTrue;
+
+                    return new LTLAnalysisResult
+                    {
+                        Error = res.Error,
+                        Ticks = res.Ticks,
+                        Status = status? LTLStatus.True : LTLStatus.False,
+                        //Time = (int)time,
+                        Loop = res.Loop,
+                        ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
+                        DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
+                        //outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
+                        //outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
+                    };
+                }
             }
             catch (Exception ex)
             {
