@@ -6233,9 +6233,9 @@ var BMA;
                 var tags = that.PrepareTableTags(data, states, vars);
                 var labelsHeight = Math.max(1, (Math.max.apply(Math, data.map(function (s) {
                     return Math.max.apply(Math, s);
-                })) - Math.min(0, Math.min.apply(Math, data.map(function (s) {
+                })) - Math.min.apply(Math, data.map(function (s) {
                     return Math.min.apply(Math, s);
-                })))));
+                }))));
                 var labels = that.PreparePlotLabels(tags, labelsHeight);
                 var interval = this.CreateInterval(vars);
                 var options = {
@@ -6307,9 +6307,9 @@ var BMA;
                 var tags = this.PrepareTableTags(that.currentData.data, states, vars);
                 var labelsHeight = Math.max(1, (Math.max.apply(Math, that.currentData.data.map(function (s) {
                     return Math.max.apply(Math, s);
-                })) - Math.min(0, Math.min.apply(Math, that.currentData.data.map(function (s) {
+                })) - Math.min.apply(Math, that.currentData.data.map(function (s) {
                     return Math.min.apply(Math, s);
-                })))));
+                }))));
                 var labels = this.PreparePlotLabels(tags, labelsHeight);
                 that.currentData.tags = tags;
                 that.currentData.labels = labels;
@@ -15650,7 +15650,8 @@ var BMA;
                     var merged = that.MergeStates(that.appModel.States, [newState]);
                     that.appModel.States = merged.states;
                     that.statespresenter.UpdateStatesFromModel();
-                    that.tppresenter.UpdateStatesFromModel();
+                    if (that.tppresenter)
+                        that.tppresenter.UpdateStatesFromModel();
                 }
             };
             LTLPresenter.prototype.UpdateOperations = function (states) {
