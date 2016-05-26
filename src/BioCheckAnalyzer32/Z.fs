@@ -31,6 +31,7 @@ let get_qn_var_at_t_from_z3_var (name : string) =
     let id = (parts.[0]).Substring 1
     ((int id),(int parts.[1]) : QN.var * int)
 
+// The env encoding is different as it does not include the v before the %d^%d!
 let enc_for_env_qn_id_string_at_t (id : string) time =
     (id +  "^" + ((string)time))
 
@@ -39,7 +40,6 @@ let enc_for_env_qn_id_at_t (id : QN.var) time =
 
 let dec_from_env_qn_id_at_t (name : string) = 
     let parts = name.Split[|'^'|]
-//    let id = (parts.[0]).Substring 1
     let id = parts.[0]
     ((id),((int)parts.[1]))
 
