@@ -17,9 +17,16 @@ using System.Xml.Serialization;
 
 namespace bma.client.Controllers
 {
+    public enum LTLStatus
+    {
+        True,
+        False,
+        Unknown
+    }
+
     public class LTLAnalysisResult
     {
-        public bool Status { get; set; }
+        public LTLStatus Status { get; set; }
 
         /// <summary>Additional error information if status is nor Stabilizing neither NonStabilizing</summary>
         [XmlIgnore]

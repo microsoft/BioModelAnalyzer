@@ -109,7 +109,7 @@ type Analyzer () =
                 let formula = LTL.string_to_LTL_formula formula network true
                 let num_of_steps = (int)num_of_steps 
                 if (formula = LTL.Error) then
-                    Marshal.LTLAnalysisResultDTO_of_error -1 "unable to parse formula"                  
+                    Some(Marshal.LTLAnalysisResultDTO_of_error -1 "unable to parse formula")                  
                 else             
                     let range = Rangelist.nuRangel network
                     // SI: pass default value of 3rd argument. 
@@ -120,14 +120,13 @@ type Analyzer () =
                     // We should structure the data that res,model,model_checked are.
                     //let (res,model) = BMC.BoundedMC formula network range padded_paths
                     let outcome = BMC.SimulationBasedMC formula network padded_paths
-                    let (res1, model1) = 
-                        match outcome with
-                        | Some (res, model) -> (res, model)
-                        | None -> (false, (0, Map.empty)) // 
+                    match outcome with
+                    | Some (res, model) -> Some(Marshal.ltl_result_full res model)
+                    | None -> None //(false, (0, Map.empty)) // 
 
-                    Marshal.ltl_result_full res1 model1
+                    //Marshal.ltl_result_full res1 model1
 
-            with Marshal.MarshalInFailed(id,msg) -> Marshal.LTLAnalysisResultDTO_of_error id msg
+            with Marshal.MarshalInFailed(id,msg) -> Some(Marshal.LTLAnalysisResultDTO_of_error id msg)
 
         member this.checkLTLPolarity(input_model:Model, formula:string, num_of_steps:string, polarity: bool) = 
             try
