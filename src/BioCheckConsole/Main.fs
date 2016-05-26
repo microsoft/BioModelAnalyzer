@@ -24,7 +24,7 @@ let engine_of_string s =
     | "SCM" | "scm" -> Some EngineSCM
     | "CAV" | "cav" -> Some EngineCAV
     | "VMCAI" | "vmcai" -> Some EngineVMCAI 
-    | "Simulate" | "simulate" -> Some EngineSimulate
+    | "Simulate" | "simulate" | "SIMULATE"-> Some EngineSimulate
     | _ -> None 
 
 // Command-line args
@@ -67,6 +67,7 @@ let output_proof = ref false
 let simul_v0     = ref "" // initial values file (csv file, with idXvalue schema per line)
 let simul_time   = ref 20 // max time to simulate
 let simul_output = ref "" // output log/excel filename. 
+let excel_output = ref false // output the xlsx file as well 
 // -- related to PATH engine
 let model' = ref "" // input model filename for destination qn
 let state  = ref "" // input csv describing starting state
@@ -78,9 +79,9 @@ let usage i =
     Printf.printfn "                           -log "
     Printf.printfn "                           -loglevel n"
     Printf.printfn "                         [ -engine [ SCM | SYN ] –prove output_file_name.json |"
-    Printf.printfn "                         [ -engine VMCAI –prove output_file_name.json -nosat? |"
+    Printf.printfn "                           -engine VMCAI –prove output_file_name.json -nosat? |"
     Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? |"
-    Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.json |"
+    Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.csv -excel |"
     Printf.printfn "                           -engine PATH –model2 model2.json –state initial_state.csv –state2 target_state.csv ]"
     Printf.printfn "                           -dump_before_xforms"
     Printf.printfn "                           -ko id const -dump_after_ko_xforms"
@@ -98,6 +99,7 @@ let rec parse_args args =
     | "-simulate" :: o :: rest -> simul_output := o; parse_args rest 
     | "-simulate_time" :: t :: rest -> simul_time := (int)t; parse_args rest
     | "-simulate_v0" :: v0 :: rest -> simul_v0 := v0; parse_args rest
+    | "-excel" :: rest -> excel_output := true; parse_args rest
     | "-formula" :: f :: rest -> formula := f; parse_args rest
     | "-mc" :: rest -> model_check := true; parse_args rest
     | "-nosat" :: rest -> no_sat := true; parse_args rest
@@ -185,7 +187,7 @@ let runSYNEngine qn =
     | Suggest.Edges(edges, nature) -> 
             Log.log_debug(sprintf "Suggested edges: %s Nature: %A" (Suggest.edgelist_to_str edges) nature)
 
-let runSimulateEngine qn (simul_output : string) start_state_file simulation_time  =
+let runSimulateEngine qn (simul_output : string) start_state_file simulation_time excel_output =
     Log.log_debug "Running the simulation"
     // Format of init.csv: Each line is a var_id,value pair. So there will be as many lines as there are variables.
     let init_values = 
@@ -201,9 +203,10 @@ let runSimulateEngine qn (simul_output : string) start_state_file simulation_tim
     let everything = String.concat "\n" (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) final_values)
     System.IO.File.WriteAllText(simul_output, everything)
     // SI: check why the xlsx is sometimes corrupted ? 
-    let (app,sheet) = ModelToExcel.model_to_excel qn simulation_time init_values
-    Log.log_debug "Writing excel spreadsheet"
-    ModelToExcel.saveSpreadsheet app sheet (simul_output + ".xlsx")
+    if excel_output then
+        let (app,sheet) = ModelToExcel.model_to_excel qn simulation_time init_values
+        Log.log_debug "Writing excel spreadsheet"
+        ModelToExcel.saveSpreadsheet app sheet (simul_output + ".xlsx")
 
 let runVMCAIEngine qn (proof_output : string) (no_sat : bool) =
     Log.log_debug "Running the proof"
@@ -321,7 +324,7 @@ let main args =
                     else false
                 | Some EngineCAV -> runCAVEngine qn !number_of_steps !formula !model_check !output_proof !output_model; true
                 | Some EngineSimulate ->
-                    if (!simul_output <> "") then runSimulateEngine qn !simul_output !simul_v0 !simul_time; true
+                    if (!simul_output <> "") then runSimulateEngine qn !simul_output !simul_v0 !simul_time !excel_output; true
                     else false
                 | none -> false
 

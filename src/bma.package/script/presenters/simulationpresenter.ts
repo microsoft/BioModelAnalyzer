@@ -11,8 +11,9 @@
             private expandedSimulationPlot: JQuery;
             private currentModel: BMA.Model.BioModel;
             private logService: ISessionLog;
-            private simulationAccordeon: JQuery;
+            private simulationAccordeon: BMA.UIDrivers.IHider;
             private messagebox: BMA.UIDrivers.IMessageServiсe;
+            private simulationStatus = "NotStarted";
 
             private variables: {
                 Id: number;
@@ -25,7 +26,7 @@
 
             constructor(
                 appModel: BMA.Model.AppModel,
-                simulationAccordeon: JQuery,
+                simulationAccordeon: BMA.UIDrivers.IHider,
                 simulationExpanded: BMA.UIDrivers.ISimulationExpanded,
                 simulationViewer: BMA.UIDrivers.ISimulationViewer,
                 popupViewer: BMA.UIDrivers.IPopup,
@@ -49,10 +50,31 @@
                     that.compactViewer.ChangeVisibility(param);
                 });
 
+                simulationExpanded.SetOnCreateStateRequested((param) => {
+                    var columnData = [];
+                    for (var i = 0; i < that.variables.length; i++) {
+                        columnData.push({
+                            variable: that.variables[i].Name,
+                            variableId: that.variables[i].Id,
+                            value: that.variables[i].Plot[param.column + 1]
+                        });
+                    }
+
+                    window.Commands.Execute("CreateStateFromTable", columnData);
+                });
+
                 //window.Commands.On("ChangePlotVariables", function (param) {
                 //    that.variables[param.ind].Seen = param.check;
                 //    that.compactViewer.ChangeVisibility(param);
                 //});
+
+                window.Commands.On("ModelReset", function (param) {
+                    if (that.simulationStatus == "Processing") {
+                        that.simulationStatus = "NotStarted";
+                        that.expandedViewer.ActiveMode();
+                        that.simulationAccordeon.HideTab(2);
+                    }
+                });
 
                 window.Commands.On("RunSimulation", function (param) {
                     that.expandedViewer.StandbyMode();
@@ -61,11 +83,15 @@
                         var stableModel = BMA.Model.ExportBioModel(that.appModel.BioModel);
                         var variables = that.ConvertParam(param.data);
                         logService.LogSimulationRun();
+                        that.simulationStatus = "Processing";
                         that.StartSimulation({ model: stableModel, variables: variables, num: param.num });
                     }
                     catch (ex) {
-                        that.messagebox.Show(ex);
+                        //that.messagebox.Show(ex);
+                        that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: ex } });
                         that.expandedViewer.ActiveMode();
+                        that.simulationStatus = "Ended";
+                        that.simulationAccordeon.ContentLoaded("#icon2", true);
                     }
                 });
 
@@ -80,7 +106,7 @@
                             return;
                         }
 
-                        that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: false } });
+                        that.simulationAccordeon.ContentLoaded("#icon2", false);
                         that.expandedSimulationVariables = undefined;
                         that.UpdateVariables();
                         that.compactView = that.CreateVariablesCompactView();
@@ -99,6 +125,7 @@
                             colors: that.variables,
                             init: initValues
                         });
+                        that.simulationStatus = "NotStarted";
                         window.Commands.Execute("RunSimulation", { num: 10, data: initValues });
                     }
                     else {
@@ -218,6 +245,7 @@
                 var that = this;
                 
                 if (param.num === undefined || param.num === 0) {
+                    that.simulationStatus = "Ended";
                     var colorData = that.CreateProgressionMinTable();
                     that.compactViewer.SetData({
                         data: {
@@ -230,7 +258,7 @@
                     that.expandedSimulationVariables = that.expandedViewer.GetViewer();
                     that.expandedViewer.ActiveMode();
                     that.Snapshot();
-                    that.simulationAccordeon.bmaaccordion({ contentLoaded: { ind: "#icon2", val: true } });
+                    that.simulationAccordeon.ContentLoaded("#icon2", true);
                     return;
                 }
                 else {
@@ -243,16 +271,23 @@
 
                         var result = that.ajax.Invoke(simulate)
                             .done(function (res) {
-                            if (res.Variables !== null) {
-                                that.expandedViewer.AddResult(res);
-                                var d = that.ConvertResult(res);
-                                that.AddData(d);
-                                that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1, attempt: 1 });
-                            }
-                            else {
-                                that.expandedViewer.ActiveMode();
-                                alert("Simulation Error: " + res.ErrorMessages);
-                            }
+                                if (that.simulationStatus == "Processing") {
+                                    if (res.Variables !== null) {
+                                        that.expandedViewer.AddResult(res);
+                                        var d = that.ConvertResult(res);
+                                        that.AddData(d);
+                                        that.StartSimulation({ model: param.model, variables: res.Variables, num: param.num - 1, attempt: 1 });
+                                    }
+                                    else {
+                                        that.expandedViewer.ActiveMode();
+                                        that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: res.ErrorMessages } });
+                                        that.simulationAccordeon.ContentLoaded("#icon2", true);
+                                        //alert("Simulation Error: " + res.ErrorMessages);
+                                    }
+                                } else {
+                                    that.expandedViewer.ActiveMode();
+                                    that.simulationAccordeon.ContentLoaded("#icon2", false);
+                                }
                         })
                             .fail(function (XMLHttpRequest, textStatus, errorThrown) {
 
@@ -263,10 +298,12 @@
                                     setTimeout(() => { that.StartSimulation({ model: param.model, variables: param.variables, num: param.num, attempt: param.attempt + 1 }); }, time * 1000);
 
                                 } else {
-                                    this.logService.LogSimulationError();
+                                    that.logService.LogSimulationError();
                                     console.log(textStatus);
                                     that.expandedViewer.ActiveMode();
-                                    alert("Simulate error: " + errorThrown);
+                                    that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: errorThrown } });
+                                    that.simulationAccordeon.ContentLoaded("#icon2", true);
+                                    //alert("Simulate error: " + errorThrown);
                                 }
 
                             return;

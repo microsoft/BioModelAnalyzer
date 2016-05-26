@@ -276,9 +276,17 @@ module BMA {
                     }
                 });
 
-                commands.On("TemporalPropertiesEditorImport", (args: { top: number; left: number }) => {
+                commands.On("TemporalPropertiesEditorImportAsJson", (args: { top: number; left: number }) => {
                     if (this.contextElement !== undefined) {
-                        commands.Execute("ImportLTLFormula", {
+                        commands.Execute("ImportLTLFormulaAsJson", {
+                            position: { x: this.contextElement.x, y: this.contextElement.y }
+                        });
+                    }
+                });
+
+                commands.On("TemporalPropertiesEditorImportAsText", (args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        commands.Execute("ImportLTLFormulaAsText", {
                             position: { x: this.contextElement.x, y: this.contextElement.y }
                         });
                     }
@@ -959,7 +967,7 @@ module BMA {
                                 if (res.Error.indexOf("Operation is not completed in") > -1)
                                     driver.SetStatus("nottested", "Timed out");
                                 else
-                                    driver.SetStatus("nottested", "Server error");
+                                    driver.SetStatus("nottested", "Server error: " + res.Error);
 
                                 operation.AnalysisStatus = "nottested";
                                 operation.Tag.data = undefined;

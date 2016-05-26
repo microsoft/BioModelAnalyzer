@@ -431,5 +431,51 @@
 
             return { width: width, height: height };
         }
+
+        export function ConvertFormulaToOperation(formula: string, states: BMA.LTLOperations.Keyframe[]): BMA.LTLOperations.Operation {
+            var parsedFormula;
+            try {
+                var parsedFormula = BMA.parser.parse(formula);
+                var operation = ConvertToOperation(parsedFormula, states);
+                if (operation instanceof BMA.LTLOperations.Operation) return operation;
+            } catch (ex) {
+                alert(ex);
+            }
+            return undefined;
+        }
+
+        export function ConvertToOperation(formula: any, states: BMA.LTLOperations.Keyframe[]): BMA.LTLOperations.IOperand  {
+            if (!formula) throw "Nothing to import";
+            if (formula.state && states) {
+                for (var i = 0; i < states.length; i++) {
+                    if (states[i].Name == formula.state)
+                        return states[i].Clone();
+                }
+                if (formula.state.toUpperCase() == "OSCILLATION")
+                    return new BMA.LTLOperations.OscillationKeyframe();
+                if (formula.state.toUpperCase() == "SELFLOOP")
+                    return new BMA.LTLOperations.SelfLoopKeyframe();
+                if (formula.state.toUpperCase() == "TRUE")
+                    return new BMA.LTLOperations.TrueKeyframe();
+                return undefined;
+            } else {
+                if (formula.operator) {
+                    var operation = new BMA.LTLOperations.Operation();
+                    var operands = [];
+                    var operator = window.OperatorsRegistry.GetOperatorByName(formula.operator.toUpperCase());
+                    if (operator === undefined) throw "Operator doesn't exist";
+                    if (operator.OperandsCount == 2) {
+                        operands.push(ConvertToOperation(formula.operand1, states));
+                        operands.push(ConvertToOperation(formula.operand2, states));
+                    } else {
+                        operands.push(ConvertToOperation(formula.operand, states));
+                    }
+                    operation.Operator = operator;
+                    operation.Operands = operands;
+                    return operation;
+                }
+            }
+            throw "Operation was not found";
+        }
     }
 } 

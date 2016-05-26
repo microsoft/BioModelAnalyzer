@@ -69,6 +69,13 @@
                     else
                         input.val(init);
 
+                    input.bind("change", function () {
+                        var index = $($(this).parent()).parent().index() - 1;
+                        var interval = that.options.interval[index];
+                        if (this.value < interval[0]) this.value = interval[0];
+                        if (this.value > interval[1]) this.value = interval[1];
+                    });
+
                     if (that.options.canEditInitialValue) {
                         var random = $('<td></td>')
                             .addClass("random-small bma-random-icon2 hoverable")
@@ -214,6 +221,7 @@
                         }
                     }
                 }
+                that.createColumnContextMenu();
             }
         },
 
@@ -239,16 +247,17 @@
                     autoFocus: true,
                     preventContextMenuForPopup: true,
                     preventSelect: true,
-                    menu: [{ title: "Create State", cmd: "CreateState" }],//that.options.columnContextMenuItems,
+                    menu: that.options.columnContextMenuItems,
                     beforeOpen: function (event, ui) {
                         ui.menu.zIndex(50);
-                        if ($(ui.target.context.parentElement).index() == 0)
+                        if ($(ui.target.context.parentElement).hasClass("table-tags"))
                             return false;
                     },
                     select: function (event, ui) {
                         var args: any = {};
                         args.command = ui.cmd;
                         args.column = $(ui.target.context).index();
+
                         if (that.options.onContextMenuItemSelected !== undefined)
                             that.options.onContextMenuItemSelected(args);
                     }

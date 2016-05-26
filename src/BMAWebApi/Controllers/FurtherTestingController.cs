@@ -109,7 +109,8 @@ namespace bma.client.Controllers
                 //FailureAzureLogger logger = new FailureAzureLogger(
                 //    CloudStorageAccount.Parse(
                 //        RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
-                logger.Add(DateTime.Now, "2.0", input, log);
+                var version = typeof(AnalyzeController).Assembly.GetName().Version;
+                logger.Add(DateTime.Now, version.ToString(), input, log);
 
                 return new FurtherTestingOutput
                 {

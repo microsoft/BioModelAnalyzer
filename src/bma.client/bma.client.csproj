@@ -123,9 +123,11 @@
     <Content Include="html\BandPlotSample.html" />
     <Content Include="html\callback.html" />
     <Content Include="html\chartSample.html" />
+    <Content Include="html\FormulaEditorSample.html" />
     <Content Include="html\LayoutSample.html" />
     <Content Include="html\LTLFormulaViewSample.html" />
     <Content Include="html\LTLResultsCompactViewerSample.html" />
+    <Content Include="html\LTLFormulaParserSample.html" />
     <Content Include="html\MemoryLeakTestPage.html" />
     <Content Include="html\OneDriveSample.html" />
     <Content Include="html\StatesEditorSample.html" />
@@ -294,6 +296,7 @@
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="js\jquery.svganim.js" />
     <Content Include="js\jquery.svganim.min.js" />
+    <Content Include="Scripts\formulaParser.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
@@ -362,6 +365,10 @@
     <Content Include="js\jquery.svg.js" />
     <Content Include="js\jquery.svg.min.js" />
     <Content Include="js\jquery.svgdom.min.js" />
+    <!--<Content Include="videos\.QT-0d4a-d0f6841e-bffff608-00" />
+    <Content Include="videos\BMA.mp4" />
+    <Content Include="videos\BMA-trailer.mp4" />-->
+
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\rx.aggregates.d.ts" />

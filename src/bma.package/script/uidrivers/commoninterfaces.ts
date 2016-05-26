@@ -22,6 +22,8 @@ module BMA {
 
         export interface IHider {
             Hide();
+            HideTab(index);
+            ContentLoaded(index, value);
         }
 
         export interface INavigationPanel {
@@ -114,6 +116,7 @@ module BMA {
             StandbyMode();
             ActiveMode();
             SetOnPlotVariablesSelectionChanged(callback);
+            SetOnCreateStateRequested(callback);
         }
 
         export interface ILocalStorageDriver {

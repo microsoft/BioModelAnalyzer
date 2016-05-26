@@ -58,6 +58,7 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="Scripts\formulaParser.js" />
     <Content Include="js\FileSaver.js" />
     <Content Include="js\idd.heatmapworker.js" />
     <Content Include="js\idd.js" />
@@ -137,6 +138,7 @@
     <TypeScriptCompile Include="script\Commands.ts" />
     <TypeScriptCompile Include="script\elementsregistry.ts" />
     <TypeScriptCompile Include="script\functionsregistry.ts" />
+    <TypeScriptCompile Include="script\jisonparser.ts" />
     <TypeScriptCompile Include="script\jqextensions.ts" />
     <TypeScriptCompile Include="script\keyframesregistry.ts" />
     <TypeScriptCompile Include="script\localRepository.ts" />
@@ -173,6 +175,7 @@
     <TypeScriptCompile Include="script\widgets\containernameeditor.ts" />
     <TypeScriptCompile Include="script\widgets\drawingsurface.ts" />
     <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
+    <TypeScriptCompile Include="script\widgets\formulaeditor.ts" />
     <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
     <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
     <TypeScriptCompile Include="script\widgets\ltl\compactltlresult.ts" />
@@ -205,6 +208,7 @@
     <TypeScriptCompile Include="test\ColoredTableViewerTest.ts" />
     <TypeScriptCompile Include="test\CommandTests.ts" />
     <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
+    <TypeScriptCompile Include="test\ConvertFormulaToOperationTests.ts" />
     <TypeScriptCompile Include="test\DrawingSurfacePresenterTests.ts" />
     <TypeScriptCompile Include="test\ExportImportTest.ts" />
     <TypeScriptCompile Include="test\ExportImportLTLTests.ts" />

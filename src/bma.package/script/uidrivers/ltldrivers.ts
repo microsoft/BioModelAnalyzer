@@ -260,7 +260,10 @@ module BMA {
 
                         formula.push({
                             type: (<any>opnd).LeftOperand.Name === undefined ? "const" : "variable",
-                            value: (<any>opnd).LeftOperand.Name === undefined ? (<any>opnd).LeftOperand.Value : (<any>opnd).LeftOperand.Name
+                            value: (<any>opnd).LeftOperand.Name === undefined ? (<any>opnd).LeftOperand.Value : {
+                                name: (<any>opnd).LeftOperand.Name,
+                                id: (<any>opnd).LeftOperand.Id
+                            }
                         });
 
                         if ((<any>opnd).MiddleOperand !== undefined) {
@@ -273,7 +276,10 @@ module BMA {
                             var middle = (<any>opnd).MiddleOperand;
                             formula.push({
                                 type: middle.Name === undefined ? "const" : "variable",
-                                value: middle.Name === undefined ? middle.Value : middle.Name
+                                value: middle.Name === undefined ? middle.Value : {
+                                    name: middle.Name,
+                                    id: middle.Id
+                                }
                             });
 
                             var rightop = (<any>opnd).RightOperator;
@@ -291,7 +297,10 @@ module BMA {
 
                         formula.push({
                             type: (<any>opnd).RightOperand.Name === undefined ? "const" : "variable",
-                            value: (<any>opnd).RightOperand.Name === undefined ? (<any>opnd).RightOperand.Value : (<any>opnd).RightOperand.Name
+                            value: (<any>opnd).RightOperand.Name === undefined ? (<any>opnd).RightOperand.Value : {
+                                name: (<any>opnd).RightOperand.Name,
+                                id: (<any>opnd).RightOperand.Id
+                            }
                         });
                         ws.formula.push(formula);
                     }
@@ -723,7 +732,10 @@ module BMA {
                     }
 
                     if (this.createStateRequested !== undefined) {
-                        this.ltlResultsViewer.ltlresultsviewer({ createStateRequested: that.createStateRequested });
+                        this.ltlResultsViewer.ltlresultsviewer({
+                            columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                            createStateRequested: that.createStateRequested
+                        });
                         this.createStateRequested = undefined;
                     }
                 }
@@ -920,9 +932,9 @@ module BMA {
                 
                 var labelsHeight = Math.max(1, (Math.max.apply(Math, data.map(function (s) {
                     return Math.max.apply(Math, s);
-                })) - Math.min.apply(Math, data.map(function (s) {
+                })) - Math.min(0, Math.min.apply(Math, data.map(function (s) {
                     return Math.min.apply(Math, s);
-                }))));
+                })))));
                 var labels = that.PreparePlotLabels(tags, labelsHeight);
                 
                 var interval = this.CreateInterval(vars);
@@ -977,7 +989,10 @@ module BMA {
 
             public SetOnCreateStateRequested(callback) {
                 if (this.ltlResultsViewer !== undefined) {
-                    this.ltlResultsViewer.ltlresultsviewer({ createStateRequested: callback });
+                    this.ltlResultsViewer.ltlresultsviewer({
+                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        createStateRequested: callback
+                    });
                 } else {
                     this.createStateRequested = callback;
                 }
@@ -1001,9 +1016,9 @@ module BMA {
 
                 var labelsHeight = Math.max(1, (Math.max.apply(Math, that.currentData.data.map(function (s) {
                     return Math.max.apply(Math, s);
-                })) - Math.min.apply(Math, that.currentData.data.map(function (s) {
+                })) - Math.min(0, Math.min.apply(Math, that.currentData.data.map(function (s) {
                     return Math.min.apply(Math, s);
-                }))));
+                })))));
                 var labels = this.PreparePlotLabels(tags, labelsHeight);
 
                 that.currentData.tags = tags;

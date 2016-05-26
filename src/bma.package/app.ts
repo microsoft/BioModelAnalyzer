@@ -44,6 +44,7 @@
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
+/// <reference path="script\jisonparser.ts"/>
 
 declare var saveTextAs: any;
 declare var Silverlight: any;
@@ -59,6 +60,7 @@ interface JQuery {
 interface Window {
     PlotSettings: any;
     GridSettings: any;
+    BMAServiceURL: string;
 }
 
 function onSilverlightError(sender, args) {
@@ -237,6 +239,9 @@ function loadScript(version) {
     //Creating CommandRegistry
     window.Commands = new BMA.CommandRegistry();
     var ltlCommands = new BMA.CommandRegistry();
+
+    //Defining processing service URL
+    window.BMAServiceURL = "http://bmamathnew.cloudapp.net";
 
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
@@ -573,13 +578,13 @@ function loadScript(version) {
 
     //Loaing ServiсeDrivers 
     var exportService = new BMA.UIDrivers.ExportService();
-    var formulaValidationService = new BMA.UIDrivers.FormulaValidationService();
-    var furtherTestingServiсe = new BMA.UIDrivers.FurtherTestingService();
-    var proofAnalyzeService = new BMA.UIDrivers.ProofAnalyzeService();
-    var simulationService = new BMA.UIDrivers.SimulationService();
+    var formulaValidationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Validate"); 
+    var furtherTestingServiсe = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/FurtherTesting"); 
+    var proofAnalyzeService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Analyze"); 
+    var simulationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Simulate"); 
+    var ltlSimulationService = new BMA.UIDrivers.LTLAnalyzeService(window.BMAServiceURL + "/api/AnalyzeLTLSimulation", 1);
+    var ltlPolarityService = new BMA.UIDrivers.LTLAnalyzeService(window.BMAServiceURL + "/api/AnalyzeLTLPolarity", 1);
     var logService = new BMA.SessionLog();
-    var ltlSimulationService = new BMA.UIDrivers.LTLAnalyzeService("http://bmamath.cloudapp.net/api/AnalyzeLTLSimulation", 1);
-    var ltlPolarityService = new BMA.UIDrivers.LTLAnalyzeService("http://bmamath.cloudapp.net/api/AnalyzeLTLPolarity", 1);
 
     var waitScreen = new BMA.UIDrivers.LoadingWaitScreen($('.page-loading'));
     var dragndropextender = new BMA.UIDrivers.DrawingSurfaceDragnDropExtender(drawingSurface, popup);
@@ -589,7 +594,7 @@ function loadScript(version) {
     var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver, exportService, dragndropextender);
     var proofPresenter = new BMA.Presenters.ProofPresenter(appModel, proofViewer, popupDriver, proofAnalyzeService, messagebox, logService);
     var furtherTestingPresenter = new BMA.Presenters.FurtherTestingPresenter(appModel, furtherTestingDriver, popupDriver, furtherTestingServiсe, messagebox, logService);
-    var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, $("#analytics"), fullSimulationViewer, simulationViewer, popupDriver, simulationService, logService, exportService, messagebox);
+    var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, accordionHider, fullSimulationViewer, simulationViewer, popupDriver, simulationService, logService, exportService, messagebox);
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService, waitScreen);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
@@ -668,7 +673,7 @@ function loadScript(version) {
         });
 
         var xhr = new XMLHttpRequest();
-        xhr.open('post', 'http://bmamath.cloudapp.net/api/ActivityLog', false);
+        xhr.open('post', window.BMAServiceURL + '/api/ActivityLog', false);
         xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
         //xhr.setRequestHeader("Content-length", data.length.toString());
         //xhr.setRequestHeader("Connection", "close");
