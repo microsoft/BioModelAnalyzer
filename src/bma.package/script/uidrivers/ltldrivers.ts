@@ -932,9 +932,9 @@ module BMA {
                 
                 var labelsHeight = Math.max(1, (Math.max.apply(Math, data.map(function (s) {
                     return Math.max.apply(Math, s);
-                })) - Math.min.apply(Math, data.map(function (s) {
+                })) - Math.min(0, Math.min.apply(Math, data.map(function (s) {
                     return Math.min.apply(Math, s);
-                }))));
+                })))));
                 var labels = that.PreparePlotLabels(tags, labelsHeight);
                 
                 var interval = this.CreateInterval(vars);
@@ -1016,9 +1016,9 @@ module BMA {
 
                 var labelsHeight = Math.max(1, (Math.max.apply(Math, that.currentData.data.map(function (s) {
                     return Math.max.apply(Math, s);
-                })) - Math.min.apply(Math, that.currentData.data.map(function (s) {
+                })) - Math.min(0, Math.min.apply(Math, that.currentData.data.map(function (s) {
                     return Math.min.apply(Math, s);
-                }))));
+                })))));
                 var labels = this.PreparePlotLabels(tags, labelsHeight);
 
                 that.currentData.tags = tags;

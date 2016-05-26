@@ -1714,7 +1714,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=Commands.js.map
+//# sourceMappingURL=commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12438,7 +12438,7 @@ jQuery.fn.extend({
                 }
             });
             svgDiv.mousemove(function (arg) {
-                if (that.operationLayout !== undefined) {
+                if (that.operationLayout !== undefined && that.operationLayout.IsVisible) {
                     var opL = that.operationLayout;
                     var parentOffset = $(this).offset();
                     var relX = arg.pageX - parentOffset.left;
@@ -12493,29 +12493,57 @@ jQuery.fn.extend({
                 preventSelect: true,
                 //taphold: true,
                 menu: [
-                    { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
-                    { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
-                    { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
+                    //{ title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
+                    //{ title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
+                    //{ title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
-                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }] },
-                    { title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
                 ],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);
-                    var x = holdCords.holdX || event.pageX;
-                    var y = holdCords.holdX || event.pageY;
+                    var x = event.pageX;
+                    var y = event.pageY;
                     var left = x - svgDiv.offset().left;
                     var top = y - svgDiv.offset().top;
+                    var svgCoords = that._getSVGCoords(left, top);
+                    if (that.operationLayout !== undefined) {
+                        that.contextElement = {
+                            x: svgCoords.x,
+                            y: svgCoords.y,
+                        };
+                    }
                 },
                 select: function (event, ui) {
                     var args = {};
-                    var x = holdCords.holdX || event.pageX;
-                    var y = holdCords.holdX || event.pageY;
+                    var x = event.pageX;
+                    var y = event.pageY;
                     args.left = x - svgDiv.offset().left;
                     args.top = y - svgDiv.offset().top;
-                    //ui.cmd
+                    that._processContextMenuOption(ui.cmd);
                 }
             });
+        },
+        _processContextMenuOption: function (option) {
+            var that = this;
+            switch (option) {
+                case "Delete":
+                    if (that.contextElement !== undefined) {
+                        var opL = that.operationLayout;
+                        var op = opL.UnpinOperation(this.contextElement.x, this.contextElement.y);
+                        if (op.isRoot) {
+                            that.operationLayout.IsVisible = false;
+                            that.operationLayout = undefined;
+                            that.options.operation = undefined;
+                        }
+                        else {
+                            that.options.operation = opL.Operation;
+                        }
+                        that.contextElement = undefined;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            this._refresh();
         },
         _getSVGCoords: function (x, y) {
             var bbox = this.operationLayout.BoundingBox;
@@ -12539,6 +12567,7 @@ jQuery.fn.extend({
             var that = this;
             if (that._svg === undefined)
                 return;
+            that._svg.clear();
             if (that.options.operation !== undefined) {
                 this.operationLayout = new BMA.LTLOperations.OperationLayout(that._svg, that.options.operation, { x: 0, y: 0 });
                 var bbox = this.operationLayout.BoundingBox;
@@ -12558,6 +12587,7 @@ jQuery.fn.extend({
             else {
                 if (that.operationLayout !== undefined) {
                     that.operationLayout.IsVisible = false;
+                    that.operationLayout = undefined;
                 }
             }
         },
@@ -15045,7 +15075,7 @@ jQuery.fn.extend({
                     { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
                     { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }] },
-                    { title: "Import as", cmd: "Import", uiIcon: "ui-icon-import", children: [{ title: "json", cmd: "ImportAsJson" }, { title: "text", cmd: "ImportAsText" }] },
+                    { title: "Import from", cmd: "Import", uiIcon: "ui-icon-import", children: [{ title: "json", cmd: "ImportAsJson" }, { title: "text", cmd: "ImportAsText" }] },
                 ],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);
@@ -15620,7 +15650,8 @@ var BMA;
                     var merged = that.MergeStates(that.appModel.States, [newState]);
                     that.appModel.States = merged.states;
                     that.statespresenter.UpdateStatesFromModel();
-                    that.tppresenter.UpdateStatesFromModel();
+                    if (that.tppresenter)
+                        that.tppresenter.UpdateStatesFromModel();
                 }
             };
             LTLPresenter.prototype.UpdateOperations = function (states) {

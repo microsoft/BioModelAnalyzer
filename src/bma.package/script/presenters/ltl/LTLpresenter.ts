@@ -265,7 +265,8 @@
                     var merged = that.MergeStates(that.appModel.States, [newState]);
                     that.appModel.States = merged.states;
                     that.statespresenter.UpdateStatesFromModel();
-                    that.tppresenter.UpdateStatesFromModel();
+                    if (that.tppresenter)
+                        that.tppresenter.UpdateStatesFromModel();
                 }
             }
 
