@@ -23,11 +23,13 @@ let make_z3_int_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z
 
 let get_qn_var_from_z3_var (name : string) =
     let parts = name.Split[|'^'|]
-    ((int parts.[0]) : QN.var)
+    let id = (parts.[0]).Substring 1
+    ((int id) : QN.var)
 
 let get_qn_var_at_t_from_z3_var (name : string) =
     let parts = name.Split[|'^'|]
-    ((int parts.[0]),(int parts.[1]) : QN.var * int)
+    let id = (parts.[0]).Substring 1
+    ((int id),(int parts.[1]) : QN.var * int)
 
 let enc_for_env_qn_id_string_at_t (id : string) time =
     (id +  "^" + ((string)time))
@@ -37,7 +39,9 @@ let enc_for_env_qn_id_at_t (id : QN.var) time =
 
 let dec_from_env_qn_id_at_t (name : string) = 
     let parts = name.Split[|'^'|]
-    ((parts.[0]),((int)parts.[1]))
+//    let id = (parts.[0]).Substring 1
+    let id = parts.[0]
+    ((id),((int)parts.[1]))
 
 
 // Z.expr_to_z3 should be similar to Expr.eval_expr_int.
