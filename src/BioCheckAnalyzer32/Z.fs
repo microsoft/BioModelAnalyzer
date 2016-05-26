@@ -16,7 +16,10 @@ let gensym =
     (fun s -> incr counter; s + ((string)!counter))
 
 // Naming convention for Z3 variables
-let get_z3_int_var_at_time (node : QN.node) time = sprintf "%d^%d" node.var time
+// The same functions appear in BioCheckZ3 and BioCheckPlusZ3
+let get_z3_int_var_at_time (node : QN.node) time = sprintf "v%d^%d" node.var time
+let make_z3_int_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkIntSort())
+
 
 let get_qn_var_from_z3_var (name : string) =
     let parts = name.Split[|'^'|]
@@ -58,7 +61,7 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
 
             let input_var =
                 let v_t = get_z3_int_var_at_time v_defn time
-                z.MkToReal(z.MkConst(z.MkSymbol v_t, z.MkIntSort()))
+                z.MkToReal(make_z3_int_var v_t z)
             ([], z.MkAdd(z.MkMul(input_var,scale), displacement))
         | Const c -> ([],z.MkRealNumeral c)
         | Plus(e1, e2) ->
@@ -116,7 +119,7 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
             let x' = z.MkSub(x, z.MkRealNumeral(1))
             let m =
                 let m = gensym "floor"
-                z.MkToReal(z.MkConst(z.MkSymbol m, z.MkIntSort()))
+                z.MkToReal(make_z3_int_var m z)
             let x'_lt_m = z.MkLt(x', m)
             let m_le_x = z.MkLe(m, x)
             let floor_assert = z.MkAnd([|x'_lt_m; m_le_x|])

@@ -16,7 +16,7 @@ open QN
 type VariableRange = Map<QN.var, int list>
 
 // Naming convension for Z3 variables
-
+// Some of these functions appear also in Z.fs and BioCheckZ3.fs
 let get_z3_int_var_at_time (node : QN.node) time = sprintf "v%d^%d" node.var time
 
 let get_z3_bool_var_at_time_in_val_from_var variable time value = sprintf "v%d^%d^%d" variable time value
@@ -34,6 +34,7 @@ let get_z3_bool_var_loop_at_time time = sprintf "l^%d" time
 let get_z3_bool_var_trans_of_var_from_time_to_time_in_val (node : QN.node) from_time to_time value = sprintf "tv%d^%d^%d^%d" node.var from_time to_time value
 
 let make_z3_bool_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkBoolSort())
+let make_z3_int_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkIntSort())
 
 
 // A variable ranging over values i_1,...,i_n can be encoded by n-1 Boolean variables with

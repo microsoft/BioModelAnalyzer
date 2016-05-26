@@ -89,10 +89,10 @@ let rec expr_to_z3 (qn : QN.node list) (node:QN.node) expr (var_names : Map<int,
 
 let assert_target_function qn (node: QN.node) var_names (rangelist : Map<QN.var,int list>) start_time end_time (z : Context) =
     let current_state_id = BioCheckPlusZ3.get_z3_int_var_at_time node start_time
-    let current_state = z.MkConst(z.MkSymbol current_state_id, z.MkIntSort())
+    let current_state = BioCheckPlusZ3.make_z3_int_var current_state_id z
 
     let next_state_id = BioCheckPlusZ3.get_z3_int_var_at_time node end_time
-    let next_state = z.MkConst(z.MkSymbol next_state_id, z.MkIntSort())
+    let next_state = BioCheckPlusZ3.make_z3_int_var next_state_id z
 
     let z3_target_function = BioCheckZ3.expr_to_z3 qn node node.f start_time z
     // let T_applied = z.MkToInt(z3_target_function)
@@ -125,7 +125,7 @@ let assert_target_function qn (node: QN.node) var_names (rangelist : Map<QN.var,
     let dn = z.MkAnd(dn, z.MkLt(z.MkIntNumeral lower, current_state))
 
     let cnstr = z.MkOr([|up;same;dn|])
-    Log.log_debug (z.ToString cnstr)
+    Log.log_debug ("Apply TF of " + node.name + " for step " + string(start_time) + " to " + string(end_time) + ":" + (z.ToString cnstr))
     z.AssertCnstr cnstr
     
 let assert_query (node : QN.node) (value : int) time (z : Context) = 
@@ -139,6 +139,7 @@ let find_paths (network : QN.node list) step rangelist orbounds=
     cfg.SetParamValue("MODEL", "true")
     let ctx = new Context(cfg)
     
+    Log.log_debug("ctx.Push()")
     ctx.Push()
     
     // use to record new bounds on variables
@@ -189,7 +190,8 @@ let find_paths (network : QN.node list) step rangelist orbounds=
 
     // For each action step, we only handle one variable and its inputs.
     for node in network do
-            
+
+        Log.log_debug("ctx.Push()")        
         ctx.Push()
             
         // then find the correponding nodes with these node.var(s)
@@ -212,8 +214,11 @@ let find_paths (network : QN.node list) step rangelist orbounds=
         let currentPossibleValues = Map.find node.var rangelist
                    
         nubounds <- Map.add node.var (UpdatePossibleValues node currentPossibleValues) nubounds
+        
+        Log.log_debug("ctx.Pop()")
         ctx.Pop()
             
+    Log.log_debug("ctx.Pop()")
     ctx.Pop()
 
     ctx.Dispose()
