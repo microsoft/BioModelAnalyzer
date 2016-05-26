@@ -318,7 +318,7 @@
                     { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
                     { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" } ] },
-                    { title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
+                    { title: "Import as", cmd: "Import", uiIcon: "ui-icon-import", children: [{ title: "json", cmd: "ImportAsJson" }, { title: "text", cmd: "ImportAsText" }] },
                 ],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);

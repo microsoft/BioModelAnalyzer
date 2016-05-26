@@ -231,11 +231,17 @@
             private name: string;
             private fun: IGetFormula;
             private operandsNumber: number;
+            private isFunction: boolean
 
-            constructor(name: string, operandsCount: number, fun: IGetFormula) {
+            constructor(name: string, operandsCount: number, fun: IGetFormula, isFunction: boolean = false) {
                 this.name = name;
                 this.fun = fun;
                 this.operandsNumber = operandsCount;
+                this.isFunction = isFunction;
+            }
+
+            get IsFunction() {
+                return this.isFunction;
             }
 
             get Name() {

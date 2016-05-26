@@ -19,7 +19,8 @@
             visibleItems: [],
             colors: [],
             onExportCSV: undefined,
-            createStateRequested: undefined
+            createStateRequested: undefined,
+            columnContextMenuItems: undefined
         },
 
         _create: function () {
@@ -28,26 +29,17 @@
             this.element.addClass("ltlresultsviewer");
 
             var root = this.element;
-            //this.loading = $("<div></div>").addClass("page-loading").css("position", "absolute").css("top", "27").css("height", 470- 47).hide().appendTo(that.element);
-            //var loadingText = $("<div> Loading </div>").addClass("loading-text").appendTo(this.loading);
-            //this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(root);
             this.tablesContainer = $("<div></div>").addClass('ltl-simplot-container').appendTo(root);
-            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer);//root);
-            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer);//root);
-            //this._table.height(that._table.height() + 10);
-
+            this._variables = $("<div></div>").addClass("small-simulation-popout-table").appendTo(this.tablesContainer);
+            this._table = $("<div></div>").addClass("big-simulation-popout-table").addClass("simulation-progression-table-container").appendTo(this.tablesContainer);
+            
             this.scrollBarSize = BMA.ModelHelper.GetScrollBarSize();            
 
             this._table.on('scroll', function () {
                 that._variables.scrollTop($(this).scrollTop());
             });
 
-            //this._variables.on('scroll', function () {
-            //    that._table.scrollTop($(this).scrollTop());
-            //});
-
             this._variables.css("max-height", 322 - that.scrollBarSize.height);
-            //var plotContainer = $("<div></div>").addClass("ltl-simplot-container").appendTo(root);
             
             this._plot = $("<div></div>").addClass("ltl-results").appendTo(root);
             this.loading = $("<div></div>").addClass("page-loading").css("position", "inherit").css("height", 322).appendTo(this._plot);
@@ -77,7 +69,6 @@
                     that.options.visibleItems[params.ind] = params.check;
                 if (that.options.variables !== undefined && that.options.variables.length != 0)
                     that.options.variables[params.ind][1] = params.check;
-                //that._setOption("visibleItems", visibility);
             };
 
             this._variables.coloredtableviewer({
@@ -86,7 +77,6 @@
 
             var onContextMenuItemSelected = function (args) {
                 if (that.options.data !== undefined && that.options.data.length !== 0) {
-                    //that.loading.show();
                     var columnData = [];
                     for (var i = 0; i < that.options.data[args.column].length; i++) {
                         columnData.push({
@@ -99,15 +89,11 @@
                     if (args.command == "CreateState" && that.options.createStateRequested !== undefined)
                         that.options.createStateRequested(columnData);
                 }
-                //that.loading.hide();
-                //that.tablesContainer.show();
-                //that._plot.show();
             };
 
             this._table.progressiontable({
                 canEditInitialValue: false,
                 showInitialValue: false,
-                columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
                 onContextMenuItemSelected: onContextMenuItemSelected
             });
             
@@ -180,11 +166,18 @@
                         });
                     break;
                 }
+
+                case "columnContextMenuItems": {
+                    needUpdate = false;
+                    this._table.progressiontable({
+                        columnContextMenuItems: that.options.columnContextMenuItems,
+                    });
+                    break;
+                }
                 default: break;
             }
             if (needUpdate) {
                 this.refresh();
-                //this.createPlotData();
             }
         },
 
