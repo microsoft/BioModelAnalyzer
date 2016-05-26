@@ -24,7 +24,7 @@ let engine_of_string s =
     | "SCM" | "scm" -> Some EngineSCM
     | "CAV" | "cav" -> Some EngineCAV
     | "VMCAI" | "vmcai" -> Some EngineVMCAI 
-    | "Simulate" | "simulate" -> Some EngineSimulate
+    | "Simulate" | "simulate" | "SIMULATE"-> Some EngineSimulate
     | _ -> None 
 
 // Command-line args
@@ -78,9 +78,9 @@ let usage i =
     Printf.printfn "                           -log "
     Printf.printfn "                           -loglevel n"
     Printf.printfn "                         [ -engine [ SCM | SYN ] –prove output_file_name.json |"
-    Printf.printfn "                         [ -engine VMCAI –prove output_file_name.json -nosat? |"
+    Printf.printfn "                           -engine VMCAI –prove output_file_name.json -nosat? |"
     Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? |"
-    Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.json |"
+    Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.csv |"
     Printf.printfn "                           -engine PATH –model2 model2.json –state initial_state.csv –state2 target_state.csv ]"
     Printf.printfn "                           -dump_before_xforms"
     Printf.printfn "                           -ko id const -dump_after_ko_xforms"
