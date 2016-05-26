@@ -33,6 +33,7 @@
          {"Path": "js/svgplot.js"},
          {"Path": "js/scalablegridlinesplot.js"},
          {"Path": "js/FileSaver.js" },
+         {"Path": "Scripts/formulaParser.js"},
 
          {"Path": "script/", "Include": "*.ts" },
          {"Path": "script/model", "Include":"*.ts"},

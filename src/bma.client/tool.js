@@ -1628,6 +1628,8 @@ var BMA;
                     var operation = new BMA.LTLOperations.Operation();
                     var operands = [];
                     var operator = window.OperatorsRegistry.GetOperatorByName(formula.operator.toUpperCase());
+                    if (operator === undefined)
+                        throw "Operator doesn't exist";
                     if (operator.OperandsCount == 2) {
                         operands.push(ConvertToOperation(formula.operand1, states));
                         operands.push(ConvertToOperation(formula.operand2, states));
