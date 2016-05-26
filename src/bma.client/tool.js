@@ -1615,11 +1615,11 @@ var BMA;
                     if (states[i].Name == formula.state)
                         return states[i].Clone();
                 }
-                if (formula.state == "Oscillation")
+                if (formula.state.toUpperCase() == "OSCILLATION")
                     return new BMA.LTLOperations.OscillationKeyframe();
-                if (formula.state == "SelfLoop")
+                if (formula.state.toUpperCase() == "SELFLOOP")
                     return new BMA.LTLOperations.SelfLoopKeyframe();
-                if (formula.state == "True")
+                if (formula.state.toUpperCase() == "TRUE")
                     return new BMA.LTLOperations.TrueKeyframe();
                 return undefined;
             }
@@ -1714,7 +1714,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=commands.js.map
+//# sourceMappingURL=Commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }

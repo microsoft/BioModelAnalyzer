@@ -3,7 +3,6 @@
 
 (function ($) {
     $.widget("BMA.formulaeditor", {
-
         _create: function () {
             var that = this;
             var root = this.element;
@@ -120,7 +119,7 @@
             });
 
             svgDiv.mousemove(function (arg) {
-                if (that.operationLayout !== undefined) {
+                if (that.operationLayout !== undefined && that.operationLayout.IsVisible) {
                     var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                     var parentOffset = $(this).offset(); 
                     var relX = arg.pageX - parentOffset.left;
@@ -178,31 +177,62 @@
                 preventSelect: true,
                 //taphold: true,
                 menu: [
-                    { title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
-                    { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
-                    { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
+                    //{ title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
+                    //{ title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
+                    //{ title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
-                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }] },
-                    { title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
+                    //{ title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }] },
+                    //{ title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
                 ],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);
-                    var x = holdCords.holdX || event.pageX;
-                    var y = holdCords.holdX || event.pageY;
+                    var x = event.pageX;
+                    var y = event.pageY;
                     var left = x - svgDiv.offset().left;
                     var top = y - svgDiv.offset().top;
+                    var svgCoords = that._getSVGCoords(left, top);
+                    if (that.operationLayout !== undefined) {
+                        that.contextElement = {
+                            x: svgCoords.x,
+                            y: svgCoords.y,
+                        }
+                    }
 
                 },
                 select: function (event, ui) {
                     var args: any = {};
-                    var x = holdCords.holdX || event.pageX;
-                    var y = holdCords.holdX || event.pageY;
+                    var x = event.pageX;
+                    var y = event.pageY;
                     args.left = x - svgDiv.offset().left;
                     args.top = y - svgDiv.offset().top;
 
-                    //ui.cmd
+                    that._processContextMenuOption(ui.cmd);
                 }
             });
+        },
+
+        _processContextMenuOption(option) {
+            var that = this;
+            switch (option) {
+                case "Delete":
+                    if (that.contextElement !== undefined) {
+                        var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+                        var op = opL.UnpinOperation(this.contextElement.x, this.contextElement.y);
+                        if (op.isRoot) {
+                            that.operationLayout.IsVisible = false;
+                            that.operationLayout = undefined;
+                            that.options.operation = undefined;
+                        } else {
+                            that.options.operation = opL.Operation;
+                        }
+                        that.contextElement = undefined;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            
+            this._refresh();  
         },
 
         _getSVGCoords: function (x, y) {
@@ -230,6 +260,8 @@
             if (that._svg === undefined)
                 return;
 
+            that._svg.clear();
+
             if (that.options.operation !== undefined) {
                 this.operationLayout = new BMA.LTLOperations.OperationLayout(that._svg, that.options.operation, { x: 0, y: 0 });
                 var bbox = this.operationLayout.BoundingBox;
@@ -248,6 +280,7 @@
             } else {
                 if (that.operationLayout !== undefined) {
                     that.operationLayout.IsVisible = false;
+                    that.operationLayout = undefined;
                 }
             }
         },
