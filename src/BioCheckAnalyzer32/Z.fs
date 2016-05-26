@@ -104,17 +104,17 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
             let floor_assert = z.MkTrue
             z.MkToReal (z.MkToInt z1)
 *)
-        | Ceil e1 ->
+        | Ceil e1 -> // TODO: CHECK WITH SAMIN
             let (a1,x) = tr e1
             let x' = z.MkAdd(x, z.MkRealNumeral(1))
             let n =
                 let n = gensym "ceil"
-                z.MkToReal(z.MkConst(z.MkSymbol n, z.MkIntSort()))
+                z.MkToReal(make_z3_int_var n z)
             let x_leq_n = z.MkLe(x, n)
             let n_lt_x' = z.MkLt(n, x')
             let ceil_assert = z.MkAnd([|x_leq_n;n_lt_x'|])
             (ceil_assert::a1, n)
-        | Floor e1 ->
+        | Floor e1 -> // TODO: CHECK WITH SAMIN
             let (a1,x) = tr e1
             let x' = z.MkSub(x, z.MkRealNumeral(1))
             let m =
@@ -139,7 +139,7 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
             let abs = z.MkIte(x_gt_zero,x,x_neg)
 
 
-            let a' = z.MkToReal(z.MkConst(z.MkSymbol (gensym "absolute"), z.MkIntSort()))
+            let a' = z.MkToReal(make_z3_int_var (gensym "absolute") z)
             let a_eq_abs = z.MkEq(a',abs)
 //
 //            let zero_lt_l = z.MkLt(z.MkRealNumeral(0),l)
@@ -187,11 +187,11 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
 //        (v_t+1 = (v_t - 1) /\ T(v_t) < v_t)
 let assert_target_function qn (node: QN.node)  bounds start_time end_time (z : Context) =
     // SI: should be able to use [get_z3_int_var_at_time node] for this too, like we do for next_state_id. 
-    let current_state_id = sprintf "%d^%d" node.var start_time
-    let current_state = z.MkConst(z.MkSymbol current_state_id, z.MkIntSort())
+    let current_state_id = get_z3_int_var_at_time node start_time
+    let current_state = make_z3_int_var current_state_id z
 
     let next_state_id = get_z3_int_var_at_time node end_time
-    let next_state = z.MkConst(z.MkSymbol next_state_id, z.MkIntSort())
+    let next_state = make_z3_int_var next_state_id z
 
     let (extra_asserts,z_of_f) = expr_to_z3 qn node node.f start_time z
     let T_applied = z.MkToInt(z_of_f)
@@ -225,7 +225,7 @@ let assert_target_function qn (node: QN.node)  bounds start_time end_time (z : C
 // assert  lower <= v_t <= upper
 let assert_bound (node : QN.node) ((lower,upper) : (int*int)) time (z : Context) =
     let var_name = get_z3_int_var_at_time node time
-    let v = z.MkConst(z.MkSymbol var_name, z.MkIntSort())
+    let v = make_z3_int_var var_name z
 
     let simplify =  id // z.Simplify
     let lower_bound = simplify (z.MkGe(v, z.MkIntNumeral lower))
@@ -432,8 +432,8 @@ let assert_states_equal (qn : QN.node list) start_time end_time (ctx : Context) 
     for node in qn do
         let start_name = get_z3_int_var_at_time node start_time
         let end_name = get_z3_int_var_at_time node end_time
-        let start_var = ctx.MkConst(start_name, ctx.MkIntSort())
-        let end_var = ctx.MkConst(end_name, ctx.MkIntSort())
+        let start_var = make_z3_int_var start_name ctx
+        let end_var = make_z3_int_var end_name ctx
         let eq = ctx.MkEq(start_var, end_var)
         equal_condition <- ctx.MkAnd(equal_condition, eq)
 
