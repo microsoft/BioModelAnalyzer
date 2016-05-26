@@ -358,6 +358,7 @@ module BMA {
         export class SimulationExpandedDriver implements ISimulationExpanded {
             private viewer;
             private onplotvariablesselectionchanged;
+            private createStateRequested;
 
             constructor(view: JQuery) {
                 this.viewer = view;
@@ -366,6 +367,17 @@ module BMA {
             public SetOnPlotVariablesSelectionChanged(callback) {
                 this.onplotvariablesselectionchanged = callback;
                 this.viewer.simulationexpanded({ onChangePlotVariables: callback });
+            }
+
+            public SetOnCreateStateRequested(callback) {
+                if (this.viewer !== undefined) {
+                    this.viewer.simulationexpanded({
+                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        createStateRequested: callback
+                    });
+                } else {
+                    this.createStateRequested = callback;
+                }
             }
 
             public Set(data: { variables; colors; init }) {
@@ -563,40 +575,33 @@ module BMA {
                 this.acc = acc;
             }
 
+            public ContentLoaded(index, value) {
+                this.acc.bmaaccordion({ contentLoaded: { ind: index, val: value } });
+            }
+
             public Hide() {
                 var coll = this.acc.children().filter('[aria-selected="true"]').trigger("click");
             }
-        }
 
-        export class FormulaValidationService implements IServiceDriver {
-            public Invoke(data): JQueryPromise<any> {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/Validate",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
+            public HideTab(ind) {
+                var searchString = "[aria-controls = 'tabs-" + ind + "']";
+                var tab = this.acc.find(searchString);
+                tab.trigger("click");
             }
         }
 
-        export class FurtherTestingService implements IServiceDriver {
-            public Invoke(data): JQueryPromise<any> {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/FurtherTesting",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
-            }
-        }
+        export class BMAProcessingService implements IServiceDriver {
+            protected serviceURL: string;
 
-        export class ProofAnalyzeService implements IServiceDriver {
+            constructor(serviceURL: string) {
+                this.serviceURL = serviceURL;
+            }
+
             public Invoke(data): JQueryPromise<any> {
+                var that = this;
                 return $.ajax({
                     type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/Analyze",
+                    url: that.serviceURL,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json"
@@ -653,19 +658,7 @@ module BMA {
                 }
             }
         }
-
-        export class SimulationService implements IServiceDriver {
-            public Invoke(data): JQueryPromise<any> {
-                return $.ajax({
-                    type: "POST",
-                    url: "http://bmamath.cloudapp.net/api/Simulate",
-                    data: JSON.stringify(data),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
-            }
-        }
-
+       
         export class MessageBoxDriver implements IMessageServiсe {
 
             public Show(message: string) {

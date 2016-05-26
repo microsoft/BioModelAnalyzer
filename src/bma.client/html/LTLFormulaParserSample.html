@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>LTL Results Viewer Sample</title>
+    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
+    <link rel="stylesheet" href="../Content/themes/base/jquery.ui.all.css" type="text/css" />
+    <link rel="stylesheet" href="../Content/themes/base/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="../css/jquery.svg.css" type="text/css" />
+    <link rel="stylesheet" href="../css/bma.css" />
+    <script src="../Scripts/jquery-2.1.4.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.11.4.min.js"></script>
+    <script src="../js/jquery.svg.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../Scripts/rx.aggregates.min.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../tool.js"></script>
+    <script src="../js/jquery.ui-contextmenu.js"></script>
+    <script src="../Scripts/formulaParser.js"></script>
+
+    <script type="text/javascript">
+
+        function ConvertFormulaToOperation(formula, states) {
+            var parsedFormula;
+            try {
+                var parsedFormula = parser.parse(formula);
+                return ConvertToOperation(parsedFormula, states);
+            } catch (ex) {
+                alert(ex);
+            }
+            return;
+        }
+
+        function ConvertToOperation(formula, states) {
+            if (formula && formula.state && states) {
+                for (var i = 0; i < states.length; i++) {
+                    if (states[i].Name == formula.state)
+                        return states[i].Clone();
+                }
+                return undefined;
+            } else {
+                if (formula && formula.operator) {
+                    var operation = new BMA.LTLOperations.Operation();
+                    var operands = [];
+                    var operator = window.OperatorsRegistry.GetOperatorByName(formula.operator);
+                    if (operator.OperandsCount == 2) {
+                        operands.push(ConvertToOperation(formula.operand1, states));
+                        operands.push(ConvertToOperation(formula.operand2, states));
+                    } else {
+                        operands.push(ConvertToOperation(formula.operand, states));
+                    }
+                    operation.Operator = operator;
+                    operation.Operands = operands;
+                    return operation;
+                }
+            }
+            return undefined;
+        }
+
+        $(document).ready(function () {
+
+            var svgDiv = $("#svgDiv");
+            var jqSvg = undefined;
+            var pixofs = 0;
+            svgDiv.svg({
+                onLoad: function (svg) {
+                    jqSvg = svg;
+
+                    svg.configure({
+                        width: svgDiv.width() - pixofs,
+                        height: svgDiv.height() - pixofs,
+                        viewBox: "0 0 " + (svgDiv.width() - pixofs) + " " + (svgDiv.height() - pixofs),
+                        preserveAspectRatio: "none meet"
+                    }, true);
+
+
+                    //that._refresh();
+                }
+            });
+
+            function RenderToSvg(svgDiv, svg, operation) {
+                svg.clear();
+                var operationLayout = new BMA.LTLOperations.OperationLayout(svg, operation, { x: 0, y: 0 });
+                var bbox = operationLayout.BoundingBox;
+                var aspect = svgDiv.width() / svgDiv.height();
+                var width = bbox.width + 20;
+                var height = width / aspect;
+                if (height < bbox.height + 20) {
+                    height = bbox.height + 20;
+                    width = height * aspect;
+                }
+                var x = -width / 2;
+                var y = -height / 2;
+                svg.configure({
+                    viewBox: x + " " + y + " " + width + " " + height,
+                }, true);
+            }
+
+            window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
+
+            $("#inp").change(function () {
+                try {
+                    var parsed = ConvertFormulaToOperation($("#inp").val(),
+                        [
+                            new BMA.LTLOperations.Keyframe("A", "", []),
+                            new BMA.LTLOperations.Keyframe("B", "", []),
+                            new BMA.LTLOperations.Keyframe("C", "", []),
+                        ]);
+
+                    RenderToSvg(svgDiv, jqSvg, parsed);
+                    //$("#textoutput").text(JSON.stringify(parsed));
+                } catch (ex) {
+                    $("#textoutput").text(ex);
+                }
+            });
+        });
+
+    </script>
+</head>
+<body style="background-color: white;">
+    <div style="width:450px; height: 250px;">
+        <div id="textbox" style="width:200px;height: 200px;float:left;background-color: aliceblue;">
+            <input type="text" value="Enter formula" id="inp" style="border:none; background-color:transparent;" />
+        </div>
+        <div id="textoutput" style="width:200px;height: 200px;float:left;background-color: cornsilk;">
+        </div>
+
+        <div id="svgDiv" style="width:400px;height:250px;"></div>
+    </div>
+</body>
+</html>

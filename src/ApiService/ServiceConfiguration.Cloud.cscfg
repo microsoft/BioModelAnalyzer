@@ -5,6 +5,8 @@
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=bmanew;AccountKey=***REMOVED***" />
       <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=bmanew;AccountKey=***REMOVED***" />
+      <!--<Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biomodelanalyzer2;AccountKey=***REMOVED***" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biomodelanalyzer2;AccountKey=***REMOVED***" />-->
       <Setting name="ComputeTimeLimit" value="90" />
     </ConfigurationSettings>
   </Role>

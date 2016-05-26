@@ -74,7 +74,39 @@
                         }
                         that.refresh();
                     });
+                this.addStatesHighlighting(stateButton);
             }
+        },
+
+        addStatesHighlighting: function (stateButton) {
+            var that = this;
+
+            stateButton.hover(function (e) {
+                var variablesIds = [];
+                var stateIdx;
+                for (var j = 0; j < that.options.states.length; j++) {
+                    if (that.options.states[j].name == $(this).attr("data-state-name")) {
+                        stateIdx = j;
+                        break;
+                    }
+                }
+                if (stateIdx !== undefined) {
+                    var formulas = that.options.states[stateIdx].formula;
+                    for (var i = 0; i < formulas.length; i++) {
+                        var variableId = formulas[i] && formulas[i][0] && formulas[i][0].value && formulas[i][0].value.variable !== undefined ?
+                            formulas[i][0].value.variable : undefined;
+                        if (variableId !== undefined)
+                            variablesIds.push(variableId);
+                    }
+
+                    window.Commands.Execute("HighlightContent", {
+                        variableHighlightIds: variablesIds,
+                        containerHighlightIds: [],
+                    });
+                }
+            }, (e) => {
+                window.Commands.Execute("UnhighlightContent", undefined);
+            });
         },
 
         addContextMenu: function () {
@@ -163,6 +195,7 @@
                 }
                 that.refresh();
             });
+            this.addStatesHighlighting(state);
 
             if (this._activeState != null)
                 that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
@@ -256,6 +289,16 @@
             
             var variableTd = $("<td></td>").addClass("variable").appendTo(tr);
             that.createVariablePicker(variableTd, formula[0]);
+
+            variableTd.hover(function (e) {
+                var variableId = parseFloat(formula[0].value.variable);
+                window.Commands.Execute("HighlightContent", {
+                    variableHighlightIds: [variableId],
+                    containerHighlightIds: [],
+                });
+            }, (e) => {
+                window.Commands.Execute("UnhighlightContent", undefined);
+            });
            
 
             var operatorTd = $("<td></td>").addClass("operator").appendTo(tr);
@@ -348,7 +391,6 @@
                 if (operatorSelector) {
                     if (!operatorSelector.is(e.target) && operatorSelector.has(e.target).length === 0) {
                         operatorSelector.remove();
-                        //operatorExpandButton.removeClass('inputs-list-header-expanded');
                     }
                 }
             });
@@ -359,11 +401,9 @@
                     firstTop = $(operatorTd).offset().top + 47;
 
                     operatorSelector = that.updateOperatorPicker({ top: firstTop, left: firstLeft }, setOperatorValue);
-                    //operatorExpandButton.addClass('inputs-list-header-expanded');
                 } else {
                     operatorSelector.remove();
                     operatorSelector = undefined;
-                    //operatorExpandButton.removeClass('inputs-list-header-expanded');
                 }
             });
         },
@@ -397,7 +437,6 @@
             operatorSelector.children().bind("click", function () {
                 var newOperator = $(this).attr("data-operator-type");
                 setOperatorValue(newOperator);
-                //operatorExpandButton.removeClass('inputs-list-header-expanded');
 
                 that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
             });
@@ -438,7 +477,7 @@
                         }
                         break;
                     }
-
+                
                 if (!containerName) {
                     value.container = 0;
                     containerName = "ALL";
@@ -454,10 +493,7 @@
 
                 if (variableName === "") {
                     variableName = "Unnamed";
-                    expandButton.addClass("hidden");
-                } else {
-                    expandButton.removeClass("hidden");
-                }
+                } 
                 
                 $(selectedContainer).text(containerName);
                 $(selectedVariable).text(variableName);
@@ -467,8 +503,7 @@
                     variablePicker.remove();
                     variablePicker = undefined;
                 }
-
-                //expandButton.removeClass('inputs-list-header-expanded');
+                
                 if (containerName !== "ALL") {
                     containerImg.removeClass("hidden");
                     selectedContainer.removeClass("hidden");
@@ -486,33 +521,26 @@
             var variablePicker = undefined;
             setSelectedValue(variable.value);
 
-            //var trDivs = this.updateVariablePicker(trList, setSelectedValue, variable);
-
             $(document).mousedown(function (e) {
                 if (variablePicker) {
                     if (/*!variableTd.is(e.target) && variableTd.has(e.target).length === 0*/
                         !variablePicker.is(e.target) && variablePicker.has(e.target).length === 0) {
                         variablePicker.remove();
-                        //expandButton.removeClass('inputs-list-header-expanded');
                     }
                 }
             });
 
             expandButton.bind("click", function () {
                 if (!variablePicker) {
-                    //var offLeft = $(variableTd).offset().left - firstLeft;
-                    //var offTop = $(variableTd).offset().top - firstTop;
 
                     firstLeft = $(variableTd).offset().left;
                     firstTop = $(variableTd).offset().top + 47;
 
                     that.executeonComboBoxOpen();
                     variablePicker = that.updateVariablePicker({ top: firstTop, left: firstLeft }, setSelectedValue, variable);
-                    //expandButton.addClass('inputs-list-header-expanded');
                 } else {
                     variablePicker.remove();
                     variablePicker = undefined;
-                    //expandButton.removeClass('inputs-list-header-expanded');
                 }
             });
         },
@@ -545,15 +573,24 @@
             }
 
             for (var i = 0; i < this.options.variables.length; i++) {
-                //if (this.options.variables[i].name) {
-                    var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
-                        .appendTo(divContainers).click(function () {
-                            that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
-                        });
-                    if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id) {
-                        that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
+                var container = $("<a>" + this.options.variables[i].name + "</a>").attr("data-container-id", this.options.variables[i].id)
+                    .appendTo(divContainers).click(function () {
+                        that.setActiveContainer(divContainers, divVariables, this, setSelectedValue, currSymbol);
+                    });
+
+                container.hover(function (e) {
+                    var containerId = parseFloat($(this).attr("data-container-id"));
+                    if (containerId > 0) {
+                        window.Commands.Execute("HighlightContent", { variableHighlightIds: [], containerHighlightIds: [containerId] });
                     }
-               // }
+                }, (e) => {
+                    window.Commands.Execute("UnhighlightContent", undefined);
+                });
+
+
+                if (currSymbol.value != 0 && currSymbol.value.container == this.options.variables[i].id) {
+                    that.setActiveContainer(divContainers, divVariables, container, setSelectedValue, currSymbol);
+                }
             }
             if (currSymbol.value == 0) {
                 that.setActiveContainer(divContainers, divVariables, divContainers.children().eq(0), setSelectedValue, currSymbol);
@@ -581,8 +618,9 @@
             for (var j = 0; j < that.options.variables[idx].vars.length; j++) {
 
                 var variableName = that.options.variables[idx].vars[j].name;
-                if (variableName && that.options.variables[idx].vars[j].id !== undefined) {
-
+                variableName = variableName ? variableName : "Unnamed";
+                if (that.options.variables[idx].vars[j].id !== undefined) {
+                    
                     var variable = $("<a>" + variableName + "</a>").attr("data-variable-id", that.options.variables[idx].vars[j].id)
                         .appendTo(divVariables).click(function () {
                             divVariables.find(".active").removeClass("active");
@@ -599,10 +637,16 @@
                             that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
                         });
 
+                    variable.hover(function(e) {
+                        window.Commands.Execute("HighlightContent", { variableHighlightIds: [parseFloat($(this).attr("data-variable-id"))], containerHighlightIds: [] });
+                    }, (e) => {
+                        window.Commands.Execute("UnhighlightContent", undefined);
+                    });
+
                     if (currSymbol.value != 0 && currSymbol.value.container == $(container).attr("data-container-id")
                         && currSymbol.value.variable == that.options.variables[idx].vars[j].id) {
                         variable.addClass("active");
-                        setSelectedValue({ container: parseFloat($(container).attr("data-container-id")), variable: that.options.variables[idx].vars[j].id});
+                        setSelectedValue({ container: parseFloat($(container).attr("data-container-id")), variable: that.options.variables[idx].vars[j].id });
                     }
                 }
             }
@@ -681,9 +725,9 @@
                     that.options.states[stateIdx].formula[idx][0] = { type: "variable", value: value };
                     that._activeState.formula[idx][0] = { type: "variable", value: value };
 
-                    that.refresh();
-                    that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
-                }
+                that.refresh();
+                that.executeStatesUpdate({ states: that.options.states, changeType: "stateModified" });
+            }
                 
             }
         },

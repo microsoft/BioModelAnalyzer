@@ -18,6 +18,7 @@ module.exports = function (grunt) {
                 src: [
                     "js/svgplot.js",
                     "js/scalablegridlinesplot.js",
+                    "Scripts/formulaParser.js",
                     "script/XmlModelParser.js" ,
                     "script/SVGHelper.js",
                     "script/LTLHelper.js",
@@ -62,6 +63,7 @@ module.exports = function (grunt) {
                     "script/widgets/userdialog.js",
                     "script/widgets/variablesOptionsEditor.js",
                     "script/widgets/visibilitysettings.js",
+                    "script/widgets/formulaeditor.js",
                     "script/widgets/ltl/keyframetable.js",
                     "script/widgets/ltl/keyframecompact.js",
                     "script/widgets/ltl/ltlstatesviewer.js",

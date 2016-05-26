@@ -159,24 +159,12 @@
                 });
 
                 ltlresultsviewer.SetOnCreateStateRequested(function (args) {
-                    if (args !== undefined) {
-                        var keyframeEqs = [];
-                        for (var i = 0; i < args.length; i++) {
-                            keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(
-                                new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId),
-                                "=",
-                                new BMA.LTLOperations.ConstOperand(args[i].value)
-                            ));
-                        }
+                    that.CreateStateFromTableData(args);
+                    ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
+                });
 
-                        var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
-                        var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
-                        var merged = that.MergeStates(that.appModel.States, [newState]);
-                        that.appModel.States = merged.states;
-                        that.statespresenter.UpdateStatesFromModel();
-                        that.tppresenter.UpdateStatesFromModel();
-                        ltlresultsviewer.UpdateStateFromModel(that.appModel.BioModel, that.appModel.States);
-                    }
+                window.Commands.On("CreateStateFromTable", (args) => {
+                    that.CreateStateFromTableData(args);
                 });
 
                 commands.On("ExportLTLFormulaAsJson", (args) => {
@@ -191,7 +179,7 @@
                     }
                 });
 
-                commands.On("ImportLTLFormula", (args) => {
+                commands.On("ImportLTLFormulaAsJson", (args) => {
                     fileLoaderDriver.OpenFileDialog().done(function (fileName) {
                         var fileReader: any = new FileReader();
                         fileReader.onload = function () {
@@ -222,12 +210,63 @@
                     });
                 });
 
+                commands.On("ImportLTLFormulaAsText", (args) => {
+                    fileLoaderDriver.OpenFileDialog().done(function (fileName) {
+                        var fileReader: any = new FileReader();
+                        fileReader.onload = function () {
+                            var fileContent = fileReader.result;
+                            var operation = BMA.ModelHelper.ConvertFormulaToOperation(fileContent, that.appModel.States);
+
+                            if (operation instanceof BMA.LTLOperations.Operation) {
+                                var op = <BMA.LTLOperations.Operation>operation;
+                                var states = that.GetStates(op);
+                                var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(that.appModel.BioModel, that.appModel.Layout, states);
+                                if (statesChanged.isChanged) {
+                                    states = statesChanged.states;
+                                    BMA.LTLOperations.RefreshStatesInOperation(op, states);
+                                }
+                                if (statesChanged.shouldNotify) window.Commands.Execute("InvalidStatesImported", {});
+                                var merged = that.MergeStates(that.appModel.States, states);
+                                that.appModel.States = merged.states;
+                                that.UpdateOperationStates(op, merged.map);
+                                that.statespresenter.UpdateStatesFromModel();
+                                that.tppresenter.UpdateStatesFromModel();
+                                that.tppresenter.AddOperation(op, args.position);
+                            }
+
+                        };
+                        fileReader.readAsText(fileName);
+
+                    });
+                });
+
                 commands.On("KeyframesChanged", (args: { states: BMA.LTLOperations.Keyframe[] }) => {
                     //TP presenter should normally handle this but in case it was not shown and user tries to modify states for imported states and formulas
                     if (this.tppresenter === undefined) {
                         this.UpdateOperations(args.states);
                     }
                 });
+            }
+
+            private CreateStateFromTableData(args) {
+                var that = this;
+                if (args !== undefined) {
+                    var keyframeEqs = [];
+                    for (var i = 0; i < args.length; i++) {
+                        keyframeEqs.push(new BMA.LTLOperations.KeyframeEquation(
+                            new BMA.LTLOperations.NameOperand(args[i].variable, args[i].variableId),
+                            args[i].operator ? args[i].operator : "=",
+                            new BMA.LTLOperations.ConstOperand(args[i].value)
+                        ));
+                    }
+
+                    var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
+                    var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
+                    var merged = that.MergeStates(that.appModel.States, [newState]);
+                    that.appModel.States = merged.states;
+                    that.statespresenter.UpdateStatesFromModel();
+                    that.tppresenter.UpdateStatesFromModel();
+                }
             }
 
             private UpdateOperations(states) {
