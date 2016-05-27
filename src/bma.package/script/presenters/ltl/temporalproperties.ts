@@ -1099,20 +1099,22 @@ module BMA {
                                                 if (negativeResult.Status === 1/*True*/) {
                                                     resultStatus = "partialsuccesspartialfail";
                                                     operation.Tag.negdata = negativeResult.Ticks;
-                                                } else if (negativeResult === 0/*False*/) {
+                                                } else if (negativeResult.Status === 0/*False*/) {
                                                     resultStatus = "success";
                                                 } else {
                                                     //Something weird happened. Status shouldn't be unknown here
+                                                    resultStatus = "partialsuccess";
                                                 }
                                             } else if (positiveResult.Status === 0/*False*/) {
                                                 operation.Tag.negdata = positiveResult.Ticks;
-                                                if (negativeResult === 1/*True*/) {
+                                                if (negativeResult.Status === 1/*True*/) {
                                                     resultStatus = "partialsuccesspartialfail";
                                                     operation.Tag.data = negativeResult.Ticks;
-                                                } else if (negativeResult === 0/*False*/) {
+                                                } else if (negativeResult.Status === 0/*False*/) {
                                                     resultStatus = "fail";
                                                 } else {
                                                     //Something weird happened. Status shouldn't be unknown here
+                                                    resultStatus = "partialfail";
                                                 }
                                             } else {
                                                 //Something weird happened. Status shouldn't be unknown here
