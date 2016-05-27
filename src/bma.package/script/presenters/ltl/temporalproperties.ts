@@ -1094,31 +1094,28 @@ module BMA {
                                             var resultStatus = "";
                                             operation.Tag.negdata = undefined;
                                             operation.Tag.data = undefined;
-                                            if (positiveResult.Status === 0) {
+                                            if (positiveResult.Status === 1/*True*/) {
                                                 operation.Tag.data = positiveResult.Ticks;
-                                                if (negativeResult.Status === 0) {
+                                                if (negativeResult.Status === 1/*True*/) {
                                                     resultStatus = "partialsuccesspartialfail";
                                                     operation.Tag.negdata = negativeResult.Ticks;
-                                                } else if (negativeResult === 1) {
+                                                } else if (negativeResult === 0/*False*/) {
                                                     resultStatus = "success";
                                                 } else {
                                                     //Something weird happened. Status shouldn't be unknown here
-                                                    //TODO: log error
                                                 }
-                                            } else if (positiveResult.Status === 1) {
+                                            } else if (positiveResult.Status === 0/*False*/) {
                                                 operation.Tag.negdata = positiveResult.Ticks;
-                                                if (negativeResult === 0) {
+                                                if (negativeResult === 1/*True*/) {
                                                     resultStatus = "partialsuccesspartialfail";
                                                     operation.Tag.data = negativeResult.Ticks;
-                                                } else if (negativeResult === 1) {
+                                                } else if (negativeResult === 0/*False*/) {
                                                     resultStatus = "fail";
                                                 } else {
                                                     //Something weird happened. Status shouldn't be unknown here
-                                                    //TODO: log error
                                                 }
                                             } else {
                                                 //Something weird happened. Status shouldn't be unknown here
-                                                //TODO: log error
                                             }
 
                                             operation.AnalysisStatus = resultStatus;
