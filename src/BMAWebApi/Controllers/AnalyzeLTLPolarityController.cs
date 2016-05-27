@@ -20,8 +20,8 @@ namespace bma.client.Controllers
 {
     public enum LTLStatus
     {
-        True,
         False,
+        True,
         Unknown
     }
 

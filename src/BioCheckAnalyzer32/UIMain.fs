@@ -149,11 +149,11 @@ type Analyzer () =
                     //Marshal.ltl_double_result_full res model None
                     match polarity with
                     | Some(value) ->
-                        let (res, model) = (BMC.SingleSideBoundedMC formula network paths -1 value)
+                        let (res, model) = (BMC.SingleSideBoundedMC formula network padded_paths -1 value)
                         Marshal.ltl_double_result_full res model None
                     | None -> 
-                        let (res1, model1) = BMC.SingleSideBoundedMC formula network paths -1 true
-                        Marshal.ltl_double_result_full res1 model1 (Some (BMC.SingleSideBoundedMC formula network paths -1 false))
+                        let (res1, model1) = BMC.SingleSideBoundedMC formula network padded_paths -1 true
+                        Marshal.ltl_double_result_full res1 model1 (Some (BMC.SingleSideBoundedMC formula network padded_paths -1 false))
 
                     //Marshal.ltl_double_result_full res model neg
 

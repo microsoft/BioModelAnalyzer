@@ -16610,9 +16610,9 @@ var BMA;
                         .done(function (res) {
                         if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                             return;
-                        //Status = 0, we have Satisfying simulation
-                        //Status = 1, we have Non-Satisfying simulation
-                        //Status = 2, we didn't revieve any simulations
+                        //Status = 0, we don't have any Satisfying simulation
+                        //Status = 1, we have Satisfying simulation
+                        //Status = 2, we didn't revieve any results
                         if (res.Ticks == null && res.Status !== 2) {
                             that.log.LogLTLError();
                             if (res.Error.indexOf("Operation is not completed in") > -1)
@@ -16627,7 +16627,7 @@ var BMA;
                             that.OnOperationsChanged(false);
                         }
                         else {
-                            if (res.Status === 0 /*True*/) {
+                            if (res.Status === 1 /*True*/) {
                                 driver.SetShowResultsCallback(function () {
                                     that.commands.Execute("ShowLTLResults", {
                                         ticks: res.Ticks
@@ -16638,7 +16638,7 @@ var BMA;
                                 operation.Tag.negdata = undefined;
                                 operation.Tag.steps = driver.GetSteps();
                             }
-                            else if (res.Status === 1 /*False*/) {
+                            else if (res.Status === 0 /*False*/) {
                                 driver.SetShowResultsCallback(function (showpositive) {
                                     that.commands.Execute("ShowLTLResults", {
                                         ticks: res.Ticks
@@ -16659,10 +16659,10 @@ var BMA;
                             that.OnOperationsChanged(false);
                             //Preparing polarity
                             var polarity = 2;
-                            //if (res.Status === 0)
-                            //    polarity = 1;
-                            //else if (res.Status === 1)
-                            //    polarity = 0;
+                            if (res.Status === 0)
+                                polarity = 1;
+                            else if (res.Status === 1)
+                                polarity = 0;
                             proofInput.Polarity = polarity;
                             that.polarityService.Invoke(proofInput).done(function (polarityResults) {
                                 if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
@@ -16679,8 +16679,8 @@ var BMA;
                                     else {
                                         var polarityStatus = polarityResult.Status;
                                         var resultStatus = "";
-                                        if (res.Status === 0) {
-                                            if (polarityStatus === 1) {
+                                        if (res.Status === 1 /*True*/) {
+                                            if (polarityStatus === 0 /*False*/) {
                                                 resultStatus = "success";
                                             }
                                             else {
@@ -16689,7 +16689,7 @@ var BMA;
                                             }
                                         }
                                         else {
-                                            if (polarityStatus === 1) {
+                                            if (polarityStatus === 0 /*False*/) {
                                                 resultStatus = "fail";
                                             }
                                             else {

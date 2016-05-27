@@ -961,8 +961,8 @@ module BMA {
                             if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                 return;
 
-                            //Status = 0, we have Satisfying simulation
-                            //Status = 1, we don't have any Satisfying simulation
+                            //Status = 0, we don't have any Satisfying simulation
+                            //Status = 1, we have Satisfying simulation
                             //Status = 2, we didn't revieve any results
 
                             if (res.Ticks == null && res.Status !== 2) {
@@ -983,7 +983,7 @@ module BMA {
                             else {
                                 
 
-                                if (res.Status === 0/*True*/) {
+                                if (res.Status === 1/*True*/) {
 
                                     driver.SetShowResultsCallback(function () {
                                         that.commands.Execute("ShowLTLResults", {
@@ -996,7 +996,7 @@ module BMA {
                                     operation.Tag.negdata = undefined;
                                     operation.Tag.steps = driver.GetSteps();
 
-                                } else if (res.Status === 1/*False*/) {
+                                } else if (res.Status === 0/*False*/) {
                                     driver.SetShowResultsCallback(function (showpositive) {
                                         that.commands.Execute("ShowLTLResults", {
                                             ticks: res.Ticks
@@ -1041,15 +1041,15 @@ module BMA {
                                         else {
                                             var polarityStatus = polarityResult.Status;
                                             var resultStatus = "";
-                                            if (res.Status === 0) {
-                                                if (polarityStatus === 1) {
+                                            if (res.Status === 1/*True*/) {
+                                                if (polarityStatus === 0/*False*/) {
                                                     resultStatus = "success";
                                                 } else {
                                                     resultStatus = "partialsuccesspartialfail";
                                                     operation.Tag.negdata = polarityResult.Ticks;
                                                 }
                                             } else {
-                                                if (polarityStatus === 1) {
+                                                if (polarityStatus === 0/*False*/) {
                                                     resultStatus = "fail";
                                                 } else {
                                                     resultStatus = "partialsuccesspartialfail";
