@@ -1714,7 +1714,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=commands.js.map
+//# sourceMappingURL=Commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -16649,12 +16649,6 @@ var BMA;
                                 operation.Tag.negdata = res.Ticks;
                                 operation.Tag.steps = driver.GetSteps();
                             }
-                            else {
-                                operation.AnalysisStatus = "processing, none";
-                                operation.Tag.data = undefined;
-                                operation.Tag.negdata = undefined;
-                                operation.Tag.steps = driver.GetSteps();
-                            }
                             domplot.updateLayout();
                             that.OnOperationsChanged(false);
                             //Preparing polarity
@@ -16669,7 +16663,7 @@ var BMA;
                                     return;
                                 if (res.Status < 2) {
                                     var polarityResult = polarityResults.m_Item1;
-                                    if (polarityResult.Ticks == null) {
+                                    if (polarityResult.Ticks == null || polarityResult.Error) {
                                         that.log.LogLTLError();
                                         operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
                                         driver.SetStatus(operation.AnalysisStatus /* === "partialfail" ? "fail" : "success"*/);
@@ -16738,20 +16732,16 @@ var BMA;
                                                 resultStatus = "partialsuccesspartialfail";
                                                 operation.Tag.negdata = negativeResult.Ticks;
                                             }
-                                            else if (negativeResult === 0 /*False*/) {
+                                            else if (negativeResult.Status === 0 /*False*/) {
                                                 resultStatus = "success";
                                             }
                                             else {
                                             }
                                         }
                                         else if (positiveResult.Status === 0 /*False*/) {
-                                            operation.Tag.negdata = positiveResult.Ticks;
-                                            if (negativeResult === 1 /*True*/) {
-                                                resultStatus = "partialsuccesspartialfail";
-                                                operation.Tag.data = negativeResult.Ticks;
-                                            }
-                                            else if (negativeResult === 0 /*False*/) {
+                                            if (negativeResult.Status === 1 /*True*/) {
                                                 resultStatus = "fail";
+                                                operation.Tag.negdata = negativeResult.Ticks;
                                             }
                                             else {
                                             }

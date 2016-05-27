@@ -1007,12 +1007,7 @@ module BMA {
                                     operation.Tag.data = undefined;
                                     operation.Tag.negdata = res.Ticks;
                                     operation.Tag.steps = driver.GetSteps();
-                                } else {
-                                    operation.AnalysisStatus = "processing, none";
-                                    operation.Tag.data = undefined;
-                                    operation.Tag.negdata = undefined;
-                                    operation.Tag.steps = driver.GetSteps();
-                                }
+                                } 
 
                                 domplot.updateLayout();
                                 that.OnOperationsChanged(false);
@@ -1031,7 +1026,7 @@ module BMA {
 
                                     if (res.Status < 2) {
                                         var polarityResult = polarityResults.m_Item1;
-                                        if (polarityResult.Ticks == null) {
+                                        if (polarityResult.Ticks == null || polarityResult.Error) {
                                             that.log.LogLTLError();
                                             operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
                                             driver.SetStatus(operation.AnalysisStatus/* === "partialfail" ? "fail" : "success"*/);
@@ -1103,18 +1098,14 @@ module BMA {
                                                     resultStatus = "success";
                                                 } else {
                                                     //Something weird happened. Status shouldn't be unknown here
-                                                    resultStatus = "partialsuccess";
+                                                    
                                                 }
                                             } else if (positiveResult.Status === 0/*False*/) {
-                                                operation.Tag.negdata = positiveResult.Ticks;
                                                 if (negativeResult.Status === 1/*True*/) {
-                                                    resultStatus = "partialsuccesspartialfail";
-                                                    operation.Tag.data = negativeResult.Ticks;
-                                                } else if (negativeResult.Status === 0/*False*/) {
                                                     resultStatus = "fail";
+                                                    operation.Tag.negdata = negativeResult.Ticks;
                                                 } else {
                                                     //Something weird happened. Status shouldn't be unknown here
-                                                    resultStatus = "partialfail";
                                                 }
                                             } else {
                                                 //Something weird happened. Status shouldn't be unknown here
