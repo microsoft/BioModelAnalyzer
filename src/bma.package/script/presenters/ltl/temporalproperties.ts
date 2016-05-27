@@ -962,8 +962,8 @@ module BMA {
                                 return;
 
                             //Status = 0, we have Satisfying simulation
-                            //Status = 1, we have Non-Satisfying simulation
-                            //Status = 2, we didn't revieve any simulations
+                            //Status = 1, we don't have any Satisfying simulation
+                            //Status = 2, we didn't revieve any results
 
                             if (res.Ticks == null && res.Status !== 2) {
                                 that.log.LogLTLError();
