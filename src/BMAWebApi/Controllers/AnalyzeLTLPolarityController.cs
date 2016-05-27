@@ -52,7 +52,7 @@ namespace bma.client.Controllers
 
         public string Number_of_steps { get; set; }
 
-        public bool Polarity { get; set; }
+        public LTLStatus Polarity { get; set; }
     }
 
     public class AnalyzeLTLPolarityController : ApiController
@@ -74,7 +74,11 @@ namespace bma.client.Controllers
             {
                 string formula = input.Formula;
                 string num_of_steps = input.Number_of_steps;
-                bool polarity = input.Polarity;
+                FSharpOption<bool> polarity = FSharpOption<bool>.None;
+                if (input.Polarity != LTLStatus.Unknown)
+                {
+                    polarity = new FSharpOption<bool>(input.Polarity == LTLStatus.True);
+                }
 
                 IAnalyzer analyzer = new UIMain.Analyzer();
 
@@ -93,7 +97,7 @@ namespace bma.client.Controllers
 
                 var model = (Model)input;
                 //var result = analyzer.checkLTL((Model)input, formula, num_of_steps); 
-                var result = Utilities.RunWithTimeLimit(() => analyzer.checkLTLPolarity((Model)input, formula, num_of_steps, new FSharpOption<bool>(polarity)), TimeSpan.FromMinutes(1));//, Utilities.GetTimeLimitFromConfig());
+                var result = Utilities.RunWithTimeLimit(() => analyzer.checkLTLPolarity((Model)input, formula, num_of_steps, polarity), TimeSpan.FromMinutes(1));//, Utilities.GetTimeLimitFromConfig());
 
                 // Log the output XML each time it's run
                 // DEBUG: Sam - to check why the output is returning is null
@@ -125,7 +129,7 @@ namespace bma.client.Controllers
                 };
 
                 LTLAnalysisResult negative = null;
-                if (FSharpOption<LTLAnalysisResultDTO>.get_IsNone(result.Item2))
+                if (result.Item2 != null && !FSharpOption<LTLAnalysisResultDTO>.get_IsNone(result.Item2))
                 {
                     negative = new LTLAnalysisResult
                     {
