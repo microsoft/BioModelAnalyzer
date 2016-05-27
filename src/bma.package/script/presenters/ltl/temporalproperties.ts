@@ -1007,7 +1007,7 @@ module BMA {
                                     operation.Tag.data = undefined;
                                     operation.Tag.negdata = res.Ticks;
                                     operation.Tag.steps = driver.GetSteps();
-                                } 
+                                }
 
                                 domplot.updateLayout();
                                 that.OnOperationsChanged(false);
