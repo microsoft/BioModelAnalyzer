@@ -1008,7 +1008,7 @@ module BMA {
                                     operation.Tag.negdata = res.Ticks;
                                     operation.Tag.steps = driver.GetSteps();
                                 } else {
-                                    operation.AnalysisStatus = "processing, none";
+                                    operation.AnalysisStatus = "processing";
                                     operation.Tag.data = undefined;
                                     operation.Tag.negdata = undefined;
                                     operation.Tag.steps = driver.GetSteps();
