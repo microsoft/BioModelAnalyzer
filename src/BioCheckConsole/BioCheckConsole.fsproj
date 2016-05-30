@@ -54,7 +54,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\BioCheckConsole.XML</DocumentationFile>
-    <StartArguments>-model model8.json -engine VMCAI -prove model8output.json</StartArguments>
+    <StartArguments>-model model.json -engine CAV -formula "(Eventually (= a 0))" -path 10 -outputmodel -proof -ltloutput "output.json"</StartArguments>
     <StartWorkingDirectory />
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>

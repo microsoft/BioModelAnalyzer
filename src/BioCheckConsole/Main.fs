@@ -72,6 +72,7 @@ let excel_output = ref false // output the xlsx file as well
 let model' = ref "" // input model filename for destination qn
 let state  = ref "" // input csv describing starting state
 let state' = ref "" // input csv describing destination state 
+let ltloutputfilename = ref ""
 
 let usage i = 
     Printf.printfn "Usage: BioCheckConsole.exe -model input_analysis_file.json"
@@ -114,6 +115,7 @@ let rec parse_args args =
     | "-dump_after_ko_edge_xforms" :: rest -> dump_after_ko_edge_xforms := true; parse_args rest
     | "-tests" :: rest -> run_tests := true; parse_args rest
     | "-log" :: rest -> logging := true; parse_args rest
+    | "-ltloutput" :: fn :: rest -> ltloutputfilename := fn; parse_args rest
     | "-loglevel" :: lvl :: rest -> logging_level := (int) lvl; parse_args rest
     | _ -> failwith "Bad command line args" 
 
@@ -221,7 +223,7 @@ let runVMCAIEngine qn (proof_output : string) (no_sat : bool) =
     | (Result.SRNotStabilizing(_), None) -> ()
     | _ -> failwith "Bad result from prover"
 
-let runCAVEngine qn length_of_path formula model_check output_proof output_model =
+let runCAVEngine qn length_of_path formula model_check output_proof output_model ltl_output_filename =
     let ltl_formula_str = 
         if (model_check) then
             sprintf "(Not %s)" formula
@@ -253,13 +255,22 @@ let runCAVEngine qn length_of_path formula model_check output_proof output_model
     
         // given the # of steps and the path, do BMC   
         let (res1, model1, res2, model2) = 
-                BMC.DoubleBoundedMCWithSim ltl_formula qn correct_length_paths false
+                BMC.DoubleBoundedMCWithSim ltl_formula qn correct_length_paths true
 
         BioCheckPlusZ3.check_model model1 res1 qn
 
         LTL.print_in_order ltl_formula
         BioCheckPlusZ3.print_model model1 res1 qn output_model
         // BioCheckPlusZ3.print_model model2 res2 qn output_model
+
+        let ltlResult = 
+            match ltl_output_filename with
+            | "" -> None //nothing to do here
+            | _ -> Some (JsonConvert.SerializeObject(Marshal.ltl_double_result_full res1 model1 (Some (res2, model2))))
+
+        match ltlResult with
+        | None -> ()
+        | Some(result) -> System.IO.File.WriteAllText(ltl_output_filename, result)
 
 let runPATHEngine qnX modelsdir other_model_name start_state dest_state =
     Log.log_debug "Running path search"
@@ -322,7 +333,7 @@ let main args =
                 | Some EngineVMCAI ->
                     if (!proof_output <> "") then runVMCAIEngine qn !proof_output !no_sat; true
                     else false
-                | Some EngineCAV -> runCAVEngine qn !number_of_steps !formula !model_check !output_proof !output_model; true
+                | Some EngineCAV -> runCAVEngine qn !number_of_steps !formula !model_check !output_proof !output_model !ltloutputfilename; true
                 | Some EngineSimulate ->
                     if (!simul_output <> "") then runSimulateEngine qn !simul_output !simul_v0 !simul_time !excel_output; true
                     else false
