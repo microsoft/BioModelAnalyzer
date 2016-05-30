@@ -255,7 +255,7 @@ let runCAVEngine qn length_of_path formula model_check output_proof output_model
     
         // given the # of steps and the path, do BMC   
         let (res1, model1, res2, model2) = 
-                BMC.DoubleBoundedMCWithSim ltl_formula qn correct_length_paths true
+                BMC.DoubleBoundedMCWithSim ltl_formula qn correct_length_paths false
 
         BioCheckPlusZ3.check_model model1 res1 qn
 
@@ -266,7 +266,7 @@ let runCAVEngine qn length_of_path formula model_check output_proof output_model
         let ltlResult = 
             match ltl_output_filename with
             | "" -> None //nothing to do here
-            | _ -> Some (JsonConvert.SerializeObject(Marshal.ltl_double_result_full res1 model1 (Some (res2, model2))))
+            | _ -> Some (JsonConvert.SerializeObject(Marshal.ltl_result_full res1 model1))
 
         match ltlResult with
         | None -> ()
