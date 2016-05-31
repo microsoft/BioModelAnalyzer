@@ -86,6 +86,7 @@
     <Compile Include="QN.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="Marshal.fs" />
+    <Compile Include="VariableEncoding.fs" />
     <Compile Include="Z.fs" />
     <Compile Include="Counterexample.fs" />
     <Compile Include="FNewLemmas.fs" />
