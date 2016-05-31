@@ -4,45 +4,9 @@ module Z
 /// Z3 related stuff.
 
 open Microsoft.Z3
+open VariableEncoding
 
 open Expr
-
-///////////////////////////////////////////////////////////////////////////////
-// Encode the target function in Z3
-///////////////////////////////////////////////////////////////////////////////
-
-let gensym =
-    let counter = ref 0
-    (fun s -> incr counter; s + ((string)!counter))
-
-// Naming convention for Z3 variables
-// The same functions appear in BioCheckZ3 and BioCheckPlusZ3
-let get_z3_int_var_at_time (node : QN.node) time = sprintf "v%d^%d" node.var time
-let make_z3_int_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkIntSort())
-
-
-let get_qn_var_from_z3_var (name : string) =
-    let parts = name.Split[|'^'|]
-    let id = (parts.[0]).Substring 1
-    ((int id) : QN.var)
-
-let get_qn_var_at_t_from_z3_var (name : string) =
-    let parts = name.Split[|'^'|]
-    let id = (parts.[0]).Substring 1
-    ((int id),(int parts.[1]) : QN.var * int)
-
-// The env encoding is different as it does not include the v before the %d^%d!
-let enc_for_env_qn_id_string_at_t (id : string) time =
-    (id +  "^" + ((string)time))
-
-let enc_for_env_qn_id_at_t (id : QN.var) time =
-    enc_for_env_qn_id_string_at_t ((string) id) time
-
-let dec_from_env_qn_id_at_t (name : string) = 
-    let parts = name.Split[|'^'|]
-    let id = parts.[0]
-    ((id),((int)parts.[1]))
-
 
 // Z.expr_to_z3 should be similar to Expr.eval_expr_int.
 let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
@@ -64,7 +28,7 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
                 else (z.MkRealNumeral 1, z.MkRealNumeral 0)
 
             let input_var =
-                let v_t = get_z3_int_var_at_time v_defn time
+                let v_t = enc_z3_int_var_at_time v_defn time
                 z.MkToReal(make_z3_int_var v_t z)
             ([], z.MkAdd(z.MkMul(input_var,scale), displacement))
         | Const c -> ([],z.MkRealNumeral c)
@@ -191,10 +155,10 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
 //        (v_t+1 = (v_t - 1) /\ T(v_t) < v_t)
 let assert_target_function qn (node: QN.node)  bounds start_time end_time (z : Context) =
     // SI: should be able to use [get_z3_int_var_at_time node] for this too, like we do for next_state_id. 
-    let current_state_id = get_z3_int_var_at_time node start_time
+    let current_state_id = enc_z3_int_var_at_time node start_time
     let current_state = make_z3_int_var current_state_id z
 
-    let next_state_id = get_z3_int_var_at_time node end_time
+    let next_state_id = enc_z3_int_var_at_time node end_time
     let next_state = make_z3_int_var next_state_id z
 
     let (extra_asserts,z_of_f) = expr_to_z3 qn node node.f start_time z
@@ -228,7 +192,7 @@ let assert_target_function qn (node: QN.node)  bounds start_time end_time (z : C
 
 // assert  lower <= v_t <= upper
 let assert_bound (node : QN.node) ((lower,upper) : (int*int)) time (z : Context) =
-    let var_name = get_z3_int_var_at_time node time
+    let var_name = enc_z3_int_var_at_time node time
     let v = make_z3_int_var var_name z
 
     let simplify =  id // z.Simplify
@@ -278,7 +242,7 @@ let fixpoint_to_env (fixpoint : Map<string, int>) =
     Map.fold
         (fun newMap name value ->
             try 
-                let (id,t) = get_qn_var_at_t_from_z3_var name
+                let (id,t) = dec_qn_var_at_t_from_z3_var name
                 Map.add (enc_for_env_qn_id_at_t id t) value newMap
             with
                 | exn -> newMap )
@@ -434,8 +398,8 @@ let assert_states_equal (qn : QN.node list) start_time end_time (ctx : Context) 
     let mutable equal_condition = ctx.MkTrue()
 
     for node in qn do
-        let start_name = get_z3_int_var_at_time node start_time
-        let end_name = get_z3_int_var_at_time node end_time
+        let start_name = enc_z3_int_var_at_time node start_time
+        let end_name = enc_z3_int_var_at_time node end_time
         let start_var = make_z3_int_var start_name ctx
         let end_var = make_z3_int_var end_name ctx
         let eq = ctx.MkEq(start_var, end_var)

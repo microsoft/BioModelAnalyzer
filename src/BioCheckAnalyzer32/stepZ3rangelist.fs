@@ -11,6 +11,7 @@ module stepZ3rangelist
 // related to the inputs of one variable.
 
 open Microsoft.Z3
+open VariableEncoding
 
 open Expr
 (*
@@ -88,11 +89,11 @@ let rec expr_to_z3 (qn : QN.node list) (node:QN.node) expr (var_names : Map<int,
         *)
 
 let assert_target_function qn (node: QN.node) var_names (rangelist : Map<QN.var,int list>) start_time end_time (z : Context) =
-    let current_state_id = BioCheckPlusZ3.get_z3_int_var_at_time node start_time
-    let current_state = BioCheckPlusZ3.make_z3_int_var current_state_id z
+    let current_state_id = enc_z3_int_var_at_time node start_time
+    let current_state = make_z3_int_var current_state_id z
 
-    let next_state_id = BioCheckPlusZ3.get_z3_int_var_at_time node end_time
-    let next_state = BioCheckPlusZ3.make_z3_int_var next_state_id z
+    let next_state_id = enc_z3_int_var_at_time node end_time
+    let next_state = make_z3_int_var next_state_id z
 
     let z3_target_function = BioCheckZ3.expr_to_z3 qn node node.f start_time z
     // let T_applied = z.MkToInt(z3_target_function)
@@ -129,8 +130,8 @@ let assert_target_function qn (node: QN.node) var_names (rangelist : Map<QN.var,
     z.AssertCnstr cnstr
     
 let assert_query (node : QN.node) (value : int) time (z : Context) = 
-    let var_name = BioCheckPlusZ3.get_z3_int_var_at_time node time
-    let v = z.MkConst(z.MkSymbol var_name, z.MkIntSort())
+    let var_name = enc_z3_int_var_at_time node time
+    let v = make_z3_int_var var_name z
     let query = z.MkEq (v, z.MkIntNumeral value)
     z.AssertCnstr query
 
