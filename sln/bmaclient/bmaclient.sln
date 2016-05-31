@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F7B5A3D7-B82D-4906-940C-DED019A886BC}"
 	ProjectSection(SolutionItems) = preProject
@@ -40,6 +40,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiServer", "..\..\src\ApiServer\ApiServer.csproj", "{8F8EE772-02FA-4623-B407-006FB7B9A314}"
 EndProject
 Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "ApiService", "..\..\src\ApiService\ApiService.ccproj", "{B955AFFF-9F2E-49E2-8E0F-11115A744A80}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scheduling", "Scheduling", "{3A75A43A-30CB-4D92-89EB-7DA995979C52}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FairShareScheduler.Common", "..\..\src\FairShareScheduler.Common\FairShareScheduler.Common.fsproj", "{850DF26E-27B2-4766-99DE-B815616C0D90}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FairShareScheduler", "..\..\src\FairShareScheduler\FairShareScheduler.fsproj", "{A66E4EE3-5D4E-4889-90EC-36317A4DE882}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -208,6 +214,30 @@ Global
 		{B955AFFF-9F2E-49E2-8E0F-11115A744A80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B955AFFF-9F2E-49E2-8E0F-11115A744A80}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B955AFFF-9F2E-49E2-8E0F-11115A744A80}.Release|x64.ActiveCfg = Release|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.Debug|x64.Build.0 = Debug|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.nuget|Any CPU.Build.0 = Release|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.nuget|x64.ActiveCfg = Release|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.nuget|x64.Build.0 = Release|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.Release|x64.ActiveCfg = Release|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.Release|x64.Build.0 = Release|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Debug|x64.Build.0 = Debug|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.nuget|Any CPU.Build.0 = Release|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.nuget|x64.ActiveCfg = Release|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.nuget|x64.Build.0 = Release|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Release|x64.ActiveCfg = Release|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -219,5 +249,7 @@ Global
 		{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E} = {491D2994-4833-439D-8426-B0AA75EE0F08}
 		{C6745675-EA9F-41F3-BFFC-2C3810585B36} = {491D2994-4833-439D-8426-B0AA75EE0F08}
 		{27FCEE47-CED8-4629-9989-7E9A490B090E} = {491D2994-4833-439D-8426-B0AA75EE0F08}
+		{850DF26E-27B2-4766-99DE-B815616C0D90} = {3A75A43A-30CB-4D92-89EB-7DA995979C52}
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882} = {3A75A43A-30CB-4D92-89EB-7DA995979C52}
 	EndGlobalSection
 EndGlobal
