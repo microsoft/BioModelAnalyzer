@@ -81,7 +81,7 @@ let usage i =
     Printf.printfn "                           -loglevel n"
     Printf.printfn "                         [ -engine [ SCM | SYN ] –prove output_file_name.json |"
     Printf.printfn "                           -engine VMCAI –prove output_file_name.json -nosat? |"
-    Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? |"
+    Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? [-ltloutput filename.json]? |"
     Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.csv -excel? |"
     Printf.printfn "                           -engine PATH –model2 model2.json –state initial_state.csv –state2 target_state.csv ]"
     Printf.printfn "                           -dump_before_xforms"
