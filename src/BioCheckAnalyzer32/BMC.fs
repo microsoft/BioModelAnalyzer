@@ -141,41 +141,42 @@ let change_to_right_length (simulation : Map<QN.var, int> list) (loop : int) (de
         (simulation, loop)
 
 
-//let SimulationBasedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var, int list> list) = 
-//    let initial_ranges = paths.Head
-//    let initial_values = Map.fold (fun m k (l : int list) -> Map.add k l.Head m) Map.empty initial_ranges
-//    let (simulation, loop) = Simulate.simulate_up_to_loop network initial_values
-//    let (right_length_sim, right_length_loop) = change_to_right_length simulation loop paths.Length
-//    let list_simulation = List.map (fun elem -> (Map.map (fun key t -> [t]) elem)) right_length_sim 
-//    let (res, model) = SingleSideBoundedMC ltl_formula network list_simulation right_length_loop true
-//    if res then (res, model)
-//    else (res, (simulation_to_loop right_length_loop right_length_sim))
-
+// Return value:
+// None -> no useable simulation was found (for this length)
+// Some (res, model) -> a useable simulation was found and res indicates whehter 
+//                      the simulation satisfies (true) or does not satisfy (false) the formula
 let SimulationBasedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var, int list> list) = 
     let initial_ranges = paths.Head
     let initial_values = Map.fold (fun m k (l : int list) -> Map.add k l.Head m) Map.empty initial_ranges
     let (simulation, loop) = Simulate.simulate_up_to_loop network initial_values
     let (right_length_sim, right_length_loop) = change_to_right_length simulation loop paths.Length
 
+    // If the simulation is converted to the right length it can be used
+    // otherwise, it cannot be used
     if right_length_sim.Length = paths.Length then 
        let list_simulation = List.map (fun elem -> (Map.map (fun key t -> [t]) elem)) right_length_sim 
        let (res, model) = SingleSideBoundedMC ltl_formula network list_simulation right_length_loop true
-       if res then (res, model)
-       else (res, (simulation_to_loop right_length_loop right_length_sim))
+       if res then Some (res, model)
+       else Some (res, (simulation_to_loop right_length_loop right_length_sim))
     else
-        let (res, model) = SingleSideBoundedMC ltl_formula network paths -1 true
-        if res then (res, model)
-        else 
-            let (res, model) = SingleSideBoundedMC ltl_formula network paths -1 false
-            (false, model)
+        None
 
-let PolarityBoundedMC ltl_formula network paths previous_res previous_model =
-    if previous_res then
-        let (res2, model2) = SingleSideBoundedMC ltl_formula network paths -1 false
-        (true, previous_model, res2, model2)
-    else
-        let (res1, model1) = SingleSideBoundedMC ltl_formula network paths -1 true
-        (res1, model1, true, previous_model)
+//// Paremeters:
+//// ltl_formula - the ltl formula
+//// network - the network
+//// paths - a list representing the possible values of variables at each time point
+////         this is used to construct the model side of the SAT query for BMC
+//// previous_res - true/false indicating that a models satisfying/not satsifying the formula
+////                has already been found
+//// previous_model - the model satisfying/not satisfying the formula
+//// Return values:
+//let PolarityBoundedMC ltl_formula network paths previous_res previous_model =
+//    if previous_res then
+//        let (res2, model2) = SingleSideBoundedMC ltl_formula network paths -1 false
+//        (true, previous_model, res2, model2)
+//    else
+//        let (res1, model1) = SingleSideBoundedMC ltl_formula network paths -1 true
+//        (res1, model1, true, previous_model)
 
 //Method duplicates previous but with more clear output
 //let PolarityBoundedMC2 ltl_formula network paths previous_res =
@@ -190,12 +191,36 @@ let PolarityBoundedMC ltl_formula network paths previous_res previous_model =
 //        (res1, model1, res2, model2)
 
     
+// Parameters:
+// ltl_formula -the LTL formula
+// network - the QN network
+// paths - a list representing the possible values of variables at each time point
+//         this is used to construct the model side of the SAT query for BMC
+// check_both - is it required to check both the formula and it's negation
+// Return value:
+// A four tuple with the result of the positive check and the result of the negative check (if required).
+// res1 - true iff an execution satisfying the formula has been found
+// model1 - a model satisfying the formula (if found)
+// res2 - true iff an excetution satisfying the negation of the formula has been found
+// model2 - a model satisfying the negation of the formula (if found) 
 let DoubleBoundedMCWithSim (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int list> list) check_both =
-    let (res,model) = SimulationBasedMC ltl_formula network paths
-    if check_both then
-        PolarityBoundedMC ltl_formula network paths res model
-    else
-        (res, model, false, (0,Map.empty))
+    let outcome = SimulationBasedMC ltl_formula network paths
+    let (res1, model1) =
+        match outcome with
+        | Some (true, model) -> (true, model)
+        | _ -> SingleSideBoundedMC ltl_formula network paths -1 true
+
+    let (res2, model2) = 
+        match outcome with
+        | Some (false, model) -> (true, model)
+        | _ -> 
+            if check_both then 
+                SingleSideBoundedMC ltl_formula network paths -1 false
+            else
+                (false, (0,Map.empty))
+
+    (res1, model1, res2, model2)
+
 
 let BoundedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int list> list) check_both =
     

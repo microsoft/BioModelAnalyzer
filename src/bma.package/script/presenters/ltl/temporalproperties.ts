@@ -961,7 +961,11 @@ module BMA {
                             if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                 return;
 
-                            if (res.Ticks == null) {
+                            //Status = 0, we don't have any Satisfying simulation
+                            //Status = 1, we have Satisfying simulation
+                            //Status = 2, we didn't revieve any results
+
+                            if (res.Ticks == null && res.Status !== 2) {
                                 that.log.LogLTLError();
 
                                 if (res.Error.indexOf("Operation is not completed in") > -1)
@@ -979,7 +983,7 @@ module BMA {
                             else {
                                 
 
-                                if (res.Status === true) {
+                                if (res.Status === 1/*True*/) {
 
                                     driver.SetShowResultsCallback(function () {
                                         that.commands.Execute("ShowLTLResults", {
@@ -992,7 +996,7 @@ module BMA {
                                     operation.Tag.negdata = undefined;
                                     operation.Tag.steps = driver.GetSteps();
 
-                                } else {
+                                } else if (res.Status === 0/*False*/) {
                                     driver.SetShowResultsCallback(function (showpositive) {
                                         that.commands.Execute("ShowLTLResults", {
                                             ticks: res.Ticks
@@ -1008,55 +1012,124 @@ module BMA {
                                 domplot.updateLayout();
                                 that.OnOperationsChanged(false);
 
-                                var polarity = !res.Status;
+                                //Preparing polarity
+                                var polarity = 2;
+                                if (res.Status === 0)
+                                    polarity = 1;
+                                else if (res.Status === 1)
+                                    polarity = 0;
+
                                 (<any>proofInput).Polarity = polarity;
-                                that.polarityService.Invoke(proofInput).done(function (polarityResult) {
+                                that.polarityService.Invoke(proofInput).done(function (polarityResults) {
                                     if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                         return;
 
-                                    if (polarityResult.Ticks == null) {
-                                        that.log.LogLTLError();
-                                        operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail")? "partialfail" : "partialsuccess";
-                                        driver.SetStatus(operation.AnalysisStatus/* === "partialfail" ? "fail" : "success"*/);
-                                        domplot.updateLayout();
-                                        that.OnOperationsChanged(false);
-                                    }
-                                    else {
-                                        var polarityStatus = polarityResult.Status;
-                                        var resultStatus = "";
-                                        if (res.Status) {
-                                            if (!polarityStatus) {
-                                                resultStatus = "success";
-                                            } else {
-                                                resultStatus = "partialsuccesspartialfail";
-                                                operation.Tag.negdata = polarityResult.Ticks;
-                                            }
-                                        } else {
-                                            if (!polarityStatus) {
-                                                resultStatus = "fail";
-                                            } else {
-                                                resultStatus = "partialsuccesspartialfail";
-                                                operation.Tag.data = polarityResult.Ticks;
-                                            }
-                                        }
-                                        operation.AnalysisStatus = resultStatus;
-                                        operation.Tag.steps = driver.GetSteps();
-
-                                        if (resultStatus === "partialsuccesspartialfail") {
-                                            driver.SetStatus("partialsuccesspartialfail");
-                                            driver.SetShowResultsCallback(function (showpositive) {
-                                                that.commands.Execute("ShowLTLResults", {
-                                                    ticks: showpositive ? operation.Tag.data : operation.Tag.negdata
-                                                });
-                                            });
+                                    if (res.Status < 2) {
+                                        var polarityResult = polarityResults.m_Item1;
+                                        if (polarityResult.Ticks == null || polarityResult.Error) {
+                                            that.log.LogLTLError();
+                                            operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
+                                            driver.SetStatus(operation.AnalysisStatus/* === "partialfail" ? "fail" : "success"*/);
+                                            domplot.updateLayout();
+                                            that.OnOperationsChanged(false);
                                         }
                                         else {
-                                            driver.SetStatus(resultStatus);
-                                        }
+                                            var polarityStatus = polarityResult.Status;
+                                            var resultStatus = "";
+                                            if (res.Status === 1/*True*/) {
+                                                if (polarityStatus === 0/*False*/) {
+                                                    resultStatus = "success";
+                                                } else {
+                                                    resultStatus = "partialsuccesspartialfail";
+                                                    operation.Tag.negdata = polarityResult.Ticks;
+                                                }
+                                            } else {
+                                                if (polarityStatus === 0/*False*/) {
+                                                    resultStatus = "fail";
+                                                } else {
+                                                    resultStatus = "partialsuccesspartialfail";
+                                                    operation.Tag.data = polarityResult.Ticks;
+                                                }
+                                            }
+                                            operation.AnalysisStatus = resultStatus;
+                                            operation.Tag.steps = driver.GetSteps();
 
-                                        domplot.updateLayout();
-                                        that.OnOperationsChanged(false);
+                                            if (resultStatus === "partialsuccesspartialfail") {
+                                                driver.SetStatus("partialsuccesspartialfail");
+                                                driver.SetShowResultsCallback(function (showpositive) {
+                                                    that.commands.Execute("ShowLTLResults", {
+                                                        ticks: showpositive ? operation.Tag.data : operation.Tag.negdata
+                                                    });
+                                                });
+                                            }
+                                            else {
+                                                driver.SetStatus(resultStatus);
+                                            }
+
+                                        }
+                                    } else {
+
+                                        var positiveResult = polarityResults.m_Item1;
+                                        var negativeResult = polarityResults.m_Item2;
+                                        if (positiveResult.Ticks == null || negativeResult.Ticks == null) {
+                                            that.log.LogLTLError();
+
+                                            if (positiveResult.Error.indexOf("Operation is not completed in") > -1)
+                                                driver.SetStatus("nottested", "Timed out");
+                                            else
+                                                driver.SetStatus("nottested", "Server error: " + res.Error);
+
+                                            operation.AnalysisStatus = "nottested";
+                                            operation.Tag.data = undefined;
+                                            operation.Tag.negdata = undefined;
+                                            operation.Tag.steps = driver.GetSteps();
+                                            domplot.updateLayout();
+                                            that.OnOperationsChanged(false);
+                                        } else {
+                                            var resultStatus = "";
+                                            operation.Tag.negdata = undefined;
+                                            operation.Tag.data = undefined;
+                                            if (positiveResult.Status === 1/*True*/) {
+                                                operation.Tag.data = positiveResult.Ticks;
+                                                if (negativeResult.Status === 1/*True*/) {
+                                                    resultStatus = "partialsuccesspartialfail";
+                                                    operation.Tag.negdata = negativeResult.Ticks;
+                                                } else if (negativeResult.Status === 0/*False*/) {
+                                                    resultStatus = "success";
+                                                } else {
+                                                    //Something weird happened. Status shouldn't be unknown here
+                                                    
+                                                }
+                                            } else if (positiveResult.Status === 0/*False*/) {
+                                                if (negativeResult.Status === 1/*True*/) {
+                                                    resultStatus = "fail";
+                                                    operation.Tag.negdata = negativeResult.Ticks;
+                                                } else {
+                                                    //Something weird happened. Status shouldn't be unknown here
+                                                }
+                                            } else {
+                                                //Something weird happened. Status shouldn't be unknown here
+                                            }
+
+                                            operation.AnalysisStatus = resultStatus;
+                                            operation.Tag.steps = driver.GetSteps();
+
+                                            if (resultStatus === "partialsuccesspartialfail") {
+                                                driver.SetStatus("partialsuccesspartialfail");
+                                                driver.SetShowResultsCallback(function (showpositive) {
+                                                    that.commands.Execute("ShowLTLResults", {
+                                                        ticks: showpositive ? operation.Tag.data : operation.Tag.negdata
+                                                    });
+                                                });
+                                            }
+                                            else {
+                                                driver.SetStatus(resultStatus);
+                                            }
+                                        }
                                     }
+
+                                    domplot.updateLayout();
+                                    that.OnOperationsChanged(false);
 
                                 }).fail(function (xhr, textStatus, errorThrown) {
                                     if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)

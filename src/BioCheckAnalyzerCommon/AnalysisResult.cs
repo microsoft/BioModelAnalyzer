@@ -59,7 +59,6 @@ namespace BioModelAnalyzer
         [XmlElement("Tick", Type = typeof(Tick))]
         public Tick[] Ticks { get; set; }
 
-        [JsonConverter(typeof(StringEnumConverter))]
         public bool Status { get; set; }
 
         [XmlElement("Loop", Type = typeof(int))]
