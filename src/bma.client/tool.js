@@ -14293,6 +14293,15 @@ jQuery.fn.extend({
                     that.createWaitAnim().appendTo(btn);
                     //}
                     break;
+                case "processinglra":
+                    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
+                    var message = $("<div>Executing long-running action</div>").addClass("grey").appendTo(ltltestdiv);
+                    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(ltltestdiv);
+                    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var btn = $("<button></button>").appendTo(li);
+                    li.addClass("spin");
+                    that.createWaitAnim().appendTo(btn);
+                    break;
                 case "success":
                     if (this.options.isexpanded) {
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("true").appendTo(opDiv);
@@ -16717,7 +16726,7 @@ var BMA;
                                             return;
                                         that.log.LogLTLError();
                                         operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
-                                        driver.SetStatus(operation.AnalysisStatus /* === "partialfail" ? "fail" : "success"*/);
+                                        driver.SetStatus("processinglra"); //operation.AnalysisStatus/* === "partialfail" ? "fail" : "success"*/);
                                         domplot.updateLayout();
                                         that.OnOperationsChanged(false);
                                     });
