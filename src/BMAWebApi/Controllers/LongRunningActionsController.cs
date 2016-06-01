@@ -39,12 +39,13 @@ namespace bma.client.Controllers
             return "HELLO!";
         }
                 
-        public async Task<Guid> PostJob()
+        // POST /api/lra/{id},
+        // where {id} is the application ID.
+        public async Task<Guid> PostJob(Guid id)
         {
             var request = await Request.Content.ReadAsStreamAsync();
-            var appId = Guid.NewGuid(); // todo: take from the request
 
-            Job job = new Job(appId, request);
+            Job job = new Job(id, request);
             var jobId = scheduler.AddJob(job);
 
             return jobId;
