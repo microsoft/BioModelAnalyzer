@@ -5348,15 +5348,47 @@ var BMA;
         })();
         UIDrivers.BMAProcessingService = BMAProcessingService;
         var BMALRAProcessingService = (function () {
-            function BMALRAProcessingService() {
-            }
-            BMALRAProcessingService.prototype.contructor = function (serviceURL) {
+            function BMALRAProcessingService(serviceURL) {
                 this.serviceURL = serviceURL;
-            };
+            }
             BMALRAProcessingService.prototype.Invoke = function (data) {
+                var that = this;
                 var result = $.Deferred();
-                //result.resolve(/*result data*/);
-                return result;
+                $.ajax({
+                    type: "POST",
+                    url: that.serviceURL,
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                }).done(function (id) {
+                    that.CheckStatusOfRequest(id, result);
+                }).fail(function (xhr, textStatus, errorThrown) {
+                    throw ("post failed: " + errorThrown);
+                });
+                return result.promise();
+            };
+            BMALRAProcessingService.prototype.CheckStatusOfRequest = function (id, result) {
+                var that = this;
+                $.ajax({
+                    type: "GET",
+                    url: that.serviceURL + "/status/" + id,
+                }).done(function (res) {
+                    if (res == "Completed") {
+                        $.ajax({
+                            type: "GET",
+                            url: that.serviceURL + "/result/" + id,
+                        }).done(function (res) {
+                            result.resolve(res);
+                        }).fail(function (xhr, textStatus, errorThrown) {
+                            throw ("get failed: " + errorThrown);
+                        });
+                    }
+                    else {
+                        setTimeout(that.CheckStatusOfRequest(id, result), 1000);
+                    }
+                }).fail(function (xhr, textStatus, errorThrown) {
+                    throw ("get failed: " + errorThrown);
+                });
             };
             return BMALRAProcessingService;
         })();
