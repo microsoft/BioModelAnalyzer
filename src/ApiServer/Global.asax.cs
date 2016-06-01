@@ -35,7 +35,7 @@ namespace bma.client
                 name: "LongRunningActionsApi",
                 routeTemplate: "api/lra/{id}",
                 defaults: new { controller = "longrunningactions" },
-                constraints: new { id = @"" } // id is GUID
+                constraints: new { id = @"[0-9A-Fa-f]{8}[-]?([0-9A-Fa-f]{4}[-]?){3}[0-9A-Fa-f]{12}" } // id is GUID
             );
 
             GlobalConfiguration.Configuration.Routes.MapHttpRoute(
