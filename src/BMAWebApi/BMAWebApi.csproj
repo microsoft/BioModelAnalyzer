@@ -114,6 +114,7 @@
   <ItemGroup>
     <Compile Include="Controllers\AnalyzeLTLSimulationController.cs" />
     <Compile Include="Controllers\AnalyzeLTLPolarityController.cs" />
+    <Compile Include="Controllers\TestLRAController.cs" />
     <Compile Include="FailureAzureLogger.cs" />
     <Compile Include="ActivityAzureLogger.cs" />
     <Compile Include="Controllers\ActivityLogController.cs" />
