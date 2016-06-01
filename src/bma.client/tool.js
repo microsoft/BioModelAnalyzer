@@ -1714,7 +1714,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=commands.js.map
+//# sourceMappingURL=Commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5347,6 +5347,20 @@ var BMA;
             return BMAProcessingService;
         })();
         UIDrivers.BMAProcessingService = BMAProcessingService;
+        var BMALRAProcessingService = (function () {
+            function BMALRAProcessingService() {
+            }
+            BMALRAProcessingService.prototype.contructor = function (serviceURL) {
+                this.serviceURL = serviceURL;
+            };
+            BMALRAProcessingService.prototype.Invoke = function (data) {
+                var result = $.Deferred();
+                //result.resolve(/*result data*/);
+                return result;
+            };
+            return BMALRAProcessingService;
+        })();
+        UIDrivers.BMALRAProcessingService = BMALRAProcessingService;
         var LTLAnalyzeService = (function () {
             function LTLAnalyzeService(url, maxRequestCount) {
                 this.maxRequestCount = 1;

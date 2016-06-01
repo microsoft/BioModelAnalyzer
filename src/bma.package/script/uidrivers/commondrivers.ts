@@ -609,6 +609,22 @@ module BMA {
             }
         }
 
+        export class BMALRAProcessingService implements IServiceDriver {
+            private serviceURL: string;
+
+            contructor(serviceURL: string) {
+                this.serviceURL = serviceURL;
+            }
+
+            public Invoke(data): JQueryPromise<any> {
+                var result = $.Deferred();
+
+                //result.resolve(/*result data*/);
+
+                return result;
+            }
+        }
+
         export class LTLAnalyzeService implements IServiceDriver {
             private url: string;
             private maxRequestCount: number = 1;
