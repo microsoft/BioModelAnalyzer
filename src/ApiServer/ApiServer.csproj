@@ -170,6 +170,10 @@
       <Project>{6652fdab-c878-4661-baad-664cf8327467}</Project>
       <Name>BMAWebApi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FairShareScheduler\FairShareScheduler.fsproj">
+      <Project>{a66e4ee3-5d4e-4889-90ec-36317a4de882}</Project>
+      <Name>FairShareScheduler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UIExpr\UIExpr.fsproj">
       <Project>{c6745675-ea9f-41f3-bffc-2c3810585b36}</Project>
       <Name>UIExpr</Name>

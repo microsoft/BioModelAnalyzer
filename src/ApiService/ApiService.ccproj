@@ -13,6 +13,7 @@
     <StartDevelopmentStorage>True</StartDevelopmentStorage>
     <Name>ApiService</Name>
     <PackageEnableRemoteDebugger>False</PackageEnableRemoteDebugger>
+    <UseWebProjectPorts>True</UseWebProjectPorts>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
