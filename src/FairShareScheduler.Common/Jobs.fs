@@ -8,6 +8,15 @@ open Newtonsoft.Json.Linq
 type JobId = Guid
 type AppId = Guid
 
+module JobStatus =
+    let Queued = "Queued"
+    let Executing = "Executing"
+    let Succeeded = "Succeeded"
+
+module JobProperties =  
+    let Status = "Status"
+    let QueueName = "QueueName"
+
 type JobEntity(jobId : JobId, appId : AppId) =
     inherit TableEntity()
 
@@ -17,10 +26,10 @@ type JobEntity(jobId : JobId, appId : AppId) =
 
     new() = JobEntity(Guid.Empty, Guid.Empty) 
 
-    member val request = "" with get, set
-    member val result = "" with get, set
-    member val status = "" with get, set
-    member val queueName = "" with get, set
+    member val Request = "" with get, set
+    member val Result = "" with get, set
+    member val Status = "" with get, set
+    member val QueueName = "" with get, set
 
 type JobMessage() =
     member val jobId = "" with get, set
@@ -30,7 +39,7 @@ type JobMessage() =
 let buildQueueMessage (jobId : JobId, appId : AppId) =
     sprintf "{ 'jobId' : '%O', 'appId' : '%O' }" jobId appId
 
-let parseQueueMessage (json : string) =
+let parseQueueMessage (json : string) : JobId * AppId =
     let js = JObject.Parse json
     js.["jobId"].Value<string>() |> Guid.Parse,
     js.["appId"].Value<string>() |> Guid.Parse

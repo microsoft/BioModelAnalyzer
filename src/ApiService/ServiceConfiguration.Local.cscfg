@@ -8,4 +8,10 @@
       <Setting name="ComputeTimeLimit" value="90" />
     </ConfigurationSettings>
   </Role>
+  <Role name="LTLPolarityCheckRole">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+    </ConfigurationSettings>
+  </Role>
 </ServiceConfiguration>

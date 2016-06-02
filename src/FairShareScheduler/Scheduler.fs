@@ -8,6 +8,7 @@ open Microsoft.WindowsAzure.Storage.Queue
 open Microsoft.WindowsAzure.Storage.Blob
 open bma.Cloud.Trace
 open bma.Cloud.Jobs
+open bma.Cloud.Naming
 
 type Job =
     { AppId: AppId
@@ -27,14 +28,11 @@ type FairShareSchedulerSettings =
 
 [<Class>]
 type FairShareScheduler(settings : FairShareSchedulerSettings) =
-
-    let getName (s: string) = "fss" + settings.Name + s
-
     let queueClient = settings.StorageAccount.CreateCloudQueueClient()      
     let tableClient = settings.StorageAccount.CreateCloudTableClient()
-    let table = tableClient.GetTableReference(getName "jobs")
+    let table = tableClient.GetTableReference (getJobsTableName settings.Name)
     let blobClient = settings.StorageAccount.CreateCloudBlobClient()
-    let container = blobClient.GetContainerReference(getName "container")
+    let container = blobClient.GetContainerReference (getBlobContainerName settings.Name)
     
     
     do 
@@ -48,15 +46,15 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
             let jobId = Guid.NewGuid()
 
             let queueIdx = Math.Abs(job.AppId.GetHashCode()) % settings.MaxNumberOfQueues
-            let queueName = getName (queueIdx.ToString())
+            let queueName = getQueueName queueIdx settings.Name
 
-            let blob = container.GetBlockBlobReference(getName (jobId.ToString("N")))
+            let blob = container.GetBlockBlobReference (getJobRequestBlobName jobId settings.Name)
             blob.UploadFromStream(job.Body)
 
             let jobEntity = JobEntity(jobId, job.AppId)
-            jobEntity.request <- blob.Name
-            jobEntity.status <- "Queued"
-            jobEntity.queueName <- queueName
+            jobEntity.Request <- blob.Name
+            jobEntity.Status <- "Queued"
+            jobEntity.QueueName <- queueName
 
             let insert = TableOperation.Insert(jobEntity)
             table.Execute(insert) |> ignore

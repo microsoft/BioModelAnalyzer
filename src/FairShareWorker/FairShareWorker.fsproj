@@ -5,14 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>850df26e-27b2-4766-99de-b815616c0d90</ProjectGuid>
+    <ProjectGuid>47e591bb-eb9e-41b0-a488-f271177d2616</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>FairShareScheduler.Common</RootNamespace>
-    <AssemblyName>FairShareScheduler.Common</AssemblyName>
+    <RootNamespace>FairShareWorker</RootNamespace>
+    <AssemblyName>FairShareWorker</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Name>FairShareScheduler.Common</Name>
+    <Name>FairShareWorker</Name>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -23,7 +23,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\FairShareScheduler.Common.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\FairShareWorker.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,7 +32,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\FairShareScheduler.Common.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\FairShareWorker.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -52,8 +52,9 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Jobs.fs" />
-    <Compile Include="Naming.fs" />
+    <Compile Include="PollingService.fs" />
+    <Compile Include="Worker.fsi" />
+    <Compile Include="Worker.fs" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -62,15 +63,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Data.Edm">
-      <HintPath>..\..\ext\nuget\Microsoft.Data.Edm.5.7.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <HintPath>..\..\ext\nuget\Microsoft.Data.Edm.5.6.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Data.OData">
-      <HintPath>..\..\ext\nuget\Microsoft.Data.OData.5.7.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
+      <HintPath>..\..\ext\nuget\Microsoft.Data.OData.5.6.4\lib\net40\Microsoft.Data.OData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Data.Services.Client">
-      <HintPath>..\..\ext\nuget\Microsoft.Data.Services.Client.5.7.0\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+      <HintPath>..\..\ext\nuget\Microsoft.Data.Services.Client.5.6.4\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Storage">
@@ -89,8 +90,13 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Numerics" />
+    <ProjectReference Include="..\FairShareScheduler.Common\FairShareScheduler.Common.fsproj">
+      <Name>FairShareScheduler.Common</Name>
+      <Project>{850df26e-27b2-4766-99de-b815616c0d90}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <Reference Include="System.Spatial">
-      <HintPath>..\..\ext\nuget\System.Spatial.5.7.0\lib\net40\System.Spatial.dll</HintPath>
+      <HintPath>..\..\ext\nuget\System.Spatial.5.6.4\lib\net40\System.Spatial.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
