@@ -75,6 +75,10 @@ module BMA {
             this.proofErrorCount = this.furtherTestingErrorCount = this.simulationErrorCount = 0;
         }
 
+        public get UserID(): string {
+            return this.userId;
+        }
+
         public LogProofError() {
             this.proofErrorCount++;
         }

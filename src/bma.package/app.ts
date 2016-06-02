@@ -242,7 +242,7 @@ function loadScript(version) {
 
     //Defining processing service URL
     // To test locally, change to "http://localhost:8080"
-    window.BMAServiceURL = "";//"http://bmamathnew.cloudapp.net";
+    window.BMAServiceURL = "http://bmamathnew.cloudapp.net";
 
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
@@ -585,7 +585,7 @@ function loadScript(version) {
     var simulationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Simulate"); 
     var ltlSimulationService = new BMA.UIDrivers.LTLAnalyzeService(window.BMAServiceURL + "/api/AnalyzeLTLSimulation", 1);
     var ltlPolarityService = new BMA.UIDrivers.LTLAnalyzeService(window.BMAServiceURL + "/api/AnalyzeLTLPolarity", 1);
-    var lratestservice = new BMA.UIDrivers.BMALRAProcessingService("/api/testlra");
+    var lratestservice = new BMA.UIDrivers.BMALRAProcessingService(window.BMAServiceURL + "/api/lra/", logService.UserID);
     var logService = new BMA.SessionLog();
 
     var waitScreen = new BMA.UIDrivers.LoadingWaitScreen($('.page-loading'));

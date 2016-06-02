@@ -5348,15 +5348,16 @@ var BMA;
         })();
         UIDrivers.BMAProcessingService = BMAProcessingService;
         var BMALRAProcessingService = (function () {
-            function BMALRAProcessingService(serviceURL) {
+            function BMALRAProcessingService(serviceURL, userID) {
                 this.serviceURL = serviceURL;
+                this.userID = userID;
             }
             BMALRAProcessingService.prototype.Invoke = function (data) {
                 var that = this;
                 var result = $.Deferred();
                 $.ajax({
                     type: "POST",
-                    url: that.serviceURL,
+                    url: that.serviceURL + that.userID,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json"
@@ -5369,15 +5370,16 @@ var BMA;
             };
             BMALRAProcessingService.prototype.CheckStatusOfRequest = function (id, result) {
                 var that = this;
-                //console.log("polling to LRA service ... " + new Date().getSeconds());
+                console.log("polling to LRA service ... ");
                 $.ajax({
                     type: "GET",
-                    url: that.serviceURL + "/status/" + id,
+                    url: that.serviceURL + that.userID + "/?jobId=" + id,
                 }).done(function (res) {
-                    if (res == "Completed") {
+                    console.log("job status: " + res);
+                    if (res == "Succeeded") {
                         $.ajax({
                             type: "GET",
-                            url: that.serviceURL + "/result/" + id,
+                            url: that.serviceURL + that.userID + "/result?jobId=" + id,
                         }).done(function (res) {
                             result.resolve(res);
                         }).fail(function (xhr, textStatus, errorThrown) {
@@ -9044,6 +9046,13 @@ var BMA;
             this.ltlErrors = 0;
             this.proofErrorCount = this.furtherTestingErrorCount = this.simulationErrorCount = 0;
         }
+        Object.defineProperty(SessionLog.prototype, "UserID", {
+            get: function () {
+                return this.userId;
+            },
+            enumerable: true,
+            configurable: true
+        });
         SessionLog.prototype.LogProofError = function () {
             this.proofErrorCount++;
         };
@@ -16726,7 +16735,7 @@ var BMA;
                                             return;
                                         that.log.LogLTLError();
                                         operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
-                                        driver.SetStatus("processinglra"); //operation.AnalysisStatus/* === "partialfail" ? "fail" : "success"*/);
+                                        driver.SetStatus(operation.AnalysisStatus /* === "partialfail" ? "fail" : "success"*/);
                                         domplot.updateLayout();
                                         that.OnOperationsChanged(false);
                                     });

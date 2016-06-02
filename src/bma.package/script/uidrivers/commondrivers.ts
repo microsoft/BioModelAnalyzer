@@ -611,9 +611,11 @@ module BMA {
 
         export class BMALRAProcessingService implements IServiceDriver {
             private serviceURL: string;
+            private userID: string;
 
-            constructor(serviceURL: string) {
+            constructor(serviceURL: string, userID: string) {
                 this.serviceURL = serviceURL;
+                this.userID = userID;
             }
 
             public Invoke(data): JQueryPromise<any> {
@@ -622,7 +624,7 @@ module BMA {
 
                 $.ajax({
                     type: "POST",
-                    url: that.serviceURL,
+                    url: that.serviceURL + that.userID,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json"
@@ -637,15 +639,16 @@ module BMA {
 
             private CheckStatusOfRequest(id, result) {
                 var that = this;
-                //console.log("polling to LRA service ... " + new Date().getSeconds());
+                console.log("polling to LRA service ... ");
                 $.ajax({
                     type: "GET",
-                    url: that.serviceURL + "/status/" + id,
+                    url: that.serviceURL + that.userID + "/?jobId=" + id,
                 }).done(function (res) {
-                    if (res == "Completed") {
+                    console.log("job status: " + res);
+                    if (res == "Succeeded") {
                         $.ajax({
                             type: "GET",
-                            url: that.serviceURL + "/result/" + id,
+                            url: that.serviceURL + that.userID + "/result?jobId=" + id,
                         }).done(function (res) {
                             result.resolve(res);
                         }).fail(function (xhr, textStatus, errorThrown) {
