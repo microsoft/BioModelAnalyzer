@@ -38,6 +38,7 @@
 
 
             $("#sendAjaxBtn").click(function () {
+                $("#results").text("Started");
                 lraservice.Invoke(data).done(function (res) {
                     $("#results").text(res);
                 }).fail(function (xhr, textStatus, errorThrown) {

@@ -20,7 +20,7 @@ namespace BMAWebApi.Controllers
         public string GetStatus(string id)
         {
             Random r = new Random();
-            if (r.Next(0, 10) > 2)
+            if (r.Next(0, 1000) > 950)
             {
                 return "Completed";
             }

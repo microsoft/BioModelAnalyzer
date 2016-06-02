@@ -5363,12 +5363,13 @@ var BMA;
                 }).done(function (id) {
                     that.CheckStatusOfRequest(id, result);
                 }).fail(function (xhr, textStatus, errorThrown) {
-                    throw ("post failed: " + errorThrown);
+                    result.reject(xhr, textStatus, errorThrown);
                 });
                 return result.promise();
             };
             BMALRAProcessingService.prototype.CheckStatusOfRequest = function (id, result) {
                 var that = this;
+                console.log("polling to LRA service ... " + new Date().getSeconds());
                 $.ajax({
                     type: "GET",
                     url: that.serviceURL + "/status/" + id,
@@ -5380,14 +5381,14 @@ var BMA;
                         }).done(function (res) {
                             result.resolve(res);
                         }).fail(function (xhr, textStatus, errorThrown) {
-                            throw ("get failed: " + errorThrown);
+                            result.reject(xhr, textStatus, errorThrown);
                         });
                     }
                     else {
-                        setTimeout(that.CheckStatusOfRequest(id, result), 1000);
+                        setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 1000);
                     }
                 }).fail(function (xhr, textStatus, errorThrown) {
-                    throw ("get failed: " + errorThrown);
+                    result.reject(xhr, textStatus, errorThrown);
                 });
             };
             return BMALRAProcessingService;
