@@ -577,6 +577,9 @@ function loadScript(version) {
     var stateseditordriver = new BMA.UIDrivers.StatesEditorDriver(ltlCommands, popup);
     var ltlresultsdriver = new BMA.UIDrivers.LTLResultsViewer(ltlCommands, popup);
 
+    //Creating Session log
+    var logService = new BMA.SessionLog();
+
     //Loaing ServiсeDrivers 
     var exportService = new BMA.UIDrivers.ExportService();
     var formulaValidationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Validate"); 
@@ -586,7 +589,6 @@ function loadScript(version) {
     var ltlSimulationService = new BMA.UIDrivers.LTLAnalyzeService(window.BMAServiceURL + "/api/AnalyzeLTLSimulation", 1);
     var ltlPolarityService = new BMA.UIDrivers.LTLAnalyzeService(window.BMAServiceURL + "/api/AnalyzeLTLPolarity", 1);
     var lratestservice = new BMA.UIDrivers.BMALRAProcessingService(window.BMAServiceURL + "/api/lra/", logService.UserID);
-    var logService = new BMA.SessionLog();
 
     var waitScreen = new BMA.UIDrivers.LoadingWaitScreen($('.page-loading'));
     var dragndropextender = new BMA.UIDrivers.DrawingSurfaceDragnDropExtender(drawingSurface, popup);
