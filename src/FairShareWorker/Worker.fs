@@ -44,8 +44,8 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
                 let job = r.Result :?> JobEntity
                 job
 
-            let updateStatus (job : JobEntity) (status:string) (resultBlobName:string option) =
-                job.Status <- status
+            let updateStatus (job : JobEntity) (jobStatus:JobStatus) (resultBlobName:string option) =
+                job.Status <- status jobStatus
                 resultBlobName |> Option.iter (fun blobName -> job.Result <- blobName)
                 let merge = TableOperation.Merge(job)
                 table.Execute(merge) |> ignore
@@ -66,9 +66,9 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
                     TableQuery<JobEntity>()
                      .Where(
                         TableQuery.CombineFilters(
-                            TableQuery.GenerateFilterCondition(JobProperties.Status, QueryComparisons.Equal, JobStatus.Queued),
+                            TableQuery.GenerateFilterCondition(JobProperties.Status, QueryComparisons.Equal, status JobStatus.Queued),
                             TableOperators.Or,
-                            TableQuery.GenerateFilterCondition(JobProperties.Status, QueryComparisons.Equal, JobStatus.Executing)))
+                            TableQuery.GenerateFilterCondition(JobProperties.Status, QueryComparisons.Equal, status JobStatus.Executing)))
                      .Select([| JobProperties.QueueName |])
            
                 let queueNames = table.ExecuteQuery(query) |> Seq.map(fun job -> job.QueueName) |> Seq.distinct |> Seq.toArray

@@ -21,7 +21,6 @@ namespace bma.client.Controllers
 {
     public class LongRunningActionsController : ApiController
     {
-
         private readonly IFailureLogger faultLogger;
         private readonly IScheduler scheduler;
 
@@ -34,22 +33,71 @@ namespace bma.client.Controllers
             this.scheduler = scheduler;
         }
 
-        public string Get()
+        // GET /api/lra/{appId} ? jobId=GUID
+        // where {appId} is the application ID.
+        // Returns the status of the job.
+        // Returns 404 if there is no such job or appId is incorrect.
+        public string Get(Guid appId, Guid jobId)
         {
-            return "HELLO!";
+            var status = scheduler.TryGetStatus(appId, jobId);
+            if (status != null) return bma.Cloud.Jobs.status(status.Value);
+
+            throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
+            {
+                Content = new StringContent("Job not found")
+            });
         }
-                
-        // POST /api/lra/{id},
-        // where {id} is the application ID.
-        public async Task<Guid> PostJob(Guid id)
+
+        // POST /api/lra/{appId},
+        // where {appId} is the application ID.
+        // Adds new job from the application.
+        // Returns the job ID.
+        public async Task<Guid> PostJob(Guid appId)
         {
             var request = await Request.Content.ReadAsStreamAsync();
 
-            Job job = new Job(id, request);
+            Job job = new Job(appId, request);
             var jobId = scheduler.AddJob(job);
 
             return jobId;
         }
     }
 
-}
+    public class LongRunningActionsSpecificController : ApiController
+    {
+        private readonly IFailureLogger faultLogger;
+        private readonly IScheduler scheduler;
+
+        public LongRunningActionsSpecificController(IScheduler scheduler, IFailureLogger logger)
+        {
+            if (logger == null) throw new ArgumentNullException("logger");
+            if (scheduler == null) throw new ArgumentNullException("scheduler");
+
+            this.faultLogger = logger;
+            this.scheduler = scheduler;
+        }
+
+        [HttpGet]
+        [ActionName("Result")]
+        // GET /api/lra/{appId}/result ? jobId=GUID
+        // where {appId} is the application ID.
+        // Returns the status of the job.
+        // Returns 404 if there is no such job or appId is incorrect.
+        public string GetResult(Guid appId, Guid jobId)
+        {
+            var result = scheduler.TryGetResult(appId, jobId);
+            if (result != null)
+            {
+                using(StreamReader reader = new StreamReader(result.Value))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+
+            throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
+            {
+                Content = new StringContent("Job result is not available")
+            });
+        }
+    }
+    }

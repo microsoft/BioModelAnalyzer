@@ -12,6 +12,8 @@ type Job =
 [<Interface>]
 type IScheduler =
     abstract AddJob : Job -> JobId
+    abstract TryGetStatus : AppId * JobId -> JobStatus option
+    abstract TryGetResult : AppId * JobId -> Stream option
 
 
 type FairShareSchedulerSettings =

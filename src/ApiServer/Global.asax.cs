@@ -32,12 +32,17 @@ namespace bma.client
             var assembly = typeof(bma.client.Controllers.AnalyzeController).Assembly;
 
             GlobalConfiguration.Configuration.Routes.MapHttpRoute(
-                name: "LongRunningActionsApi",
-                routeTemplate: "api/lra/{id}",
-                defaults: new { controller = "longrunningactions" },
-                constraints: new { id = @"[0-9A-Fa-f]{8}[-]?([0-9A-Fa-f]{4}[-]?){3}[0-9A-Fa-f]{12}" } // id is GUID
+                name: "LongRunningActionsSpecificApi",
+                routeTemplate: "api/lra/{appId}/{action}",
+                defaults: new { controller = "longrunningactionsspecific" },
+                constraints: new { appId = @"[0-9A-Fa-f]{8}[-]?([0-9A-Fa-f]{4}[-]?){3}[0-9A-Fa-f]{12}" } 
             );
-
+            GlobalConfiguration.Configuration.Routes.MapHttpRoute(
+                name: "LongRunningActionsApi",
+                routeTemplate: "api/lra/{appId}",
+                defaults: new { controller = "longrunningactions" },
+                constraints: new { appId = @"[0-9A-Fa-f]{8}[-]?([0-9A-Fa-f]{4}[-]?){3}[0-9A-Fa-f]{12}" }
+            );
             GlobalConfiguration.Configuration.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}"                    
