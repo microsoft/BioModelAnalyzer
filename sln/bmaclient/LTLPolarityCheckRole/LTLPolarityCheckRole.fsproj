@@ -99,5 +99,10 @@
       <Project>{47e591bb-eb9e-41b0-a488-f271177d2616}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\src\LTLPolarityCheck\LTLPolarityCheck.csproj">
+      <Name>LTLPolarityCheck</Name>
+      <Project>{573c06c3-ab0d-4db5-a2e2-53a40e1bba57}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -13,7 +13,8 @@
   <Role name="LTLPolarityCheckRole">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=bmanew;AccountKey=***REMOVED***" />
+      <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=bmanew;AccountKey=***REMOVED***" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>

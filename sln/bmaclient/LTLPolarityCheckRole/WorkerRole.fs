@@ -10,8 +10,10 @@ open Microsoft.WindowsAzure
 open Microsoft.WindowsAzure.Diagnostics
 open Microsoft.WindowsAzure.ServiceRuntime
 open Microsoft.WindowsAzure.Storage
+open Newtonsoft.Json
 
 open bma.Cloud
+open bma.LTLPolarity
 
 type WorkerRole() =
     inherit RoleEntryPoint() 
@@ -21,9 +23,26 @@ type WorkerRole() =
 
     let mutable worker : IWorker option = None
 
-    let doJob(jobId: Guid, input: IO.Stream) = 
+    let doJob(jobId: Guid, input: IO.Stream) : IO.Stream = 
         logInfo (sprintf "Doing the job #%O" jobId)
-        input
+
+        let reader = new IO.StreamReader(input)
+        let input_s = reader.ReadToEnd()
+        let query = JsonConvert.DeserializeObject<LTLPolarityAnalysisInputDTO>(input_s)
+
+        
+        let res = bma.LTLPolarity.Algorithms.Check(query)
+
+
+
+        let jsRes = JsonConvert.SerializeObject(res)
+        let output_s = jsRes.ToString()
+        let ms = new IO.MemoryStream()
+        let writer = new IO.StreamWriter(ms)
+        writer.Write(output_s)
+        writer.Flush()
+        ms.Position <- 0L
+        upcast ms
 
 
     override wr.Run() =
@@ -34,7 +53,7 @@ type WorkerRole() =
         base.Run()
 
     override wr.OnStart() = 
-        let storageAccount = CloudStorageAccount.DevelopmentStorageAccount
+        let storageAccount = CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString"));
         let schedulerName = "ltlpolarity"; // todo: can differ for different controllers; use setter injection with name?
 
         ServicePointManager.DefaultConnectionLimit <- 12
