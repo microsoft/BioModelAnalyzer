@@ -47,8 +47,6 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FairShareScheduler.Common",
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FairShareScheduler", "..\..\src\FairShareScheduler\FairShareScheduler.fsproj", "{A66E4EE3-5D4E-4889-90EC-36317A4DE882}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "LTLPolarityCheckRole", "LTLPolarityCheckRole\LTLPolarityCheckRole.fsproj", "{64E4B49B-174E-480D-B04E-0A2B41BF2F14}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FairShareWorker", "..\..\src\FairShareWorker\FairShareWorker.fsproj", "{47E591BB-EB9E-41B0-A488-F271177D2616}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LTLPolarityCheck", "..\..\src\LTLPolarityCheck\LTLPolarityCheck.csproj", "{573C06C3-AB0D-4DB5-A2E2-53A40E1BBA57}"
@@ -246,18 +244,6 @@ Global
 		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Release|x64.ActiveCfg = Release|Any CPU
 		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Release|x64.Build.0 = Release|Any CPU
-		{64E4B49B-174E-480D-B04E-0A2B41BF2F14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64E4B49B-174E-480D-B04E-0A2B41BF2F14}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64E4B49B-174E-480D-B04E-0A2B41BF2F14}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{64E4B49B-174E-480D-B04E-0A2B41BF2F14}.Debug|x64.Build.0 = Debug|Any CPU
-		{64E4B49B-174E-480D-B04E-0A2B41BF2F14}.nuget|Any CPU.ActiveCfg = Release|Any CPU
-		{64E4B49B-174E-480D-B04E-0A2B41BF2F14}.nuget|Any CPU.Build.0 = Release|Any CPU
-		{64E4B49B-174E-480D-B04E-0A2B41BF2F14}.nuget|x64.ActiveCfg = Release|Any CPU
-		{64E4B49B-174E-480D-B04E-0A2B41BF2F14}.nuget|x64.Build.0 = Release|Any CPU
-		{64E4B49B-174E-480D-B04E-0A2B41BF2F14}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64E4B49B-174E-480D-B04E-0A2B41BF2F14}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64E4B49B-174E-480D-B04E-0A2B41BF2F14}.Release|x64.ActiveCfg = Release|Any CPU
-		{64E4B49B-174E-480D-B04E-0A2B41BF2F14}.Release|x64.Build.0 = Release|Any CPU
 		{47E591BB-EB9E-41B0-A488-F271177D2616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{47E591BB-EB9E-41B0-A488-F271177D2616}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47E591BB-EB9E-41B0-A488-F271177D2616}.Debug|x64.ActiveCfg = Debug|Any CPU

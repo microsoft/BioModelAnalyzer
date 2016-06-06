@@ -18,7 +18,7 @@
     </Certificates>
   </Role>
   <Role name="LTLCheckRole">
-    <Instances count="1" />
+    <Instances count="2" />
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
       <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=bmanew;AccountKey=***REMOVED***" />

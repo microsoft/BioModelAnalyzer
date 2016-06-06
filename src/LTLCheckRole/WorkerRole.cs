@@ -29,7 +29,7 @@ namespace LTLCheckRole
 
             try
             {
-                this.RunAsync(this.cancellationTokenSource.Token).Wait();
+                worker.Process(DoJob, TimeSpan.FromSeconds(1.0));
             }
             finally
             {
@@ -81,11 +81,7 @@ namespace LTLCheckRole
 
             Trace.TraceInformation("LTLCheckRole has stopped");
         }
-
-        private Task RunAsync(CancellationToken cancellationToken)
-        {
-            return worker.ProcessAsync(DoJob, TimeSpan.FromSeconds(1.0), cancellationToken);
-        }
+        
 
         private Stream DoJob(Guid jobId, Stream input)
         {

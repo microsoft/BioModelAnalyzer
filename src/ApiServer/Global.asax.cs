@@ -27,7 +27,7 @@ namespace bma.client
             GlobalConfiguration.Configuration.Formatters.XmlFormatter.UseXmlSerializer = true;
             // http://stackoverflow.com/questions/9847564/how-do-i-get-asp-net-web-api-to-return-json-instead-of-xml-using-chrome
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
-
+ 
             // Force controllers assembly to be loaded
             var assembly = typeof(bma.client.Controllers.AnalyzeController).Assembly;
 

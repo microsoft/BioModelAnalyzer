@@ -9,8 +9,7 @@ open Microsoft.WindowsAzure.Storage
 [<Interface>]
 type IWorker =
     inherit IDisposable
-    abstract Process : (Guid * IO.Stream -> IO.Stream) * TimeSpan -> Async<unit>
-    abstract ProcessAsync : Func<Guid, IO.Stream, IO.Stream> * TimeSpan * CancellationToken -> Task
+    abstract Process : Func<Guid, IO.Stream, IO.Stream> * TimeSpan -> unit
 
 [<Sealed>]
 type Worker =

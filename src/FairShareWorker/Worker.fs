@@ -13,9 +13,7 @@ open bma.Cloud.Jobs
 [<Interface>]
 type IWorker =
     inherit IDisposable
-
-    abstract Process : (Guid * IO.Stream -> IO.Stream) * TimeSpan -> Async<unit>
-    abstract ProcessAsync : Func<Guid, IO.Stream, IO.Stream> * TimeSpan * CancellationToken -> Task
+    abstract Process : Func<Guid, IO.Stream, IO.Stream> * TimeSpan -> unit
 
 [<Class>]
 type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerName : string) =
@@ -28,15 +26,7 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
     
     let mutable disp : IDisposable option = None     
 
-    do
-        container.CreateIfNotExists() |> ignore
-        table.CreateIfNotExists() |> ignore
-        
-
-    interface IWorker with
-        member x.Dispose() = disp |> Option.iter(fun d -> d.Dispose())
-
-        member x.Process (doJob: (Guid * IO.Stream -> IO.Stream), pollingInterval: TimeSpan) =
+    let handle (doJob: (Guid * IO.Stream -> IO.Stream), pollingInterval: TimeSpan) =
             if(disp.IsSome) then failwith "The worker is already started"
 
             let getJob (jobId:JobId, appId:AppId) =
@@ -82,7 +72,7 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
                     let queue = queueClient.GetQueueReference(queueName)
                     queue.CreateIfNotExists() |> ignore
 
-                    match queue.GetMessage() with
+                    match queue.GetMessage(visibilityTimeout = Nullable(TimeSpan.FromHours 1.0)) with
                     | null -> 
                         //info "No message"
                         false
@@ -114,10 +104,17 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
                 true // go on
         
             PollingService.StartPolling(pollingInterval, tryHandleJob, onError)
+
+    do
+        container.CreateIfNotExists() |> ignore
+        table.CreateIfNotExists() |> ignore
+        
+
+    interface IWorker with
+        member x.Dispose() = disp |> Option.iter(fun d -> d.Dispose())
     
-        member x.ProcessAsync (doJob: Func<Guid, IO.Stream, IO.Stream>, pollingInterval: TimeSpan, ct: CancellationToken) =
-            let a = (x:>IWorker).Process(doJob.Invoke, pollingInterval)
-            upcast Async.StartAsTask(a, cancellationToken = ct)
+        member x.Process (doJob: Func<Guid, IO.Stream, IO.Stream>, pollingInterval: TimeSpan) =
+            handle(doJob.Invoke, pollingInterval)
 
 
 [<Sealed>]
