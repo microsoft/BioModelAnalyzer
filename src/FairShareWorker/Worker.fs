@@ -1,6 +1,8 @@
 ﻿namespace bma.Cloud
 
 open System
+open System.Threading
+open System.Threading.Tasks
 open Microsoft.WindowsAzure.Storage
 open Microsoft.WindowsAzure.Storage
 open Microsoft.WindowsAzure.Storage.Table
@@ -12,7 +14,8 @@ open bma.Cloud.Jobs
 type IWorker =
     inherit IDisposable
 
-    abstract Start : (Guid * IO.Stream -> IO.Stream) * TimeSpan -> unit
+    abstract Process : (Guid * IO.Stream -> IO.Stream) * TimeSpan -> Async<unit>
+    abstract ProcessAsync : Func<Guid, IO.Stream, IO.Stream> * TimeSpan * CancellationToken -> Task
 
 [<Class>]
 type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerName : string) =
@@ -33,7 +36,7 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
     interface IWorker with
         member x.Dispose() = disp |> Option.iter(fun d -> d.Dispose())
 
-        member x.Start (doJob: (Guid * IO.Stream -> IO.Stream), pollingInterval: TimeSpan) =
+        member x.Process (doJob: (Guid * IO.Stream -> IO.Stream), pollingInterval: TimeSpan) =
             if(disp.IsSome) then failwith "The worker is already started"
 
             let getJob (jobId:JobId, appId:AppId) =
@@ -110,7 +113,11 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
                 // error "..."
                 true // go on
         
-            disp <- PollingService.Start(pollingInterval, tryHandleJob, onError) |> Some
+            PollingService.StartPolling(pollingInterval, tryHandleJob, onError)
+    
+        member x.ProcessAsync (doJob: Func<Guid, IO.Stream, IO.Stream>, pollingInterval: TimeSpan, ct: CancellationToken) =
+            let a = (x:>IWorker).Process(doJob.Invoke, pollingInterval)
+            upcast Async.StartAsTask(a, cancellationToken = ct)
 
 
 [<Sealed>]

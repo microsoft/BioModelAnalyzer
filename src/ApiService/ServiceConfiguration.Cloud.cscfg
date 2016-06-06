@@ -8,13 +8,28 @@
       <!--<Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biomodelanalyzer2;AccountKey=***REMOVED***" />
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biomodelanalyzer2;AccountKey=***REMOVED***" />-->
       <Setting name="ComputeTimeLimit" value="90" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="dmvoyt" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="***REMOVED***" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2017-06-06T23:59:59.0000000+03:00" />
     </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="***REMOVED***" thumbprintAlgorithm="sha1" />
+    </Certificates>
   </Role>
-  <Role name="LTLPolarityCheckRole">
+  <Role name="LTLCheckRole">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=bmanew;AccountKey=***REMOVED***" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
       <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=bmanew;AccountKey=***REMOVED***" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="dmvoyt" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="***REMOVED***" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2017-06-06T23:59:59.0000000+03:00" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
     </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="***REMOVED***" thumbprintAlgorithm="sha1" />
+    </Certificates>
   </Role>
 </ServiceConfiguration>

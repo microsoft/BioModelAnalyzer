@@ -63,15 +63,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Data.Edm">
-      <HintPath>..\..\ext\nuget\Microsoft.Data.Edm.5.6.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <HintPath>..\..\ext\nuget\Microsoft.Data.Edm.5.7.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Data.OData">
-      <HintPath>..\..\ext\nuget\Microsoft.Data.OData.5.6.4\lib\net40\Microsoft.Data.OData.dll</HintPath>
+      <HintPath>..\..\ext\nuget\Microsoft.Data.OData.5.7.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Data.Services.Client">
-      <HintPath>..\..\ext\nuget\Microsoft.Data.Services.Client.5.6.4\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+      <HintPath>..\..\ext\nuget\Microsoft.Data.Services.Client.5.7.0\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Storage">
@@ -96,7 +96,7 @@
       <Private>True</Private>
     </ProjectReference>
     <Reference Include="System.Spatial">
-      <HintPath>..\..\ext\nuget\System.Spatial.5.6.4\lib\net40\System.Spatial.dll</HintPath>
+      <HintPath>..\..\ext\nuget\System.Spatial.5.7.0\lib\net40\System.Spatial.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

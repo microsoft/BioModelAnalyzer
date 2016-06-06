@@ -53,6 +53,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FairShareWorker", "..\..\sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LTLPolarityCheck", "..\..\src\LTLPolarityCheck\LTLPolarityCheck.csproj", "{573C06C3-AB0D-4DB5-A2E2-53A40E1BBA57}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LTLCheckRole", "..\..\src\LTLCheckRole\LTLCheckRole.csproj", "{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -280,6 +282,18 @@ Global
 		{573C06C3-AB0D-4DB5-A2E2-53A40E1BBA57}.Release|Any CPU.Build.0 = Release|Any CPU
 		{573C06C3-AB0D-4DB5-A2E2-53A40E1BBA57}.Release|x64.ActiveCfg = Release|Any CPU
 		{573C06C3-AB0D-4DB5-A2E2-53A40E1BBA57}.Release|x64.Build.0 = Release|Any CPU
+		{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}.Debug|x64.Build.0 = Debug|Any CPU
+		{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}.nuget|Any CPU.Build.0 = Release|Any CPU
+		{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}.nuget|x64.ActiveCfg = Release|Any CPU
+		{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}.nuget|x64.Build.0 = Release|Any CPU
+		{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}.Release|x64.ActiveCfg = Release|Any CPU
+		{CA56A7DA-A2FF-45A7-9BBD-B3594EE090DB}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

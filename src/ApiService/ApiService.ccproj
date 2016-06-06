@@ -39,14 +39,6 @@
     <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\sln\bmaclient\LTLPolarityCheckRole\LTLPolarityCheckRole.fsproj">
-      <Name>LTLPolarityCheckRole</Name>
-      <Project>{64e4b49b-174e-480d-b04e-0a2b41bf2f14}</Project>
-      <Private>True</Private>
-      <RoleType>Worker</RoleType>
-      <RoleName>LTLPolarityCheckRole</RoleName>
-      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
-    </ProjectReference>
     <ProjectReference Include="..\ApiServer\ApiServer.csproj">
       <Name>ApiServer</Name>
       <Project>{8f8ee772-02fa-4623-b407-006fb7b9a314}</Project>
@@ -55,14 +47,24 @@
       <RoleName>ApiServer</RoleName>
       <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
+    <ProjectReference Include="..\LTLCheckRole\LTLCheckRole.csproj">
+      <Name>LTLCheckRole</Name>
+      <Project>{ca56a7da-a2ff-45a7-9bbd-b3594ee090db}</Project>
+      <Private>True</Private>
+      <RoleType>Worker</RoleType>
+      <RoleName>LTLCheckRole</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ApiServerContent\" />
+    <Folder Include="LTLCheckRoleContent\" />
     <Folder Include="LTLPolarityCheckRoleContent\" />
     <Folder Include="Profiles" />
   </ItemGroup>
   <ItemGroup>
     <DiagnosticsConfiguration Include="ApiServerContent\diagnostics.wadcfgx" />
+    <DiagnosticsConfiguration Include="LTLCheckRoleContent\diagnostics.wadcfgx" />
     <DiagnosticsConfiguration Include="LTLPolarityCheckRoleContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <ItemGroup>
