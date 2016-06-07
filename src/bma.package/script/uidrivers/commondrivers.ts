@@ -650,12 +650,12 @@ module BMA {
                             type: "GET",
                             url: that.serviceURL + that.userID + "/result?jobId=" + id,
                         }).done(function (res) {
-                            result.resolve(res);
+                            result.resolve(JSON.parse(res));
                         }).fail(function (xhr, textStatus, errorThrown) {
                             result.reject(xhr, textStatus, errorThrown);
                         });
                     } else {
-                        setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 1000);
+                        setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
                     }
                 }).fail(function (xhr, textStatus, errorThrown) {
                     result.reject(xhr, textStatus, errorThrown);

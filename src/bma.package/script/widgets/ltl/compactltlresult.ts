@@ -181,7 +181,7 @@
                         break;
                 case "processinglra":
                     var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    var message = $("<div>Executing long-running action</div>").addClass("grey").appendTo(ltltestdiv);
+                    var message = $("<div>processing as long job</div>").addClass("grey").appendTo(ltltestdiv);
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(ltltestdiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button></button>").appendTo(li);
