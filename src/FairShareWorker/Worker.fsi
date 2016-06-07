@@ -9,7 +9,7 @@ open Microsoft.WindowsAzure.Storage
 [<Interface>]
 type IWorker =
     inherit IDisposable
-    abstract Process : Func<Guid, IO.Stream, IO.Stream> * TimeSpan -> unit
+    abstract Process : Func<Guid, IO.Stream, IO.Stream> * TimeSpan * TimeSpan -> unit
 
 [<Sealed>]
 type Worker =

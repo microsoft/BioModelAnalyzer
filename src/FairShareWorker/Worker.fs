@@ -13,7 +13,7 @@ open bma.Cloud.Jobs
 [<Interface>]
 type IWorker =
     inherit IDisposable
-    abstract Process : Func<Guid, IO.Stream, IO.Stream> * TimeSpan -> unit
+    abstract Process : Func<Guid, IO.Stream, IO.Stream> * TimeSpan * TimeSpan -> unit
 
 [<Class>]
 type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerName : string) =
@@ -26,7 +26,7 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
     
     let mutable disp : IDisposable option = None     
 
-    let handle (doJob: (Guid * IO.Stream -> IO.Stream), pollingInterval: TimeSpan) =
+    let handle (doJob: (Guid * IO.Stream -> IO.Stream), pollingInterval: TimeSpan, maxPollingInterval: TimeSpan) =
             if(disp.IsSome) then failwith "The worker is already started"
 
             let getJob (jobId:JobId, appId:AppId) =
@@ -103,7 +103,7 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
                 // error "..."
                 true // go on
         
-            PollingService.StartPolling(pollingInterval, tryHandleJob, onError)
+            PollingService.StartPolling(pollingInterval, maxPollingInterval, tryHandleJob, onError)
 
     do
         container.CreateIfNotExists() |> ignore
@@ -113,8 +113,8 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
     interface IWorker with
         member x.Dispose() = disp |> Option.iter(fun d -> d.Dispose())
     
-        member x.Process (doJob: Func<Guid, IO.Stream, IO.Stream>, pollingInterval: TimeSpan) =
-            handle(doJob.Invoke, pollingInterval)
+        member x.Process (doJob: Func<Guid, IO.Stream, IO.Stream>, pollingInterval: TimeSpan, maxPollingInterval: TimeSpan) =
+            handle(doJob.Invoke, pollingInterval, maxPollingInterval)
 
 
 [<Sealed>]

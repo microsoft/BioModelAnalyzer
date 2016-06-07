@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using System.Web.Http.Cors;
 
 
 namespace bma.client.Controllers
