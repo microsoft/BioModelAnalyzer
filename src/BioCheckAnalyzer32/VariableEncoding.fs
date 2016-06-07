@@ -17,9 +17,7 @@ let enc_z3_bool_var_formula_in_location_at_time (location : int list) time =
     let f_with_location = List.fold (fun name value -> sprintf "%s^%d" name value) "f" location
     sprintf "%s^^%d" f_with_location time
 let enc_z3_bool_var_loop_at_time time = sprintf "l^%d" time
-let enc_z3_bool_var_trans_of_var_from_time_to_time_uniqueid (node : QN.node) from_time to_time value = sprintf "tv%d^%d^%d^%s" node.var from_time 
-to_time val
-ue
+let enc_z3_bool_var_trans_of_var_from_time_to_time_uniqueid (node : QN.node) from_time to_time value = sprintf "tv%d^%d^%d^%s" node.var from_time to_time value
 
 
 let make_z3_int_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkIntSort())
