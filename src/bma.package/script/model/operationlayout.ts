@@ -68,6 +68,10 @@
                         this.status = value;
                         this.Fill = "white";
                         break;
+                    case "processinglra":
+                        this.status = value;
+                        this.Fill = "white";
+                        break;
                     case "success":
                         this.status = value;
                         this.Fill = "rgb(217,255,182)";

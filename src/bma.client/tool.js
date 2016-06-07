@@ -4220,6 +4220,10 @@ var BMA;
                             this.status = value;
                             this.Fill = "white";
                             break;
+                        case "processinglra":
+                            this.status = value;
+                            this.Fill = "white";
+                            break;
                         case "success":
                             this.status = value;
                             this.Fill = "rgb(217,255,182)";
@@ -14304,7 +14308,7 @@ jQuery.fn.extend({
                     break;
                 case "processinglra":
                     var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    var message = $("<div>Executing long-running action</div>").addClass("grey").appendTo(ltltestdiv);
+                    var message = $("<div>processing as long job</div>").addClass("grey").appendTo(ltltestdiv);
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(ltltestdiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button></button>").appendTo(li);
@@ -15428,7 +15432,7 @@ jQuery.fn.extend({
                     context.fillText(text, opSize.width + 10, opPosition.y);
                 }
                 else if (operations[i].status.indexOf("processing") > -1) {
-                    var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7);
+                    var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7, operations[i].status === "processinglra");
                     this._anims.push(anim);
                 }
                 else if (operations[i].status === "nottested" && operations[i].message !== undefined && operations[i].message !== null) {
@@ -15483,11 +15487,15 @@ jQuery.fn.extend({
                     return "white";
             }
         },
-        _createWaitAnimation: function (x, y) {
-            var snipperCnt = $('<div></div>').width(30).css("position", "absolute").css("top", y).css("left", x).appendTo(this.element);
+        _createWaitAnimation: function (x, y, islra) {
+            var width = islra ? 50 : 30;
+            var snipperCnt = $('<div></div>').width(width).css("position", "absolute").css("top", y).css("left", x).appendTo(this.element);
             var snipper = $('<div></div>').css("display", "inline-block").addClass('spinner').appendTo(snipperCnt);
             for (var i = 1; i < 4; i++) {
                 $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+            }
+            if (islra) {
+                $('<div></div>').css("display", "inline-block").text("(lra)").appendTo(snipperCnt);
             }
             return snipperCnt;
         },
@@ -16683,6 +16691,7 @@ var BMA;
                         that.ProcessLTLResults({ Status: 2 }, polarityResults, operation, opVersion, function () {
                             //Starting long-running job
                             driver.SetStatus("processinglra");
+                            operation.AnalysisStatus = "processinglra";
                             that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
                                 that.ProcessLTLResults({ Status: 2 }, polarityResults2, operation, opVersion, undefined);
                             }).fail(function (xhr, textStatus, errorThrown) {
@@ -16699,8 +16708,16 @@ var BMA;
                         if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                             return;
                         that.log.LogLTLError();
-                        operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
-                        driver.SetStatus(operation.AnalysisStatus /* === "partialfail" ? "fail" : "success"*/);
+                        if (operation.AnalysisStatus === "processing, partialfail") {
+                            operation.AnalysisStatus = "partialfail";
+                        }
+                        else if (operation.AnalysisStatus === "processing, partialsuccess") {
+                            operation.AnalysisStatus = "partialsuccess";
+                        }
+                        else {
+                            operation.AnalysisStatus = "nottested";
+                        }
+                        driver.SetStatus(operation.AnalysisStatus);
                         domplot.updateLayout();
                         that.OnOperationsChanged(false);
                     });
@@ -16806,6 +16823,7 @@ var BMA;
                             that.polarityService.Invoke(proofInput).done(function (polarityResults) {
                                 that.ProcessLTLResults(res, polarityResults, operation, opVersion, function () {
                                     //Starting long-running job
+                                    operation.AnalysisStatus = "processinglra";
                                     driver.SetStatus("processinglra");
                                     that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
                                         that.ProcessLTLResults(res, polarityResults2, operation, opVersion, undefined);

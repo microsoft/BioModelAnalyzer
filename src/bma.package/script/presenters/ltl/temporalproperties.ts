@@ -972,6 +972,8 @@ module BMA {
                         that.ProcessLTLResults({ Status: 2 }, polarityResults, operation, opVersion, () => {
                             //Starting long-running job
                             driver.SetStatus("processinglra");
+                            operation.AnalysisStatus = "processinglra";
+
                             that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
                                 that.ProcessLTLResults({ Status: 2 }, polarityResults2, operation, opVersion, undefined);
                             }).fail(function (xhr, textStatus, errorThrown) {
@@ -988,8 +990,14 @@ module BMA {
                         if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                             return;
                         that.log.LogLTLError();
-                        operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
-                        driver.SetStatus(operation.AnalysisStatus/* === "partialfail" ? "fail" : "success"*/);
+                        if (operation.AnalysisStatus === "processing, partialfail") {
+                            operation.AnalysisStatus = "partialfail";
+                        } else if (operation.AnalysisStatus === "processing, partialsuccess") {
+                            operation.AnalysisStatus = "partialsuccess";
+                        } else {
+                            operation.AnalysisStatus = "nottested";
+                        }
+                        driver.SetStatus(operation.AnalysisStatus);
                         domplot.updateLayout();
                         that.OnOperationsChanged(false);
                     });
@@ -1120,6 +1128,7 @@ module BMA {
                                 that.polarityService.Invoke(proofInput).done(function (polarityResults) {
                                     that.ProcessLTLResults(res, polarityResults, operation, opVersion, () => {
                                         //Starting long-running job
+                                        operation.AnalysisStatus = "processinglra";
                                         driver.SetStatus("processinglra");
                                         that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
                                             that.ProcessLTLResults(res, polarityResults2, operation, opVersion, undefined);
