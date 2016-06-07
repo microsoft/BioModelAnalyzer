@@ -15495,7 +15495,7 @@ jQuery.fn.extend({
                 $('<div></div>').addClass('bounce' + i).appendTo(snipper);
             }
             if (islra) {
-                $('<div></div>').css("display", "inline-block").css("marfin-left", 3).text("(lra)").appendTo(snipperCnt);
+                $('<div></div>').css("display", "inline-block").css("margin-left", 5).text("(lra)").appendTo(snipperCnt);
             }
             return snipperCnt;
         },
