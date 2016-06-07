@@ -15488,14 +15488,14 @@ jQuery.fn.extend({
             }
         },
         _createWaitAnimation: function (x, y, islra) {
-            var width = islra ? 50 : 30;
+            var width = islra ? 70 : 30;
             var snipperCnt = $('<div></div>').width(width).css("position", "absolute").css("top", y).css("left", x).appendTo(this.element);
             var snipper = $('<div></div>').css("display", "inline-block").addClass('spinner').appendTo(snipperCnt);
             for (var i = 1; i < 4; i++) {
                 $('<div></div>').addClass('bounce' + i).appendTo(snipper);
             }
             if (islra) {
-                $('<div></div>').css("display", "inline-block").text("(lra)").appendTo(snipperCnt);
+                $('<div></div>').css("display", "inline-block").css("marfin-left", 3).text("(lra)").appendTo(snipperCnt);
             }
             return snipperCnt;
         },
@@ -16698,8 +16698,18 @@ var BMA;
                                 if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                     return;
                                 that.log.LogLTLError();
-                                operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
-                                driver.SetStatus(operation.AnalysisStatus /* === "partialfail" ? "fail" : "success"*/);
+                                if (operation.AnalysisStatus === "processing, partialfail") {
+                                    operation.AnalysisStatus = "partialfail";
+                                    driver.SetStatus(operation.AnalysisStatus);
+                                }
+                                else if (operation.AnalysisStatus === "processing, partialsuccess") {
+                                    operation.AnalysisStatus = "partialsuccess";
+                                    driver.SetStatus(operation.AnalysisStatus);
+                                }
+                                else {
+                                    operation.AnalysisStatus = "nottested";
+                                    driver.SetStatus("nottested", "Server Error");
+                                }
                                 domplot.updateLayout();
                                 that.OnOperationsChanged(false);
                             });
@@ -16710,14 +16720,16 @@ var BMA;
                         that.log.LogLTLError();
                         if (operation.AnalysisStatus === "processing, partialfail") {
                             operation.AnalysisStatus = "partialfail";
+                            driver.SetStatus(operation.AnalysisStatus);
                         }
                         else if (operation.AnalysisStatus === "processing, partialsuccess") {
                             operation.AnalysisStatus = "partialsuccess";
+                            driver.SetStatus(operation.AnalysisStatus);
                         }
                         else {
                             operation.AnalysisStatus = "nottested";
+                            driver.SetStatus("nottested", "Server Error");
                         }
-                        driver.SetStatus(operation.AnalysisStatus);
                         domplot.updateLayout();
                         that.OnOperationsChanged(false);
                     });

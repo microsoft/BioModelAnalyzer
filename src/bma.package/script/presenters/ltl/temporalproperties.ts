@@ -980,8 +980,16 @@ module BMA {
                                 if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                     return;
                                 that.log.LogLTLError();
-                                operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
-                                driver.SetStatus(operation.AnalysisStatus/* === "partialfail" ? "fail" : "success"*/);
+                                if (operation.AnalysisStatus === "processing, partialfail") {
+                                    operation.AnalysisStatus = "partialfail";
+                                    driver.SetStatus(operation.AnalysisStatus);
+                                } else if (operation.AnalysisStatus === "processing, partialsuccess") {
+                                    operation.AnalysisStatus = "partialsuccess";
+                                    driver.SetStatus(operation.AnalysisStatus);
+                                } else {
+                                    operation.AnalysisStatus = "nottested";
+                                    driver.SetStatus("nottested", "Server Error");
+                                }
                                 domplot.updateLayout();
                                 that.OnOperationsChanged(false);
                             });
@@ -992,12 +1000,17 @@ module BMA {
                         that.log.LogLTLError();
                         if (operation.AnalysisStatus === "processing, partialfail") {
                             operation.AnalysisStatus = "partialfail";
+                            driver.SetStatus(operation.AnalysisStatus);
+
                         } else if (operation.AnalysisStatus === "processing, partialsuccess") {
                             operation.AnalysisStatus = "partialsuccess";
+                            driver.SetStatus(operation.AnalysisStatus);
+
                         } else {
                             operation.AnalysisStatus = "nottested";
+                            driver.SetStatus("nottested", "Server Error");
+
                         }
-                        driver.SetStatus(operation.AnalysisStatus);
                         domplot.updateLayout();
                         that.OnOperationsChanged(false);
                     });
