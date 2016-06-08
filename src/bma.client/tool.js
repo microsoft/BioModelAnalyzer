@@ -1186,11 +1186,12 @@ var BMA;
                 layout.isFunction = operator.isFunction;
                 var operands = op.Operands;
                 var layer = 0;
-                var width = getOperatorWidth(operator.Name, 10);
-                layout.operatorWidth = width;
-                if (operands.length === 1) {
-                    width += paddingX;
+                var operatorWidth = getOperatorWidth(operator.Name, 10);
+                var width = paddingX;
+                if (operator.isFunction || operands.length === 1) {
+                    width += operatorWidth + paddingX;
                 }
+                layout.operatorWidth = operatorWidth;
                 for (var i = 0; i < operands.length; i++) {
                     var operand = operands[i];
                     if (operand !== undefined) {
@@ -1199,11 +1200,14 @@ var BMA;
                         calcLW.parentoperation = operation;
                         layer = Math.max(layer, calcLW.layer);
                         layout.operands.push(calcLW);
-                        width += (calcLW.width + paddingX * 2);
+                        width += (calcLW.width + paddingX);
                     }
                     else {
                         layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i });
-                        width += (keyFrameSize + 2 * paddingX);
+                        width += (keyFrameSize + paddingX);
+                    }
+                    if (!operator.isFunction && i > 0) {
+                        width += operatorWidth + paddingX;
                     }
                 }
                 layout.layer = layer + 1;
@@ -4548,49 +4552,50 @@ var BMA;
                         });
                         layoutPart.svgref = opSVG;
                         var operands = operation.operands;
-                        switch (operands.length) {
-                            case 1:
+                        if (operands.length == 1) {
+                            svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
+                                "font-size": 10,
+                                "fill": "rgb(96,96,96)"
+                            });
+                            this.RenderLayoutPart(svg, {
+                                x: position.x + halfWidth - operands[0].width / 2 - paddingX,
+                                y: position.y
+                            }, operands[0], undefined);
+                        }
+                        else {
+                            if (!layoutPart.isFunction) {
+                                var wOffset = operands[0].width + paddingX;
+                                this.RenderLayoutPart(svg, {
+                                    x: position.x - halfWidth + operands[0].width / 2 + paddingX,
+                                    y: position.y
+                                }, operands[0], undefined);
+                                for (var i = 1; i < operands.length; i++) {
+                                    svg.text(this.renderGroup, position.x - halfWidth + paddingX + wOffset, position.y + 3, operation.operator, {
+                                        "font-size": 10,
+                                        "fill": "rgb(96,96,96)"
+                                    });
+                                    wOffset += layoutPart.operatorWidth + paddingX;
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x - halfWidth + wOffset + paddingX + operands[i].width / 2,
+                                        y: position.y
+                                    }, operands[i], undefined);
+                                    wOffset += paddingX + operands[i].width;
+                                }
+                            }
+                            else {
                                 svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
                                     "font-size": 10,
                                     "fill": "rgb(96,96,96)"
                                 });
-                                this.RenderLayoutPart(svg, {
-                                    x: position.x + halfWidth - operands[0].width / 2 - paddingX,
-                                    y: position.y
-                                }, operands[0], undefined);
-                                break;
-                            case 2:
-                                if (!layoutPart.isFunction) {
+                                var wOffset = layoutPart.operatorWidth + paddingX;
+                                for (var i = 0; i < operands.length; i++) {
                                     this.RenderLayoutPart(svg, {
-                                        x: position.x - halfWidth + operands[0].width / 2 + paddingX,
+                                        x: position.x - halfWidth + wOffset + paddingX + operands[i].width / 2,
                                         y: position.y
-                                    }, operands[0], undefined);
-                                    this.RenderLayoutPart(svg, {
-                                        x: position.x + halfWidth - operands[1].width / 2 - paddingX,
-                                        y: position.y
-                                    }, operands[1], undefined);
-                                    svg.text(this.renderGroup, position.x - halfWidth + operands[0].width + 2 * paddingX, position.y + 3, operation.operator, {
-                                        "font-size": 10,
-                                        "fill": "rgb(96,96,96)"
-                                    });
+                                    }, operands[i], undefined);
+                                    wOffset += paddingX + operands[i].width;
                                 }
-                                else {
-                                    this.RenderLayoutPart(svg, {
-                                        x: position.x + halfWidth - operands[1].width - paddingX - operands[0].width / 2 - paddingX,
-                                        y: position.y
-                                    }, operands[0], undefined);
-                                    this.RenderLayoutPart(svg, {
-                                        x: position.x + halfWidth - operands[1].width / 2 - paddingX,
-                                        y: position.y
-                                    }, operands[1], undefined);
-                                    svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
-                                        "font-size": 10,
-                                        "fill": "rgb(96,96,96)"
-                                    });
-                                }
-                                break;
-                            default:
-                                break;
+                            }
                         }
                     }
                     else {
@@ -12413,11 +12418,11 @@ jQuery.fn.extend({
             operators.width(350);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
             var operatorsArr = [
-                { Name: "+", OperandsCount: 2, isFunction: false },
+                { Name: "+", OperandsCount: 4, isFunction: false },
                 { Name: "-", OperandsCount: 2, isFunction: false },
-                { Name: "*", OperandsCount: 2, isFunction: false },
+                { Name: "*", OperandsCount: 3, isFunction: false },
                 { Name: "/", OperandsCount: 2, isFunction: false },
-                { Name: "AVG", OperandsCount: 2, isFunction: true },
+                { Name: "AVG", OperandsCount: 6, isFunction: true },
                 { Name: "MIN", OperandsCount: 2, isFunction: true },
                 { Name: "MAX", OperandsCount: 2, isFunction: true },
                 { Name: "CEIL", OperandsCount: 1, isFunction: false },
@@ -12517,7 +12522,10 @@ jQuery.fn.extend({
                             break;
                         }
                     }
-                    op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
+                    op.Operands = [];
+                    for (var i = 0; i < op.Operator.OperandsCount; i++) {
+                        op.Operands.push(undefined);
+                    }
                     var opL = that.operationLayout;
                     if (opL === undefined) {
                         that.options.operation = op;
