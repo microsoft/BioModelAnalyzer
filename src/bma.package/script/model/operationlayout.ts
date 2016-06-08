@@ -68,6 +68,10 @@
                         this.status = value;
                         this.Fill = "white";
                         break;
+                    case "processinglra":
+                        this.status = value;
+                        this.Fill = "white";
+                        break;
                     case "success":
                         this.status = value;
                         this.Fill = "rgb(217,255,182)";
@@ -381,71 +385,64 @@
                         layoutPart.svgref = opSVG;
 
                         var operands = operation.operands;
-                        switch (operands.length) {
-                            case 1:
+                        if (operands.length == 1) {
+
+                            svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
+                                "font-size": 10,
+                                "fill": "rgb(96,96,96)"
+                            });
+
+                            this.RenderLayoutPart(svg, {
+                                x: position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
+                                y: position.y
+                            },
+                                operands[0], undefined);
+
+                        } else {
+                            if (!layoutPart.isFunction) {
+                                var wOffset: any = (<any>operands[0]).width + paddingX;
+                                this.RenderLayoutPart(svg, {
+                                    x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
+                                    y: position.y
+                                },
+                                    operands[0], undefined);
+
+                                for (var i = 1; i < operands.length; i++) {
+                                    svg.text(this.renderGroup, position.x - halfWidth + paddingX + wOffset, position.y + 3, operation.operator, {
+                                        "font-size": 10,
+                                        "fill": "rgb(96,96,96)"
+                                    });
+
+                                    wOffset += layoutPart.operatorWidth + paddingX;
+
+                                    this.RenderLayoutPart(svg, {
+                                        x: position.x - halfWidth + wOffset + paddingX + (<any>operands[i]).width / 2,
+                                        y: position.y
+                                    },
+                                        operands[i], undefined);
+
+                                    wOffset += paddingX + (<any>operands[i]).width;
+                                }
+
+                            } else {
 
                                 svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
                                     "font-size": 10,
                                     "fill": "rgb(96,96,96)"
                                 });
 
-                                this.RenderLayoutPart(svg, {
-                                    x: position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
-                                    y: position.y
-                                },
-                                    operands[0], undefined);
-
-                                break;
-                            case 2:
-
-                                if (!layoutPart.isFunction) {
-
+                                var wOffset:any = layoutPart.operatorWidth + paddingX;
+                                for (var i = 0; i < operands.length; i++) {
                                     this.RenderLayoutPart(svg, {
-                                        x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
+                                        x: position.x - halfWidth + wOffset + paddingX + (<any>operands[i]).width / 2,
                                         y: position.y
                                     },
-                                        operands[0], undefined);
+                                        operands[i], undefined);
 
-
-                                    this.RenderLayoutPart(svg, {
-                                        x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
-                                        y: position.y
-                                    },
-                                        operands[1], undefined);
-
-                                    svg.text(this.renderGroup, position.x - halfWidth + (<any>operands[0]).width + 2 * paddingX, position.y + 3, operation.operator, {
-                                        "font-size": 10,
-                                        "fill": "rgb(96,96,96)"
-                                    });
-
-                                } else {
-
-                                    this.RenderLayoutPart(svg, {
-                                        x: position.x + halfWidth - (<any>operands[1]).width - paddingX - (<any>operands[0]).width / 2 - paddingX,
-                                        y: position.y
-                                    },
-                                        operands[0], undefined);
-
-
-                                    this.RenderLayoutPart(svg, {
-                                        x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
-                                        y: position.y
-                                    },
-                                        operands[1], undefined);
-
-                                    svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
-                                        "font-size": 10,
-                                        "fill": "rgb(96,96,96)"
-                                    });
-
+                                    wOffset += paddingX + (<any>operands[i]).width;
                                 }
 
-                                break;
-                            default:
-                                break;
-                            //throw "Rendering of operators with " + operands.length + " operands is not supported";
-
-
+                            }
                         }
                     } else {
                         var stateGroup = svg.group(this.renderGroup, {

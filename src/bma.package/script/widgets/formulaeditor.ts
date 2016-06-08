@@ -21,11 +21,11 @@
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
 
             var operatorsArr = [
-                { Name: "+", OperandsCount: 2, isFunction: false },
+                { Name: "+", OperandsCount: 4, isFunction: false },
                 { Name: "-", OperandsCount: 2, isFunction: false },
-                { Name: "*", OperandsCount: 2, isFunction: false },
+                { Name: "*", OperandsCount: 3, isFunction: false },
                 { Name: "/", OperandsCount: 2, isFunction: false },
-                { Name: "AVG", OperandsCount: 2, isFunction: true },
+                { Name: "AVG", OperandsCount: 6, isFunction: true },
                 { Name: "MIN", OperandsCount: 2, isFunction: true },
                 { Name: "MAX", OperandsCount: 2, isFunction: true },
                 { Name: "CEIL", OperandsCount: 1, isFunction: false },
@@ -139,7 +139,10 @@
                             break;
                         }
                     }
-                    op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
+                    op.Operands = [];
+                    for (var i = 0; i < op.Operator.OperandsCount; i++) {
+                        op.Operands.push(undefined);
+                    }
                     var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                     if (opL === undefined) {
                         that.options.operation = op;

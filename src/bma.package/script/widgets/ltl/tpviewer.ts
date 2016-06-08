@@ -154,7 +154,7 @@
                     var text = operations[i].steps + " steps";
                     context.fillText(text, opSize.width + 10, opPosition.y);
                 } else if (operations[i].status.indexOf("processing") > -1) {
-                    var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7);
+                    var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7, operations[i].status === "processinglra");
                     this._anims.push(anim);
                 } else if (operations[i].status === "nottested" && operations[i].message !== undefined && operations[i].message !== null) {
                     context.font = "14px Segoe-UI";
@@ -211,11 +211,15 @@
         },
 
 
-        _createWaitAnimation: function (x, y) {
-            var snipperCnt = $('<div></div>').width(30).css("position", "absolute").css("top", y).css("left", x).appendTo(this.element);
+        _createWaitAnimation: function (x, y, islra) {
+            var width = islra ? 70 : 30;
+            var snipperCnt = $('<div></div>').width(width).css("position", "absolute").css("top", y).css("left", x).appendTo(this.element);
             var snipper = $('<div></div>').css("display", "inline-block").addClass('spinner').appendTo(snipperCnt);
             for (var i = 1; i < 4; i++) {
                 $('<div></div>').addClass('bounce' + i).appendTo(snipper);
+            }
+            if (islra) {
+                $('<div></div>').css("display", "inline-block").css("margin-left", 5).text("(lra)").appendTo(snipperCnt);
             }
             return snipperCnt;
         },
