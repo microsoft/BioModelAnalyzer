@@ -22,7 +22,7 @@
         function ConvertFormulaToOperation(formula, states) {
             var parsedFormula;
             try {
-                var parsedFormula = parser.parse(formula);
+                var parsedFormula = BMA.parser.parse(formula);
                 return ConvertToOperation(parsedFormula, states);
             } catch (ex) {
                 alert(ex);
@@ -41,12 +41,10 @@
                 if (formula && formula.operator) {
                     var operation = new BMA.LTLOperations.Operation();
                     var operands = [];
-                    var operator = window.OperatorsRegistry.GetOperatorByName(formula.operator);
-                    if (operator.OperandsCount == 2) {
-                        operands.push(ConvertToOperation(formula.operand1, states));
-                        operands.push(ConvertToOperation(formula.operand2, states));
-                    } else {
-                        operands.push(ConvertToOperation(formula.operand, states));
+                    var operator = window.OperatorsRegistry.GetOperatorByName(formula.operator.toUpperCase());
+                    if (operator === undefined) throw "Operator doesn't exist";
+                    for (i = 0; i < formula.operands.length; i++) {
+                        operands.push(ConvertToOperation(formula.operands[i], states));
                     }
                     operation.Operator = operator;
                     operation.Operands = operands;
@@ -119,7 +117,7 @@
 <body style="background-color: white;">
     <div style="width:450px; height: 250px;">
         <div id="textbox" style="width:200px;height: 200px;float:left;background-color: aliceblue;">
-            <input type="text" value="Enter formula" id="inp" style="border:none; background-color:transparent;" />
+            <textarea type="text" id="inp" style="margin:0px;width:190px;height: 190px;border:none; background-color:transparent;">Enter formula</textarea>
         </div>
         <div id="textoutput" style="width:200px;height: 200px;float:left;background-color: cornsilk;">
         </div>

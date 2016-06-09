@@ -464,11 +464,8 @@
                     var operands = [];
                     var operator = window.OperatorsRegistry.GetOperatorByName(formula.operator.toUpperCase());
                     if (operator === undefined) throw "Operator doesn't exist";
-                    if (operator.OperandsCount == 2) {
-                        operands.push(ConvertToOperation(formula.operand1, states));
-                        operands.push(ConvertToOperation(formula.operand2, states));
-                    } else {
-                        operands.push(ConvertToOperation(formula.operand, states));
+                    for (i = 0; i < formula.operands.length; i++) {
+                        operands.push(ConvertToOperation(formula.operands[i], states));
                     }
                     operation.Operator = operator;
                     operation.Operands = operands;
