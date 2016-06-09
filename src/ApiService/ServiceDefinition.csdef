@@ -20,7 +20,7 @@
       <Import moduleName="RemoteAccess" />
     </Imports>
   </WebRole>
-  <WorkerRole name="LTLCheckRole" vmsize="Medium">
+  <WorkerRole name="LTLCheckRole" vmsize="A5">
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
       <Setting name="StorageConnectionString" />
