@@ -154,7 +154,7 @@
                     var text = operations[i].steps + " steps";
                     context.fillText(text, opSize.width + 10, opPosition.y);
                 } else if (operations[i].status.indexOf("processing") > -1) {
-                    var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7, operations[i].status === "processinglra");
+                    var anim = this._createWaitAnimation(opSize.width + 10, opPosition.y - 7, operations[i].status.indexOf("processinglra") > -1);
                     this._anims.push(anim);
                 } else if (operations[i].status === "nottested" && operations[i].message !== undefined && operations[i].message !== null) {
                     context.font = "14px Segoe-UI";
@@ -191,7 +191,15 @@
                     var canvas = <HTMLCanvasElement>(this._canvas[0]);
                     var context = canvas.getContext("2d");
                     return context.createPattern(this._images[1], "repeat");
+                case "processinglra, partialsuccess":
+                    var canvas = <HTMLCanvasElement>(this._canvas[0]);
+                    var context = canvas.getContext("2d");
+                    return context.createPattern(this._images[1], "repeat");
                 case "processing, partialfail":
+                    var canvas = <HTMLCanvasElement>(this._canvas[0]);
+                    var context = canvas.getContext("2d");
+                    return context.createPattern(this._images[3], "repeat");
+                case "processinglra, partialfail":
                     var canvas = <HTMLCanvasElement>(this._canvas[0]);
                     var context = canvas.getContext("2d");
                     return context.createPattern(this._images[3], "repeat");
