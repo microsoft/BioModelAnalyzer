@@ -92,7 +92,15 @@
                         this.status = value;
                         this.Fill = "url(#stripe-pattern-half-green)";
                         break;
+                    case "processinglra, partialsuccess":
+                        this.status = value;
+                        this.Fill = "url(#stripe-pattern-half-green)";
+                        break;
                     case "processing, partialfail":
+                        this.status = value;
+                        this.Fill = "url(#stripe-pattern-half-red)";
+                        break;
+                    case "processinglra, partialfail":
                         this.status = value;
                         this.Fill = "url(#stripe-pattern-half-red)";
                         break;
@@ -103,7 +111,6 @@
                     default:
                         throw "Invalid status!";
                 }
-
             }
 
             public get Tag(): any {
