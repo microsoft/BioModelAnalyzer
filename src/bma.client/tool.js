@@ -16773,11 +16773,11 @@ var BMA;
                                         if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                             return;
                                         that.log.LogLTLError();
-                                        if (operation.AnalysisStatus === "processinglra, partialfail") {
+                                        if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
                                             operation.AnalysisStatus = "partialfail";
                                             driver.SetStatus(operation.AnalysisStatus);
                                         }
-                                        else if (operation.AnalysisStatus === "processinglra, partialsuccess") {
+                                        else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
                                             operation.AnalysisStatus = "partialsuccess";
                                             driver.SetStatus(operation.AnalysisStatus);
                                         }
@@ -16793,11 +16793,11 @@ var BMA;
                                 if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                     return;
                                 that.log.LogLTLError();
-                                if (operation.AnalysisStatus === "processing, partialfail") {
+                                if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
                                     operation.AnalysisStatus = "partialfail";
                                     driver.SetStatus(operation.AnalysisStatus);
                                 }
-                                else if (operation.AnalysisStatus === "processing, partialsuccess") {
+                                else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
                                     operation.AnalysisStatus = "partialsuccess";
                                     driver.SetStatus(operation.AnalysisStatus);
                                 }
@@ -16847,8 +16847,18 @@ var BMA;
                     if (polarityResult === undefined || polarityResult.Ticks == null || polarityResult.Error) {
                         if (timeoutcallback === undefined) {
                             that.log.LogLTLError();
-                            operation.AnalysisStatus = (operation.AnalysisStatus == "processing, partialfail") ? "partialfail" : "partialsuccess";
-                            driver.SetStatus(operation.AnalysisStatus /* === "partialfail" ? "fail" : "success"*/);
+                            if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
+                                operation.AnalysisStatus = "partialfail";
+                                driver.SetStatus(operation.AnalysisStatus);
+                            }
+                            else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
+                                operation.AnalysisStatus = "partialsuccess";
+                                driver.SetStatus(operation.AnalysisStatus);
+                            }
+                            else {
+                                operation.AnalysisStatus = "nottested";
+                                driver.SetStatus("nottested", "Server Error");
+                            }
                             domplot.updateLayout();
                             that.OnOperationsChanged(false);
                         }
