@@ -20,6 +20,7 @@
                 ltlresultsviewer: BMA.UIDrivers.ILTLResultsViewer,
                 ltlSimlationService: BMA.UIDrivers.IServiceDriver,
                 ltlPolarityService: BMA.UIDrivers.IServiceDriver,
+                lraLtlPolarityService: BMA.UIDrivers.IServiceDriver,
                 popupViewer: BMA.UIDrivers.IPopup,
                 exportService: BMA.UIDrivers.IExportService,
                 fileLoaderDriver: BMA.UIDrivers.IFileLoader,
@@ -46,6 +47,7 @@
                                 appModel,
                                 ltlSimlationService,
                                 ltlPolarityService,
+                                lraLtlPolarityService,
                                 temporlapropertieseditor,
                                 that.statespresenter,
                                 logService);
@@ -90,6 +92,7 @@
                                     appModel,
                                     ltlSimlationService,
                                     ltlPolarityService,
+                                    lraLtlPolarityService,
                                     temporlapropertieseditor,
                                     this.statespresenter,
                                     logService);

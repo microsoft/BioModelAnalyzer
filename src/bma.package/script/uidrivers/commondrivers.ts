@@ -609,6 +609,60 @@ module BMA {
             }
         }
 
+        export class BMALRAProcessingService implements IServiceDriver {
+            private serviceURL: string;
+            private userID: string;
+
+            constructor(serviceURL: string, userID: string) {
+                this.serviceURL = serviceURL;
+                this.userID = userID;
+            }
+
+            public Invoke(data): JQueryPromise<any> {
+                var that = this;
+                var result = $.Deferred();
+
+                $.ajax({
+                    type: "POST",
+                    url: that.serviceURL + that.userID,
+                    data: JSON.stringify(data),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                }).done(function (id) {
+                    that.CheckStatusOfRequest(id, result);
+                }).fail(function (xhr, textStatus, errorThrown) {
+                    result.reject(xhr, textStatus, errorThrown);
+                });
+
+                return result.promise();
+            }
+
+            private CheckStatusOfRequest(id, result) {
+                var that = this;
+                console.log("polling to LRA service ... ");
+                $.ajax({
+                    type: "GET",
+                    url: that.serviceURL + that.userID + "/?jobId=" + id,
+                }).done(function (res) {
+                    console.log("job status: " + res);
+                    if (res == "Succeeded") {
+                        $.ajax({
+                            type: "GET",
+                            url: that.serviceURL + that.userID + "/result?jobId=" + id,
+                        }).done(function (res) {
+                            result.resolve(JSON.parse(res));
+                        }).fail(function (xhr, textStatus, errorThrown) {
+                            result.reject(xhr, textStatus, errorThrown);
+                        });
+                    } else {
+                        setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
+                    }
+                }).fail(function (xhr, textStatus, errorThrown) {
+                    result.reject(xhr, textStatus, errorThrown);
+                })
+            }
+        }
+
         export class LTLAnalyzeService implements IServiceDriver {
             private url: string;
             private maxRequestCount: number = 1;
@@ -658,7 +712,7 @@ module BMA {
                 }
             }
         }
-       
+
         export class MessageBoxDriver implements IMessageServiсe {
 
             public Show(message: string) {

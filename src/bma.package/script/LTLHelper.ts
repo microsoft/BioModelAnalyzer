@@ -205,13 +205,13 @@
 
                 var operands = (<BMA.LTLOperations.Operation>op).Operands;
                 var layer = 0;
-                var width = getOperatorWidth(operator.Name, 10);
-
-
-                layout.operatorWidth = width;
-                if (operands.length === 1) {
-                    width += paddingX;
+                var operatorWidth = getOperatorWidth(operator.Name, 10);
+                var width = paddingX; 
+                if (operator.isFunction || operands.length === 1) {
+                    width += operatorWidth + paddingX;
                 }
+
+                layout.operatorWidth = operatorWidth;
 
                 for (var i = 0; i < operands.length; i++) {
                     var operand = operands[i];
@@ -222,11 +222,16 @@
                         calcLW.parentoperation = operation;
                         layer = Math.max(layer, calcLW.layer);
                         layout.operands.push(calcLW);
-                        width += (calcLW.width + paddingX * 2);
+                        width += (calcLW.width + paddingX);
+                        
                     } else {
                         layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i });
-                        width += (keyFrameSize + 2 * paddingX);
+                        width += (keyFrameSize + paddingX);
 
+                    }
+
+                    if (!operator.isFunction && i > 0) {
+                        width += operatorWidth + paddingX;
                     }
                 }
 

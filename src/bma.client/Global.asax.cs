@@ -30,6 +30,11 @@ namespace bma.client
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}"                    
             );
+            GlobalConfiguration.Configuration.Routes.MapHttpRoute(
+                name: "TestLRA",
+                routeTemplate: "api/{controller}/{action}/{id}"//,
+                //defaults: new { controller = "TestRLA" }
+            );
 
             var container = new UnityContainer();
             IFailureLogger logger;

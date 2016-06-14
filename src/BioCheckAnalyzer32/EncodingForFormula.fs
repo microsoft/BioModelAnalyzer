@@ -652,6 +652,7 @@ let constraint_of_formula (ltl_formula : LTLFormulaType) (map : FormulaConstrain
     | Upto (location, _, _)
     | And (location, _, _) 
     | Or (location, _, _) 
+    | Implies (location, _, _)
     | Not (location, _)
     | Next (location, _)
     | Always (location, _)
@@ -766,7 +767,8 @@ let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (network : QN) (
         | Upto (_, l_op, r_op)
         | Release (_, l_op, r_op)
         | And (_, l_op, r_op)
-        | Or (_, l_op, r_op) ->
+        | Or (_, l_op, r_op) 
+        | Implies (_, l_op, r_op) ->
             recursive_encode_formula_fairness l_op
             recursive_encode_formula_fairness r_op
         | Not (_, op)
