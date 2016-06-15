@@ -47,17 +47,23 @@
 
             if (_svgCnt === undefined) {
                 _svgCnt = $("<div></div>").css("overflow", "hidden").appendTo(that.host);
+                _svgCnt.width(finalRect.width).height(finalRect.height);
                 _svgCnt.svg({ onLoad: svgLoaded });
             }
 
-            _svgCnt.width(finalRect.width).height(finalRect.height);
+            var sizeChanged = false; //_svgCnt.width() !== finalRect.width || _svgCnt.height() !== finalRect.height;
+            if (sizeChanged) {
+                _svgCnt.width(finalRect.width).height(finalRect.height);
+            }
 
             if (_svg !== undefined) {
                 var plotRect = that.visibleRect;
-                _svg.configure({
-                    width: _svgCnt.width(),
-                    height: _svgCnt.height()
-                }, false);
+                if (sizeChanged) {
+                    _svg.configure({
+                        width: _svgCnt.width(),
+                        height: _svgCnt.height()
+                    }, false);
+                }
 
                 if (!isNaN(plotRect.y) && !isNaN(plotRect.height)) {
                     _svg.configure({
