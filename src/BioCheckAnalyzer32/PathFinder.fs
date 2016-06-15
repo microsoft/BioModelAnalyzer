@@ -24,6 +24,8 @@ type result = Success of locationLog | Failure of (Map<QN.var,int>)*(Map<QN.var,
 let routes (qnX: QN.node list) (qnY:QN.node list) (X:Map<QN.var,int>) (Y:Map<QN.var,int>) =
     let rec simulateToFix (qn: QN.node list) (state:Map<QN.var,int>) (acc:Map<QN.var,int> list) = 
         let state' = Simulate.tick qn state
+        //BH need to change this to an option and test for a non-fix point end. At present  
+        //computations only finish if it ends in an fixpoint
         if (state'=state) then state'::acc else simulateToFix qn state' (state'::acc)
     // SI: call function "canEscapeAttractor"? 
     let rec escapeAttractor (qn: QN.node list) (destination:Map<QN.var,int>) (acc:locationLog) (forward:bool) = 

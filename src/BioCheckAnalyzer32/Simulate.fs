@@ -35,6 +35,48 @@ let individualVariableTick (qn:QN.qn) (env_0:Map<QN.var,int>) (node:QN.var) =
     let range = Map.ofList [for v in qn -> (v.var, v.range)]
     singleUpdate qn env_0 node range
 
+///One-step, asynchronous. Returns list of possible successors
+let asyncTick (qn:QN.qn) (state:Map<QN.var,int>) = 
+    let state' = List.map (fun (node:QN.node) ->    let var = state.[node.var]
+                                                    let var' = individualVariableTick qn state node.var
+                                                    if var=var' then None else
+                                                    Some(state.Add(node.var,var'))                      ) qn
+                 |> List.filter (fun i -> i<>None )
+                 |> List.map (fun (Some(i)) -> i)
+    state'
+
+//A fixpoint is a self loop; an EndComponent is a SCC in async space; Unknown is a set of states which may or may not be an EndComponent
+type asyncEndComponent = FixPoint of Map<QN.var,int> | EndComponent of Map<QN.var,int> list  
+
+//Apply a depth first search for a fix point from a state in async space. Returns asyncEndComponent
+let dfsAsyncFixPoint (qn:QN.qn) (state:Map<QN.var,int>) =
+    let rec join a b =
+        match a with
+        | [] -> b
+        | head::tail -> join tail (head::b)
+    //discovered is a list of visited states
+    let rec core (qn:QN.qn) (state:Map<QN.var,int>) discovered = 
+        let discoveredList = match discovered with EndComponent(n) -> n
+        let discovered' = EndComponent(state::discoveredList)
+        let state' = asyncTick qn state
+        match state' with
+        //No successors -> found a fix point
+        | [] -> FixPoint(state) 
+        | _ ->  let state' = List.filter (fun i -> not (List.exists (fun j -> i=j) discoveredList) ) state' //ignore states we've seen before
+                //Two options- I have no new successors, or I have some
+                match state' with
+                | [] -> discovered'
+                | _ ->  List.fold (fun acc s -> match acc with
+                                                | FixPoint(_)   -> acc 
+                                                | EndComponent(a)->    let result = (core qn s acc)
+                                                                       match result with
+                                                                       | FixPoint(_) -> result
+                                                                       | EndComponent(states'') -> EndComponent(join states'' a)
+                                                                       )
+                                                                                         discovered' state'
+    
+    core qn state (EndComponent([]))
+
 let simulate (qn:QN.qn) (initial_values:Map<QN.var,int>) =
     tick qn initial_values
 
