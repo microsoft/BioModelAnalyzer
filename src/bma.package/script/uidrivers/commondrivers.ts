@@ -134,12 +134,13 @@ module BMA {
                 this.variableEditor.click(function (e) { e.stopPropagation(); });
             }
 
-            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number } {
+            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; description: string } {
                 return {
                     name: this.variableEditor.bmaeditor('option', 'name'),
                     formula: this.variableEditor.bmaeditor('option', 'formula'),
                     rangeFrom: this.variableEditor.bmaeditor('option', 'rangeFrom'),
-                    rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo')
+                    rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo'),
+                    description: this.variableEditor.bmaeditor('option', 'description'),
                 };
             }
 
@@ -147,7 +148,7 @@ module BMA {
                 this.variableEditor.bmaeditor("SetValidation", val, message);
             }
 
-            public Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel) {
+            public Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel, layout: BMA.Model.Layout) {
                 this.variableEditor.bmaeditor('option', 'name', variable.Name);
                 var options = [];
                 var id = variable.Id;
@@ -161,7 +162,7 @@ module BMA {
                 this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
                 this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
                 this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
-
+                this.variableEditor.bmaeditor('option', 'description', layout.GetVariableById(variable.Id).Description);
 
             }
 

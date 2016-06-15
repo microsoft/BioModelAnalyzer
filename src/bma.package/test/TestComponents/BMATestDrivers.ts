@@ -74,6 +74,7 @@ module BMA {
 
             private variable: BMA.Model.Variable;
             private model: BMA.Model.BioModel;
+            private layout: BMA.Model.Layout;
 
             public get Variable() {
                 return this.variable;
@@ -83,12 +84,13 @@ module BMA {
                 return this.model;
             }
 
-            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; } {
+            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; description: string;} {
         return {
                     name: this.variable.Name,
                     formula: this.variable.Formula,
                     rangeFrom: this.variable.RangeFrom,
-                    rangeTo: this.variable.RangeTo
+                    rangeTo: this.variable.RangeTo,
+                    description: this.layout.GetVariableById(this.variable.Id).Description
                 }
     }
 

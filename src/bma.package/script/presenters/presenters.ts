@@ -129,7 +129,8 @@ module BMA {
                         var id = that.GetVariableAtPosition(args.x, args.y);
                         if (id !== undefined) {
                             that.editingId = id;
-                            that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
+                            that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout,
+                                that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout);
                             that.variableEditor.Show(args.screenX, args.screenY);
                             window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
                             //if (that.isVariableEdited) {
@@ -161,6 +162,7 @@ module BMA {
                     var that = this;
                     if (that.editingId !== undefined) {
                         var model = this.undoRedoPresenter.Current.model;//add editingmodel
+                        var layout = this.undoRedoPresenter.Current.layout;
                         var variables = model.Variables;
                         var editingVariableIndex = -1;
                         for (var i = 0; i < variables.length; i++) {
@@ -173,6 +175,7 @@ module BMA {
                             var params = that.variableEditor.GetVariableProperties();
                             //model.SetVariableProperties(variables[i].Id, params.name, params.rangeFrom, params.rangeTo, params.formula);//to editingmodel
                             var newVariables = [];
+                            var newVariablesLayout = [];
                             var newRelations = [];
                             for (var j = 0; j < model.Variables.length; j++) {
                                 if (model.Variables[j].Id === variables[i].Id) {
@@ -207,6 +210,20 @@ module BMA {
                                     model.Relationships[j].Type)
                                 );
                             }
+
+                            for (var j = 0; j < layout.Variables.length; j++) {
+                                newVariablesLayout.push(new BMA.Model.VariableLayout(
+                                    layout.Variables[j].Id,
+                                    layout.Variables[j].PositionX,
+                                    layout.Variables[j].PositionY,
+                                    layout.Variables[j].CellX,
+                                    layout.Variables[j].CellY,
+                                    layout.Variables[j].Angle,
+                                    (j == editingVariableIndex && params.description !== undefined) ?
+                                        params.description : layout.Variables[j].Description)
+                                );
+                            }
+
                             if (!(model.Variables[editingVariableIndex].Name === newVariables[editingVariableIndex].Name
                                 && model.Variables[editingVariableIndex].RangeFrom === newVariables[editingVariableIndex].RangeFrom
                                 && model.Variables[editingVariableIndex].RangeTo === newVariables[editingVariableIndex].RangeTo
@@ -215,7 +232,13 @@ module BMA {
                                 that.variableEditedId = that.editingId;
                                 that.isVariableEdited = true;
                             }
-                            that.RefreshOutput(that.editingModel);
+                            if (!(layout.Variables[editingVariableIndex].Description == newVariablesLayout[editingVariableIndex].Description)) {
+                                that.editingLayout = new BMA.Model.Layout(layout.Containers, newVariablesLayout);
+                                that.variableEditedId = that.editingId;
+                                that.isVariableEdited = true;
+                            }
+
+                            that.RefreshOutput(that.editingModel, that.editingLayout);
                         }
                     }
                 });
@@ -239,7 +262,9 @@ module BMA {
                                         layout.Variables[i].PositionY,
                                         layout.Variables[i].CellX,
                                         layout.Variables[i].CellY,
-                                        layout.Variables[i].Angle)
+                                        layout.Variables[i].Angle,
+                                        layout.Variables[i].Description
+                                    )
                                 );
                             }
 
@@ -375,7 +400,7 @@ module BMA {
                                 var offsetX = variableLayout.PositionX - oldContainerOffset.x;
                                 var offsetY = variableLayout.PositionY - oldContainerOffset.y;
                                 variables.push(new BMA.Model.Variable(that.variableIndex, newContainerId, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
-                                variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, newContainerOffset.x + offsetX, newContainerOffset.y + offsetY, 0, 0, variableLayout.Angle));
+                                variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, newContainerOffset.x + offsetX, newContainerOffset.y + offsetY, 0, 0, variableLayout.Angle, variableLayout.Description));
                             }
 
                             for (var i = 0; i < that.clipboard.Realtionships.length; i++) {
@@ -397,7 +422,7 @@ module BMA {
                             var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
                             var container = that.GetContainerFromGridCell(gridCell);
                             variables.push(new BMA.Model.Variable(that.variableIndex, container && container.Id ? container.Id : 0, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
-                            variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle));
+                            variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle, variableLayout.Description));
                             var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                             that.undoRedoPresenter.Dup(newmodel, newlayout);
@@ -418,7 +443,8 @@ module BMA {
                     if (that.contextElement !== undefined && that.contextElement.type === "variable") {
                         var id = that.contextElement.id;
                         that.editingId = id;
-                        that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
+                        that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model,
+                            that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout);
                         that.variableEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
                         window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
                         //that.RefreshOutput();
@@ -468,7 +494,8 @@ module BMA {
                         if (that.editingId !== undefined) {
                             var v = that.undoRedoPresenter.Current.model.GetVariableById(that.editingId);
                             if (v !== undefined) {
-                                that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, that.editingId).model, that.undoRedoPresenter.Current.model);
+                                that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, that.editingId).model,
+                                    that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout);
                             } else {
                                 that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(that.editingId));
                             }
@@ -505,7 +532,8 @@ module BMA {
                     if (that.isVariableEdited) {
                         that.editingModel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(that.variableEditedId,
                             that.undoRedoPresenter.Current.model, that.editingModel);
-                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel,
+                            that.editingLayout ? that.editingLayout : appModel.Layout);
                         that.variableEditedId = undefined;
                         that.editingModel = undefined;
                         that.isVariableEdited = false;
@@ -522,7 +550,8 @@ module BMA {
                     if (that.isVariableEdited) {
                         that.editingModel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(that.variableEditedId,
                             that.undoRedoPresenter.Current.model, that.editingModel);
-                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel,
+                            that.editingLayout ? that.editingLayout : appModel.Layout);
                         that.variableEditedId = undefined;
                         that.editingModel = undefined;
                         that.isVariableEdited = false;
@@ -625,7 +654,8 @@ module BMA {
                     if (that.isVariableEdited) {
                         that.editingModel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(that.variableEditedId,
                             that.undoRedoPresenter.Current.model, that.editingModel);
-                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel,
+                            that.editingLayout ? that.editingLayout : appModel.Layout);
                         that.editingModel = undefined;
                         that.variableEditedId = undefined;
                         that.isVariableEdited = false;
@@ -688,7 +718,7 @@ module BMA {
 
                             return;
                         } else if (that.stagingVariable !== undefined) {
-                            that.stagingVariable.layout = new BMA.Model.VariableLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
+                            that.stagingVariable.layout = new BMA.Model.VariableLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0, that.stagingVariable.layout.Description);
 
                             if (that.svg !== undefined) {
                                 that.driver.DrawLayer2(<SVGElement>that.CreateStagingSvg());
@@ -1226,7 +1256,7 @@ module BMA {
 
                                                 variableLayouts[j] = new BMA.Model.VariableLayout(variableLayouts[j].Id,
                                                     vlX - oldContainerOffset.x + newContainerOffset.x,
-                                                    vlY - oldContainerOffset.y + newContainerOffset.y, 0, 0, variableLayouts[j].Angle);
+                                                    vlY - oldContainerOffset.y + newContainerOffset.y, 0, 0, variableLayouts[j].Angle, variableLayouts[j].Description);
                                             }
                                         }
                                     }
@@ -1252,7 +1282,7 @@ module BMA {
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
                                 if (variables[i].Id === id) {
-                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0, variableLayouts[i].Description);
                                 }
                             }
                         } else {
@@ -1282,7 +1312,7 @@ module BMA {
                                     if (vrbl.ContainerId !== container.Id) {
                                         variables[i] = new BMA.Model.Variable(vrbl.Id, container.Id, vrbl.Type, vrbl.Name, vrbl.RangeFrom, vrbl.RangeTo, vrbl.Formula);
                                     }
-                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0, variableLayouts[i].Description);
                                 }
                             }
                         } else {
@@ -1332,7 +1362,7 @@ module BMA {
                                     if (vrbl.ContainerId !== container.Id) {
                                         variables[i] = new BMA.Model.Variable(vrbl.Id, container.Id, vrbl.Type, vrbl.Name, vrbl.RangeFrom, vrbl.RangeTo, vrbl.Formula);
                                     }
-                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, angle);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, angle, variableLayouts[i].Description);
                                 }
                             }
                         } else {

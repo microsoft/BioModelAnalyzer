@@ -13,6 +13,7 @@
             operators1: ["+", "-", "*", "/"], 
             operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
             inputs: [],
+            description: "",
             formula: "",
             approved: undefined,
             oneditorclosing: undefined
@@ -155,6 +156,17 @@
                 that._setOption("rangeTo", valu - 1);
                 window.Commands.Execute("VariableEdited", {});
             });
+
+            var descriptionDiv = $("<div></div>")
+                .addClass("description")
+                .appendTo(that.element);
+            $('<div></div>')
+                .addClass("window-title")
+                .text("Description")
+                .appendTo(descriptionDiv);
+            this.description = $("<input type='text'>")
+                .addClass("description-input")
+                .appendTo(descriptionDiv);
 
             var formulaDiv = $('<div></div>')
                 .addClass('target-function')
@@ -317,6 +329,10 @@
                 window.Commands.Execute("VariableEdited", {});
             });
 
+            this.description.bind("input change", function () {
+                that.options.description = that.description.val();
+                window.Commands.Execute("VariableEdited", {});
+            });
         },
 
         _inputsArray() {
@@ -355,6 +371,11 @@
                         this.formulaTextArea.val(that.options.formula);
                     window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
                     
+                    break;
+                case "description":
+                    that.options.description = value;
+                    if (this.description.val() !== that.options.description)
+                        this.description.val(that.options.description);
                     break;
                 case "inputs": 
                     this.options.inputs = value;

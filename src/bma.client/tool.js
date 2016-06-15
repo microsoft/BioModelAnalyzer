@@ -2979,13 +2979,15 @@ var BMA;
         })();
         Model.ContainerLayout = ContainerLayout;
         var VariableLayout = (function () {
-            function VariableLayout(id, positionX, positionY, cellX, cellY, angle) {
+            function VariableLayout(id, positionX, positionY, cellX, cellY, angle, description) {
+                if (description === void 0) { description = ""; }
                 this.id = id;
                 this.positionX = positionX;
                 this.positionY = positionY;
                 this.cellX = cellX;
                 this.cellY = cellY;
                 this.angle = angle;
+                this.description = description;
             }
             Object.defineProperty(VariableLayout.prototype, "Id", {
                 get: function () {
@@ -3025,6 +3027,13 @@ var BMA;
             Object.defineProperty(VariableLayout.prototype, "Angle", {
                 get: function () {
                     return this.angle;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(VariableLayout.prototype, "Description", {
+                get: function () {
+                    return this.description ? this.description : "";
                 },
                 enumerable: true,
                 configurable: true
@@ -3498,6 +3507,7 @@ var BMA;
                             CellX: v.CellX,
                             CellY: v.CellY,
                             Angle: v.Angle,
+                            Description: v.Description,
                         };
                     }),
                     Containers: layout.Containers.map(function (c) {
@@ -3526,7 +3536,7 @@ var BMA;
                     containers[i] = newContainer;
                 }
             }
-            var layout = new Model.Layout(containers, json.Layout.Variables.map(function (v) { return new Model.VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle); }));
+            var layout = new Model.Layout(containers, json.Layout.Variables.map(function (v) { return new Model.VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle, v.Description); }));
             return {
                 Model: model,
                 Layout: layout
@@ -4956,13 +4966,14 @@ var BMA;
                     name: this.variableEditor.bmaeditor('option', 'name'),
                     formula: this.variableEditor.bmaeditor('option', 'formula'),
                     rangeFrom: this.variableEditor.bmaeditor('option', 'rangeFrom'),
-                    rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo')
+                    rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo'),
+                    description: this.variableEditor.bmaeditor('option', 'description'),
                 };
             };
             VariableEditorDriver.prototype.SetValidation = function (val, message) {
                 this.variableEditor.bmaeditor("SetValidation", val, message);
             };
-            VariableEditorDriver.prototype.Initialize = function (variable, model) {
+            VariableEditorDriver.prototype.Initialize = function (variable, model, layout) {
                 this.variableEditor.bmaeditor('option', 'name', variable.Name);
                 var options = [];
                 var id = variable.Id;
@@ -4976,6 +4987,7 @@ var BMA;
                 this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
                 this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
                 this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
+                this.variableEditor.bmaeditor('option', 'description', layout.GetVariableById(variable.Id).Description);
             };
             VariableEditorDriver.prototype.Show = function (x, y) {
                 this.variableEditor.show();
@@ -6550,7 +6562,7 @@ var BMA;
                         var id = that.GetVariableAtPosition(args.x, args.y);
                         if (id !== undefined) {
                             that.editingId = id;
-                            that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
+                            that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout);
                             that.variableEditor.Show(args.screenX, args.screenY);
                             window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
                         }
@@ -6569,6 +6581,7 @@ var BMA;
                     var that = _this;
                     if (that.editingId !== undefined) {
                         var model = _this.undoRedoPresenter.Current.model; //add editingmodel
+                        var layout = _this.undoRedoPresenter.Current.layout;
                         var variables = model.Variables;
                         var editingVariableIndex = -1;
                         for (var i = 0; i < variables.length; i++) {
@@ -6581,6 +6594,7 @@ var BMA;
                             var params = that.variableEditor.GetVariableProperties();
                             //model.SetVariableProperties(variables[i].Id, params.name, params.rangeFrom, params.rangeTo, params.formula);//to editingmodel
                             var newVariables = [];
+                            var newVariablesLayout = [];
                             var newRelations = [];
                             for (var j = 0; j < model.Variables.length; j++) {
                                 if (model.Variables[j].Id === variables[i].Id) {
@@ -6593,6 +6607,10 @@ var BMA;
                             for (var j = 0; j < model.Relationships.length; j++) {
                                 newRelations.push(new BMA.Model.Relationship(model.Relationships[j].Id, model.Relationships[j].FromVariableId, model.Relationships[j].ToVariableId, model.Relationships[j].Type));
                             }
+                            for (var j = 0; j < layout.Variables.length; j++) {
+                                newVariablesLayout.push(new BMA.Model.VariableLayout(layout.Variables[j].Id, layout.Variables[j].PositionX, layout.Variables[j].PositionY, layout.Variables[j].CellX, layout.Variables[j].CellY, layout.Variables[j].Angle, (j == editingVariableIndex && params.description !== undefined) ?
+                                    params.description : layout.Variables[j].Description));
+                            }
                             if (!(model.Variables[editingVariableIndex].Name === newVariables[editingVariableIndex].Name
                                 && model.Variables[editingVariableIndex].RangeFrom === newVariables[editingVariableIndex].RangeFrom
                                 && model.Variables[editingVariableIndex].RangeTo === newVariables[editingVariableIndex].RangeTo
@@ -6601,7 +6619,12 @@ var BMA;
                                 that.variableEditedId = that.editingId;
                                 that.isVariableEdited = true;
                             }
-                            that.RefreshOutput(that.editingModel);
+                            if (!(layout.Variables[editingVariableIndex].Description == newVariablesLayout[editingVariableIndex].Description)) {
+                                that.editingLayout = new BMA.Model.Layout(layout.Containers, newVariablesLayout);
+                                that.variableEditedId = that.editingId;
+                                that.isVariableEdited = true;
+                            }
+                            that.RefreshOutput(that.editingModel, that.editingLayout);
                         }
                     }
                 });
@@ -6614,7 +6637,7 @@ var BMA;
                             var variablesLayout = [];
                             var containersLayout = [];
                             for (var i = 0; i < layout.Variables.length; i++) {
-                                variablesLayout.push(new BMA.Model.VariableLayout(layout.Variables[i].Id, layout.Variables[i].PositionX, layout.Variables[i].PositionY, layout.Variables[i].CellX, layout.Variables[i].CellY, layout.Variables[i].Angle));
+                                variablesLayout.push(new BMA.Model.VariableLayout(layout.Variables[i].Id, layout.Variables[i].PositionX, layout.Variables[i].PositionY, layout.Variables[i].CellX, layout.Variables[i].CellY, layout.Variables[i].Angle, layout.Variables[i].Description));
                             }
                             for (var i = 0; i < layout.Containers.length; i++) {
                                 containersLayout.push(new BMA.Model.ContainerLayout(layout.Containers[i].Id, (layout.Containers[i].Id === that.editingId) ?
@@ -6725,7 +6748,7 @@ var BMA;
                                 var offsetX = variableLayout.PositionX - oldContainerOffset.x;
                                 var offsetY = variableLayout.PositionY - oldContainerOffset.y;
                                 variables.push(new BMA.Model.Variable(that.variableIndex, newContainerId, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
-                                variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, newContainerOffset.x + offsetX, newContainerOffset.y + offsetY, 0, 0, variableLayout.Angle));
+                                variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, newContainerOffset.x + offsetX, newContainerOffset.y + offsetY, 0, 0, variableLayout.Angle, variableLayout.Description));
                             }
                             for (var i = 0; i < that.clipboard.Realtionships.length; i++) {
                                 var relationship = that.clipboard.Realtionships[i];
@@ -6745,7 +6768,7 @@ var BMA;
                             var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
                             var container = that.GetContainerFromGridCell(gridCell);
                             variables.push(new BMA.Model.Variable(that.variableIndex, container && container.Id ? container.Id : 0, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
-                            variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle));
+                            variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle, variableLayout.Description));
                             var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                             that.undoRedoPresenter.Dup(newmodel, newlayout);
@@ -6763,7 +6786,7 @@ var BMA;
                     if (that.contextElement !== undefined && that.contextElement.type === "variable") {
                         var id = that.contextElement.id;
                         that.editingId = id;
-                        that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
+                        that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout);
                         that.variableEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
                         window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
                     }
@@ -6805,7 +6828,7 @@ var BMA;
                         if (that.editingId !== undefined) {
                             var v = that.undoRedoPresenter.Current.model.GetVariableById(that.editingId);
                             if (v !== undefined) {
-                                that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, that.editingId).model, that.undoRedoPresenter.Current.model);
+                                that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, that.editingId).model, that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout);
                             }
                             else {
                                 that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(that.editingId));
@@ -6836,7 +6859,7 @@ var BMA;
                     _this.containerEditor.Hide();
                     if (that.isVariableEdited) {
                         that.editingModel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(that.variableEditedId, that.undoRedoPresenter.Current.model, that.editingModel);
-                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel, that.editingLayout ? that.editingLayout : appModel.Layout);
                         that.variableEditedId = undefined;
                         that.editingModel = undefined;
                         that.isVariableEdited = false;
@@ -6851,7 +6874,7 @@ var BMA;
                     _this.variableEditor.Hide();
                     if (that.isVariableEdited) {
                         that.editingModel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(that.variableEditedId, that.undoRedoPresenter.Current.model, that.editingModel);
-                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel, that.editingLayout ? that.editingLayout : appModel.Layout);
                         that.variableEditedId = undefined;
                         that.editingModel = undefined;
                         that.isVariableEdited = false;
@@ -6941,7 +6964,7 @@ var BMA;
                 variableEditorDriver.SetOnClosingCallback(function () {
                     if (that.isVariableEdited) {
                         that.editingModel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(that.variableEditedId, that.undoRedoPresenter.Current.model, that.editingModel);
-                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel, that.editingLayout ? that.editingLayout : appModel.Layout);
                         that.editingModel = undefined;
                         that.variableEditedId = undefined;
                         that.isVariableEdited = false;
@@ -6998,7 +7021,7 @@ var BMA;
                         return;
                     }
                     else if (that.stagingVariable !== undefined) {
-                        that.stagingVariable.layout = new BMA.Model.VariableLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
+                        that.stagingVariable.layout = new BMA.Model.VariableLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0, that.stagingVariable.layout.Description);
                         if (that.svg !== undefined) {
                             that.driver.DrawLayer2(that.CreateStagingSvg());
                         }
@@ -7424,7 +7447,7 @@ var BMA;
                                             if (variables[j].ContainerId === id) {
                                                 var vlX = variableLayouts[j].PositionX;
                                                 var vlY = variableLayouts[j].PositionY;
-                                                variableLayouts[j] = new BMA.Model.VariableLayout(variableLayouts[j].Id, vlX - oldContainerOffset.x + newContainerOffset.x, vlY - oldContainerOffset.y + newContainerOffset.y, 0, 0, variableLayouts[j].Angle);
+                                                variableLayouts[j] = new BMA.Model.VariableLayout(variableLayouts[j].Id, vlX - oldContainerOffset.x + newContainerOffset.x, vlY - oldContainerOffset.y + newContainerOffset.y, 0, 0, variableLayouts[j].Angle, variableLayouts[j].Description);
                                             }
                                         }
                                     }
@@ -7447,7 +7470,7 @@ var BMA;
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
                                 if (variables[i].Id === id) {
-                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0, variableLayouts[i].Description);
                                 }
                             }
                         }
@@ -7474,7 +7497,7 @@ var BMA;
                                     if (vrbl.ContainerId !== container.Id) {
                                         variables[i] = new BMA.Model.Variable(vrbl.Id, container.Id, vrbl.Type, vrbl.Name, vrbl.RangeFrom, vrbl.RangeTo, vrbl.Formula);
                                     }
-                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0, variableLayouts[i].Description);
                                 }
                             }
                         }
@@ -7515,7 +7538,7 @@ var BMA;
                                     if (vrbl.ContainerId !== container.Id) {
                                         variables[i] = new BMA.Model.Variable(vrbl.Id, container.Id, vrbl.Type, vrbl.Name, vrbl.RangeFrom, vrbl.RangeTo, vrbl.Formula);
                                     }
-                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, angle);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, angle, variableLayouts[i].Description);
                                 }
                             }
                         }
@@ -11920,6 +11943,7 @@ var BMA;
             operators1: ["+", "-", "*", "/"],
             operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
             inputs: [],
+            description: "",
             formula: "",
             approved: undefined,
             oneditorclosing: undefined
@@ -12042,6 +12066,16 @@ var BMA;
                 that._setOption("rangeTo", valu - 1);
                 window.Commands.Execute("VariableEdited", {});
             });
+            var descriptionDiv = $("<div></div>")
+                .addClass("description")
+                .appendTo(that.element);
+            $('<div></div>')
+                .addClass("window-title")
+                .text("Description")
+                .appendTo(descriptionDiv);
+            this.description = $("<input type='text'>")
+                .addClass("description-input")
+                .appendTo(descriptionDiv);
             var formulaDiv = $('<div></div>')
                 .addClass('target-function')
                 .appendTo(that.element);
@@ -12170,6 +12204,10 @@ var BMA;
                 that._setOption("formula", that.formulaTextArea.val());
                 window.Commands.Execute("VariableEdited", {});
             });
+            this.description.bind("input change", function () {
+                that.options.description = that.description.val();
+                window.Commands.Execute("VariableEdited", {});
+            });
         },
         _inputsArray: function () {
             var inputs = this.options.inputs;
@@ -12211,6 +12249,11 @@ var BMA;
                     if (this.formulaTextArea.val() !== that.options.formula)
                         this.formulaTextArea.val(that.options.formula);
                     window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
+                    break;
+                case "description":
+                    that.options.description = value;
+                    if (this.description.val() !== that.options.description)
+                        this.description.val(that.options.description);
                     break;
                 case "inputs":
                     this.options.inputs = value;

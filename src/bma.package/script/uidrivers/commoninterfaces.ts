@@ -45,9 +45,9 @@ module BMA {
 
         export interface IVariableEditor {
             GetVariableProperties(): {
-                name: string; formula: string; rangeFrom: number; rangeTo: number;
+                name: string; formula: string; rangeFrom: number; rangeTo: number; description: string;
             };
-            Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel);
+            Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel, layout: BMA.Model.Layout);
             Show(x: number, y: number);
             Hide();
             SetValidation(val: boolean, message: string);
