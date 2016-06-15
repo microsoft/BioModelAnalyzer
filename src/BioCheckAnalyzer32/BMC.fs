@@ -145,15 +145,14 @@ let change_to_right_length (simulation : Map<QN.var, int> list) (loop : int) (de
 // None -> no useable simulation was found (for this length)
 // Some (res, model) -> a useable simulation was found and res indicates whehter 
 //                      the simulation satisfies (true) or does not satisfy (false) the formula
-let SimulationBasedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var, int list> list) = 
-    let initial_ranges = paths.Head
-    let initial_values = Map.fold (fun m k (l : int list) -> Map.add k l.Head m) Map.empty initial_ranges
+let SimulationBasedMC (ltl_formula : LTLFormulaType) network (range : Map<QN.var, int list>) req_length = 
+    let initial_values = Map.fold (fun m k (l : int list) -> Map.add k l.Head m) Map.empty range
     let (simulation, loop) = Simulate.simulate_up_to_loop network initial_values
-    let (right_length_sim, right_length_loop) = change_to_right_length simulation loop paths.Length
+    let (right_length_sim, right_length_loop) = change_to_right_length simulation loop req_length
 
     // If the simulation is converted to the right length it can be used
     // otherwise, it cannot be used
-    if right_length_sim.Length = paths.Length then 
+    if right_length_sim.Length = req_length then 
        let list_simulation = List.map (fun elem -> (Map.map (fun key t -> [t]) elem)) right_length_sim 
        let (res, model) = SingleSideBoundedMC ltl_formula network list_simulation right_length_loop true
        if res then Some (res, model)
@@ -204,7 +203,7 @@ let SimulationBasedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var
 // res2 - true iff an excetution satisfying the negation of the formula has been found
 // model2 - a model satisfying the negation of the formula (if found) 
 let DoubleBoundedMCWithSim (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int list> list) check_both =
-    let outcome = SimulationBasedMC ltl_formula network paths
+    let outcome = SimulationBasedMC ltl_formula network paths.Head paths.Length
     let (res1, model1) =
         match outcome with
         | Some (true, model) -> (true, model)
