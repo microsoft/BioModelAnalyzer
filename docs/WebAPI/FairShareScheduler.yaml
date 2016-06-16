@@ -1,0 +1,52 @@
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  version: "0.0.1"
+  title: FairShareScheduler
+  
+basePath: /api/lra
+
+# Describe your paths here
+paths:
+  /{appId}:
+    get:
+      description: |
+        Gets status of the job.
+      parameters: 
+        - name: jobId
+          in: query
+          description: Identifies the job. This is the identifier that is returned when the job is added
+          required: true
+          type: string
+          format: guid
+        - name: appId
+          in: path
+          description: Identifies the application that is sending the job
+          required: true
+          type: string
+          format: guid
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        404:
+          description: There is no job with the given job id and application id
+        200:
+          description: Completed - the job is succeeded
+        201:
+          description: Queued - the job is queued and awaits to be chosen by a worker
+        202:
+          description: Executing - the job is being executed
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            title: ArrayOfPersons
+            type: array
+            items:
+              title: Person
+              type: object
+              properties:
+                name:
+                  type: string
+                single:
+                  type: boolean

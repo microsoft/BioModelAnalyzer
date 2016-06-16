@@ -31,33 +31,39 @@ let parseStatus status =
     | _ -> failwith "Unexpected job status"
 
 module JobProperties =  
+    let JobId = "JobId"
+    let AppId = "PartitionKey"
+    let EntryId = "RowKey"
     let Status = "Status"
+    let StatusInformation = "StatusInformation"
     let Result = "Result"
     let QueueName = "QueueName"
 
-type JobEntity(jobId : JobId, appId : AppId) =
+type JobEntity(entryId : Guid, appId : AppId) =
     inherit TableEntity()
 
     do 
-        base.RowKey <- jobId.ToString()
+        base.RowKey <- entryId.ToString()
         base.PartitionKey <- appId.ToString()
 
     new() = JobEntity(Guid.Empty, Guid.Empty) 
 
+    member val JobId = Guid.Empty with get, set
     member val Request = "" with get, set
     member val Result = "" with get, set
     member val Status = "" with get, set
+    member val StatusInformation = "" with get, set
     member val QueueName = "" with get, set
 
 type JobMessage() =
-    member val jobId = "" with get, set
+    member val entryId = "" with get, set
     member val appId = "" with get, set
 
 
-let buildQueueMessage (jobId : JobId, appId : AppId) =
-    sprintf "{ 'jobId' : '%O', 'appId' : '%O' }" jobId appId
+let buildQueueMessage (entryId : Guid, appId : AppId) =
+    sprintf "{ 'entryId' : '%O', 'appId' : '%O' }" entryId appId
 
-let parseQueueMessage (json : string) : JobId * AppId =
+let parseQueueMessage (json : string) : Guid * AppId =
     let js = JObject.Parse json
-    js.["jobId"].Value<string>() |> Guid.Parse,
+    js.["entryId"].Value<string>() |> Guid.Parse,
     js.["appId"].Value<string>() |> Guid.Parse

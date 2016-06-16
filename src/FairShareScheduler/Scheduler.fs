@@ -35,12 +35,23 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
     let blobClient = settings.StorageAccount.CreateCloudBlobClient()
     let container = blobClient.GetContainerReference (getBlobContainerName settings.Name)
     
-    let getResult (resultBlobName: string) =
-        let blob = container.GetBlockBlobReference(resultBlobName)
+    let getBlobContent (blobName: string) =
+        let blob = container.GetBlockBlobReference(blobName)
         let stream = new System.IO.MemoryStream()
         blob.DownloadToStream(stream)
         stream.Position <- 0L
         stream :> System.IO.Stream
+
+    let getJobEntries (appId: AppId, jobId: JobId) = 
+        let query = 
+            TableQuery<JobEntity>()
+                .Where(
+                    TableQuery.CombineFilters(
+                        TableQuery.GenerateFilterCondition(JobProperties.AppId, QueryComparisons.Equal, appId.ToString()),
+                        TableOperators.And,
+                        TableQuery.GenerateFilterConditionForGuid(JobProperties.JobId, QueryComparisons.Equal, jobId)))
+                .Select([| JobProperties.EntryId; JobProperties.JobId; JobProperties.Status; JobProperties.StatusInformation; JobProperties.Result |])
+        table.ExecuteQuery(query)
     
     do 
         table.CreateIfNotExists() |> ignore  
@@ -51,63 +62,58 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
 
         member x.AddJob (job : Job) : JobId =
             let jobId = Guid.NewGuid()
+            let entryId = jobId
             let queueIdx = Math.Abs(job.AppId.GetHashCode()) % settings.MaxNumberOfQueues
             let queueName = getQueueName queueIdx settings.Name
 
-            let blob = container.GetBlockBlobReference (getJobRequestBlobName jobId settings.Name)
-            blob.UploadFromStream(job.Body)
+            let blobReq = container.GetBlockBlobReference (getJobRequestBlobName jobId settings.Name)
+            blobReq.UploadFromStream(job.Body)
 
-            let jobEntity = JobEntity(jobId, job.AppId)
-            jobEntity.Request <- blob.Name
+            let blobRes = container.GetBlockBlobReference (getJobResultBlobName jobId settings.Name)
+            blobRes.UploadFromStream(job.Body)
+
+            let jobEntity = JobEntity(entryId, job.AppId)
+            jobEntity.JobId <- jobId
+            jobEntity.Request <- blobReq.Name
+            jobEntity.Result <- blobRes.Name
             jobEntity.Status <- status JobStatus.Queued
             jobEntity.QueueName <- queueName
 
             let insert = TableOperation.Insert(jobEntity)
             table.Execute(insert) |> ignore
-            logInfo (sprintf "Job added to the table with id = %O, queue = %s" jobId queueName)
+            logInfo (sprintf "Job added to the table with jobId = %O, queue = %s" jobId queueName)
 
             let queue = queueClient.GetQueueReference(queueName)
             queue.CreateIfNotExists() |> ignore
-            queue.AddMessage(CloudQueueMessage(buildQueueMessage(jobId, job.AppId)))
+            queue.AddMessage(CloudQueueMessage(buildQueueMessage(entryId, job.AppId)))
             logInfo (sprintf "Job %O is queued" jobId)
             jobId
 
         member x.TryGetStatus (appId: AppId, jobId: JobId) : JobStatus option =
-            let cols = System.Collections.Generic.List<string>()
-            cols.Add(JobProperties.Status)
-            let retrieveOperation = TableOperation.Retrieve<JobEntity>(appId.ToString(), jobId.ToString(), cols)
-            let r = table.Execute(retrieveOperation)
-            match r.HttpStatusCode with
-            | error when error < 200 || error >= 300 -> 
-                logInfo (sprintf "GetStatus for job %O returned error code %d" jobId error)
+            match getJobEntries (appId, jobId) |> Seq.toList with
+            | [] ->
+                logInfo (sprintf "Job %O is not found" jobId)
                 None
-            | success ->
-                match r.Result with
-                | :? JobEntity as job ->
-                    job.Status |> parseStatus |> Some
-                | _ ->
-                    logInfo (sprintf "GetStatus for job %O returned code %d but not a JobEntity instance" jobId success)
-                    None
+            | jobEntries ->
+                jobEntries 
+                |> List.fold(fun rs s -> 
+                    match parseStatus s.Status, rs with
+                    | JobStatus.Succeeded, _ | _, JobStatus.Succeeded -> JobStatus.Succeeded
+                    | JobStatus.Failed, _ | _, JobStatus.Failed -> JobStatus.Failed
+                    | JobStatus.Executing, _ | _, JobStatus.Executing -> JobStatus.Executing
+                    | _ -> JobStatus.Queued
+                    ) JobStatus.Queued
+                |> Some
 
         member x.TryGetResult (appId: AppId, jobId: JobId) : IO.Stream option =
-            let cols = System.Collections.Generic.List<string>()
-            cols.Add(JobProperties.Status)
-            cols.Add(JobProperties.Result)
-            let retrieveOperation = TableOperation.Retrieve<JobEntity>(appId.ToString(), jobId.ToString(), cols)
-            let r = table.Execute(retrieveOperation)
-            match r.HttpStatusCode with
-            | error when error < 200 || error >= 300 -> 
-                logInfo (sprintf "GetResult for job %O returned error code %d" jobId error)
+            match getJobEntries (appId, jobId) |> Seq.toList with
+            | [] ->
+                logInfo (sprintf "Job %O is not found" jobId)
                 None
-            | success ->
-                match r.Result with
-                | :? JobEntity as job ->
-                    match parseStatus job.Status with
-                    | JobStatus.Succeeded ->
-                        getResult job.Result |> Some
-                    | _ -> 
-                        logInfo (sprintf "GetResult for job %O: job has status %A; cannot return the result for it" jobId job.Status)
-                        None
-                | _ ->
-                    logInfo (sprintf "GetStatus for job %O returned code %d but not a JobEntity instance" jobId success)
-                    None
+            | jobEntries ->
+                jobEntries 
+                |> List.tryPick(fun entry -> 
+                    match parseStatus entry.Status with
+                    | JobStatus.Succeeded -> Some entry.Result
+                    | _ -> None)
+                |> Option.map(getBlobContent)

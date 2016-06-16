@@ -4,7 +4,6 @@ open System
 open System.Threading
 open System.Threading.Tasks
 open Microsoft.WindowsAzure.Storage
-open Microsoft.WindowsAzure.Storage
 open Microsoft.WindowsAzure.Storage.Table
 open Microsoft.WindowsAzure.Storage.Table.Queryable
 open bma.Cloud.Naming
@@ -26,84 +25,100 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
     
     let mutable disp : IDisposable option = None     
 
-    let handle (doJob: (Guid * IO.Stream -> IO.Stream), pollingInterval: TimeSpan, maxPollingInterval: TimeSpan) =
-            if(disp.IsSome) then failwith "The worker is already started"
+    let tryGetJob (entryId:JobId, appId:AppId) : JobEntity option =
+        let rkey = entryId.ToString()
+        let pkey = appId.ToString()
+        let retrieveOperation = TableOperation.Retrieve<JobEntity>(pkey, rkey)
+        let r = table.Execute(retrieveOperation)
+        match r.Result with
+        | null -> None // couldn't be retrieved (considering as not found)
+        | _ as job -> job :?> JobEntity |> Some
 
-            let getJob (jobId:JobId, appId:AppId) =
-                let rkey = jobId.ToString()
-                let pkey = appId.ToString()
-                let retrieveOperation = TableOperation.Retrieve<JobEntity>(pkey, rkey)
-                let r = table.Execute(retrieveOperation)
-                let job = r.Result :?> JobEntity
-                job
+    let upsertStatus (job : JobEntity) (jobStatus:JobStatus) (info:string) =
+        job.Status <- status jobStatus
+        job.StatusInformation <- info
+        let op = TableOperation.InsertOrReplace(job)
+        let entity = table.Execute(op)
+        match entity.Result with
+        | null -> failwith "Couldn't retrieve job entry when upserting it"
+        | _ -> ()
 
-            let updateStatus (job : JobEntity) (jobStatus:JobStatus) (resultBlobName:string option) =
-                job.Status <- status jobStatus
-                resultBlobName |> Option.iter (fun blobName -> job.Result <- blobName)
-                let merge = TableOperation.Merge(job)
-                table.Execute(merge) |> ignore
+    let getJobRequest (blobName : string) =
+        let blob = container.GetBlockBlobReference(blobName)
+        let stream = new System.IO.MemoryStream()
+        blob.DownloadToStream(stream)
+        stream.Position <- 0L
+        stream :> System.IO.Stream
 
-            let getJobRequest (blobName : string) =
-                let blob = container.GetBlockBlobReference(blobName)
-                let stream = new System.IO.MemoryStream()
-                blob.DownloadToStream(stream)
-                stream.Position <- 0L
-                stream :> System.IO.Stream
+    let putResult (resultBlobName:string) (result : IO.Stream) =                
+        let blob = container.GetBlockBlobReference(resultBlobName)
+        blob.UploadFromStream(result)
 
-            let putResult (jobId:JobId) (resultBlobName:string) (result : IO.Stream) =                
-                let blob = container.GetBlockBlobReference(resultBlobName)
-                blob.UploadFromStream(result)
+    let handleMessage (doJob: Guid * IO.Stream -> IO.Stream) (m : Queue.CloudQueueMessage) =
+        let entryId, appId = parseQueueMessage m.AsString
+        match tryGetJob (entryId, appId) with
+        | Some job -> // job status is "Queued"
+            //sprintf "Received job ticket %O" jobId |> info
+            job.RowKey <- Guid.NewGuid().ToString() // new entry id
 
-            let tryHandleJob() =
-                let query = 
-                    TableQuery<JobEntity>()
-                     .Where(
-                        TableQuery.CombineFilters(
-                            TableQuery.GenerateFilterCondition(JobProperties.Status, QueryComparisons.Equal, status JobStatus.Queued),
-                            TableOperators.Or,
-                            TableQuery.GenerateFilterCondition(JobProperties.Status, QueryComparisons.Equal, status JobStatus.Executing)))
-                     .Select([| JobProperties.QueueName |])
+            upsertStatus job JobStatus.Executing String.Empty
+
+            use jobReq = getJobRequest job.Request
+
+            let mutable result = Choice2Of2(null)
+            try
+                result <- Choice1Of2(doJob (job.JobId, jobReq))
+                //sprintf "Job %O request is complete" jobId |> info
+            with
+            | exn -> // job failed
+                //sprintf "Job %O failed" jobId |> error
+                result <- Choice2Of2(exn)
+                
+            match result with
+            | Choice1Of2 outcome ->
+                outcome |> putResult job.Result
+                outcome.Dispose()
+                upsertStatus job JobStatus.Succeeded String.Empty
+            | Choice2Of2 exn ->
+                upsertStatus job JobStatus.Failed (sprintf "Job execution failed: %A" exn)
+        | None -> () // nothing to do; the job is either cancelled or complete&cleared
+
+    let selectQueue () =
+        let query = 
+            TableQuery<JobEntity>()
+                .Where(TableQuery.GenerateFilterCondition(JobProperties.Status, QueryComparisons.Equal, status JobStatus.Queued))
+                .Select([| JobProperties.QueueName |])
            
-                let queueNames = table.ExecuteQuery(query) |> Seq.map(fun job -> job.QueueName) |> Seq.distinct |> Seq.toArray
-                if queueNames.Length > 0 then
-                    let queueName = queueNames.[rand.Next queueNames.Length]
-                    //info (sprintf "Chosen queue is %s" queueName)
+        let queueNames = table.ExecuteQuery(query) |> Seq.map(fun job -> job.QueueName) |> Seq.distinct |> Seq.toArray
+        if queueNames.Length > 0 then
+            let queueName = queueNames.[rand.Next queueNames.Length]
+            let queue = queueClient.GetQueueReference(queueName)
+            if queue.Exists() then
+                //info (sprintf "Chosen queue is %s" queueName)
+                Some queue
+            else None
+        else None
 
-                    let queue = queueClient.GetQueueReference(queueName)
-                    queue.CreateIfNotExists() |> ignore
-
-                    match queue.GetMessage(visibilityTimeout = Nullable(TimeSpan.FromHours 1.0)) with
-                    | null -> 
-                        //info "No message"
-                        false
-                    | m ->
-                        let jobId, appId = parseQueueMessage m.AsString
-                        let resultBlobName = getJobResultBlobName jobId schedulerName
-
-                        //sprintf "Received job ticket %O" jobId |> info
-                        let job = getJob (jobId, appId) 
-                        updateStatus job JobStatus.Executing (Some resultBlobName)
-
-                        use jobReq = getJobRequest job.Request
-                        use result = doJob (jobId, jobReq)
-                        //sprintf "Job %O request is complete" jobId |> info
-
-                        result |> putResult jobId resultBlobName
-
-                        queue.DeleteMessage(m)
-                        // todo: check if delete failed
-                        // TODO: what is this role is stopped before the status updated?
-                        updateStatus job JobStatus.Succeeded None
-                        true
-                else
-                    //info "No queued message in the job table"
-                    false
-
-            let onError (exc:exn) = // if tryHandleJob() failed
-                // error "..."
-                true // go on
-        
-            PollingService.StartPolling(pollingInterval, maxPollingInterval, tryHandleJob, onError)
+    let tryNextMessage (doJob: Guid * IO.Stream -> IO.Stream) () =
+        match selectQueue() with
+        | Some queue ->
+            let visibilityTimeout = TimeSpan.FromMinutes 70.0
+            match queue.GetMessage(visibilityTimeout = Nullable visibilityTimeout) with       
+            | null -> false                 
+            | m ->
+                m |> handleMessage doJob // fails only because of infrastructure problems
+                try
+                    queue.DeleteMessage(m)
+                    true
+                with
+                | :? StorageException as ex when ex.RequestInformation.ExtendedErrorInformation.ErrorCode = "MessageNotFound" -> // we don't own the message already
+                    // http://blog.smarx.com/posts/deleting-windows-azure-queue-messages-handling-exceptions
+                    // pop receipt must be invalid
+                    true        
+                    // trace "Cannot delete the message because the pop receipt is invalid"
+                | exn -> 
+                    raise exn
+        | None -> false
 
     do
         container.CreateIfNotExists() |> ignore
@@ -114,7 +129,11 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
         member x.Dispose() = disp |> Option.iter(fun d -> d.Dispose())
     
         member x.Process (doJob: Func<Guid, IO.Stream, IO.Stream>, pollingInterval: TimeSpan, maxPollingInterval: TimeSpan) =
-            handle(doJob.Invoke, pollingInterval, maxPollingInterval)
+            if(disp.IsSome) then failwith "The worker is already started"
+            let onError (exc:exn) = // if tryNextMessage() failed
+                // error "..."
+                true // go on; the message will be taken by another worker
+            PollingService.StartPolling(pollingInterval, maxPollingInterval, tryNextMessage (doJob.Invoke), onError)
 
 
 [<Sealed>]

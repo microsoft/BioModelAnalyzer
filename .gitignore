@@ -3,6 +3,8 @@
 
 .vs/
 
+*.js.map
+
 # User-specific files
 *.suo
 *.user
