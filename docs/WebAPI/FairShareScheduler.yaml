@@ -7,9 +7,28 @@ info:
   
 basePath: /api/lra
 
+host: localhost:8223
+
 # Describe your paths here
 paths:
   /{appId}:
+    post:
+      description: |
+        Schedules new job.
+      parameters:
+        - name: appId
+          in: path
+          description: Identifies the application that is sending the job
+          required: true
+          type: string
+          format: guid
+      responses:
+        200:
+          description: The job is scheduled to execute.
+          schema: 
+            description: Job identifier that allows to get status and result of the job.
+            type: string
+            format: guid
     get:
       description: |
         Gets status of the job.
@@ -32,21 +51,37 @@ paths:
         404:
           description: There is no job with the given job id and application id
         200:
-          description: Completed - the job is succeeded
+          description: Succeeded - the job is succeeded
         201:
           description: Queued - the job is queued and awaits to be chosen by a worker
         202:
           description: Executing - the job is being executed
-          # A schema describing your response object.
-          # Use JSON Schema format
+        203:
+          description: Failed - the job is failed
           schema:
-            title: ArrayOfPersons
-            type: array
-            items:
-              title: Person
-              type: object
-              properties:
-                name:
-                  type: string
-                single:
-                  type: boolean
+            description: Description of the failure.
+            type: string
+  /{appId}/result:
+    get:
+      description: |
+        Gets result of the succeeded job.
+      parameters: 
+        - name: jobId
+          in: query
+          description: Identifies the job. This is the identifier that is returned when the job is added
+          required: true
+          type: string
+          format: guid
+        - name: appId
+          in: path
+          description: Identifies the application that is sending the job
+          required: true
+          type: string
+          format: guid
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        404:
+          description: Either there is no job with the given job id and application id, or the job is not succeeded.
+        200:
+          description: The job is succeeded and its result is in the response.

@@ -8,6 +8,8 @@ open Microsoft.WindowsAzure.Storage.Table
 open Microsoft.WindowsAzure.Storage.Table.Queryable
 open bma.Cloud.Naming
 open bma.Cloud.Jobs
+open System.Diagnostics
+open Microsoft.WindowsAzure.Storage.Queue
 
 [<Interface>]
 type IWorker =
@@ -15,7 +17,7 @@ type IWorker =
     abstract Process : Func<Guid, IO.Stream, IO.Stream> * TimeSpan * TimeSpan -> unit
 
 [<Class>]
-type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerName : string) =
+type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerName : string, visibilityTimeout : TimeSpan, maxDequeueCount : int) =
     let rand = Random()
     let queueClient = storageAccount.CreateCloudQueueClient()
     let blobClient = storageAccount.CreateCloudBlobClient()
@@ -54,8 +56,14 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
         let blob = container.GetBlockBlobReference(resultBlobName)
         blob.UploadFromStream(result)
 
-    let handleMessage (doJob: Guid * IO.Stream -> IO.Stream) (m : Queue.CloudQueueMessage) =
-        let entryId, appId = parseQueueMessage m.AsString
+    let poisonMessage (entryId, appId) =
+        match tryGetJob (entryId, appId) with
+        | Some job -> 
+            job.RowKey <- Guid.NewGuid().ToString() 
+            upsertStatus job JobStatus.Failed (sprintf "The worker failed more than %d times during execution of the job %A" maxDequeueCount job.JobId)
+        | None -> () // nothing to do; the job is either cancelled or complete&cleared
+
+    let handleMessage (doJob: Guid * IO.Stream -> IO.Stream) (entryId, appId) =
         match tryGetJob (entryId, appId) with
         | Some job -> // job status is "Queued"
             //sprintf "Received job ticket %O" jobId |> info
@@ -99,25 +107,36 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
             else None
         else None
 
+    let parse (m : CloudQueueMessage) = parseQueueMessage m.AsString
+
+    let deleteMessage (queue : CloudQueue) (m : CloudQueueMessage) =
+        try
+            queue.DeleteMessage(m)
+            Trace.WriteLine(sprintf "Message '%s' deleted from the queue" m.AsString)
+        with
+        | :? StorageException as ex when ex.RequestInformation.ExtendedErrorInformation.ErrorCode = "MessageNotFound" -> // we don't own the message already
+            // http://blog.smarx.com/posts/deleting-windows-azure-queue-messages-handling-exceptions
+            Trace.WriteLine(sprintf "Cannot delete the message '%s' because the pop receipt is invalid" m.AsString)
+        | exn -> 
+            raise exn
+
+
+
     let tryNextMessage (doJob: Guid * IO.Stream -> IO.Stream) () =
         match selectQueue() with
         | Some queue ->
-            let visibilityTimeout = TimeSpan.FromMinutes 70.0
             match queue.GetMessage(visibilityTimeout = Nullable visibilityTimeout) with       
             | null -> false                 
+            | m when m.DequeueCount < maxDequeueCount ->
+                use lease = new AutoLeaseRenewal(queue, m, visibilityTimeout)
+                parse m |> handleMessage doJob // fails only because of infrastructure problems
+                deleteMessage queue m
+                true
             | m ->
-                m |> handleMessage doJob // fails only because of infrastructure problems
-                try
-                    queue.DeleteMessage(m)
-                    true
-                with
-                | :? StorageException as ex when ex.RequestInformation.ExtendedErrorInformation.ErrorCode = "MessageNotFound" -> // we don't own the message already
-                    // http://blog.smarx.com/posts/deleting-windows-azure-queue-messages-handling-exceptions
-                    // pop receipt must be invalid
-                    true        
-                    // trace "Cannot delete the message because the pop receipt is invalid"
-                | exn -> 
-                    raise exn
+                Trace.WriteLine(sprintf "Message '%s' is poisoned" m.AsString)
+                parse m |> poisonMessage
+                deleteMessage queue m
+                true
         | None -> false
 
     do
@@ -139,4 +158,4 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
 [<Sealed>]
 type Worker private () =
     static member Create (storageAccount : CloudStorageAccount, schedulerName : string) : IWorker =
-        upcast new FairShareWorker(storageAccount,schedulerName)
+        upcast new FairShareWorker(storageAccount, schedulerName, TimeSpan.FromMinutes 5.0, 3)
