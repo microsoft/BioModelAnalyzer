@@ -51,7 +51,7 @@
                 _svgCnt.svg({ onLoad: svgLoaded });
             }
 
-            var sizeChanged = false; //_svgCnt.width() !== finalRect.width || _svgCnt.height() !== finalRect.height;
+            var sizeChanged = _svgCnt.width() !== finalRect.width || _svgCnt.height() !== finalRect.height;
             if (sizeChanged) {
                 _svgCnt.width(finalRect.width).height(finalRect.height);
             }
@@ -5361,6 +5361,9 @@ var BMA;
             BMALRAProcessingService.prototype.Invoke = function (data) {
                 var that = this;
                 var result = $.Deferred();
+                result.progress(function (res) {
+                    return res;
+                });
                 $.ajax({
                     type: "POST",
                     url: that.serviceURL + that.userID,
@@ -5382,6 +5385,7 @@ var BMA;
                     url: that.serviceURL + that.userID + "/?jobId=" + id,
                 }).done(function (res) {
                     console.log("job status: " + res);
+                    result.notify(res);
                     if (res == "Succeeded") {
                         $.ajax({
                             type: "GET",
@@ -6005,6 +6009,11 @@ var BMA;
                         if (that.showresultcallback !== undefined) {
                             that.showresultcallback(showpositive);
                         }
+                    },
+                    oncancelrequest: function () {
+                        if (that.oncancelrequestcallback !== undefined) {
+                            that.oncancelrequestcallback();
+                        }
                     }
                 });
             }
@@ -6028,14 +6037,14 @@ var BMA;
                     options.isexpanded = false;
                 }
                 if (message)
-                    options.error = message;
+                    options.message = message;
                 this.compactltlresult.compactltlresult(options);
             };
             LTLResultsCompactViewer.prototype.SetMessage = function (message) {
-                this.compactltlresult.compactltlresult({ "error": message });
+                this.compactltlresult.compactltlresult({ "message": message });
             };
             LTLResultsCompactViewer.prototype.GetMessage = function () {
-                return this.compactltlresult.compactltlresult("option", "error");
+                return this.compactltlresult.compactltlresult("option", "message");
             };
             LTLResultsCompactViewer.prototype.SetSteps = function (steps) {
                 if (steps && steps > 0) {
@@ -6060,17 +6069,22 @@ var BMA;
             LTLResultsCompactViewer.prototype.SetOnStepsChangedCallback = function (callback) {
                 this.onstepschangedcallback = callback;
             };
+            LTLResultsCompactViewer.prototype.SetOnCancelRequestCallback = function (callback) {
+                this.oncancelrequestcallback = callback;
+            };
             LTLResultsCompactViewer.prototype.Destroy = function () {
                 this.compactltlresult.compactltlresult({
                     ontestrequested: undefined,
                     onstepschanged: undefined,
                     onexpanded: undefined,
-                    onshowresultsrequested: undefined
+                    onshowresultsrequested: undefined,
+                    oncancelrequest: undefined,
                 });
                 this.ltlrequested = undefined;
                 this.expandedcallback = undefined;
                 this.showresultcallback = undefined;
                 this.onstepschangedcallback = undefined;
+                this.oncancelrequestcallback = undefined;
                 this.compactltlresult.compactltlresult("destroy");
                 this.compactltlresult.empty();
             };
@@ -14160,12 +14174,13 @@ jQuery.fn.extend({
             status: "nottested",
             isexpanded: false,
             steps: 10,
-            error: undefined,
+            message: undefined,
             maxsteps: 999,
             ontestrequested: undefined,
             onstepschanged: undefined,
             onexpanded: undefined,
             onshowresultsrequested: undefined,
+            oncancelrequest: undefined,
         },
         _create: function () {
             this.element.empty();
@@ -14185,8 +14200,8 @@ jQuery.fn.extend({
                 case "nottested":
                     //if (this.options.isexpanded) {
                     var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    if (that.options.error) {
-                        var errorMessage = $("<div>" + that.options.error + "</div>").addClass("red").appendTo(ltltestdiv);
+                    if (that.options.message) {
+                        var errorMessage = $("<div>" + that.options.message + "</div>").addClass("red").appendTo(ltltestdiv);
                     }
                     var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(ltltestdiv);
                     var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
@@ -14313,10 +14328,20 @@ jQuery.fn.extend({
                     break;
                 case "processinglra":
                     var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    var message = $("<div>processing as long job</div>").addClass("grey").appendTo(ltltestdiv);
+                    var message = $("<div>processing as long job: </div>").addClass("grey").appendTo(ltltestdiv);
+                    var time = $("<div></div>").text(that.options.message).addClass("grey").appendTo(message);
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(ltltestdiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button></button>").appendTo(li);
+                    var cancelBtn = $("<button>Cancel</button>").addClass("cancel-button").appendTo(li).click(function () {
+                        if (that.options.oncancelrequest !== undefined) {
+                            that.options.oncancelrequest();
+                        }
+                        else {
+                            that.options.status = "nottested";
+                            that._createView();
+                        }
+                    });
                     li.addClass("spin");
                     that.createWaitAnim().appendTo(btn);
                     break;
@@ -14853,8 +14878,8 @@ jQuery.fn.extend({
                         needRefreshStates = true;
                     }
                     break;
-                case "error":
-                    if (that.options.error !== value)
+                case "message":
+                    if (that.options.message !== value)
                         needRefreshStates = true;
                     break;
                 default:
@@ -16776,6 +16801,10 @@ var BMA;
                                         }
                                         domplot.updateLayout();
                                         that.OnOperationsChanged(false);
+                                    }).progress(function (res) {
+                                        driver.SetMessage(res);
+                                        domplot.updateLayout();
+                                        that.OnOperationsChanged(false);
                                     });
                                 });
                             }).fail(function (xhr, textStatus, errorThrown) {
@@ -17094,6 +17123,14 @@ var BMA;
                         operation.AnalysisStatus = "nottested";
                         driver.SetMessage(undefined);
                     }
+                    that.OnOperationsChanged(false, true);
+                });
+                driver.SetOnCancelRequestCallback(function () {
+                    var status = operation.AnalysisStatus.split(', ');
+                    var parsedstatus = status[1] ? status[1] : "nottested";
+                    driver.SetStatus(parsedstatus);
+                    operation.AnalysisStatus = parsedstatus;
+                    dom.updateLayout();
                     that.OnOperationsChanged(false, true);
                 });
                 var bbox = operation.BoundingBox;

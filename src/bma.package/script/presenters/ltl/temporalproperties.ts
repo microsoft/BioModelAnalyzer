@@ -1054,6 +1054,10 @@ module BMA {
                                             }
                                             domplot.updateLayout();
                                             that.OnOperationsChanged(false);
+                                        }).progress(function (res) {
+                                            driver.SetMessage(res);
+                                            domplot.updateLayout();
+                                            that.OnOperationsChanged(false);
                                         });
                                     });
                                 }).fail(function (xhr, textStatus, errorThrown) {
@@ -1396,6 +1400,15 @@ module BMA {
                         operation.AnalysisStatus = "nottested";
                         driver.SetMessage(undefined);
                     }
+                    that.OnOperationsChanged(false, true);
+                });
+
+                driver.SetOnCancelRequestCallback(() => {
+                    var status = operation.AnalysisStatus.split(', ');
+                    var parsedstatus = status[1] ? status[1] : "nottested";
+                    driver.SetStatus(parsedstatus);
+                    operation.AnalysisStatus = parsedstatus;
+                    (<any>dom).updateLayout();
                     that.OnOperationsChanged(false, true);
                 });
 

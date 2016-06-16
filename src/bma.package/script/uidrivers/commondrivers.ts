@@ -622,6 +622,10 @@ module BMA {
                 var that = this;
                 var result = $.Deferred();
 
+                result.progress(function (res) {
+                    return res;
+                });
+
                 $.ajax({
                     type: "POST",
                     url: that.serviceURL + that.userID,
@@ -645,6 +649,7 @@ module BMA {
                     url: that.serviceURL + that.userID + "/?jobId=" + id,
                 }).done(function (res) {
                     console.log("job status: " + res);
+                    result.notify(res);
                     if (res == "Succeeded") {
                         $.ajax({
                             type: "GET",
@@ -659,8 +664,9 @@ module BMA {
                     }
                 }).fail(function (xhr, textStatus, errorThrown) {
                     result.reject(xhr, textStatus, errorThrown);
-                })
+                });
             }
+            
         }
 
         export class LTLAnalyzeService implements IServiceDriver {

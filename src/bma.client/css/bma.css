@@ -4632,3 +4632,9 @@ ui-icon-arrowthickstop-1-n {
 .action-button-small.grey.spin:hover {
   background-color: #AAA;
 }
+.action-button-small.grey.spin .cancel-button {
+  display: inline-block;
+}
+.action-button-small.grey.spin .cancel-button:hover {
+  color: white;
+}
