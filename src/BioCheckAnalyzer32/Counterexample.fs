@@ -24,7 +24,7 @@ let find_cex_cycle (net : QN.node list) (bounds : Map<QN.var, int*int>) =
         // old find cycle (looks for a cycle up to the number of steps in the network): 
 //        let cycle = Z.find_cycle_steps net diameter bounds //range
 
-    let cycle = Z.find_cycle_steps_optimized net bounds //range
+    let cycle = Z.find_cycle_steps_optimized net bounds true//range
 
     match cycle with
     | Some(x) -> Some(Result.CExCycle(x))
@@ -87,7 +87,7 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) (no_sat : bool
             match concurrencyType with
             | Synchronous ->
                 Log.log_debug "CEx(2): check whether the model cycles."
-                let cycle = Z.find_cycle_steps_optimized net bounds//range
+                let cycle = Z.find_cycle_steps_optimized net bounds true//range
 
                 match cycle with
                 | Some(x) -> Result.CExCycle(x)
@@ -107,19 +107,18 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) (no_sat : bool
             | Asynchronous -> 
                 Log.log_debug "CEx(2): check whether the model has a endcomponent."
                 //First find a cycle
-                let cycle = Z.find_cycle_steps_optimized net bounds
+                let cycle = Z.find_cycle_steps_optimized net bounds false
                 //Test to see if the cycle collapses in async space
                 match cycle with
-                | Some(x) -> let cycleStart =   Map.toList x 
-                                                |> List.filter (fun (varid,value) -> "0" = (varid.Split([|'^'|])).[1]  ) 
-                                                |> List.map (fun (varid,value) -> (int((varid.Split([|'^'|])).[0]),value)) 
-                                                |> Map.ofList
-                             let endstate = Simulate.dfsAsyncFixPoint net cycleStart
-                             match endstate with
-                             | Simulate.EndComponent(n) ->  let resultFriendlyFormat = List.map (fun item -> Map.toList item |> List.map (fun (varid,value) -> (string(varid),value)) |> Map.ofList) n 
-                                                            Result.CExEndComponent(resultFriendlyFormat)
-                             | _ -> failwith "Can't cope with fix points yet- needs to loop back and test for more cycles"
+                | Some(x) -> Result.CExEndComponent(x)
                 | None ->
-                    Log.log_debug "No cycle..."
-                    failwith "Not completed"
+                    Log.log_debug "No endComponent..."
+                    Log.log_debug "CEx(3): check whether the model has a fixpoint."
+                    let fix = Z.find_fixpoint net bounds(*was: range*)
+
+                    match fix with
+                    | Some(x) -> Result.CExFixpoint(x)
+                    | None ->
+                        Log.log_debug "...and no fixpoint???"
+                        Result.CExUnknown
 

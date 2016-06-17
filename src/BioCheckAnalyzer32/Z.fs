@@ -514,7 +514,7 @@ let find_cycle_steps network diameter bounds =
 // Postcondition:
 // The returned cycle has the last state and one of the states in the first
 // half of the path the same!
-let find_cycle_steps_optimized network bounds = 
+let find_cycle_steps_optimized network bounds synchronous = 
     let mutable cycle = None
     let rec find_cycle_of_length length (ctx : Context) =      
         let model = ref null
@@ -533,12 +533,12 @@ let find_cycle_steps_optimized network bounds =
         let sat = ctx.CheckAndGetModel (model)
         if (!model) <> null then (!model).Dispose()
 
-        match sat with
+        match (sat,synchronous) with
         // A path of the requested length does not exists in the model, may stop the search now
-        | LBool.False ->                 
+        | (LBool.False,_) ->                 
                 None
         // A path of the requested length exists, Check for a cycle in the range: length/2..length  
-        | LBool.True -> 
+        | (LBool.True,true) -> 
 
             ctx.Push()
            
@@ -565,7 +565,69 @@ let find_cycle_steps_optimized network bounds =
                 let res = Some(smallenv)
                 if (!model) <> null then (!model).Dispose()
                 res
-        | LBool.Undef -> None
+        | (LBool.True,false) -> 
+
+            ctx.Push()
+           
+            // Assert that we get a repetition (cycle) in the range : length/2..length  
+            let mutable loop_condition = ctx.MkFalse()
+            for time in [0..((length/2)-1)] do 
+                let k_loop = assert_states_equal network time length ctx
+                loop_condition <- ctx.MkOr(loop_condition, k_loop)
+                
+            ctx.AssertCnstr loop_condition
+
+            // Now go find that cycle
+            
+            let rec asyncLoop (ctx:Context) =
+                let model = ref null
+                let sat = ctx.CheckAndGetModel (model)
+                match sat with
+                | LBool.False -> 
+                    ctx.Pop()
+                    find_cycle_of_length (length*2) ctx
+                | LBool.True ->
+                    //There is a cycle, but is does it collapse to fix point?
+                    Log.log_debug "Testing for fix point"
+                    //Convert the env to a state and perform a simulation in async space
+                    let env = fixpoint_to_env (model_to_fixpoint !model)
+                    assert_not_model !model ctx
+                    if (!model) <> null then (!model).Dispose()
+                    let smallenv = extract_cycle_from_model env
+                    let state = Map.toList smallenv
+                                |> List.filter (fun (varid,value) -> "0" = (varid.Split([|'^'|])).[1]  ) 
+                                |> List.map (fun (varid,value) -> (int((varid.Split([|'^'|])).[0]),value)) 
+                                |> Map.ofList
+                    Log.log_debug (sprintf "Cycle start %A" state)
+                    let endstate = Simulate.dfsAsyncFixPoint network state
+                    match endstate with 
+                    | Simulate.EndComponent(n) -> 
+                    //This cycle leads to an endpoint- return the endpoint
+                        let r = List.mapi ( fun i state -> Map.fold (fun (acc:Map<string,int>) key value -> acc.Add((sprintf "%d^%d" key i),value) ) Map.empty state ) n
+                                |> List.fold (fun acc state -> Map.fold (fun (a:Map<string,int>) k v -> a.Add(k,v) ) acc state ) Map.empty
+                        Some(r)
+                    //This cycle collapses- try again until there are no more loops
+                    | Simulate.FixPoint(n) -> 
+                        Log.log_debug "Cycle collapsed- trying again"
+                        Log.log_debug (sprintf "Fixpoint %A" n)
+                        if (!model) <> null then (!model).Dispose()
+                        asyncLoop ctx
+
+            //failwith "Incomplete endpoint checking"
+            asyncLoop ctx
+        
+//            match sat with
+//            | LBool.False -> 
+//                find_cycle_of_length (length*2) ctx
+//            | LBool.True -> 
+//                // update cycle with the information from model
+//                let env = fixpoint_to_env (model_to_fixpoint !model)
+//                let smallenv = extract_cycle_from_model env
+//                let res = Some(smallenv)
+//                if (!model) <> null then (!model).Dispose()
+//                res
+        
+        | (LBool.Undef,_) -> None
      
     let cfg = new Config()
     cfg.SetParamValue("MODEL", "true")
