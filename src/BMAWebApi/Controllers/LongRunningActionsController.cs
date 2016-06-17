@@ -34,44 +34,58 @@ namespace bma.client.Controllers
             this.scheduler = scheduler;
         }
 
+        private HttpResponseMessage PlainText(HttpStatusCode status, string content)
+        {
+            var response = Request.CreateResponse(status);
+            response.Content = new StringContent(content, System.Text.Encoding.UTF8, "text/plain");
+            return response;
+        }
+
         // GET /api/lra/{appId} ? jobId=GUID
         // where {appId} is the application ID.
         // Returns the status of the job.
         // Returns 404 if there is no such job or appId is incorrect.
-        public string Get(Guid appId, Guid jobId)
+        public HttpResponseMessage Get(Guid appId, Guid jobId)
         {
             var status = scheduler.TryGetStatus(appId, jobId);
-            if (status != null) return bma.Cloud.Jobs.status(status.Value);
-
-            throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
+            if (status != null)
             {
-                Content = new StringContent("Job not found")
-            });
+                var st = status.Value.Item1;
+                var info = status.Value.Item2;
+                var s = bma.Cloud.Jobs.status(st);
+                switch (st)
+                {
+                    case Jobs.JobStatus.Succeeded:
+                        return PlainText(HttpStatusCode.OK /* 200 */, s);
+                    case Jobs.JobStatus.Queued:
+                        return PlainText(HttpStatusCode.Created /* 201 */, s);
+                    case Jobs.JobStatus.Executing:
+                        return PlainText(HttpStatusCode.Accepted /* 202 */, s);
+                    case Jobs.JobStatus.Failed:
+                        return PlainText((HttpStatusCode)203, info);
+                }
+                return Request.CreateResponse((HttpStatusCode)501, new HttpError("Unknown status"));
+            }
+
+            return Request.CreateResponse(HttpStatusCode.NotFound, new HttpError("Job not found"));
         }
 
         // DELETE /api/lra/{appId} ? jobId=GUID
         // where {appId} is the application ID.
         // Deletes the job and, if appropriate, cancels the execution.
         // Returns 404 if there is no such job or appId is incorrect.
-        public void Delete(Guid appId, Guid jobId)
+        public HttpResponseMessage DeleteJob(Guid appId, Guid jobId)
         {
-            bool deleted = false;
             try
             {
-                deleted = scheduler.DeleteJob(appId, jobId);                    
+                if (scheduler.DeleteJob(appId, jobId))
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                return Request.CreateResponse(HttpStatusCode.NotFound, new HttpError("Job not found"));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent(ex.ToString())
-                });
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new HttpError(ex, false));
             }
-            if(!deleted)
-                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
-                {
-                    Content = new StringContent("Job not found")
-                });
         }
 
         // POST /api/lra/{appId},
@@ -103,27 +117,31 @@ namespace bma.client.Controllers
             this.scheduler = scheduler;
         }
 
+        private static HttpContent Json(string content)
+        {
+            return new StringContent(content, System.Text.Encoding.UTF8, "application/json");
+        }
+
         [HttpGet]
         [ActionName("Result")]
         // GET /api/lra/{appId}/result ? jobId=GUID
         // where {appId} is the application ID.
         // Returns the status of the job.
         // Returns 404 if there is no such job or appId is incorrect.
-        public string GetResult(Guid appId, Guid jobId)
+        public HttpResponseMessage GetResult(Guid appId, Guid jobId)
         {
             var result = scheduler.TryGetResult(appId, jobId);
             if (result != null)
             {
-                using(StreamReader reader = new StreamReader(result.Value))
+                using (StreamReader reader = new StreamReader(result.Value))
                 {
-                    return reader.ReadToEnd();
+                    var s = reader.ReadToEnd();
+                    var response = Request.CreateResponse(HttpStatusCode.OK);
+                    response.Content = Json(s);
+                    return response;
                 }
             }
-
-            throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
-            {
-                Content = new StringContent("Job result is not available")
-            });
+            return Request.CreateResponse(HttpStatusCode.NotFound, new HttpError("Job result is not available"));
         }
     }
-    }
+}

@@ -20,7 +20,7 @@ type Job =
 type IScheduler =
     abstract AddJob : Job -> JobId
     abstract DeleteJob : AppId * JobId -> bool
-    abstract TryGetStatus : AppId * JobId -> JobStatus option
+    abstract TryGetStatus : AppId * JobId -> (JobStatus * string) option
     abstract TryGetResult : AppId * JobId -> IO.Stream option
 
 type FairShareSchedulerSettings =
@@ -51,9 +51,16 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
                         TableQuery.GenerateFilterCondition(JobProperties.AppId, QueryComparisons.Equal, appId.ToString()),
                         TableOperators.And,
                         TableQuery.GenerateFilterConditionForGuid(JobProperties.JobId, QueryComparisons.Equal, jobId)))
-                .Select([| JobProperties.EntryId; JobProperties.JobId; JobProperties.Status; JobProperties.StatusInformation; JobProperties.Result |])
+                //.Select([| JobProperties.EntryId; JobProperties.JobId; JobProperties.Status; JobProperties.StatusInformation; JobProperties.Result |])
         table.ExecuteQuery(query)
     
+    let deleteBlob (blobName: string) =
+        try
+            let blob = container.GetBlockBlobReference(blobName)
+            blob.DeleteIfExists() |> ignore
+        with
+        | exn -> logInfo (sprintf "Cannot delete blob %s: %A" blobName exn)
+
     do 
         table.CreateIfNotExists() |> ignore  
         container.CreateIfNotExists() |> ignore
@@ -90,20 +97,19 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
             logInfo (sprintf "Job %O is queued" jobId)
             jobId
 
-        member x.TryGetStatus (appId: AppId, jobId: JobId) : JobStatus option =
+        member x.TryGetStatus (appId: AppId, jobId: JobId) : (JobStatus * string) option =
             match getJobEntries (appId, jobId) |> Seq.toList with
             | [] ->
                 logInfo (sprintf "Job %O is not found" jobId)
                 None
             | jobEntries ->
                 jobEntries 
-                |> List.fold(fun rs s -> 
+                |> List.fold(fun (rs,rsi) s -> 
                     match parseStatus s.Status, rs with
-                    | JobStatus.Succeeded, _ | _, JobStatus.Succeeded -> JobStatus.Succeeded
-                    | JobStatus.Failed, _ | _, JobStatus.Failed -> JobStatus.Failed
-                    | JobStatus.Executing, _ | _, JobStatus.Executing -> JobStatus.Executing
-                    | _ -> JobStatus.Queued
-                    ) JobStatus.Queued
+                    | JobStatus.Succeeded, _ | _, JobStatus.Succeeded -> JobStatus.Succeeded, String.Empty
+                    | JobStatus.Failed, _ | _, JobStatus.Failed -> JobStatus.Failed, s.StatusInformation
+                    | JobStatus.Executing, _ | _, JobStatus.Executing -> JobStatus.Executing, String.Empty
+                    | _ -> JobStatus.Queued, String.Empty) (JobStatus.Queued, String.Empty)
                 |> Some
 
         member x.TryGetResult (appId: AppId, jobId: JobId) : IO.Stream option =
@@ -136,6 +142,9 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
                             logInfo(sprintf "Failed to delete the job entry %A: %A" entry.RowKey exn)
                             exn :: fails
                         ) []
+                let job = jobEntries.Head
+                deleteBlob job.Result
+                deleteBlob job.Request
                 match fails with
                 | [] -> true
                 | _ -> raise (AggregateException("Failed to delete some or all entries for the job", fails))
