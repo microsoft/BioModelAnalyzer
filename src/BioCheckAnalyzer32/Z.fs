@@ -534,7 +534,7 @@ let find_cycle_steps_optimized network bounds =
         if (!model) <> null then (!model).Dispose()
 
         match sat with
-        // A path of the requested length does not exists in the model, may stop the earsch now
+        // A path of the requested length does not exists in the model, may stop the search now
         | LBool.False ->                 
                 None
         // A path of the requested length exists, Check for a cycle in the range: length/2..length  
