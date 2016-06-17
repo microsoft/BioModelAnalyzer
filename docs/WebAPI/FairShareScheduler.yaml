@@ -61,6 +61,32 @@ paths:
           schema:
             description: Description of the failure.
             type: string
+    delete:
+      description: |
+        Deletes the job and, if appropriate, cancels the execution.
+      parameters: 
+        - name: jobId
+          in: query
+          description: Identifies the job. This is the identifier that is returned when the job is added
+          required: true
+          type: string
+          format: guid
+        - name: appId
+          in: path
+          description: Identifies the application that is sending the job
+          required: true
+          type: string
+          format: guid      
+      responses:
+        200:
+          description: Job is deleted from the scheduler. The workers will not take the job for execution. If the job is already executing, it is requested to cancel but it is still possible that its result will be saved.
+        404:
+          description: Combination of the application and job IDs is not found.
+        500:
+          description: Exceptions occured when deleting the jobs. The scheduler is consistent though it is not guaranteed that the job execution is requested to cancel or the job will no be executed later.
+          schema:
+            description: Description of the failure.
+            type: string
   /{appId}/result:
     get:
       description: |
