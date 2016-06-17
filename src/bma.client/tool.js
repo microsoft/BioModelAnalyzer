@@ -5369,7 +5369,7 @@ var BMA;
                     url: that.serviceURL + that.userID,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
-                    dataType: "json"
+                    dataType: "json",
                 }).done(function (id) {
                     that.CheckStatusOfRequest(id, result);
                 }).fail(function (xhr, textStatus, errorThrown) {
@@ -5383,24 +5383,36 @@ var BMA;
                 $.ajax({
                     type: "GET",
                     url: that.serviceURL + that.userID + "/?jobId=" + id,
-                }).done(function (res) {
-                    console.log("job status: " + res);
-                    result.notify(res);
-                    if (res == "Succeeded") {
-                        $.ajax({
-                            type: "GET",
-                            url: that.serviceURL + that.userID + "/result?jobId=" + id,
-                        }).done(function (res) {
-                            result.resolve(JSON.parse(res));
-                        }).fail(function (xhr, textStatus, errorThrown) {
+                    statusCode: {
+                        200: function (res) {
+                            $.ajax({
+                                type: "GET",
+                                url: that.serviceURL + that.userID + "/result?jobId=" + id,
+                                statusCode: {
+                                    200: function (res) {
+                                        result.resolve(JSON.parse(res));
+                                    },
+                                    404: function (xhr, textStatus, errorThrown) {
+                                        result.reject(xhr, textStatus, errorThrown);
+                                    }
+                                }
+                            });
+                        },
+                        201: function (res) {
+                            result.notify(res);
+                            setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
+                        },
+                        202: function (res) {
+                            result.notify(res);
+                            setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
+                        },
+                        203: function (xhr, textStatus, errorThrown) {
                             result.reject(xhr, textStatus, errorThrown);
-                        });
+                        },
+                        404: function (xhr, textStatus, errorThrown) {
+                            result.reject(xhr, textStatus, errorThrown);
+                        },
                     }
-                    else {
-                        setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
-                    }
-                }).fail(function (xhr, textStatus, errorThrown) {
-                    result.reject(xhr, textStatus, errorThrown);
                 });
             };
             return BMALRAProcessingService;
