@@ -579,12 +579,14 @@ let find_cycle_steps_optimized network bounds synchronous =
 
             // Now go find that cycle
             
-            let rec asyncLoop (ctx:Context) =
+            let rec asyncLoop (ctx:Context) acc =
                 let model = ref null
                 let sat = ctx.CheckAndGetModel (model)
                 match sat with
                 | LBool.False -> 
                     ctx.Pop()
+                    //Exclude the previously found loops in future searches
+                    List.iter (fun i -> assert_not_model i ctx) acc 
                     find_cycle_of_length (length*2) ctx
                 | LBool.True ->
                     //There is a cycle, but is does it collapse to fix point?
@@ -592,6 +594,7 @@ let find_cycle_steps_optimized network bounds synchronous =
                     //Convert the env to a state and perform a simulation in async space
                     let env = fixpoint_to_env (model_to_fixpoint !model)
                     assert_not_model !model ctx
+                    let acc' = (!model::acc)
                     if (!model) <> null then (!model).Dispose()
                     let smallenv = extract_cycle_from_model env
                     let state = Map.toList smallenv
@@ -610,22 +613,9 @@ let find_cycle_steps_optimized network bounds synchronous =
                     | Simulate.FixPoint(n) -> 
                         Log.log_debug "Cycle collapsed- trying again"
                         Log.log_debug (sprintf "Fixpoint %A" n)
-                        if (!model) <> null then (!model).Dispose()
-                        asyncLoop ctx
+                        asyncLoop ctx acc'
 
-            //failwith "Incomplete endpoint checking"
-            asyncLoop ctx
-        
-//            match sat with
-//            | LBool.False -> 
-//                find_cycle_of_length (length*2) ctx
-//            | LBool.True -> 
-//                // update cycle with the information from model
-//                let env = fixpoint_to_env (model_to_fixpoint !model)
-//                let smallenv = extract_cycle_from_model env
-//                let res = Some(smallenv)
-//                if (!model) <> null then (!model).Dispose()
-//                res
+            asyncLoop ctx []
         
         | (LBool.Undef,_) -> None
      
