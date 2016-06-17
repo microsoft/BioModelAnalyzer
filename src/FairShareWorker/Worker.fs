@@ -11,13 +11,18 @@ open bma.Cloud.Jobs
 open System.Diagnostics
 open Microsoft.WindowsAzure.Storage.Queue
 
+type WorkerSettings =
+    { JobTimeout : TimeSpan
+      Retries : int
+      VisibilityTimeout : TimeSpan }
+
 [<Interface>]
 type IWorker =
     inherit IDisposable
     abstract Process : Func<Guid, IO.Stream, IO.Stream> * TimeSpan * TimeSpan -> unit
 
 [<Class>]
-type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerName : string, visibilityTimeout : TimeSpan, maxDequeueCount : int) =
+type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerName : string, settings : WorkerSettings) =
     let rand = Random()
     let queueClient = storageAccount.CreateCloudQueueClient()
     let blobClient = storageAccount.CreateCloudBlobClient()
@@ -60,7 +65,7 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
         match tryGetJob (entryId, appId) with
         | Some job -> 
             job.RowKey <- Guid.NewGuid().ToString() 
-            upsertStatus job JobStatus.Failed (sprintf "The worker failed more than %d times during execution of the job %A" maxDequeueCount job.JobId)
+            upsertStatus job JobStatus.Failed (sprintf "The worker failed more than %d times during execution of the job %A" settings.Retries job.JobId)
         | None -> () // nothing to do; the job is either cancelled or complete&cleared
 
     let handleMessage (doJob: Guid * IO.Stream -> IO.Stream) (entryId, appId) =
@@ -75,7 +80,8 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
 
             let mutable result = Choice2Of2(null)
             try
-                result <- Choice1Of2(doJob (job.JobId, jobReq))
+                let r = ManageableAction.Do (fun () -> doJob (job.JobId, jobReq)) settings.JobTimeout
+                result <- Choice1Of2 r
                 //sprintf "Job %O request is complete" jobId |> info
             with
             | exn -> // job failed
@@ -110,7 +116,7 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
     let parse (m : CloudQueueMessage) = parseQueueMessage m.AsString
 
     let deleteMessage (queue : CloudQueue) (m : CloudQueueMessage) =
-        try
+        try // todo: get rid of "Queued" entry otherwise it will participate in all "selectQueue" responses
             queue.DeleteMessage(m)
             Trace.WriteLine(sprintf "Message '%s' deleted from the queue" m.AsString)
         with
@@ -118,17 +124,17 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
             // http://blog.smarx.com/posts/deleting-windows-azure-queue-messages-handling-exceptions
             Trace.WriteLine(sprintf "Cannot delete the message '%s' because the pop receipt is invalid" m.AsString)
         | exn -> 
-            raise exn
+            raise exn 
 
 
 
     let tryNextMessage (doJob: Guid * IO.Stream -> IO.Stream) () =
         match selectQueue() with
         | Some queue ->
-            match queue.GetMessage(visibilityTimeout = Nullable visibilityTimeout) with       
+            match queue.GetMessage(visibilityTimeout = Nullable settings.VisibilityTimeout) with       
             | null -> false                 
-            | m when m.DequeueCount < maxDequeueCount ->
-                use lease = new AutoLeaseRenewal(queue, m, visibilityTimeout)
+            | m when m.DequeueCount < settings.Retries ->
+                use lease = new AutoLeaseRenewal(queue, m, settings.VisibilityTimeout)
                 parse m |> handleMessage doJob // fails only because of infrastructure problems
                 deleteMessage queue m
                 true
@@ -157,5 +163,5 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
 
 [<Sealed>]
 type Worker private () =
-    static member Create (storageAccount : CloudStorageAccount, schedulerName : string) : IWorker =
-        upcast new FairShareWorker(storageAccount, schedulerName, TimeSpan.FromMinutes 5.0, 3)
+    static member Create (storageAccount : CloudStorageAccount, schedulerName : string, settings : WorkerSettings) : IWorker =
+        upcast new FairShareWorker(storageAccount, schedulerName, settings)

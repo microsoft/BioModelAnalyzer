@@ -18,10 +18,11 @@ type AutoLeaseRenewal(queue : CloudQueue, message : CloudQueueMessage, interval 
         | exn -> 
             Trace.WriteLine(sprintf "AutoLeaseRenewal: thread function failed: %A" exn)
 
-    let thread = new Thread(threadFunc)
+    let thread = Thread(threadFunc)
     let mutable isDisposed = false
 
     do
+        thread.IsBackground <- true
         thread.Start()
 
     member x.Stop() =

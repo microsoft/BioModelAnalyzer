@@ -52,6 +52,7 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="ManageableAction.fs" />
     <Compile Include="LeaseRenewal.fs" />
     <Compile Include="PollingService.fs" />
     <Compile Include="Worker.fsi" />

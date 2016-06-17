@@ -6,6 +6,11 @@ open System.Threading.Tasks
 open Microsoft.WindowsAzure.Storage
 
 
+type WorkerSettings =
+    { JobTimeout : TimeSpan
+      Retries : int
+      VisibilityTimeout : TimeSpan }
+
 [<Interface>]
 type IWorker =
     inherit IDisposable
@@ -13,4 +18,4 @@ type IWorker =
 
 [<Sealed>]
 type Worker =
-    static member Create : CloudStorageAccount * string -> IWorker
+    static member Create : CloudStorageAccount * string * WorkerSettings -> IWorker

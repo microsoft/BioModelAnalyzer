@@ -54,7 +54,8 @@ namespace LTLCheckRole
             {
                 if (result)
                 {
-                    worker = Worker.Create(storageAccount, schedulerName);
+                    var settings = new WorkerSettings(TimeSpan.FromHours(1), 3, TimeSpan.FromMinutes(5));
+                    worker = Worker.Create(storageAccount, schedulerName, settings);
                     Trace.TraceInformation("LTLCheckRole has been started");
                 }
             }

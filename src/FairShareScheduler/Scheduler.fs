@@ -110,7 +110,7 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
             | [] ->
                 logInfo (sprintf "Job %O is not found" jobId)
                 None
-            | jobEntries ->
+            | jobEntries -> // todo: use special table request: get status=succeeded top 1 select result
                 jobEntries 
                 |> List.tryPick(fun entry -> 
                     match parseStatus entry.Status with
