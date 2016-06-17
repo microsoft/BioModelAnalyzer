@@ -63,15 +63,18 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
 
     let poisonMessage (entryId, appId) =
         match tryGetJob (entryId, appId) with
-        | Some job -> 
+        | Some mainJob -> 
+            let job = mainJob.Clone()
             job.RowKey <- Guid.NewGuid().ToString() 
             upsertStatus job JobStatus.Failed (sprintf "The worker failed more than %d times during execution of the job %A" settings.Retries job.JobId)
-        | None -> () // nothing to do; the job is either cancelled or complete&cleared
+            Some mainJob
+        | None -> None // nothing to do; the job is either cancelled or complete&cleared
 
     let handleMessage (doJob: Guid * IO.Stream -> IO.Stream) (entryId, appId) =
         match tryGetJob (entryId, appId) with
-        | Some job -> // job status is "Queued"
+        | Some mainJob -> // job status is "Queued"
             //sprintf "Received job ticket %O" jobId |> info
+            let job = mainJob.Clone()
             job.RowKey <- Guid.NewGuid().ToString() // new entry id
 
             upsertStatus job JobStatus.Executing String.Empty
@@ -95,7 +98,8 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
                 upsertStatus job JobStatus.Succeeded String.Empty
             | Choice2Of2 exn ->
                 upsertStatus job JobStatus.Failed (sprintf "Job execution failed: %A" exn)
-        | None -> () // nothing to do; the job is either cancelled or complete&cleared
+            Some mainJob
+        | None -> None // nothing to do; the job is either cancelled or complete&cleared
 
     let selectQueue () =
         let query = 
@@ -126,7 +130,9 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
         | exn -> 
             raise exn 
 
-
+    let clean (mainJob : JobEntity option) =
+        mainJob
+        |> Option.iter(fun job -> TableOperation.Delete job |> table.Execute |> ignore)
 
     let tryNextMessage (doJob: Guid * IO.Stream -> IO.Stream) () =
         match selectQueue() with
@@ -135,13 +141,15 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
             | null -> false                 
             | m when m.DequeueCount < settings.Retries ->
                 use lease = new AutoLeaseRenewal(queue, m, settings.VisibilityTimeout)
-                parse m |> handleMessage doJob // fails only because of infrastructure problems
+                let mjob = parse m |> handleMessage doJob // fails only because of infrastructure problems
                 deleteMessage queue m
+                clean mjob
                 true
             | m ->
                 Trace.WriteLine(sprintf "Message '%s' is poisoned" m.AsString)
-                parse m |> poisonMessage
+                let mjob = parse m |> poisonMessage // the Jobs table will contain new entry where status is Failed.
                 deleteMessage queue m
+                clean mjob
                 true
         | None -> false
 

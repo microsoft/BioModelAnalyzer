@@ -19,6 +19,7 @@ type Job =
 [<Interface>]
 type IScheduler =
     abstract AddJob : Job -> JobId
+    abstract DeleteJob : AppId * JobId -> bool
     abstract TryGetStatus : AppId * JobId -> JobStatus option
     abstract TryGetResult : AppId * JobId -> IO.Stream option
 
@@ -117,3 +118,25 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
                     | JobStatus.Succeeded -> Some entry.Result
                     | _ -> None)
                 |> Option.map(getBlobContent)
+
+        member x.DeleteJob (appId: AppId, jobId: JobId) : bool =
+            match getJobEntries (appId, jobId) |> Seq.toList with
+            | [] ->
+                logInfo (sprintf "Job %O is not found" jobId)
+                false
+            | jobEntries -> 
+                let fails =
+                    jobEntries 
+                    |> List.fold(fun fails entry -> 
+                        try
+                            TableOperation.Delete entry |> table.Execute |> ignore
+                            fails
+                        with
+                        | exn -> 
+                            logInfo(sprintf "Failed to delete the job entry %A: %A" entry.RowKey exn)
+                            exn :: fails
+                        ) []
+                match fails with
+                | [] -> true
+                | _ -> raise (AggregateException("Failed to delete some or all entries for the job", fails))
+

@@ -55,6 +55,18 @@ type JobEntity(entryId : Guid, appId : AppId) =
     member val StatusInformation = "" with get, set
     member val QueueName = "" with get, set
 
+    member x.Clone() =
+        let e = JobEntity()
+        e.RowKey <- x.RowKey
+        e.PartitionKey <- x.PartitionKey
+        e.JobId <- x.JobId
+        e.Request <- x.Request
+        e.Result <- x.Result
+        e.Status <- x.Status
+        e.StatusInformation <- x.StatusInformation
+        e.QueueName <- x.QueueName
+        e
+
 type JobMessage() =
     member val entryId = "" with get, set
     member val appId = "" with get, set

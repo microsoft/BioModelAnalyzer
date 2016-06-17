@@ -49,6 +49,31 @@ namespace bma.client.Controllers
             });
         }
 
+        // DELETE /api/lra/{appId} ? jobId=GUID
+        // where {appId} is the application ID.
+        // Deletes the job and, if appropriate, cancels the execution.
+        // Returns 404 if there is no such job or appId is incorrect.
+        public void Delete(Guid appId, Guid jobId)
+        {
+            bool deleted = false;
+            try
+            {
+                deleted = scheduler.DeleteJob(appId, jobId);                    
+            }
+            catch(Exception ex)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.ToString())
+                });
+            }
+            if(!deleted)
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
+                {
+                    Content = new StringContent("Job not found")
+                });
+        }
+
         // POST /api/lra/{appId},
         // where {appId} is the application ID.
         // Adds new job from the application.

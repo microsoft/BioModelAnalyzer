@@ -12,6 +12,7 @@ type Job =
 [<Interface>]
 type IScheduler =
     abstract AddJob : Job -> JobId
+    abstract DeleteJob : AppId * JobId -> bool
     abstract TryGetStatus : AppId * JobId -> JobStatus option
     abstract TryGetResult : AppId * JobId -> Stream option
 
