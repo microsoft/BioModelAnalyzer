@@ -16,7 +16,7 @@ open BioModelAnalyzer
 //
 // CL Parsing
 //
-type Engine = EngineCAV | EngineVMCAI | EngineSimulate | EngineSCM | EngineSYN | EnginePath
+type Engine = EngineCAV | EngineVMCAI | EngineSimulate | EngineSCM | EngineSYN | EnginePath | EngineVMCAIAsync
 let engine_of_string s = 
     match s with 
     | "PATH" | "path" -> Some EnginePath
@@ -24,6 +24,7 @@ let engine_of_string s =
     | "SCM" | "scm" -> Some EngineSCM
     | "CAV" | "cav" -> Some EngineCAV
     | "VMCAI" | "vmcai" -> Some EngineVMCAI 
+    | "VMCAIASYNC" | "vmcaiasync" -> Some EngineVMCAIAsync
     | "Simulate" | "simulate" | "SIMULATE"-> Some EngineSimulate
     | _ -> None 
 
@@ -80,7 +81,7 @@ let usage i =
     Printf.printfn "                           -log "
     Printf.printfn "                           -loglevel n"
     Printf.printfn "                         [ -engine [ SCM | SYN ] –prove output_file_name.json |"
-    Printf.printfn "                           -engine VMCAI –prove output_file_name.json -nosat? |"
+    Printf.printfn "                           -engine [ VMCAI | VMCAIASYNC ] –prove output_file_name.json -nosat? |"
     Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? [-ltloutput filename.json]? |"
     Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.csv -excel? |"
     Printf.printfn "                           -engine PATH –model2 model2.json –state initial_state.csv –state2 target_state.csv ]"
@@ -210,9 +211,9 @@ let runSimulateEngine qn (simul_output : string) start_state_file simulation_tim
         Log.log_debug "Writing excel spreadsheet"
         ModelToExcel.saveSpreadsheet app sheet (simul_output + ".xlsx")
 
-let runVMCAIEngine qn (proof_output : string) (no_sat : bool) =
+let runVMCAIEngine qn (proof_output : string) (no_sat : bool) concurrencyType =
     Log.log_debug "Running the proof"
-    let (sr,cex_o) = Stabilize.stabilization_prover qn no_sat
+    let (sr,cex_o) = Stabilize.stabilization_prover qn no_sat concurrencyType
     match (sr,cex_o) with 
     | (Result.SRStabilizing(_), None) -> 
         write_json_to_file proof_output (Marshal.AnalysisResult_of_stability_result sr)
@@ -332,7 +333,10 @@ let main args =
                 | Some EngineSYN -> runSYNEngine qn; true
                 | Some EngineSCM -> runSCMEngine qn; true
                 | Some EngineVMCAI ->
-                    if (!proof_output <> "") then runVMCAIEngine qn !proof_output !no_sat; true
+                    if (!proof_output <> "") then runVMCAIEngine qn !proof_output !no_sat Counterexample.Synchronous; true
+                    else false
+                | Some EngineVMCAIAsync ->
+                    if (!proof_output <> "") then runVMCAIEngine qn !proof_output !no_sat Counterexample.Asynchronous; true
                     else false
                 | Some EngineCAV -> runCAVEngine qn !number_of_steps !formula !model_check !output_proof !output_model !ltloutputfilename; true
                 | Some EngineSimulate ->

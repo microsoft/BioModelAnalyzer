@@ -32,7 +32,6 @@ let find_cex_cycles qn bounds =
 let find_cex_fixpoint qn bounds = 
     Counterexample.find_cex_fixpoint qn bounds 
 
-
 ///Algorithm 1
 //let stabilization_proving_proc network range =
 //    let bounds = GenLemmas.stabilize network range
@@ -40,7 +39,7 @@ let find_cex_fixpoint qn bounds =
 //        Result.Stabilizing(bounds)
 //    else
 //        Counterexample.find_counterexample network bounds range
-let stabilization_prover model no_sat = 
+let stabilization_prover model no_sat concurrencyType = 
     let results = check_stability_lazy model
     let results = Seq.toArray results
     let result = Seq.nth ((Seq.length results) - 1) results 
@@ -49,6 +48,6 @@ let stabilization_prover model no_sat =
         (result, None) 
     | Result.SRNotStabilizing(bounds_history) -> 
         let (_last_tick,last_bounds) = List.maxBy (fun (t,_b) -> t) bounds_history
-        let cex = Counterexample.find_cex model last_bounds no_sat
+        let cex = Counterexample.find_cex model last_bounds no_sat concurrencyType
         Log.log_debug (cex.ToString())
         (result, Some(cex))

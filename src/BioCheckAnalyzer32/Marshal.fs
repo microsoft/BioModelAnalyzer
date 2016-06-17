@@ -901,6 +901,10 @@ let CounterExampleOutput_of_cex_result cr =
         (CycleCounterExample_of_CExCycle cyc) :> CounterExampleOutput
     | Result.CExFixpoint(fix) -> 
         (FixPointCounterExample_of_CExFixpoint fix) :> CounterExampleOutput
+    | Result.CExEndComponent(endComp) ->
+        let eC = List.mapi (fun i state -> Map.toList state  |> List.map (fun (var,(value:int)) -> ((sprintf "%s^%d" var i) ,value)) |> Map.ofList ) endComp
+                 |> List.fold (fun allStates state -> Map.fold (fun (acc:Map<string,int>) key value -> acc.Add(key,value)) allStates state) Map.empty
+        (CycleCounterExample_of_CExCycle eC ) :> CounterExampleOutput
     | Result.CExUnknown -> 
         let cex = new CounterExampleOutput()
         cex.Status <- CounterExampleType.Unknown

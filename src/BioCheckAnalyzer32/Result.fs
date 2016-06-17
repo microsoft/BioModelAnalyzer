@@ -15,10 +15,15 @@ type cex_result =
     | CExBifurcation of Map<string, int> * Map<string, int>
     | CExCycle of Map<string, int>
     | CExFixpoint of Map<string, int>
+    | CExEndComponent of Map<string, int> list
     | CExUnknown
     override this.ToString() =
         let string_of_fixpoint fixpoint =
             List.map (fun (var,value) -> sprintf "%s=%d" var value) (Map.toList fixpoint)
+        let string_of_endcomponent endComp = 
+            List.map (Map.toList) endComp
+            |> List.map (List.map (fun (var,value) -> sprintf "%s=%d" var value))
+            |> List.map (fun state -> String.concat "/" state )
         match this with
             | CExBifurcation(fix1,fix2) -> 
                 "Bifurcates with fix1:" + (String.concat "," (string_of_fixpoint fix1)) + " fix2:" + (String.concat "," (string_of_fixpoint fix2))
@@ -26,6 +31,8 @@ type cex_result =
                 "Cycles:" + (String.concat "," (string_of_fixpoint cyc))
             | CExFixpoint(fix) ->
                 "Fixpoint:" + (String.concat "," (string_of_fixpoint fix))
+            | CExEndComponent(endComp) ->
+                "End component:" + (String.concat "," (string_of_endcomponent endComp) )
             | CExUnknown -> 
                 "Unknown"
 
