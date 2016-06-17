@@ -14,7 +14,8 @@ open Microsoft.WindowsAzure.Storage.Queue
 type WorkerSettings =
     { JobTimeout : TimeSpan
       Retries : int
-      VisibilityTimeout : TimeSpan }
+      VisibilityTimeout : TimeSpan 
+      CancellationCheckInterval : TimeSpan }
 
 [<Interface>]
 type IWorker =
@@ -61,20 +62,20 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
         let blob = container.GetBlockBlobReference(resultBlobName)
         blob.UploadFromStream(result)
 
+    let isCancellationRequested (entryId:JobId, appId:AppId) : bool =
+        tryGetJob (entryId, appId) |> Option.isNone
+
     let poisonMessage (entryId, appId) =
         match tryGetJob (entryId, appId) with
-        | Some mainJob -> 
-            let job = mainJob.Clone()
+        | Some job -> 
             job.RowKey <- Guid.NewGuid().ToString() 
             upsertStatus job JobStatus.Failed (sprintf "The worker failed more than %d times during execution of the job %A" settings.Retries job.JobId)
-            Some mainJob
-        | None -> None // nothing to do; the job is either cancelled or complete&cleared
+        | None -> () // nothing to do; the job is either cancelled or complete&cleared
 
     let handleMessage (doJob: Guid * IO.Stream -> IO.Stream) (entryId, appId) =
         match tryGetJob (entryId, appId) with
-        | Some mainJob -> // job status is "Queued"
+        | Some job -> // job status is "Queued"
             //sprintf "Received job ticket %O" jobId |> info
-            let job = mainJob.Clone()
             job.RowKey <- Guid.NewGuid().ToString() // new entry id
 
             upsertStatus job JobStatus.Executing String.Empty
@@ -83,7 +84,9 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
 
             let mutable result = Choice2Of2(null)
             try
-                let r = ManageableAction.Do (fun () -> doJob (job.JobId, jobReq)) settings.JobTimeout
+                let r = ManageableAction.Do 
+                            (fun () -> doJob (job.JobId, jobReq)) settings.JobTimeout // do this job with time limitation
+                            (fun () -> isCancellationRequested (entryId, appId)) settings.CancellationCheckInterval  // check if cancellation is requested
                 result <- Choice1Of2 r
                 //sprintf "Job %O request is complete" jobId |> info
             with
@@ -98,8 +101,7 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
                 upsertStatus job JobStatus.Succeeded String.Empty
             | Choice2Of2 exn ->
                 upsertStatus job JobStatus.Failed (sprintf "Job execution failed: %A" exn)
-            Some mainJob
-        | None -> None // nothing to do; the job is either cancelled or complete&cleared
+        | None -> () // nothing to do; the job is either cancelled or complete&cleared
 
     let selectQueue () =
         let query = 
@@ -130,26 +132,32 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
         | exn -> 
             raise exn 
 
-    let clean (mainJob : JobEntity option) =
-        mainJob
-        |> Option.iter(fun job -> TableOperation.Delete job |> table.Execute |> ignore)
+    let clean (jobId, appId) =
+        match tryGetJob (jobId, appId) with
+        | Some job -> // removing the main job entry, where status is 'Queued'
+            TableOperation.Delete job |> table.Execute |> ignore 
+        | None -> // it was cancelled
+            Trace.WriteLine(sprintf "Job %A was cancelled; cleaning the table" jobId)
+            Jobs.deleteJob (appId, jobId) (table, container) |> ignore
 
     let tryNextMessage (doJob: Guid * IO.Stream -> IO.Stream) () =
         match selectQueue() with
-        | Some queue ->
+        | Some queue ->            
             match queue.GetMessage(visibilityTimeout = Nullable settings.VisibilityTimeout) with       
-            | null -> false                 
+            | null -> false          
             | m when m.DequeueCount < settings.Retries ->
                 use lease = new AutoLeaseRenewal(queue, m, settings.VisibilityTimeout)
-                let mjob = parse m |> handleMessage doJob // fails only because of infrastructure problems
+                let ticket = parse m
+                ticket |> handleMessage doJob // fails only because of infrastructure problems
                 deleteMessage queue m
-                clean mjob
+                clean ticket
                 true
             | m ->
                 Trace.WriteLine(sprintf "Message '%s' is poisoned" m.AsString)
-                let mjob = parse m |> poisonMessage // the Jobs table will contain new entry where status is Failed.
+                let ticket = parse m
+                ticket |> poisonMessage // the Jobs table will contain new entry where status is Failed.
                 deleteMessage queue m
-                clean mjob
+                clean ticket
                 true
         | None -> false
 

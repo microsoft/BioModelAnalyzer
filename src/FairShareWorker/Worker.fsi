@@ -9,7 +9,8 @@ open Microsoft.WindowsAzure.Storage
 type WorkerSettings =
     { JobTimeout : TimeSpan
       Retries : int
-      VisibilityTimeout : TimeSpan }
+      VisibilityTimeout : TimeSpan 
+      CancellationCheckInterval : TimeSpan }
 
 [<Interface>]
 type IWorker =

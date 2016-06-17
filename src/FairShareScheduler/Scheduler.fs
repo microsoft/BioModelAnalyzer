@@ -53,13 +53,7 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
                         TableQuery.GenerateFilterConditionForGuid(JobProperties.JobId, QueryComparisons.Equal, jobId)))
                 //.Select([| JobProperties.EntryId; JobProperties.JobId; JobProperties.Status; JobProperties.StatusInformation; JobProperties.Result |])
         table.ExecuteQuery(query)
-    
-    let deleteBlob (blobName: string) =
-        try
-            let blob = container.GetBlockBlobReference(blobName)
-            blob.DeleteIfExists() |> ignore
-        with
-        | exn -> logInfo (sprintf "Cannot delete blob %s: %A" blobName exn)
+
 
     do 
         table.CreateIfNotExists() |> ignore  
@@ -126,26 +120,5 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
                 |> Option.map(getBlobContent)
 
         member x.DeleteJob (appId: AppId, jobId: JobId) : bool =
-            match getJobEntries (appId, jobId) |> Seq.toList with
-            | [] ->
-                logInfo (sprintf "Job %O is not found" jobId)
-                false
-            | jobEntries -> 
-                let fails =
-                    jobEntries 
-                    |> List.fold(fun fails entry -> 
-                        try
-                            TableOperation.Delete entry |> table.Execute |> ignore
-                            fails
-                        with
-                        | exn -> 
-                            logInfo(sprintf "Failed to delete the job entry %A: %A" entry.RowKey exn)
-                            exn :: fails
-                        ) []
-                let job = jobEntries.Head
-                deleteBlob job.Result
-                deleteBlob job.Request
-                match fails with
-                | [] -> true
-                | _ -> raise (AggregateException("Failed to delete some or all entries for the job", fails))
+            Jobs.deleteJob (appId, jobId) (table, container)
 

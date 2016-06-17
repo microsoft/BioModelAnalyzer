@@ -2,8 +2,10 @@
 
 open System
 open Microsoft.WindowsAzure.Storage
+open Microsoft.WindowsAzure.Storage.Blob
 open Microsoft.WindowsAzure.Storage.Table
 open Newtonsoft.Json.Linq
+open System.Diagnostics
 
 type JobId = Guid
 type AppId = Guid
@@ -79,3 +81,44 @@ let parseQueueMessage (json : string) : Guid * AppId =
     let js = JObject.Parse json
     js.["entryId"].Value<string>() |> Guid.Parse,
     js.["appId"].Value<string>() |> Guid.Parse
+
+let getJobEntries (appId: AppId, jobId: JobId) (table : CloudTable) = 
+    let query = 
+        TableQuery<JobEntity>()
+            .Where(
+                TableQuery.CombineFilters(
+                    TableQuery.GenerateFilterCondition(JobProperties.AppId, QueryComparisons.Equal, appId.ToString()),
+                    TableOperators.And,
+                    TableQuery.GenerateFilterConditionForGuid(JobProperties.JobId, QueryComparisons.Equal, jobId)))
+    table.ExecuteQuery(query)
+
+let deleteJob (appId: AppId, jobId: JobId) (table : CloudTable, container : CloudBlobContainer) : bool =
+    let deleteBlob (blobName: string) =
+        try
+            let blob = container.GetBlockBlobReference(blobName)
+            blob.DeleteIfExists() |> ignore
+        with
+        | exn -> Trace.WriteLine (sprintf "Cannot delete blob %s: %A" blobName exn)
+
+    match getJobEntries (appId, jobId) table |> Seq.toList with
+    | [] ->
+        Trace.WriteLine (sprintf "Job %O is not found" jobId)
+        false
+    | jobEntries -> 
+        let fails =
+            jobEntries 
+            |> List.fold(fun fails entry -> 
+                try
+                    TableOperation.Delete entry |> table.Execute |> ignore
+                    fails
+                with
+                | exn -> 
+                    Trace.WriteLine (sprintf "Failed to delete the job entry %A: %A" entry.RowKey exn)
+                    exn :: fails
+                ) []
+        let job = jobEntries.Head
+        deleteBlob job.Result
+        deleteBlob job.Request
+        match fails with
+        | [] -> true
+        | _ -> raise (AggregateException("Failed to delete some or all entries for the job", fails))
