@@ -524,13 +524,11 @@ let find_frustrated_fixpoints network bounds =
 
     // get some simulations
     unroll_qn network bounds 0 1 ctx
-    unroll_qn network bounds 1 2 ctx
-    //assert that it ends in a fixpoint
-    let eventually_fixpoint = assert_states_equal network 1 2 ctx
-    ctx.AssertCnstr eventually_fixpoint
+    unroll_qn network bounds 1 1 ctx
     //assert that it does not start with a fix opint
     let not_fixpoint = ctx.MkNot (assert_states_equal network 0 1 ctx)
     ctx.AssertCnstr not_fixpoint
+    //Could add an additional constraint that >1 variable must change
 
     let rec frustrated_fp (ctx: Context) =
         let model = ref null
