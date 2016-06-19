@@ -106,12 +106,15 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) (no_sat : bool
                         Result.CExUnknown
             | Asynchronous -> 
                 Log.log_debug "CEx(2): check whether the model has a endcomponent."
+                Log.log_debug "CEx(2a): check whether the model has a frustrated fixpoint."
+                let fix = Z.find_frustrated_fixpoints net bounds
                 //First find a cycle
-                let cycle = Z.find_cycle_steps_optimized net bounds false
+                let cycle = lazy (Log.log_debug "CEx(2b): check whether the model has collapsing cycles."; Z.find_cycle_steps_optimized net bounds false)
                 //Test to see if the cycle collapses in async space
-                match cycle with
-                | Some(x) -> Result.CExEndComponent(x)
-                | None ->
+                match (fix,cycle) with
+                | (Some(x),_) -> Result.CExEndComponent(x)
+                | (_,Lazy(Some(x))) -> Result.CExEndComponent(x)
+                | (_,Lazy(None)) ->
                     Log.log_debug "No endComponent..."
                     Log.log_debug "CEx(3): check whether the model has a fixpoint."
                     let fix = Z.find_fixpoint net bounds(*was: range*)

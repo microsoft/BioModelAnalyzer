@@ -50,6 +50,7 @@ type asyncEndComponent = FixPoint of Map<QN.var,int> | EndComponent of Map<QN.va
 
 //Apply a depth first search for a fix point from a state in async space. Returns asyncEndComponent
 let dfsAsyncFixPoint (qn:QN.qn) (state:Map<QN.var,int>) =
+    Log.log_debug "Initiating a DFS for fixpoint"
     let rec join a b =
         match a with
         | [] -> b
@@ -61,7 +62,7 @@ let dfsAsyncFixPoint (qn:QN.qn) (state:Map<QN.var,int>) =
         let state' = asyncTick qn state
         match state' with
         //No successors -> found a fix point
-        | [] -> FixPoint(state) 
+        | [] -> Log.log_debug (sprintf "Transition from %A to fix point %A" discoveredList.[0] state) ;FixPoint(state) 
         | _ ->  let state' = List.filter (fun i -> not (List.exists (fun j -> i=j) discoveredList) ) state' //ignore states we've seen before
                 //Two options- I have no new successors, or I have some
                 match state' with
