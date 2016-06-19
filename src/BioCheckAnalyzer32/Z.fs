@@ -285,11 +285,17 @@ let fixpoint_to_env (fixpoint : Map<string, int>) =
         Map.empty
         fixpoint
 
-let env_to_QNState (env:Map<string,int>) =
+//Assumption- there is a state where time = t
+let env_to_QNState_t t (env:Map<string,int>) =
+    //Doing this as a list as we want to change the keys, which map.map doesn't let us do
     Map.toList env
-                                |> List.filter (fun (varid,value) -> "0" = (varid.Split([|'^'|])).[1]  ) 
+                                |> List.filter (fun (varid,value) -> (sprintf "%d" t) = (varid.Split([|'^'|])).[1]  ) 
                                 |> List.map (fun (varid,value) -> (int((varid.Split([|'^'|])).[0]),value)) 
                                 |> Map.ofList
+
+//Assumption- there is a state where time = 0
+let env_to_QNState (env:Map<string,int>) = 
+    env_to_QNState_t 0 env
 
 let format_endComponent n = 
     List.mapi ( fun i state -> Map.fold (fun (acc:Map<string,int>) key value -> acc.Add((sprintf "%d^%d" key i),value) ) Map.empty state ) n
@@ -522,37 +528,65 @@ let find_frustrated_fixpoints network bounds =
     cfg.SetParamValue("MODEL", "true")
     let ctx = new Context(cfg)
 
-    // get some simulations
-    unroll_qn network bounds 0 1 ctx
-    unroll_qn network bounds 1 1 ctx
-    //assert that it does not start with a fix opint
-    let not_fixpoint = ctx.MkNot (assert_states_equal network 0 1 ctx)
-    ctx.AssertCnstr not_fixpoint
-    //Could add an additional constraint that >1 variable must change
-
-    let rec frustrated_fp (ctx: Context) =
+    let rec frustrated_fp (ctx: Context) (t:int) =
         let model = ref null
         let sat = ctx.CheckAndGetModel (model)
 
         // Did we find a transition?
         if sat = LBool.True then
-            let state = fixpoint_to_env (model_to_fixpoint !model) |> env_to_QNState
+            let state = fixpoint_to_env (model_to_fixpoint !model) |> env_to_QNState_t t
             Log.log_debug (sprintf "Found some transitions %A" (fixpoint_to_env (model_to_fixpoint !model)) )
             //BH getting some incorrect transitions here
             match (Simulate.dfsAsyncFixPoint network state) with
             | Simulate.FixPoint(n) ->       Log.log_debug "Found a fix point- moving onto next"
                                             assert_not_model !model ctx
                                             if (!model) <> null then (!model).Dispose()
-                                            frustrated_fp ctx
+                                            frustrated_fp ctx t
             | Simulate.EndComponent(n) ->   Log.log_debug "Found an end component"
                                             if (!model) <> null then (!model).Dispose()
-                                            Some(format_endComponent n) //Need to convert this to something more natural
+                                            Some(format_endComponent n) 
         else
             Log.log_debug "Found no transitions"
             if (!model) <> null then (!model).Dispose()
             None
+    
+    let rec find_path_to_fixpoint_of_length network bounds length (ctx:Context) =
+        //first check to see if theres an endcomponent in the last round of transitions
+        let init = 1 - length
+        ctx.Push()
+        Log.log_debug (sprintf "Looking for frustrated fp in paths from t=%d to t=0" init)
+        let res = frustrated_fp ctx init
+        ctx.Pop()
 
-    endComponent <- frustrated_fp ctx
+        match res with
+        | Some(n) -> Some(n)
+        | None ->   //No endcomponents found- add an extra step to the simulation
+                    Log.log_debug (sprintf "Found no fix points- looking for longer paths (length %d)" length)
+                    unroll_qn network bounds (init-1) init ctx
+                    //Do any new simulations of this length exist?
+                    let model = ref null
+                    let sat = ctx.CheckAndGetModel (model)
+                    if sat = LBool.True then 
+                        Log.log_debug "Found longer paths- continuing search"
+                        //Simulations exist- test them for frustrated fp and try increase 
+                        //path length
+                        if (!model) <> null then (!model).Dispose()
+                        find_path_to_fixpoint_of_length network bounds (length+1) ctx
+                    else 
+                        Log.log_debug "No longer simulations available- there are no frustrated fp"
+                        //No more simulations to be found
+                        if (!model) <> null then (!model).Dispose()
+                        None
+
+    // get some simulations
+    unroll_qn network bounds 0 0 ctx
+    unroll_qn network bounds -1 0 ctx
+    //assert that the state before the fixpoint is not a fixpoint
+    let not_fixpoint = ctx.MkNot (assert_states_equal network -1 0 ctx)
+    ctx.AssertCnstr not_fixpoint
+    //Could add an additional constraint that >1 variable must change
+
+    endComponent <- find_path_to_fixpoint_of_length network bounds 2 ctx
     ctx.Dispose()
     cfg.Dispose()
     endComponent
