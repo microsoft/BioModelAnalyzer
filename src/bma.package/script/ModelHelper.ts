@@ -76,6 +76,70 @@
             return result;
         }
 
+        export function GetGridCell(x: number, y: number, grid: { xOrigin: number; yOrigin: number; xStep: number; yStep: number }): { x: number; y: number } {
+            var cellX = Math.ceil((x - grid.xOrigin) / grid.xStep) - 1;
+            var cellY = Math.ceil((y - grid.yOrigin) / grid.yStep) - 1;
+            return { x: cellX, y: cellY };
+        }
+
+        /*
+        * Retrun cells which will occupied by container after its resize to @containerSize
+        */
+        export function GetContainerExtraCells(container: BMA.Model.ContainerLayout, containerSize: number): { x: number; y: number }[] {
+            var result = [];
+
+            if (container !== undefined) {
+                var currentSize = container.Size;
+                if (containerSize > currentSize) {
+                    var diff = containerSize - currentSize;
+                    for (var i = 0; i < container.Size; i++) {
+                        for (var j = 0; j < diff; j++) {
+                            result.push({ x: container.PositionX + container.Size + j, y: container.PositionY + i });
+                        }
+                    }
+                    for (var i = 0; i < diff; i++) {
+                        for (var j = 0; j < containerSize; j++) {
+                            result.push({ x: container.PositionX + j, y: container.PositionY + container.Size + i });
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        export function IsGridCellEmpty(gridCell: { x: number; y: number }, model: BMA.Model.BioModel, layout: BMA.Model.Layout, id: number, grid: { xOrigin: number; yOrigin: number; xStep: number; yStep: number }): boolean {
+            var layouts = layout.Containers;
+            for (var i = 0; i < layouts.length; i++) {
+                if (layouts[i].Id === id)
+                    continue;
+
+                if (layouts[i].PositionX <= gridCell.x && layouts[i].PositionX + layouts[i].Size > gridCell.x &&
+                    layouts[i].PositionY <= gridCell.y && layouts[i].PositionY + layouts[i].Size > gridCell.y) {
+                    return false;
+                }
+            }
+
+            var result = [];
+            var variables = model.Variables;
+            var variableLayouts = layout.Variables;
+            for (var i = 0; i < variables.length; i++) {
+                var variable = variables[i];
+                var variableLayout = variableLayouts[i];
+
+                if (variable.Type !== "Constant")
+                    continue;
+
+                var vGridCell = GetGridCell(variableLayout.PositionX, variableLayout.PositionY, grid);
+
+                if (gridCell.x === vGridCell.x && gridCell.y === vGridCell.y) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         export function ResizeContainer(model: BMA.Model.BioModel, layout: BMA.Model.Layout, containerId: number, containerSize: number, grid: { xOrigin: number; yOrigin: number; xStep: number; yStep: number }): {
             model: BMA.Model.BioModel;
             layout: BMA.Model.Layout
@@ -83,17 +147,32 @@
             var container = layout.GetContainerById(containerId);
             if (container !== undefined) {
                 var sizeDiff = containerSize - container.Size;
+                var shouldMove = sizeDiff > 0;
 
+                
                 var containerLayouts = layout.Containers;
                 var variables = model.Variables;
                 var variableLayouts = layout.Variables;
+
+                if (shouldMove) {
+                    //Check if there is enough size for extending without replacing other contents
+                    var wishfulCells = GetContainerExtraCells(container, containerSize);
+                    var hasNonEmpty = false;
+                    for (var i = 0; i < wishfulCells.length; i++) {
+                        if (!IsGridCellEmpty(wishfulCells[i], model, layout, containerId, grid)) {
+                            hasNonEmpty = true;
+                            break;
+                        }
+                    }
+                    shouldMove = hasNonEmpty;
+                }
 
                 var newCnt = [];
                 for (var i = 0; i < containerLayouts.length; i++) {
                     var cnt = containerLayouts[i];
                     if (cnt.Id === container.Id) {
                         newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, cnt.Name, containerSize, cnt.PositionX, cnt.PositionY));
-                    } else if (cnt.PositionX > container.PositionX || cnt.PositionY > container.PositionY) {
+                    } else if (shouldMove && (cnt.PositionX > container.PositionX || cnt.PositionY > container.PositionY)) {
                         newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, cnt.Name, cnt.Size, cnt.PositionX > container.PositionX ? cnt.PositionX + sizeDiff : cnt.PositionX,
                             cnt.PositionY > container.PositionY ? cnt.PositionY + sizeDiff : cnt.PositionY));
                     } else
@@ -109,23 +188,27 @@
                     if (variables[i].ContainerId === container.Id) {
                         newVL.push(new BMA.Model.VariableLayout(vl.Id, cntX + (vl.PositionX - cntX) * containerSize / container.Size, cntY + (vl.PositionY - cntY) * containerSize / container.Size, 0, 0, vl.Angle));
                     } else {
-                        if (v.Type === "Constant") {
-                            newVL.push(new BMA.Model.VariableLayout(vl.Id,
-                                vl.PositionX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX,
-                                vl.PositionY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY,
-                                0, 0, vl.Angle));
+                        if (shouldMove) {
+                            if (v.Type === "Constant") {
+                                newVL.push(new BMA.Model.VariableLayout(vl.Id,
+                                    vl.PositionX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX,
+                                    vl.PositionY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY,
+                                    0, 0, vl.Angle));
+                            } else {
+                                var vCnt = layout.GetContainerById(v.ContainerId);
+                                var vCntX = vCnt.PositionX * grid.xStep + grid.xOrigin;
+                                var vCntY = vCnt.PositionY * grid.yStep + grid.yOrigin;
+
+                                var unsizedVposX = (vl.PositionX - vCntX) / vCnt.Size + vCntX;
+                                var unsizedVposY = (vl.PositionY - vCntY) / vCnt.Size + vCntY;
+
+                                newVL.push(new BMA.Model.VariableLayout(vl.Id,
+                                    unsizedVposX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX,
+                                    unsizedVposY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY,
+                                    0, 0, vl.Angle));
+                            }
                         } else {
-                            var vCnt = layout.GetContainerById(v.ContainerId);
-                            var vCntX = vCnt.PositionX * grid.xStep + grid.xOrigin;
-                            var vCntY = vCnt.PositionY * grid.yStep + grid.yOrigin;
-
-                            var unsizedVposX = (vl.PositionX - vCntX) / vCnt.Size + vCntX;
-                            var unsizedVposY = (vl.PositionY - vCntY) / vCnt.Size + vCntY;
-
-                            newVL.push(new BMA.Model.VariableLayout(vl.Id,
-                                unsizedVposX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX,
-                                unsizedVposY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY,
-                                0, 0, vl.Angle));
+                            newVL.push(vl);
                         }
                     }
                 }

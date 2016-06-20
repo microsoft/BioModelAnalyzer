@@ -8,12 +8,23 @@
         var _svgCnt = undefined;
         var _svg = undefined;
 
+        var _isAutomaticSizeUpdate = true;
+
         Object.defineProperty(this, "svg", {
             get: function () {
                 return _svg;
             },
         });
 
+        Object.defineProperty(this, "IsAutomaticSizeUpdate", {
+            get: function () {
+                return _isAutomaticSizeUpdate;
+            },
+            set: function (value) {
+                _isAutomaticSizeUpdate = value;
+                that.master.requestUpdateLayout();
+            }
+        });
 
         this.computeLocalBounds = function () {
             var _bbox = undefined;
@@ -42,22 +53,39 @@
             return (y - (plotRect.y + plotRect.height / 2)) * (-1) + plotRect.y + plotRect.height / 2;
         }
 
+        this.setSVGScreenSize = function (sizeToSet) {
+            _svgCnt.width(finalRect.width).height(finalRect.height);
+            _svg.configure({
+                width: _svgCnt.width(),
+                height: _svgCnt.height()
+            }, false);
+        }
+
         this.arrange = function (finalRect) {
             InteractiveDataDisplay.CanvasPlot.prototype.arrange.call(this, finalRect);
 
             if (_svgCnt === undefined) {
                 _svgCnt = $("<div></div>").css("overflow", "hidden").appendTo(that.host);
+                _svgCnt.width(finalRect.width).height(finalRect.height);
                 _svgCnt.svg({ onLoad: svgLoaded });
             }
 
-            _svgCnt.width(finalRect.width).height(finalRect.height);
+            var sizeChanged = false;
+            if (_isAutomaticSizeUpdate) {
+                sizeChanged = _svgCnt.width() !== finalRect.width || _svgCnt.height() !== finalRect.height;
+                if (sizeChanged) {
+                    _svgCnt.width(finalRect.width).height(finalRect.height);
+                }
+            }
 
             if (_svg !== undefined) {
                 var plotRect = that.visibleRect;
-                _svg.configure({
-                    width: _svgCnt.width(),
-                    height: _svgCnt.height()
-                }, false);
+                if (_isAutomaticSizeUpdate && sizeChanged) {
+                    _svg.configure({
+                        width: _svgCnt.width(),
+                        height: _svgCnt.height()
+                    }, false);
+                }
 
                 if (!isNaN(plotRect.y) && !isNaN(plotRect.height)) {
                     _svg.configure({
@@ -1287,20 +1315,89 @@ var BMA;
             return result;
         }
         ModelHelper.CreateClipboardContent = CreateClipboardContent;
+        function GetGridCell(x, y, grid) {
+            var cellX = Math.ceil((x - grid.xOrigin) / grid.xStep) - 1;
+            var cellY = Math.ceil((y - grid.yOrigin) / grid.yStep) - 1;
+            return { x: cellX, y: cellY };
+        }
+        ModelHelper.GetGridCell = GetGridCell;
+        /*
+        * Retrun cells which will occupied by container after its resize to @containerSize
+        */
+        function GetContainerExtraCells(container, containerSize) {
+            var result = [];
+            if (container !== undefined) {
+                var currentSize = container.Size;
+                if (containerSize > currentSize) {
+                    var diff = containerSize - currentSize;
+                    for (var i = 0; i < container.Size; i++) {
+                        for (var j = 0; j < diff; j++) {
+                            result.push({ x: container.PositionX + container.Size + j, y: container.PositionY + i });
+                        }
+                    }
+                    for (var i = 0; i < diff; i++) {
+                        for (var j = 0; j < containerSize; j++) {
+                            result.push({ x: container.PositionX + j, y: container.PositionY + container.Size + i });
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+        ModelHelper.GetContainerExtraCells = GetContainerExtraCells;
+        function IsGridCellEmpty(gridCell, model, layout, id, grid) {
+            var layouts = layout.Containers;
+            for (var i = 0; i < layouts.length; i++) {
+                if (layouts[i].Id === id)
+                    continue;
+                if (layouts[i].PositionX <= gridCell.x && layouts[i].PositionX + layouts[i].Size > gridCell.x &&
+                    layouts[i].PositionY <= gridCell.y && layouts[i].PositionY + layouts[i].Size > gridCell.y) {
+                    return false;
+                }
+            }
+            var result = [];
+            var variables = model.Variables;
+            var variableLayouts = layout.Variables;
+            for (var i = 0; i < variables.length; i++) {
+                var variable = variables[i];
+                var variableLayout = variableLayouts[i];
+                if (variable.Type !== "Constant")
+                    continue;
+                var vGridCell = GetGridCell(variableLayout.PositionX, variableLayout.PositionY, grid);
+                if (gridCell.x === vGridCell.x && gridCell.y === vGridCell.y) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        ModelHelper.IsGridCellEmpty = IsGridCellEmpty;
         function ResizeContainer(model, layout, containerId, containerSize, grid) {
             var container = layout.GetContainerById(containerId);
             if (container !== undefined) {
                 var sizeDiff = containerSize - container.Size;
+                var shouldMove = sizeDiff > 0;
                 var containerLayouts = layout.Containers;
                 var variables = model.Variables;
                 var variableLayouts = layout.Variables;
+                if (shouldMove) {
+                    //Check if there is enough size for extending without replacing other contents
+                    var wishfulCells = GetContainerExtraCells(container, containerSize);
+                    var hasNonEmpty = false;
+                    for (var i = 0; i < wishfulCells.length; i++) {
+                        if (!IsGridCellEmpty(wishfulCells[i], model, layout, containerId, grid)) {
+                            hasNonEmpty = true;
+                            break;
+                        }
+                    }
+                    shouldMove = hasNonEmpty;
+                }
                 var newCnt = [];
                 for (var i = 0; i < containerLayouts.length; i++) {
                     var cnt = containerLayouts[i];
                     if (cnt.Id === container.Id) {
                         newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, cnt.Name, containerSize, cnt.PositionX, cnt.PositionY));
                     }
-                    else if (cnt.PositionX > container.PositionX || cnt.PositionY > container.PositionY) {
+                    else if (shouldMove && (cnt.PositionX > container.PositionX || cnt.PositionY > container.PositionY)) {
                         newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, cnt.Name, cnt.Size, cnt.PositionX > container.PositionX ? cnt.PositionX + sizeDiff : cnt.PositionX, cnt.PositionY > container.PositionY ? cnt.PositionY + sizeDiff : cnt.PositionY));
                     }
                     else
@@ -1316,16 +1413,21 @@ var BMA;
                         newVL.push(new BMA.Model.VariableLayout(vl.Id, cntX + (vl.PositionX - cntX) * containerSize / container.Size, cntY + (vl.PositionY - cntY) * containerSize / container.Size, 0, 0, vl.Angle));
                     }
                     else {
-                        if (v.Type === "Constant") {
-                            newVL.push(new BMA.Model.VariableLayout(vl.Id, vl.PositionX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX, vl.PositionY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY, 0, 0, vl.Angle));
+                        if (shouldMove) {
+                            if (v.Type === "Constant") {
+                                newVL.push(new BMA.Model.VariableLayout(vl.Id, vl.PositionX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX, vl.PositionY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY, 0, 0, vl.Angle));
+                            }
+                            else {
+                                var vCnt = layout.GetContainerById(v.ContainerId);
+                                var vCntX = vCnt.PositionX * grid.xStep + grid.xOrigin;
+                                var vCntY = vCnt.PositionY * grid.yStep + grid.yOrigin;
+                                var unsizedVposX = (vl.PositionX - vCntX) / vCnt.Size + vCntX;
+                                var unsizedVposY = (vl.PositionY - vCntY) / vCnt.Size + vCntY;
+                                newVL.push(new BMA.Model.VariableLayout(vl.Id, unsizedVposX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX, unsizedVposY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY, 0, 0, vl.Angle));
+                            }
                         }
                         else {
-                            var vCnt = layout.GetContainerById(v.ContainerId);
-                            var vCntX = vCnt.PositionX * grid.xStep + grid.xOrigin;
-                            var vCntY = vCnt.PositionY * grid.yStep + grid.yOrigin;
-                            var unsizedVposX = (vl.PositionX - vCntX) / vCnt.Size + vCntX;
-                            var unsizedVposY = (vl.PositionY - vCntY) / vCnt.Size + vCntY;
-                            newVL.push(new BMA.Model.VariableLayout(vl.Id, unsizedVposX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX, unsizedVposY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY, 0, 0, vl.Angle));
+                            newVL.push(vl);
                         }
                     }
                 }
@@ -5367,12 +5469,15 @@ var BMA;
             BMALRAProcessingService.prototype.Invoke = function (data) {
                 var that = this;
                 var result = $.Deferred();
+                result.progress(function (res) {
+                    return res;
+                });
                 $.ajax({
                     type: "POST",
                     url: that.serviceURL + that.userID,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
-                    dataType: "json"
+                    dataType: "json",
                 }).done(function (id) {
                     that.CheckStatusOfRequest(id, result);
                 }).fail(function (xhr, textStatus, errorThrown) {
@@ -5386,23 +5491,36 @@ var BMA;
                 $.ajax({
                     type: "GET",
                     url: that.serviceURL + that.userID + "/?jobId=" + id,
-                }).done(function (res) {
-                    console.log("job status: " + res);
-                    if (res == "Succeeded") {
-                        $.ajax({
-                            type: "GET",
-                            url: that.serviceURL + that.userID + "/result?jobId=" + id,
-                        }).done(function (res) {
-                            result.resolve(JSON.parse(res));
-                        }).fail(function (xhr, textStatus, errorThrown) {
+                    statusCode: {
+                        200: function (res) {
+                            $.ajax({
+                                type: "GET",
+                                url: that.serviceURL + that.userID + "/result?jobId=" + id,
+                                statusCode: {
+                                    200: function (res) {
+                                        result.resolve(JSON.parse(res));
+                                    },
+                                    404: function (xhr, textStatus, errorThrown) {
+                                        result.reject(xhr, textStatus, errorThrown);
+                                    }
+                                }
+                            });
+                        },
+                        201: function (res) {
+                            result.notify(res);
+                            setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
+                        },
+                        202: function (res) {
+                            result.notify(res);
+                            setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
+                        },
+                        203: function (xhr, textStatus, errorThrown) {
                             result.reject(xhr, textStatus, errorThrown);
-                        });
+                        },
+                        404: function (xhr, textStatus, errorThrown) {
+                            result.reject(xhr, textStatus, errorThrown);
+                        },
                     }
-                    else {
-                        setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
-                    }
-                }).fail(function (xhr, textStatus, errorThrown) {
-                    result.reject(xhr, textStatus, errorThrown);
                 });
             };
             return BMALRAProcessingService;
@@ -6011,6 +6129,11 @@ var BMA;
                         if (that.showresultcallback !== undefined) {
                             that.showresultcallback(showpositive);
                         }
+                    },
+                    oncancelrequest: function () {
+                        if (that.oncancelrequestcallback !== undefined) {
+                            that.oncancelrequestcallback();
+                        }
                     }
                 });
             }
@@ -6034,14 +6157,14 @@ var BMA;
                     options.isexpanded = false;
                 }
                 if (message)
-                    options.error = message;
+                    options.message = message;
                 this.compactltlresult.compactltlresult(options);
             };
             LTLResultsCompactViewer.prototype.SetMessage = function (message) {
-                this.compactltlresult.compactltlresult({ "error": message });
+                this.compactltlresult.compactltlresult({ "message": message });
             };
             LTLResultsCompactViewer.prototype.GetMessage = function () {
-                return this.compactltlresult.compactltlresult("option", "error");
+                return this.compactltlresult.compactltlresult("option", "message");
             };
             LTLResultsCompactViewer.prototype.SetSteps = function (steps) {
                 if (steps && steps > 0) {
@@ -6066,17 +6189,22 @@ var BMA;
             LTLResultsCompactViewer.prototype.SetOnStepsChangedCallback = function (callback) {
                 this.onstepschangedcallback = callback;
             };
+            LTLResultsCompactViewer.prototype.SetOnCancelRequestCallback = function (callback) {
+                this.oncancelrequestcallback = callback;
+            };
             LTLResultsCompactViewer.prototype.Destroy = function () {
                 this.compactltlresult.compactltlresult({
                     ontestrequested: undefined,
                     onstepschanged: undefined,
                     onexpanded: undefined,
-                    onshowresultsrequested: undefined
+                    onshowresultsrequested: undefined,
+                    oncancelrequest: undefined,
                 });
                 this.ltlrequested = undefined;
                 this.expandedcallback = undefined;
                 this.showresultcallback = undefined;
                 this.onstepschangedcallback = undefined;
+                this.oncancelrequestcallback = undefined;
                 this.compactltlresult.compactltlresult("destroy");
                 this.compactltlresult.empty();
             };
@@ -6659,7 +6787,7 @@ var BMA;
                     var showPaste = that.clipboard !== undefined;
                     if (showPaste === true) {
                         if (that.clipboard.Container !== undefined) {
-                            showPaste = that.CanAddContainer(x, y, that.clipboard.Container.Size);
+                            showPaste = that.CanAddContainer(that.clipboard.Container.Id, x, y, that.clipboard.Container.Size);
                         }
                         else {
                             var variable = that.clipboard.Variables[0];
@@ -7059,8 +7187,8 @@ var BMA;
                         }
                     }
                     if (that.stagingContainer !== undefined) {
-                        var cx = that.stagingContainer.position.x;
-                        var cy = that.stagingContainer.position.y;
+                        var cx = that.stagingContainer.position.x - that.stagingContainer.container.Size * that.Grid.xStep / 3;
+                        var cy = that.stagingContainer.position.y - that.stagingContainer.container.Size * that.Grid.yStep / 3;
                         var cid = that.stagingContainer.container.Id;
                         that.stagingContainer = undefined;
                         if (!that.TryAddVariable(cx, cy, "Container", cid)) {
@@ -7343,13 +7471,14 @@ var BMA;
                     }
                 }
             };
-            DesignSurfacePresenter.prototype.CanAddContainer = function (x, y, size) {
+            DesignSurfacePresenter.prototype.CanAddContainer = function (id, x, y, size) {
                 var that = this;
                 var gridCell = that.GetGridCell(x, y);
                 for (var i = 0; i < size; i++) {
                     for (var j = 0; j < size; j++) {
                         var cellForCheck = { x: gridCell.x + i, y: gridCell.y + j };
-                        var checkCell = that.GetContainerFromGridCell(cellForCheck) === undefined && that.GetConstantsFromGridCell(cellForCheck).length === 0;
+                        var cnt = that.GetContainerFromGridCell(cellForCheck);
+                        var checkCell = (cnt === undefined || cnt.Id === id) && that.GetConstantsFromGridCell(cellForCheck).length === 0;
                         if (checkCell !== true)
                             return false;
                     }
@@ -7430,7 +7559,7 @@ var BMA;
                         var variableLayouts = layout.Variables.slice(0);
                         var gridCell = that.GetGridCell(x, y);
                         var container = layout.GetContainerById(id);
-                        if (that.CanAddContainer(x, y, container === undefined ? 1 : container.Size) === true) {
+                        if (that.CanAddContainer(id, x, y, container === undefined ? 1 : container.Size) === true) {
                             if (id !== undefined) {
                                 for (var i = 0; i < containerLayouts.length; i++) {
                                     if (containerLayouts[i].Id === id) {
@@ -7588,6 +7717,8 @@ var BMA;
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
+                    if (variable.Type !== "Constant")
+                        continue;
                     var vGridCell = this.GetGridCell(variableLayout.PositionX, variableLayout.PositionY);
                     if (gridCell.x === vGridCell.x && gridCell.y === vGridCell.y) {
                         result.push({ variable: variable, variableLayout: variableLayout });
@@ -8723,68 +8854,64 @@ var BMA;
                         })
                             .done(function (res2) {
                             that.driver.ActiveMode();
-                            if (res2.CounterExamples !== null) {
+                            if (res2.CounterExamples !== null && res2.CounterExamples.length > 0) {
                                 that.driver.HideStartFurtherTestingToggler();
-                                if (res2.CounterExamples.length === 0) {
+                                var bif = null, osc = null, fix = null;
+                                for (var i = 0; i < res2.CounterExamples.length; i++) {
+                                    switch (res2.CounterExamples[i].Status) {
+                                        case "Bifurcation":
+                                            bif = res2.CounterExamples[i];
+                                            break;
+                                        case "Cycle":
+                                            osc = res2.CounterExamples[i];
+                                            break;
+                                        case "Fixpoint":
+                                            fix = res2.CounterExamples[i];
+                                            break;
+                                    }
+                                }
+                                var data = [];
+                                var headers = [];
+                                var tabLabels = [];
+                                if (bif !== null) {
+                                    var parseBifurcations = that.ParseBifurcations(bif.Variables);
+                                    var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
+                                    data.push(bifurcationsView);
+                                    headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
+                                    var label = $('<div></div>').addClass('further-testing-tab');
+                                    var icon = $('<div></div>').addClass('bifurcations-icon').appendTo(label);
+                                    var text = $('<div></div>').text('Bifurcations').appendTo(label);
+                                    tabLabels.push(label);
+                                }
+                                if (osc !== null) {
+                                    var parseOscillations = that.ParseOscillations(osc.Variables);
+                                    var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
+                                    data.push(oscillationsView);
+                                    headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
+                                    var label = $('<div></div>').addClass('further-testing-tab');
+                                    var icon = $('<div></div>').addClass('oscillations-icon').appendTo(label);
+                                    var text = $('<div></div>').text('Oscillations').appendTo(label);
+                                    tabLabels.push(label);
+                                }
+                                if (fix !== null && bif === null && osc === null) {
+                                    try {
+                                        var parseFix = that.ParseFixPoint(fix.Variables);
+                                        window.Commands.Execute("ProofByFurtherTesting", {
+                                            issucceeded: true,
+                                            message: 'Further testing has been determined the model to be stable with the following stable state',
+                                            fixPoint: parseFix
+                                        });
+                                        OnProofStarting();
+                                    }
+                                    catch (ex) {
+                                        that.messagebox.Show("FurtherTesting error: Invalid service response");
+                                        that.driver.ShowStartFurtherTestingToggler();
+                                    }
+                                    ;
                                 }
                                 else {
-                                    var bif = null, osc = null, fix = null;
-                                    for (var i = 0; i < res2.CounterExamples.length; i++) {
-                                        switch (res2.CounterExamples[i].Status) {
-                                            case "Bifurcation":
-                                                bif = res2.CounterExamples[i];
-                                                break;
-                                            case "Cycle":
-                                                osc = res2.CounterExamples[i];
-                                                break;
-                                            case "Fixpoint":
-                                                fix = res2.CounterExamples[i];
-                                                break;
-                                        }
-                                    }
-                                    var data = [];
-                                    var headers = [];
-                                    var tabLabels = [];
-                                    if (bif !== null) {
-                                        var parseBifurcations = that.ParseBifurcations(bif.Variables);
-                                        var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
-                                        data.push(bifurcationsView);
-                                        headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
-                                        var label = $('<div></div>').addClass('further-testing-tab');
-                                        var icon = $('<div></div>').addClass('bifurcations-icon').appendTo(label);
-                                        var text = $('<div></div>').text('Bifurcations').appendTo(label);
-                                        tabLabels.push(label);
-                                    }
-                                    if (osc !== null) {
-                                        var parseOscillations = that.ParseOscillations(osc.Variables);
-                                        var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
-                                        data.push(oscillationsView);
-                                        headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
-                                        var label = $('<div></div>').addClass('further-testing-tab');
-                                        var icon = $('<div></div>').addClass('oscillations-icon').appendTo(label);
-                                        var text = $('<div></div>').text('Oscillations').appendTo(label);
-                                        tabLabels.push(label);
-                                    }
-                                    if (fix !== null && bif === null && osc === null) {
-                                        try {
-                                            var parseFix = that.ParseFixPoint(fix.Variables);
-                                            window.Commands.Execute("ProofByFurtherTesting", {
-                                                issucceeded: true,
-                                                message: 'Further testing has been determined the model to be stable with the following stable state',
-                                                fixPoint: parseFix
-                                            });
-                                            OnProofStarting();
-                                        }
-                                        catch (ex) {
-                                            that.messagebox.Show("FurtherTesting error: Invalid service response");
-                                            that.driver.ShowStartFurtherTestingToggler();
-                                        }
-                                        ;
-                                    }
-                                    else {
-                                        that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
-                                        that.driver.ShowResults(that.data);
-                                    }
+                                    that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
+                                    that.driver.ShowResults(that.data);
                                 }
                             }
                             else {
@@ -10136,6 +10263,7 @@ var BMA;
             this._plot.aspectRatio = 1;
             var svgPlot = that._plot.get(svgPlotDiv[0]);
             this._svgPlot = svgPlot;
+            //this._svgPlot.IsAutomaticSizeUpdate = false;
             var lightSvgPlot = that._plot.get(svgPlotDiv2[0]);
             this._lightSvgPlot = lightSvgPlot;
             this._domPlot = that._plot.get(domPlotDiv[0]);
@@ -14197,12 +14325,13 @@ jQuery.fn.extend({
             status: "nottested",
             isexpanded: false,
             steps: 10,
-            error: undefined,
+            message: undefined,
             maxsteps: 999,
             ontestrequested: undefined,
             onstepschanged: undefined,
             onexpanded: undefined,
             onshowresultsrequested: undefined,
+            oncancelrequest: undefined,
         },
         _create: function () {
             this.element.empty();
@@ -14222,8 +14351,8 @@ jQuery.fn.extend({
                 case "nottested":
                     //if (this.options.isexpanded) {
                     var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    if (that.options.error) {
-                        var errorMessage = $("<div>" + that.options.error + "</div>").addClass("red").appendTo(ltltestdiv);
+                    if (that.options.message) {
+                        var errorMessage = $("<div>" + that.options.message + "</div>").addClass("red").appendTo(ltltestdiv);
                     }
                     var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(ltltestdiv);
                     var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
@@ -14350,10 +14479,20 @@ jQuery.fn.extend({
                     break;
                 case "processinglra":
                     var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    var message = $("<div>processing as long job</div>").addClass("grey").appendTo(ltltestdiv);
+                    var message = $("<div>processing as long job: </div>").addClass("grey").appendTo(ltltestdiv);
+                    var time = $("<div></div>").text(that.options.message).addClass("grey").appendTo(message);
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(ltltestdiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button></button>").appendTo(li);
+                    var cancelBtn = $("<button>Cancel</button>").addClass("cancel-button").appendTo(li).click(function () {
+                        if (that.options.oncancelrequest !== undefined) {
+                            that.options.oncancelrequest();
+                        }
+                        else {
+                            that.options.status = "nottested";
+                            that._createView();
+                        }
+                    });
                     li.addClass("spin");
                     that.createWaitAnim().appendTo(btn);
                     break;
@@ -14890,8 +15029,8 @@ jQuery.fn.extend({
                         needRefreshStates = true;
                     }
                     break;
-                case "error":
-                    if (that.options.error !== value)
+                case "message":
+                    if (that.options.message !== value)
                         needRefreshStates = true;
                     break;
                 default:
@@ -16813,6 +16952,10 @@ var BMA;
                                         }
                                         domplot.updateLayout();
                                         that.OnOperationsChanged(false);
+                                    }).progress(function (res) {
+                                        driver.SetMessage(res);
+                                        domplot.updateLayout();
+                                        that.OnOperationsChanged(false);
                                     });
                                 });
                             }).fail(function (xhr, textStatus, errorThrown) {
@@ -17131,6 +17274,14 @@ var BMA;
                         operation.AnalysisStatus = "nottested";
                         driver.SetMessage(undefined);
                     }
+                    that.OnOperationsChanged(false, true);
+                });
+                driver.SetOnCancelRequestCallback(function () {
+                    var status = operation.AnalysisStatus.split(', ');
+                    var parsedstatus = status[1] ? status[1] : "nottested";
+                    driver.SetStatus(parsedstatus);
+                    operation.AnalysisStatus = parsedstatus;
+                    dom.updateLayout();
                     that.OnOperationsChanged(false, true);
                 });
                 var bbox = operation.BoundingBox;
