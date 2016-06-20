@@ -243,6 +243,31 @@ let assert_bound (node : QN.node) ((lower,upper) : (int*int)) time (z : Context)
     Log.log_debug (var_name + "_upper_bound:" + z.ToString upper_bound)
     z.AssertCnstr upper_bound
 
+//let get_z3_int_var_at_time (node : QN.node) time = sprintf "v%d^%d" node.var time
+//let make_z3_int_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkIntSort())
+let specify_state (state:Map<int,int>) (z:Context) time =
+    let state = Map.toArray state
+    //for (variableID,value) in state do
+    let t = Array.map (fun (variableID,(value:int)) ->  let var_name = sprintf "v%d^%d" variableID time
+                                                        let var_state = z.MkConst(z.MkSymbol(var_name),z.MkIntSort())
+                                                        let specify = id (z.MkEq(var_state, z.MkIntNumeral value))
+                                                        specify) state
+    z.MkAnd(t)
+
+let any_state states z time =
+    List.toArray states
+    |> Array.map (fun state -> specify_state state z time)
+    |> (fun t -> z.MkOr(t))
+
+let none_of_these_states states (z:Context) time =
+    z.MkNot(any_state states z time)
+
+let assert_any_one_of_these_states states (z:Context) time = 
+    z.AssertCnstr (any_state states z time)
+
+let assert_none_of_these_states states (z:Context) time = 
+    z.AssertCnstr (none_of_these_states states z time)
+
 let unroll_qn qn bounds start_time end_time z =
     // Assert the target functions...
     for node in qn do
@@ -284,6 +309,17 @@ let fixpoint_to_env (fixpoint : Map<string, int>) =
                 | exn -> newMap )
         Map.empty
         fixpoint
+
+//returns a list of QNs for simulation as int,int maps
+let env_to_QNState_list (env:Map<string,int>) =
+    let env' = Map.toList env
+    let time_ordered = env' |> List.sortBy (fun item -> fst item |> (fun id_time -> int (id_time.Split([|'^'|]).[1]) )  )
+    let times = env' |> List.map (fun assignment -> int ((fst assignment).Split([|'^'|]).[1] )) |> Seq.ofList |> Seq.distinct |> List.ofSeq
+    let varNum = (List.length time_ordered)/(List.length times)
+    let rename (vs:string*int) =    let vn = (fst(vs)).Split([|'^'|]).[0]
+                                    (int(vn),snd(vs))
+    List.init (List.length times) (fun t -> List.init varNum (fun varid -> rename time_ordered.[varid+t*varNum]) )
+    |> List.map (Map.ofList)
 
 //Assumption- there is a state where time = t
 let env_to_QNState_t t (env:Map<string,int>) =
@@ -516,46 +552,64 @@ let find_cycle_steps network diameter bounds =
 
     cycle
 
+//Takes a set of paths and looks to see if they are diverted away
+//from a fixpoint in async space
+//Assumes that the context initially passed has the entrypoint
+//of the endpoint (cycle state or fixpoint) specified as state 0
+//and that state -1 is not part of the endpoint
+let rec frustrated_endpoint network (ctx: Context) (t:int) =
+    let model = ref null
+    let sat = ctx.CheckAndGetModel (model)
+
+    // Did we find a transition?
+    if sat = LBool.True then
+        let state = fixpoint_to_env (model_to_fixpoint !model) |> env_to_QNState_t t
+        Log.log_debug (sprintf "Found some transitions %A" (fixpoint_to_env (model_to_fixpoint !model)) )
+        //BH getting some incorrect transitions here
+        match (Simulate.dfsAsyncFixPoint network state) with
+        | Simulate.FixPoint(n) ->       Log.log_debug "Found a fix point- moving onto next"
+                                        assert_not_model !model ctx
+                                        if (!model) <> null then (!model).Dispose()
+                                        frustrated_endpoint network ctx t
+        | Simulate.EndComponent(n) ->   Log.log_debug "Found an end component"
+                                        if (!model) <> null then (!model).Dispose()
+                                        Some(format_endComponent n) 
+    else
+        Log.log_debug "Found no transitions"
+        if (!model) <> null then (!model).Dispose()
+        None
+
+let initiate_paths_to_fixpoint network bounds ctx =
+    // get some simulations
+    unroll_qn network bounds 0 0 ctx
+    unroll_qn network bounds -1 0 ctx
+    //assert that the state before the fixpoint is not a fixpoint
+    let not_fixpoint = ctx.MkNot (assert_states_equal network -1 0 ctx)
+    ctx.AssertCnstr not_fixpoint
+
+let initiate_paths_to_cycle states network bounds ctx =
+    assert_any_one_of_these_states states ctx 0
+    unroll_qn network bounds -1 0 ctx
+    assert_none_of_these_states states ctx -1
+
 // Finds states that lead to a fixpoint in synchronous space
 // but don't in asynchronous space (hence "frustrated")
 // Works as follows
 // Find states that transition to a fixpoint in sync space
 // Test if they transition to a fixpoint in async space
 // Returns either None or an endcomponent
-let find_frustrated_fixpoints network bounds =
+let find_frustrated_endpoints network bounds initiator =
     let mutable endComponent = None
     let cfg = new Config()
     cfg.SetParamValue("MODEL", "true")
     let ctx = new Context(cfg)
-
-    let rec frustrated_fp (ctx: Context) (t:int) =
-        let model = ref null
-        let sat = ctx.CheckAndGetModel (model)
-
-        // Did we find a transition?
-        if sat = LBool.True then
-            let state = fixpoint_to_env (model_to_fixpoint !model) |> env_to_QNState_t t
-            Log.log_debug (sprintf "Found some transitions %A" (fixpoint_to_env (model_to_fixpoint !model)) )
-            //BH getting some incorrect transitions here
-            match (Simulate.dfsAsyncFixPoint network state) with
-            | Simulate.FixPoint(n) ->       Log.log_debug "Found a fix point- moving onto next"
-                                            assert_not_model !model ctx
-                                            if (!model) <> null then (!model).Dispose()
-                                            frustrated_fp ctx t
-            | Simulate.EndComponent(n) ->   Log.log_debug "Found an end component"
-                                            if (!model) <> null then (!model).Dispose()
-                                            Some(format_endComponent n) 
-        else
-            Log.log_debug "Found no transitions"
-            if (!model) <> null then (!model).Dispose()
-            None
     
     let rec find_path_to_fixpoint_of_length network bounds length (ctx:Context) =
         //first check to see if theres an endcomponent in the last round of transitions
         let init = 1 - length
         ctx.Push()
         Log.log_debug (sprintf "Looking for frustrated fp in paths from t=%d to t=0" init)
-        let res = frustrated_fp ctx init
+        let res = frustrated_endpoint network ctx init
         ctx.Pop()
 
         match res with
@@ -578,12 +632,7 @@ let find_frustrated_fixpoints network bounds =
                         if (!model) <> null then (!model).Dispose()
                         None
 
-    // get some simulations
-    unroll_qn network bounds 0 0 ctx
-    unroll_qn network bounds -1 0 ctx
-    //assert that the state before the fixpoint is not a fixpoint
-    let not_fixpoint = ctx.MkNot (assert_states_equal network -1 0 ctx)
-    ctx.AssertCnstr not_fixpoint
+    initiator network bounds ctx 
     //Could add an additional constraint that >1 variable must change
 
     endComponent <- find_path_to_fixpoint_of_length network bounds 2 ctx
@@ -591,6 +640,11 @@ let find_frustrated_fixpoints network bounds =
     cfg.Dispose()
     endComponent
 
+let find_frustrated_fixpoints network bounds =
+    find_frustrated_endpoints network bounds initiate_paths_to_fixpoint
+
+let find_frustrated_cycles network bounds states =
+    find_frustrated_endpoints network bounds (initiate_paths_to_cycle states)
 // Finds a cycle and returns it. I f no cycle is found returns None
 // 
 // The search for cycles proceeds as follows:
@@ -683,7 +737,10 @@ let find_cycle_steps_optimized network bounds synchronous =
                     //There is a cycle, but is does it collapse to fix point?
                     Log.log_debug "Testing for fix point"
                     //Convert the env to a state and perform a simulation in async space
+                    //Do I need to test every state in the cycle?
                     let env = fixpoint_to_env (model_to_fixpoint !model)
+                    //This could be more efficient- it excludes simulations when we want to exclude all
+                    //cycle states over all times
                     assert_not_model !model ctx
                     let acc' = (model::acc)
                     let smallenv = extract_cycle_from_model env
@@ -699,9 +756,15 @@ let find_cycle_steps_optimized network bounds synchronous =
                         Some(r)
                     //This cycle collapses- try again until there are no more loops
                     | Simulate.FixPoint(n) -> 
-                        Log.log_debug "Cycle collapsed- trying again"
-                        Log.log_debug (sprintf "Fixpoint %A" n)
-                        asyncLoop ctx acc'
+                        Log.log_debug (sprintf "Cycle collapsed (fixpoint %A)- checking paths to the cycle" n)
+                        //Now check all the paths to the cycle for endcomponents
+                        let cycle_states = env_to_QNState_list smallenv
+                        let exit = find_frustrated_cycles network bounds cycle_states
+                        match exit with
+                        | None ->
+                                    //No endcomponents on way to cycle- now try for longer cycles
+                                    asyncLoop ctx acc'
+                        | _ -> exit
 
             asyncLoop ctx []
         
