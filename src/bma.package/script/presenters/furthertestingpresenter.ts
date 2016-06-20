@@ -55,80 +55,75 @@
                     if (that.result.length !== 0 && that.model !== undefined && that.result !== undefined && that.variables !== undefined) {
                         that.driver.StandbyMode();
                         logService.LogFurtherTestingRun();
-                        var result = that.ajax.Invoke( {
+                        var result = that.ajax.Invoke({
                             Model: that.model,
                             Analysis: that.result,
                         })
                             .done(function (res2) {
                                 that.driver.ActiveMode();
-                                if (res2.CounterExamples !== null) {
+                                if (res2.CounterExamples !== null && res2.CounterExamples.length > 0) {
                                     that.driver.HideStartFurtherTestingToggler();
-                                    if (res2.CounterExamples.length === 0) {
-                                        
+                                    var bif = null, osc = null, fix = null;
+                                    for (var i = 0; i < res2.CounterExamples.length; i++) {
+                                        switch (res2.CounterExamples[i].Status) {
+                                            case "Bifurcation":
+                                                bif = res2.CounterExamples[i];
+                                                break;
+                                            case "Cycle":
+                                                osc = res2.CounterExamples[i];
+                                                break;
+                                            case "Fixpoint":
+                                                fix = res2.CounterExamples[i];
+                                                break;
+                                        }
+                                    }
+
+                                    var data = [];
+                                    var headers = [];
+                                    var tabLabels = [];
+
+                                    if (bif !== null) {
+                                        var parseBifurcations = that.ParseBifurcations(bif.Variables);
+                                        var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
+                                        data.push(bifurcationsView);
+                                        headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
+                                        var label = $('<div></div>').addClass('further-testing-tab');
+                                        var icon = $('<div></div>').addClass('bifurcations-icon').appendTo(label);
+                                        var text = $('<div></div>').text('Bifurcations').appendTo(label);
+
+                                        tabLabels.push(label);
+                                    }
+                                    if (osc !== null) {
+                                        var parseOscillations = that.ParseOscillations(osc.Variables);
+                                        var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
+                                        data.push(oscillationsView);
+                                        headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
+                                        var label = $('<div></div>').addClass('further-testing-tab');
+                                        var icon = $('<div></div>').addClass('oscillations-icon').appendTo(label);
+                                        var text = $('<div></div>').text('Oscillations').appendTo(label);
+                                        tabLabels.push(label);
+                                    }
+
+                                    if (fix !== null && bif === null && osc === null) {
+
+                                        try {
+                                            var parseFix = that.ParseFixPoint(fix.Variables);
+                                            window.Commands.Execute("ProofByFurtherTesting", {
+                                                issucceeded: true,
+                                                message: 'Further testing has been determined the model to be stable with the following stable state',
+                                                fixPoint: parseFix
+                                            });
+                                            OnProofStarting();
+                                        }
+                                        catch (ex) {
+                                            that.messagebox.Show("FurtherTesting error: Invalid service response");
+                                            that.driver.ShowStartFurtherTestingToggler();
+                                        };
                                     }
                                     else {
-                                        var bif = null, osc = null, fix = null;
-                                        for (var i = 0; i < res2.CounterExamples.length; i++) {
-                                            switch (res2.CounterExamples[i].Status) {
-                                                case "Bifurcation":
-                                                    bif = res2.CounterExamples[i];
-                                                    break;
-                                                case "Cycle":
-                                                    osc = res2.CounterExamples[i];
-                                                    break;
-                                                case "Fixpoint":
-                                                    fix = res2.CounterExamples[i];
-                                                    break;
-                                            }
-                                        }
 
-                                        var data = [];
-                                        var headers = [];
-                                        var tabLabels = [];
-
-                                        if (bif !== null) {
-                                            var parseBifurcations = that.ParseBifurcations(bif.Variables);
-                                            var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
-                                            data.push(bifurcationsView);
-                                            headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
-                                            var label = $('<div></div>').addClass('further-testing-tab');
-                                            var icon = $('<div></div>').addClass('bifurcations-icon').appendTo(label);
-                                            var text = $('<div></div>').text('Bifurcations').appendTo(label);
-
-                                            tabLabels.push(label);
-                                        }
-                                        if (osc !== null) {
-                                            var parseOscillations = that.ParseOscillations(osc.Variables);
-                                            var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
-                                            data.push(oscillationsView);
-                                            headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
-                                            var label = $('<div></div>').addClass('further-testing-tab');
-                                            var icon = $('<div></div>').addClass('oscillations-icon').appendTo(label);
-                                            var text = $('<div></div>').text('Oscillations').appendTo(label);
-                                            tabLabels.push(label);
-                                        }
-
-                                        if (fix !== null && bif === null && osc === null) {
-
-                                            try {
-                                                var parseFix = that.ParseFixPoint(fix.Variables);
-                                                window.Commands.Execute("ProofByFurtherTesting", {
-                                                    issucceeded: true,
-                                                    message: 'Further testing has been determined the model to be stable with the following stable state',
-                                                    fixPoint: parseFix
-                                                });
-                                                OnProofStarting();
-                                            }
-                                            catch (ex) {
-                                                that.messagebox.Show("FurtherTesting error: Invalid service response");
-                                                that.driver.ShowStartFurtherTestingToggler();
-                                            };
-                                        }
-                                        else {
-
-                                            that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
-                                            that.driver.ShowResults(that.data);
-                                        }
+                                        that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
+                                        that.driver.ShowResults(that.data);
                                     }
                                 }
                                 else {
@@ -151,19 +146,19 @@
                 })
 
                 window.Commands.On("Expand", (param) => {
-                        switch (param) {
-                            case "FurtherTesting":
-                                that.driver.HideStartFurtherTestingToggler();
-                                that.driver.HideResults();
-                                var content = $('<div></div>').furthertesting();
-                                content.furthertesting("SetData", that.data);
-                                var full = content.children().eq(1).children().eq(1);
-                                this.popupViewer.Show({ tab: param, content: full });
-                                break;
-                            default:
-                                that.driver.ShowResults(that.data);
-                                break;
-                        }
+                    switch (param) {
+                        case "FurtherTesting":
+                            that.driver.HideStartFurtherTestingToggler();
+                            that.driver.HideResults();
+                            var content = $('<div></div>').furthertesting();
+                            content.furthertesting("SetData", that.data);
+                            var full = content.children().eq(1).children().eq(1);
+                            this.popupViewer.Show({ tab: param, content: full });
+                            break;
+                        default:
+                            that.driver.ShowResults(that.data);
+                            break;
+                    }
                 })
 
                 window.Commands.On("Collapse", (param) => {
@@ -232,7 +227,7 @@
                     table[i][0] = (function () {
                         var cont = that.appModel.Layout.GetContainerById(variables[i].ContainerId);
                         return cont !== undefined ? cont.Name : '';
-                    })(); 
+                    })();
                     table[i][1] = variables[i].Name;
                     table[i][2] = resid.min + '-' + resid.max;
                     table[i][3] = resid.oscillations;
@@ -261,11 +256,11 @@
                 return table;
 
             }
-            
+
             private ParseFixPoint(variables) {
                 var fixPoints = [];
                 var that = this;
-                variables.forEach((val,ind) => {
+                variables.forEach((val, ind) => {
                     fixPoints.push({
                         "Id": that.ParseId(val.Id)[0],
                         "Value": val.Value

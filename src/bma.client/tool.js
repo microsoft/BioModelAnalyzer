@@ -8732,68 +8732,64 @@ var BMA;
                         })
                             .done(function (res2) {
                             that.driver.ActiveMode();
-                            if (res2.CounterExamples !== null) {
+                            if (res2.CounterExamples !== null && res2.CounterExamples.length > 0) {
                                 that.driver.HideStartFurtherTestingToggler();
-                                if (res2.CounterExamples.length === 0) {
+                                var bif = null, osc = null, fix = null;
+                                for (var i = 0; i < res2.CounterExamples.length; i++) {
+                                    switch (res2.CounterExamples[i].Status) {
+                                        case "Bifurcation":
+                                            bif = res2.CounterExamples[i];
+                                            break;
+                                        case "Cycle":
+                                            osc = res2.CounterExamples[i];
+                                            break;
+                                        case "Fixpoint":
+                                            fix = res2.CounterExamples[i];
+                                            break;
+                                    }
+                                }
+                                var data = [];
+                                var headers = [];
+                                var tabLabels = [];
+                                if (bif !== null) {
+                                    var parseBifurcations = that.ParseBifurcations(bif.Variables);
+                                    var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
+                                    data.push(bifurcationsView);
+                                    headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
+                                    var label = $('<div></div>').addClass('further-testing-tab');
+                                    var icon = $('<div></div>').addClass('bifurcations-icon').appendTo(label);
+                                    var text = $('<div></div>').text('Bifurcations').appendTo(label);
+                                    tabLabels.push(label);
+                                }
+                                if (osc !== null) {
+                                    var parseOscillations = that.ParseOscillations(osc.Variables);
+                                    var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
+                                    data.push(oscillationsView);
+                                    headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
+                                    var label = $('<div></div>').addClass('further-testing-tab');
+                                    var icon = $('<div></div>').addClass('oscillations-icon').appendTo(label);
+                                    var text = $('<div></div>').text('Oscillations').appendTo(label);
+                                    tabLabels.push(label);
+                                }
+                                if (fix !== null && bif === null && osc === null) {
+                                    try {
+                                        var parseFix = that.ParseFixPoint(fix.Variables);
+                                        window.Commands.Execute("ProofByFurtherTesting", {
+                                            issucceeded: true,
+                                            message: 'Further testing has been determined the model to be stable with the following stable state',
+                                            fixPoint: parseFix
+                                        });
+                                        OnProofStarting();
+                                    }
+                                    catch (ex) {
+                                        that.messagebox.Show("FurtherTesting error: Invalid service response");
+                                        that.driver.ShowStartFurtherTestingToggler();
+                                    }
+                                    ;
                                 }
                                 else {
-                                    var bif = null, osc = null, fix = null;
-                                    for (var i = 0; i < res2.CounterExamples.length; i++) {
-                                        switch (res2.CounterExamples[i].Status) {
-                                            case "Bifurcation":
-                                                bif = res2.CounterExamples[i];
-                                                break;
-                                            case "Cycle":
-                                                osc = res2.CounterExamples[i];
-                                                break;
-                                            case "Fixpoint":
-                                                fix = res2.CounterExamples[i];
-                                                break;
-                                        }
-                                    }
-                                    var data = [];
-                                    var headers = [];
-                                    var tabLabels = [];
-                                    if (bif !== null) {
-                                        var parseBifurcations = that.ParseBifurcations(bif.Variables);
-                                        var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
-                                        data.push(bifurcationsView);
-                                        headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
-                                        var label = $('<div></div>').addClass('further-testing-tab');
-                                        var icon = $('<div></div>').addClass('bifurcations-icon').appendTo(label);
-                                        var text = $('<div></div>').text('Bifurcations').appendTo(label);
-                                        tabLabels.push(label);
-                                    }
-                                    if (osc !== null) {
-                                        var parseOscillations = that.ParseOscillations(osc.Variables);
-                                        var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
-                                        data.push(oscillationsView);
-                                        headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
-                                        var label = $('<div></div>').addClass('further-testing-tab');
-                                        var icon = $('<div></div>').addClass('oscillations-icon').appendTo(label);
-                                        var text = $('<div></div>').text('Oscillations').appendTo(label);
-                                        tabLabels.push(label);
-                                    }
-                                    if (fix !== null && bif === null && osc === null) {
-                                        try {
-                                            var parseFix = that.ParseFixPoint(fix.Variables);
-                                            window.Commands.Execute("ProofByFurtherTesting", {
-                                                issucceeded: true,
-                                                message: 'Further testing has been determined the model to be stable with the following stable state',
-                                                fixPoint: parseFix
-                                            });
-                                            OnProofStarting();
-                                        }
-                                        catch (ex) {
-                                            that.messagebox.Show("FurtherTesting error: Invalid service response");
-                                            that.driver.ShowStartFurtherTestingToggler();
-                                        }
-                                        ;
-                                    }
-                                    else {
-                                        that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
-                                        that.driver.ShowResults(that.data);
-                                    }
+                                    that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
+                                    that.driver.ShowResults(that.data);
                                 }
                             }
                             else {
