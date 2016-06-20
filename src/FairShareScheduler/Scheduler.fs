@@ -74,7 +74,6 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
             let blobResName = getJobResultBlobName jobId settings.Name
 
             let jobEntity = JobEntity(jobId, job.AppId)
-            jobEntity.JobId <- jobId
             jobEntity.Request <- blobReq.Name
             jobEntity.Result <- blobResName
             jobEntity.Status <- status JobStatus.Queued
