@@ -276,7 +276,7 @@ module BMA {
                     if (showPaste === true) {
 
                         if (that.clipboard.Container !== undefined) {
-                            showPaste = that.CanAddContainer(x, y, that.clipboard.Container.Size);
+                            showPaste = that.CanAddContainer(that.clipboard.Container.Id, x, y, that.clipboard.Container.Size);
                         } else {
                             var variable = that.clipboard.Variables[0];
                             showPaste = that.CanAddVariable(x, y, variable.m.Type, undefined);
@@ -1088,14 +1088,15 @@ module BMA {
                 }
             }
 
-            private CanAddContainer(x: number, y: number, size: number): boolean {
+            private CanAddContainer(id: number, x: number, y: number, size: number): boolean {
                 var that = this;
                 var gridCell = that.GetGridCell(x, y);
 
                 for (var i = 0; i < size; i++) {
                     for (var j = 0; j < size; j++) {
                         var cellForCheck = { x: gridCell.x + i, y: gridCell.y + j };
-                        var checkCell = that.GetContainerFromGridCell(cellForCheck) === undefined && that.GetConstantsFromGridCell(cellForCheck).length === 0;
+                        var cnt = that.GetContainerFromGridCell(cellForCheck);
+                        var checkCell = (cnt === undefined || cnt.Id === id) && that.GetConstantsFromGridCell(cellForCheck).length === 0;
                         if (checkCell !== true)
                             return false;
                     }
@@ -1201,7 +1202,7 @@ module BMA {
                         var gridCell = that.GetGridCell(x, y);
                         var container = layout.GetContainerById(id);
 
-                        if (that.CanAddContainer(x, y, container === undefined ? 1 : container.Size) === true) {
+                        if (that.CanAddContainer(id, x, y, container === undefined ? 1 : container.Size) === true) {
 
                             if (id !== undefined) {
                                 for (var i = 0; i < containerLayouts.length; i++) {
@@ -1389,6 +1390,9 @@ module BMA {
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
+
+                    if (variable.Type !== "Constant")
+                        continue;
 
                     var vGridCell = this.GetGridCell(variableLayout.PositionX, variableLayout.PositionY);
 

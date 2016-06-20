@@ -8,12 +8,23 @@
         var _svgCnt = undefined;
         var _svg = undefined;
 
+        var _isAutomaticSizeUpdate = true;
+
         Object.defineProperty(this, "svg", {
             get: function () {
                 return _svg;
             },
         });
 
+        Object.defineProperty(this, "IsAutomaticSizeUpdate", {
+            get: function () {
+                return _isAutomaticSizeUpdate;
+            },
+            set: function (value) {
+                _isAutomaticSizeUpdate = value;
+                that.master.requestUpdateLayout();
+            }
+        });
 
         this.computeLocalBounds = function () {
             var _bbox = undefined;
@@ -42,6 +53,14 @@
             return (y - (plotRect.y + plotRect.height / 2)) * (-1) + plotRect.y + plotRect.height / 2;
         }
 
+        this.setSVGScreenSize = function (sizeToSet) {
+            _svgCnt.width(finalRect.width).height(finalRect.height);
+            _svg.configure({
+                width: _svgCnt.width(),
+                height: _svgCnt.height()
+            }, false);
+        }
+
         this.arrange = function (finalRect) {
             InteractiveDataDisplay.CanvasPlot.prototype.arrange.call(this, finalRect);
 
@@ -51,14 +70,17 @@
                 _svgCnt.svg({ onLoad: svgLoaded });
             }
 
-            var sizeChanged = _svgCnt.width() !== finalRect.width || _svgCnt.height() !== finalRect.height;
-            if (sizeChanged) {
-                _svgCnt.width(finalRect.width).height(finalRect.height);
+            var sizeChanged = false;
+            if (_isAutomaticSizeUpdate) {
+                sizeChanged = _svgCnt.width() !== finalRect.width || _svgCnt.height() !== finalRect.height;
+                if (sizeChanged) {
+                    _svgCnt.width(finalRect.width).height(finalRect.height);
+                }
             }
 
             if (_svg !== undefined) {
                 var plotRect = that.visibleRect;
-                if (sizeChanged) {
+                if (_isAutomaticSizeUpdate && sizeChanged) {
                     _svg.configure({
                         width: _svgCnt.width(),
                         height: _svgCnt.height()
@@ -6668,7 +6690,7 @@ var BMA;
                     var showPaste = that.clipboard !== undefined;
                     if (showPaste === true) {
                         if (that.clipboard.Container !== undefined) {
-                            showPaste = that.CanAddContainer(x, y, that.clipboard.Container.Size);
+                            showPaste = that.CanAddContainer(that.clipboard.Container.Id, x, y, that.clipboard.Container.Size);
                         }
                         else {
                             var variable = that.clipboard.Variables[0];
@@ -7352,13 +7374,14 @@ var BMA;
                     }
                 }
             };
-            DesignSurfacePresenter.prototype.CanAddContainer = function (x, y, size) {
+            DesignSurfacePresenter.prototype.CanAddContainer = function (id, x, y, size) {
                 var that = this;
                 var gridCell = that.GetGridCell(x, y);
                 for (var i = 0; i < size; i++) {
                     for (var j = 0; j < size; j++) {
                         var cellForCheck = { x: gridCell.x + i, y: gridCell.y + j };
-                        var checkCell = that.GetContainerFromGridCell(cellForCheck) === undefined && that.GetConstantsFromGridCell(cellForCheck).length === 0;
+                        var cnt = that.GetContainerFromGridCell(cellForCheck);
+                        var checkCell = (cnt === undefined || cnt.Id === id) && that.GetConstantsFromGridCell(cellForCheck).length === 0;
                         if (checkCell !== true)
                             return false;
                     }
@@ -7439,7 +7462,7 @@ var BMA;
                         var variableLayouts = layout.Variables.slice(0);
                         var gridCell = that.GetGridCell(x, y);
                         var container = layout.GetContainerById(id);
-                        if (that.CanAddContainer(x, y, container === undefined ? 1 : container.Size) === true) {
+                        if (that.CanAddContainer(id, x, y, container === undefined ? 1 : container.Size) === true) {
                             if (id !== undefined) {
                                 for (var i = 0; i < containerLayouts.length; i++) {
                                     if (containerLayouts[i].Id === id) {
@@ -7597,6 +7620,8 @@ var BMA;
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
+                    if (variable.Type !== "Constant")
+                        continue;
                     var vGridCell = this.GetGridCell(variableLayout.PositionX, variableLayout.PositionY);
                     if (gridCell.x === vGridCell.x && gridCell.y === vGridCell.y) {
                         result.push({ variable: variable, variableLayout: variableLayout });
@@ -10141,6 +10166,7 @@ var BMA;
             this._plot.aspectRatio = 1;
             var svgPlot = that._plot.get(svgPlotDiv[0]);
             this._svgPlot = svgPlot;
+            //this._svgPlot.IsAutomaticSizeUpdate = false;
             var lightSvgPlot = that._plot.get(svgPlotDiv2[0]);
             this._lightSvgPlot = lightSvgPlot;
             this._domPlot = that._plot.get(domPlotDiv[0]);
