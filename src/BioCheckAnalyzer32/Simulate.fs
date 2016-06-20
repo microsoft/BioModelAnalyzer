@@ -51,28 +51,35 @@ type asyncEndComponent = FixPoint of Map<QN.var,int> | EndComponent of Map<QN.va
 //Apply a depth first search for a fix point from a state in async space. Returns asyncEndComponent
 let dfsAsyncFixPoint (qn:QN.qn) (state:Map<QN.var,int>) =
     Log.log_debug "Initiating a DFS for fixpoint"
-    let rec join a b =
+    let rec joinUnique a b =
         match a with
         | [] -> b
-        | head::tail -> join tail (head::b)
+        | head::tail -> match (List.tryFind (fun i -> i=head) b) with
+                        | Some(_) ->    joinUnique tail b
+                        | _ ->          joinUnique tail (head::b)
     //discovered is a list of visited states
     let rec core (qn:QN.qn) (state:Map<QN.var,int>) discovered = 
         let discoveredList = match discovered with EndComponent(n) -> n
         let discovered' = EndComponent(state::discoveredList)
         let state' = asyncTick qn state
+        Log.log_debug (sprintf "End component loop start %A" (state::discoveredList))
         match state' with
         //No successors -> found a fix point
         | [] -> Log.log_debug (sprintf "Transition from %A to fix point %A" discoveredList.[0] state) ;FixPoint(state) 
         | _ ->  let state' = List.filter (fun i -> not (List.exists (fun j -> i=j) discoveredList) ) state' //ignore states we've seen before
                 //Two options- I have no new successors, or I have some
                 match state' with
-                | [] -> discovered'
-                | _ ->  List.fold (fun acc s -> match acc with
+                | [] -> Log.log_debug "No next states, returning the current endcomponent"
+                        discovered'
+                | _ ->  Log.log_debug (sprintf "Found some next states %A" state')
+                        List.fold (fun acc s -> match acc with
                                                 | FixPoint(_)   -> acc 
                                                 | EndComponent(a)->    let result = (core qn s acc)
                                                                        match result with
                                                                        | FixPoint(_) -> result
-                                                                       | EndComponent(states'') -> EndComponent(join states'' a)
+                                                                       | EndComponent(states'') ->  let observed = joinUnique states'' a 
+                                                                                                    Log.log_debug (sprintf "End component loop end %A" observed)
+                                                                                                    EndComponent(observed)
                                                                        )
                                                                                          discovered' state'
     
