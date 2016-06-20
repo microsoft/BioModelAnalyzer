@@ -552,12 +552,41 @@ let find_cycle_steps network diameter bounds =
 
     cycle
 
-//Takes a set of paths and looks to see if they are diverted away
-//from a fixpoint in async space
+let assert_multivariable_change qn start_time end_time (z:Context) =
+    let mutable one_change = z.MkFalse()
+    let mutable this_change = z.MkTrue()
+
+    for node in qn do
+        let current_state_id = get_z3_int_var_at_time node start_time
+        let current_state = make_z3_int_var current_state_id z
+
+        let next_state_id = get_z3_int_var_at_time node end_time
+        let next_state = make_z3_int_var next_state_id z
+
+        this_change <- z.MkNot(z.MkEq(current_state,next_state))
+        //everything else stays the same
+        for node2 in qn do
+            if node2<>node then
+                let current_state_id2 = get_z3_int_var_at_time node start_time
+                let current_state2 = make_z3_int_var current_state_id2 z
+
+                let next_state_id2 = get_z3_int_var_at_time node end_time
+                let next_state2 = make_z3_int_var next_state_id2 z
+
+                this_change <- z.MkAnd(this_change,z.MkEq(current_state2,next_state2))
+
+        one_change <- z.MkOr(one_change,this_change)
+    
+    z.AssertCnstr (z.MkNot(one_change))
+
+//Takes a set of paths and looks to see if their starts are diverted away
+//from a endpoint in async space
 //Assumes that the context initially passed has the entrypoint
 //of the endpoint (cycle state or fixpoint) specified as state 0
 //and that state -1 is not part of the endpoint
 let rec frustrated_endpoint network (ctx: Context) (t:int) =
+    //Add an extra constraint to limit the search to paths starting with multivariable transitions
+    assert_multivariable_change network t (t+1) ctx
     let model = ref null
     let sat = ctx.CheckAndGetModel (model)
 
@@ -565,7 +594,6 @@ let rec frustrated_endpoint network (ctx: Context) (t:int) =
     if sat = LBool.True then
         let state = fixpoint_to_env (model_to_fixpoint !model) |> env_to_QNState_t t
         Log.log_debug (sprintf "Found some transitions %A" (fixpoint_to_env (model_to_fixpoint !model)) )
-        //BH getting some incorrect transitions here
         match (Simulate.dfsAsyncFixPoint network state) with
         | Simulate.FixPoint(n) ->       Log.log_debug "Found a fix point- moving onto next"
                                         assert_not_model !model ctx
@@ -682,7 +710,7 @@ let find_cycle_steps_optimized network bounds synchronous =
         // A path of the requested length does not exists in the model, may stop the search now
         | (LBool.False,_) ->                 
                 None
-        // A path of the requested length exists, Check for a cycle in the range: length/2..length  
+        // A path of the requested length exists, Check for a synchronous cycle in the range: length/2..length  
         | (LBool.True,true) -> 
 
             ctx.Push()
@@ -710,6 +738,7 @@ let find_cycle_steps_optimized network bounds synchronous =
                 let res = Some(smallenv)
                 if (!model) <> null then (!model).Dispose()
                 res
+        // A path of the requested length exists, Check for a synchronous cycle in the range: length/2..length  
         | (LBool.True,false) -> 
 
             ctx.Push()
@@ -730,23 +759,31 @@ let find_cycle_steps_optimized network bounds synchronous =
                 match sat with
                 | LBool.False -> 
                     ctx.Pop()
-                    //Exclude the previously found loops in future searches
+                    //Exclude the previously found loops in future searches & try look for longer loops
+                    //Need to make this persist across different loop searches!
                     List.iter (fun model -> assert_not_model !model ctx; (!model).Dispose()) acc 
                     find_cycle_of_length (length*2) ctx
                 | LBool.True ->
                     //There is a cycle, but is does it collapse to fix point?
                     Log.log_debug "Testing for fix point"
                     //Convert the env to a state and perform a simulation in async space
-                    //Do I need to test every state in the cycle?
                     let env = fixpoint_to_env (model_to_fixpoint !model)
                     //This could be more efficient- it excludes simulations when we want to exclude all
                     //cycle states over all times
-                    assert_not_model !model ctx
                     let acc' = (model::acc)
                     let smallenv = extract_cycle_from_model env
-                    let state = env_to_QNState smallenv
-                    Log.log_debug (sprintf "Cycle start %A" state)
-                    let endstate = Simulate.dfsAsyncFixPoint network state
+                    let states = env_to_QNState_list smallenv
+                    //BH- this code is much slower than just excluding the path! why?
+                    //I never want to see this cycle again
+//                    for time in [0..length] do
+//                        assert_none_of_these_states states ctx time
+                    assert_not_model !model ctx
+                    Log.log_debug (sprintf "Cycle contents %A" states)
+                    //Test every state in the cycle
+                    let endstate = List.fold (fun acc state ->  match acc with
+                                                                | Simulate.FixPoint(n) -> Simulate.dfsAsyncFixPoint network state
+                                                                | _ -> acc
+                                                                ) (Simulate.FixPoint(Map.empty)) states
                     match endstate with 
                     | Simulate.EndComponent(n) -> 
                         //This cycle leads to an endpoint- return the endpoint
