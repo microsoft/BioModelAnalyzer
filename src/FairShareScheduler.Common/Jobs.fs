@@ -113,12 +113,12 @@ let deleteJob (appId: AppId, jobId: JobId) (table : CloudTable, tableExecution :
         Trace.WriteLine (sprintf "Job %O is not found" jobId)
         false
     | Some job -> 
-        ignoreExn (fun () -> TableOperation.Delete job |> table.Execute |> ignore) "Cannot delete job entry"
+        ignoreExn (fun () -> TableOperation.Delete job |> table.Execute |> ignore) "Cannot delete job entry" &&
         ignoreExn (fun () -> 
             getJobExecutionEntry (appId, jobId) tableExecution
             |> Option.iter(fun e ->
-                TableOperation.Delete e |> tableExecution.Execute |> ignore)) "Cannot delete information about job execution"
-        deleteBlob job.Result
+                TableOperation.Delete e |> tableExecution.Execute |> ignore)) "Cannot delete information about job execution" &&
+        deleteBlob job.Result &&
         deleteBlob job.Request
 
         
