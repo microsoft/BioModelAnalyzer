@@ -39,6 +39,12 @@ module BMA {
             Invoke(data): JQueryPromise<any>;
         }
 
+        /*
+        export interface JQueryPromise<any> {
+            abort: Function;
+        }
+        */
+
         export interface IExportService {
             Export(content: string, name: string, extension: string)
         }

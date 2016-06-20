@@ -1036,7 +1036,7 @@ module BMA {
                                             operation.AnalysisStatus = "processinglra," + tempStatus[1];
                                         }
 
-                                        that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
+                                       var lrapromise = that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
                                             that.ProcessLTLResults(res, polarityResults2, operation, opVersion, undefined);
                                         }).fail(function (xhr, textStatus, errorThrown) {
                                             if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
@@ -1058,6 +1058,16 @@ module BMA {
                                             driver.SetMessage(res);
                                             domplot.updateLayout();
                                             that.OnOperationsChanged(false);
+                                            });
+
+                                       driver.SetOnCancelRequestCallback(() => {
+                                           var status = operation.AnalysisStatus.split(', ');
+                                           var parsedstatus = status[1] ? status[1] : "nottested";
+                                           driver.SetStatus(parsedstatus);
+                                           operation.AnalysisStatus = parsedstatus;
+                                           domplot.updateLayout();
+                                           that.OnOperationsChanged(false, true);
+                                           (<any>lrapromise).abort();
                                         });
                                     });
                                 }).fail(function (xhr, textStatus, errorThrown) {
@@ -1079,7 +1089,8 @@ module BMA {
                                     }
                                     domplot.updateLayout();
                                     that.OnOperationsChanged(false);
-                                });
+                                    });
+
                             }
                         })
                         .fail(function (xhr, textStatus, errorThrown) {
@@ -1400,15 +1411,6 @@ module BMA {
                         operation.AnalysisStatus = "nottested";
                         driver.SetMessage(undefined);
                     }
-                    that.OnOperationsChanged(false, true);
-                });
-
-                driver.SetOnCancelRequestCallback(() => {
-                    var status = operation.AnalysisStatus.split(', ');
-                    var parsedstatus = status[1] ? status[1] : "nottested";
-                    driver.SetStatus(parsedstatus);
-                    operation.AnalysisStatus = parsedstatus;
-                    (<any>dom).updateLayout();
                     that.OnOperationsChanged(false, true);
                 });
 

@@ -622,6 +622,9 @@ module BMA {
             public Invoke(data): JQueryPromise<any> {
                 var that = this;
                 var result = $.Deferred();
+                var promise = result.promise();
+                (<any>promise).abort = function () {
+                };
 
                 result.progress(function (res) {
                     return res;
@@ -634,51 +637,66 @@ module BMA {
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                 }).done(function (id) {
+                    (<any>promise).abort = function () {
+                        console.log("Canceled");
+                        that.CancelRequest(id);
+                        result.reject();
+                    };
                     that.CheckStatusOfRequest(id, result);
                 }).fail(function (xhr, textStatus, errorThrown) {
                     result.reject(xhr, textStatus, errorThrown);
                 });
+                
+                return promise;
+            }
 
-                return result.promise();
+            private CancelRequest(id) {
+                var that = this;
+                $.ajax({
+                    type: "DELETE",
+                    url: that.serviceURL + that.userID + "/?jobId=" + id,
+                });
             }
 
             private CheckStatusOfRequest(id, result) {
                 var that = this;
-                console.log("polling to LRA service ... ");
-                $.ajax({
-                    type: "GET",
-                    url: that.serviceURL + that.userID + "/?jobId=" + id,
-                    statusCode: {
-                        200: function (res) {
-                            $.ajax({
-                                type: "GET",
-                                url: that.serviceURL + that.userID + "/result?jobId=" + id,
-                                statusCode: {
-                                    200: function (res) {
-                                        result.resolve(JSON.parse(res));
-                                    },
-                                    404: function (xhr, textStatus, errorThrown) {
-                                        result.reject(xhr, textStatus, errorThrown);
+                if (result.state() == "pending") {
+                    console.log("polling to LRA service ... ");
+                    $.ajax({
+                        type: "GET",
+                        url: that.serviceURL + that.userID + "/?jobId=" + id,
+                        statusCode: {
+                            200: function (res) {
+                                $.ajax({
+                                    type: "GET",
+                                    url: that.serviceURL + that.userID + "/result?jobId=" + id,
+                                    statusCode: {
+                                        200: function (res) {
+                                            result.resolve(JSON.parse(res));
+                                        },
+                                        404: function (xhr, textStatus, errorThrown) {
+                                            result.reject(xhr, textStatus, errorThrown);
+                                        }
                                     }
-                                }
-                            });
-                        },
-                        201: function (res) {
-                            result.notify(res);
-                            setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
-                        },
-                        202: function (res) {
-                            result.notify(res);
-                            setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
-                        },
-                        203: function (xhr, textStatus, errorThrown) {
-                            result.reject(xhr, textStatus, errorThrown);
-                        },
-                        404: function (xhr, textStatus, errorThrown) {
-                            result.reject(xhr, textStatus, errorThrown);
-                        }, 
-                    }
-                });
+                                });
+                            },
+                            201: function (res) {
+                                result.notify(res);
+                                setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
+                            },
+                            202: function (res) {
+                                result.notify(res);
+                                setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
+                            },
+                            203: function (xhr, textStatus, errorThrown) {
+                                result.reject(xhr, textStatus, errorThrown);
+                            },
+                            404: function (xhr, textStatus, errorThrown) {
+                                result.reject(xhr, textStatus, errorThrown);
+                            },
+                        }
+                    });
+                }
             }
             
         }

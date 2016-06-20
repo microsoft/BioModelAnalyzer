@@ -181,13 +181,14 @@
                     //}
                         break;
                 case "processinglra":
-                    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    var message = $("<div>processing as long job: </div>").addClass("grey").appendTo(ltltestdiv);
-                    var time = $("<div></div>").text(that.options.message).addClass("grey").appendTo(message);
+                    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").css("width", 150).addClass("default").appendTo(opDiv);
+                    var message = $("<div>processing as long job:</div>").addClass("grey").appendTo(ltltestdiv);
+                    var time = $("<div></div>").text(that.options.message).addClass("grey").appendTo(ltltestdiv);
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(ltltestdiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button></button>").appendTo(li);
-                    var cancelBtn = $("<button>Cancel</button>").addClass("cancel-button").appendTo(li).click(function () {
+                    var li2 = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var cancelBtn = $("<button>Cancel</button>").addClass("cancel-button").appendTo(li2).click(function () {
                         if (that.options.oncancelrequest !== undefined) {
                             that.options.oncancelrequest();
                         } else {

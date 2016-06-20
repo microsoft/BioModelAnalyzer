@@ -5481,6 +5481,9 @@ var BMA;
             BMALRAProcessingService.prototype.Invoke = function (data) {
                 var that = this;
                 var result = $.Deferred();
+                var promise = result.promise();
+                promise.abort = function () {
+                };
                 result.progress(function (res) {
                     return res;
                 });
@@ -5491,49 +5494,63 @@ var BMA;
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                 }).done(function (id) {
+                    promise.abort = function () {
+                        console.log("Canceled");
+                        that.CancelRequest(id);
+                        result.reject();
+                    };
                     that.CheckStatusOfRequest(id, result);
                 }).fail(function (xhr, textStatus, errorThrown) {
                     result.reject(xhr, textStatus, errorThrown);
                 });
-                return result.promise();
+                return promise;
+            };
+            BMALRAProcessingService.prototype.CancelRequest = function (id) {
+                var that = this;
+                $.ajax({
+                    type: "DELETE",
+                    url: that.serviceURL + that.userID + "/?jobId=" + id,
+                });
             };
             BMALRAProcessingService.prototype.CheckStatusOfRequest = function (id, result) {
                 var that = this;
-                console.log("polling to LRA service ... ");
-                $.ajax({
-                    type: "GET",
-                    url: that.serviceURL + that.userID + "/?jobId=" + id,
-                    statusCode: {
-                        200: function (res) {
-                            $.ajax({
-                                type: "GET",
-                                url: that.serviceURL + that.userID + "/result?jobId=" + id,
-                                statusCode: {
-                                    200: function (res) {
-                                        result.resolve(JSON.parse(res));
-                                    },
-                                    404: function (xhr, textStatus, errorThrown) {
-                                        result.reject(xhr, textStatus, errorThrown);
+                if (result.state() == "pending") {
+                    console.log("polling to LRA service ... ");
+                    $.ajax({
+                        type: "GET",
+                        url: that.serviceURL + that.userID + "/?jobId=" + id,
+                        statusCode: {
+                            200: function (res) {
+                                $.ajax({
+                                    type: "GET",
+                                    url: that.serviceURL + that.userID + "/result?jobId=" + id,
+                                    statusCode: {
+                                        200: function (res) {
+                                            result.resolve(JSON.parse(res));
+                                        },
+                                        404: function (xhr, textStatus, errorThrown) {
+                                            result.reject(xhr, textStatus, errorThrown);
+                                        }
                                     }
-                                }
-                            });
-                        },
-                        201: function (res) {
-                            result.notify(res);
-                            setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
-                        },
-                        202: function (res) {
-                            result.notify(res);
-                            setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
-                        },
-                        203: function (xhr, textStatus, errorThrown) {
-                            result.reject(xhr, textStatus, errorThrown);
-                        },
-                        404: function (xhr, textStatus, errorThrown) {
-                            result.reject(xhr, textStatus, errorThrown);
-                        },
-                    }
-                });
+                                });
+                            },
+                            201: function (res) {
+                                result.notify(res);
+                                setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
+                            },
+                            202: function (res) {
+                                result.notify(res);
+                                setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
+                            },
+                            203: function (xhr, textStatus, errorThrown) {
+                                result.reject(xhr, textStatus, errorThrown);
+                            },
+                            404: function (xhr, textStatus, errorThrown) {
+                                result.reject(xhr, textStatus, errorThrown);
+                            },
+                        }
+                    });
+                }
             };
             return BMALRAProcessingService;
         })();
@@ -14490,13 +14507,14 @@ jQuery.fn.extend({
                     //}
                     break;
                 case "processinglra":
-                    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    var message = $("<div>processing as long job: </div>").addClass("grey").appendTo(ltltestdiv);
-                    var time = $("<div></div>").text(that.options.message).addClass("grey").appendTo(message);
+                    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").css("width", 150).addClass("default").appendTo(opDiv);
+                    var message = $("<div>processing as long job:</div>").addClass("grey").appendTo(ltltestdiv);
+                    var time = $("<div></div>").text(that.options.message).addClass("grey").appendTo(ltltestdiv);
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(ltltestdiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button></button>").appendTo(li);
-                    var cancelBtn = $("<button>Cancel</button>").addClass("cancel-button").appendTo(li).click(function () {
+                    var li2 = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var cancelBtn = $("<button>Cancel</button>").addClass("cancel-button").appendTo(li2).click(function () {
                         if (that.options.oncancelrequest !== undefined) {
                             that.options.oncancelrequest();
                         }
@@ -16944,7 +16962,7 @@ var BMA;
                                     else {
                                         operation.AnalysisStatus = "processinglra," + tempStatus[1];
                                     }
-                                    that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
+                                    var lrapromise = that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
                                         that.ProcessLTLResults(res, polarityResults2, operation, opVersion, undefined);
                                     }).fail(function (xhr, textStatus, errorThrown) {
                                         if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
@@ -16968,6 +16986,15 @@ var BMA;
                                         driver.SetMessage(res);
                                         domplot.updateLayout();
                                         that.OnOperationsChanged(false);
+                                    });
+                                    driver.SetOnCancelRequestCallback(function () {
+                                        var status = operation.AnalysisStatus.split(', ');
+                                        var parsedstatus = status[1] ? status[1] : "nottested";
+                                        driver.SetStatus(parsedstatus);
+                                        operation.AnalysisStatus = parsedstatus;
+                                        domplot.updateLayout();
+                                        that.OnOperationsChanged(false, true);
+                                        lrapromise.abort();
                                     });
                                 });
                             }).fail(function (xhr, textStatus, errorThrown) {
@@ -17286,14 +17313,6 @@ var BMA;
                         operation.AnalysisStatus = "nottested";
                         driver.SetMessage(undefined);
                     }
-                    that.OnOperationsChanged(false, true);
-                });
-                driver.SetOnCancelRequestCallback(function () {
-                    var status = operation.AnalysisStatus.split(', ');
-                    var parsedstatus = status[1] ? status[1] : "nottested";
-                    driver.SetStatus(parsedstatus);
-                    operation.AnalysisStatus = parsedstatus;
-                    dom.updateLayout();
                     that.OnOperationsChanged(false, true);
                 });
                 var bbox = operation.BoundingBox;

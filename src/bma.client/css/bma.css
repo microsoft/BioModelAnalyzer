@@ -4629,11 +4629,15 @@ ui-icon-arrowthickstop-1-n {
   vertical-align: middle;
   margin-bottom: 3px;
 }
+.action-button-small.grey.spin {
+  margin-right: 5px;
+}
 .action-button-small.grey.spin:hover {
   background-color: #AAA;
 }
 .action-button-small.grey.spin .cancel-button {
   display: inline-block;
+  margin-left: 5px;
 }
 .action-button-small.grey.spin .cancel-button:hover {
   color: white;
