@@ -1315,6 +1315,62 @@ var BMA;
             return result;
         }
         ModelHelper.CreateClipboardContent = CreateClipboardContent;
+        function GetGridCell(x, y, grid) {
+            var cellX = Math.ceil((x - grid.xOrigin) / grid.xStep) - 1;
+            var cellY = Math.ceil((y - grid.yOrigin) / grid.yStep) - 1;
+            return { x: cellX, y: cellY };
+        }
+        ModelHelper.GetGridCell = GetGridCell;
+        /*
+        * Retrun cells which will occupied by container after its resize to @containerSize
+        */
+        function GetContainerExtraCells(container, containerSize) {
+            var result = [];
+            if (container !== undefined) {
+                var currentSize = container.Size;
+                if (containerSize > currentSize) {
+                    var diff = containerSize - currentSize;
+                    for (var i = 0; i < container.Size; i++) {
+                        for (var j = 0; j < diff; j++) {
+                            result.push({ x: container.PositionX + container.Size + j, y: container.PositionY + i });
+                        }
+                    }
+                    for (var i = 0; i < diff; i++) {
+                        for (var j = 0; j < containerSize; j++) {
+                            result.push({ x: container.PositionX + j, y: container.PositionY + container.Size + i });
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+        ModelHelper.GetContainerExtraCells = GetContainerExtraCells;
+        function IsGridCellEmpty(gridCell, model, layout, id, grid) {
+            var layouts = layout.Containers;
+            for (var i = 0; i < layouts.length; i++) {
+                if (layouts[i].Id === id)
+                    continue;
+                if (layouts[i].PositionX <= gridCell.x && layouts[i].PositionX + layouts[i].Size > gridCell.x &&
+                    layouts[i].PositionY <= gridCell.y && layouts[i].PositionY + layouts[i].Size > gridCell.y) {
+                    return false;
+                }
+            }
+            var result = [];
+            var variables = model.Variables;
+            var variableLayouts = layout.Variables;
+            for (var i = 0; i < variables.length; i++) {
+                var variable = variables[i];
+                var variableLayout = variableLayouts[i];
+                if (variable.Type !== "Constant")
+                    continue;
+                var vGridCell = GetGridCell(variableLayout.PositionX, variableLayout.PositionY, grid);
+                if (gridCell.x === vGridCell.x && gridCell.y === vGridCell.y) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        ModelHelper.IsGridCellEmpty = IsGridCellEmpty;
         function ResizeContainer(model, layout, containerId, containerSize, grid) {
             var container = layout.GetContainerById(containerId);
             if (container !== undefined) {
@@ -1323,6 +1379,18 @@ var BMA;
                 var containerLayouts = layout.Containers;
                 var variables = model.Variables;
                 var variableLayouts = layout.Variables;
+                if (shouldMove) {
+                    //Check if there is enough size for extending without replacing other contents
+                    var wishfulCells = GetContainerExtraCells(container, containerSize);
+                    var hasNonEmpty = false;
+                    for (var i = 0; i < wishfulCells.length; i++) {
+                        if (!IsGridCellEmpty(wishfulCells[i], model, layout, containerId, grid)) {
+                            hasNonEmpty = true;
+                            break;
+                        }
+                    }
+                    shouldMove = hasNonEmpty;
+                }
                 var newCnt = [];
                 for (var i = 0; i < containerLayouts.length; i++) {
                     var cnt = containerLayouts[i];
