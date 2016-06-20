@@ -735,8 +735,9 @@ module BMA {
                         }
 
                         if (that.stagingContainer !== undefined) {
-                            var cx = that.stagingContainer.position.x;
-                            var cy = that.stagingContainer.position.y;
+                            var cx = that.stagingContainer.position.x - that.stagingContainer.container.Size * that.Grid.xStep / 3;
+                            var cy = that.stagingContainer.position.y - that.stagingContainer.container.Size * that.Grid.yStep / 3;
+                            
                             var cid = that.stagingContainer.container.Id;
                             that.stagingContainer = undefined;
                             if (!that.TryAddVariable(cx, cy, "Container", cid)) {

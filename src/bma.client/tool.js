@@ -1319,6 +1319,7 @@ var BMA;
             var container = layout.GetContainerById(containerId);
             if (container !== undefined) {
                 var sizeDiff = containerSize - container.Size;
+                var shouldMove = sizeDiff > 0;
                 var containerLayouts = layout.Containers;
                 var variables = model.Variables;
                 var variableLayouts = layout.Variables;
@@ -1328,7 +1329,7 @@ var BMA;
                     if (cnt.Id === container.Id) {
                         newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, cnt.Name, containerSize, cnt.PositionX, cnt.PositionY));
                     }
-                    else if (cnt.PositionX > container.PositionX || cnt.PositionY > container.PositionY) {
+                    else if (shouldMove && (cnt.PositionX > container.PositionX || cnt.PositionY > container.PositionY)) {
                         newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, cnt.Name, cnt.Size, cnt.PositionX > container.PositionX ? cnt.PositionX + sizeDiff : cnt.PositionX, cnt.PositionY > container.PositionY ? cnt.PositionY + sizeDiff : cnt.PositionY));
                     }
                     else
@@ -1344,16 +1345,21 @@ var BMA;
                         newVL.push(new BMA.Model.VariableLayout(vl.Id, cntX + (vl.PositionX - cntX) * containerSize / container.Size, cntY + (vl.PositionY - cntY) * containerSize / container.Size, 0, 0, vl.Angle));
                     }
                     else {
-                        if (v.Type === "Constant") {
-                            newVL.push(new BMA.Model.VariableLayout(vl.Id, vl.PositionX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX, vl.PositionY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY, 0, 0, vl.Angle));
+                        if (shouldMove) {
+                            if (v.Type === "Constant") {
+                                newVL.push(new BMA.Model.VariableLayout(vl.Id, vl.PositionX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX, vl.PositionY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY, 0, 0, vl.Angle));
+                            }
+                            else {
+                                var vCnt = layout.GetContainerById(v.ContainerId);
+                                var vCntX = vCnt.PositionX * grid.xStep + grid.xOrigin;
+                                var vCntY = vCnt.PositionY * grid.yStep + grid.yOrigin;
+                                var unsizedVposX = (vl.PositionX - vCntX) / vCnt.Size + vCntX;
+                                var unsizedVposY = (vl.PositionY - vCntY) / vCnt.Size + vCntY;
+                                newVL.push(new BMA.Model.VariableLayout(vl.Id, unsizedVposX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX, unsizedVposY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY, 0, 0, vl.Angle));
+                            }
                         }
                         else {
-                            var vCnt = layout.GetContainerById(v.ContainerId);
-                            var vCntX = vCnt.PositionX * grid.xStep + grid.xOrigin;
-                            var vCntY = vCnt.PositionY * grid.yStep + grid.yOrigin;
-                            var unsizedVposX = (vl.PositionX - vCntX) / vCnt.Size + vCntX;
-                            var unsizedVposY = (vl.PositionY - vCntY) / vCnt.Size + vCntY;
-                            newVL.push(new BMA.Model.VariableLayout(vl.Id, unsizedVposX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX, unsizedVposY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY, 0, 0, vl.Angle));
+                            newVL.push(vl);
                         }
                     }
                 }
@@ -7090,8 +7096,8 @@ var BMA;
                         }
                     }
                     if (that.stagingContainer !== undefined) {
-                        var cx = that.stagingContainer.position.x;
-                        var cy = that.stagingContainer.position.y;
+                        var cx = that.stagingContainer.position.x - that.stagingContainer.container.Size * that.Grid.xStep / 3;
+                        var cy = that.stagingContainer.position.y - that.stagingContainer.container.Size * that.Grid.yStep / 3;
                         var cid = that.stagingContainer.container.Id;
                         that.stagingContainer = undefined;
                         if (!that.TryAddVariable(cx, cy, "Container", cid)) {
