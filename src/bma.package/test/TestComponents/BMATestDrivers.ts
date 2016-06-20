@@ -84,13 +84,13 @@ module BMA {
                 return this.model;
             }
 
-            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; description: string;} {
+            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; TFdescription: string;} {
         return {
                     name: this.variable.Name,
                     formula: this.variable.Formula,
                     rangeFrom: this.variable.RangeFrom,
                     rangeTo: this.variable.RangeTo,
-                    description: this.layout.GetVariableById(this.variable.Id).Description
+                    TFdescription: this.layout.GetVariableById(this.variable.Id).TFDescription
                 }
     }
 

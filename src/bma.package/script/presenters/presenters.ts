@@ -219,8 +219,8 @@ module BMA {
                                     layout.Variables[j].CellX,
                                     layout.Variables[j].CellY,
                                     layout.Variables[j].Angle,
-                                    (j == editingVariableIndex && params.description !== undefined) ?
-                                        params.description : layout.Variables[j].Description)
+                                    (j == editingVariableIndex && params.TFdescription !== undefined) ?
+                                        params.TFdescription : layout.Variables[j].TFDescription)
                                 );
                             }
 
@@ -232,7 +232,7 @@ module BMA {
                                 that.variableEditedId = that.editingId;
                                 that.isVariableEdited = true;
                             }
-                            if (!(layout.Variables[editingVariableIndex].Description == newVariablesLayout[editingVariableIndex].Description)) {
+                            if (!(layout.Variables[editingVariableIndex].TFDescription == newVariablesLayout[editingVariableIndex].TFDescription)) {
                                 that.editingLayout = new BMA.Model.Layout(layout.Containers, newVariablesLayout);
                                 that.variableEditedId = that.editingId;
                                 that.isVariableEdited = true;
@@ -263,7 +263,7 @@ module BMA {
                                         layout.Variables[i].CellX,
                                         layout.Variables[i].CellY,
                                         layout.Variables[i].Angle,
-                                        layout.Variables[i].Description
+                                        layout.Variables[i].TFDescription
                                     )
                                 );
                             }
@@ -400,7 +400,7 @@ module BMA {
                                 var offsetX = variableLayout.PositionX - oldContainerOffset.x;
                                 var offsetY = variableLayout.PositionY - oldContainerOffset.y;
                                 variables.push(new BMA.Model.Variable(that.variableIndex, newContainerId, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
-                                variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, newContainerOffset.x + offsetX, newContainerOffset.y + offsetY, 0, 0, variableLayout.Angle, variableLayout.Description));
+                                variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, newContainerOffset.x + offsetX, newContainerOffset.y + offsetY, 0, 0, variableLayout.Angle, variableLayout.TFDescription));
                             }
 
                             for (var i = 0; i < that.clipboard.Realtionships.length; i++) {
@@ -422,7 +422,7 @@ module BMA {
                             var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
                             var container = that.GetContainerFromGridCell(gridCell);
                             variables.push(new BMA.Model.Variable(that.variableIndex, container && container.Id ? container.Id : 0, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
-                            variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle, variableLayout.Description));
+                            variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle, variableLayout.TFDescription));
                             var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                             that.undoRedoPresenter.Dup(newmodel, newlayout);
@@ -718,7 +718,7 @@ module BMA {
 
                             return;
                         } else if (that.stagingVariable !== undefined) {
-                            that.stagingVariable.layout = new BMA.Model.VariableLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0, that.stagingVariable.layout.Description);
+                            that.stagingVariable.layout = new BMA.Model.VariableLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0, that.stagingVariable.layout.TFDescription);
 
                             if (that.svg !== undefined) {
                                 that.driver.DrawLayer2(<SVGElement>that.CreateStagingSvg());
@@ -1256,7 +1256,7 @@ module BMA {
 
                                                 variableLayouts[j] = new BMA.Model.VariableLayout(variableLayouts[j].Id,
                                                     vlX - oldContainerOffset.x + newContainerOffset.x,
-                                                    vlY - oldContainerOffset.y + newContainerOffset.y, 0, 0, variableLayouts[j].Angle, variableLayouts[j].Description);
+                                                    vlY - oldContainerOffset.y + newContainerOffset.y, 0, 0, variableLayouts[j].Angle, variableLayouts[j].TFDescription);
                                             }
                                         }
                                     }
@@ -1282,7 +1282,7 @@ module BMA {
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
                                 if (variables[i].Id === id) {
-                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0, variableLayouts[i].Description);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0, variableLayouts[i].TFDescription);
                                 }
                             }
                         } else {
@@ -1312,7 +1312,7 @@ module BMA {
                                     if (vrbl.ContainerId !== container.Id) {
                                         variables[i] = new BMA.Model.Variable(vrbl.Id, container.Id, vrbl.Type, vrbl.Name, vrbl.RangeFrom, vrbl.RangeTo, vrbl.Formula);
                                     }
-                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0, variableLayouts[i].Description);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0, variableLayouts[i].TFDescription);
                                 }
                             }
                         } else {
@@ -1362,7 +1362,7 @@ module BMA {
                                     if (vrbl.ContainerId !== container.Id) {
                                         variables[i] = new BMA.Model.Variable(vrbl.Id, container.Id, vrbl.Type, vrbl.Name, vrbl.RangeFrom, vrbl.RangeTo, vrbl.Formula);
                                     }
-                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, angle, variableLayouts[i].Description);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, angle, variableLayouts[i].TFDescription);
                                 }
                             }
                         } else {

@@ -13,7 +13,7 @@
             operators1: ["+", "-", "*", "/"], 
             operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
             inputs: [],
-            description: "",
+            TFdescription: "",
             formula: "",
             approved: undefined,
             oneditorclosing: undefined
@@ -330,7 +330,7 @@
             });
 
             this.description.bind("input change", function () {
-                that.options.description = that.description.val();
+                that.options.TFdescription = that.description.val();
                 window.Commands.Execute("VariableEdited", {});
             });
         },
@@ -372,10 +372,10 @@
                     window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
                     
                     break;
-                case "description":
-                    that.options.description = value;
-                    if (this.description.val() !== that.options.description)
-                        this.description.val(that.options.description);
+                case "TFdescription":
+                    that.options.TFdescription = value;
+                    if (this.description.val() !== that.options.TFdescription)
+                        this.description.val(that.options.TFdescription);
                     break;
                 case "inputs": 
                     this.options.inputs = value;

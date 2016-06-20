@@ -134,13 +134,13 @@ module BMA {
                 this.variableEditor.click(function (e) { e.stopPropagation(); });
             }
 
-            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; description: string } {
+            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; TFdescription: string } {
                 return {
                     name: this.variableEditor.bmaeditor('option', 'name'),
                     formula: this.variableEditor.bmaeditor('option', 'formula'),
                     rangeFrom: this.variableEditor.bmaeditor('option', 'rangeFrom'),
                     rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo'),
-                    description: this.variableEditor.bmaeditor('option', 'description'),
+                    TFdescription: this.variableEditor.bmaeditor('option', 'TFdescription'),
                 };
             }
 
@@ -162,7 +162,7 @@ module BMA {
                 this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
                 this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
                 this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
-                this.variableEditor.bmaeditor('option', 'description', layout.GetVariableById(variable.Id).Description);
+                this.variableEditor.bmaeditor('option', 'TFdescription', layout.GetVariableById(variable.Id).TFDescription);
 
             }
 

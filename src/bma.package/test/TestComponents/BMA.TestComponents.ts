@@ -173,8 +173,8 @@ module BMA {
 
         export class TestVariableEditor implements BMA.UIDrivers.IVariableEditor {
 
-            GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; description: string } {
-                return { name: "testname", formula: "testformula", rangeFrom: 0, rangeTo: 100, description: "description" }
+            GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; TFdescription: string } {
+                return { name: "testname", formula: "testformula", rangeFrom: 0, rangeTo: 100, TFdescription: "TFdescription" }
             }
 
             SetValidation(v: boolean) {

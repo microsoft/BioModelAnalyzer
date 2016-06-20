@@ -106,7 +106,7 @@
                             CellX: v.CellX,
                             CellY: v.CellY,
                             Angle: v.Angle,
-                            Description: v.Description,
+                            Description: v.TFDescription,
                         }
                     }),
                     Containers: layout.Containers.map(c => {

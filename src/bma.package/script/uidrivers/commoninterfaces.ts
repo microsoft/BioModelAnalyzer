@@ -45,7 +45,7 @@ module BMA {
 
         export interface IVariableEditor {
             GetVariableProperties(): {
-                name: string; formula: string; rangeFrom: number; rangeTo: number; description: string;
+                name: string; formula: string; rangeFrom: number; rangeTo: number; TFdescription: string;
             };
             Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel, layout: BMA.Model.Layout);
             Show(x: number, y: number);
