@@ -3890,6 +3890,18 @@ var BMA;
 (function (BMA) {
     var LTLOperations;
     (function (LTLOperations) {
+        var FlexOperand = (function () {
+            function FlexOperand() {
+            }
+            FlexOperand.prototype.GetFormula = function () {
+                return "";
+            };
+            FlexOperand.prototype.Clone = function () {
+                return new FlexOperand();
+            };
+            return FlexOperand;
+        })();
+        LTLOperations.FlexOperand = FlexOperand;
         var NameOperand = (function () {
             function NameOperand(name, id) {
                 if (id === void 0) { id = undefined; }
@@ -17327,6 +17339,36 @@ var BMA;
                         return f + ')';
                     };
                 };
+                var functionformulacreator = function (funcname) {
+                    return function (op) {
+                        var f = funcname + '(';
+                        for (var i = 0; i < op.length - 1 /*because last can be FlexSlot*/; i++) {
+                            f += ', ' + op[i].GetFormula();
+                        }
+                        if (op[op.length - 1] instanceof LTLOperations.FlexOperand) {
+                            f += ")";
+                        }
+                        else {
+                            f += +", " + op[op.length - 1].GetFormula() + ")";
+                        }
+                        return f;
+                    };
+                };
+                var operatorformulacreator = function (funcname) {
+                    return function (op) {
+                        var f = '(' + op[0].GetFormula();
+                        for (var i = 1; i < op.length - 1 /*because last can be FlexSlot*/; i++) {
+                            f += +" " + funcname + " " + op[i].GetFormula();
+                        }
+                        if (op[op.length - 1] instanceof LTLOperations.FlexOperand) {
+                            f += ")";
+                        }
+                        else {
+                            f += +" " + funcname + " " + op[op.length - 1].GetFormula() + ")";
+                        }
+                        return f;
+                    };
+                };
                 this.operators.push(new LTLOperations.Operator('AND', 2, formulacreator('And')));
                 this.operators.push(new LTLOperations.Operator('OR', 2, formulacreator('Or')));
                 this.operators.push(new LTLOperations.Operator('IMPLIES', 2, formulacreator('Implies')));
@@ -17338,6 +17380,21 @@ var BMA;
                 this.operators.push(new LTLOperations.Operator('WEAKUNTIL', 2, formulacreator('Weakuntil')));
                 this.operators.push(new LTLOperations.Operator('UNTIL', 2, formulacreator('Until')));
                 this.operators.push(new LTLOperations.Operator('RELEASE', 2, formulacreator('Release')));
+                /*
+                //Target Function Editor operators
+
+                this.operators.push(new Operator('AVG', 2, functionformulacreator('avg')));
+                this.operators.push(new Operator('MIN', 2, functionformulacreator('min')));
+                this.operators.push(new Operator('MAX', 2, functionformulacreator('max')));
+
+                this.operators.push(new Operator('CEIL', 1, formulacreator('ceil')));
+                this.operators.push(new Operator('FLOOR', 1, formulacreator('floor')));
+
+                this.operators.push(new Operator('/', 2, operatorformulacreator('/')));
+                this.operators.push(new Operator('*', Number.POSITIVE_INFINITY, operatorformulacreator('*')));
+                this.operators.push(new Operator('+', Number.POSITIVE_INFINITY, operatorformulacreator('+')));
+                this.operators.push(new Operator('-', Number.POSITIVE_INFINITY, operatorformulacreator('-')));
+                */
             }
             Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
                 get: function () {

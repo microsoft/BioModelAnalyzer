@@ -4638,3 +4638,14 @@ ui-icon-arrowthickstop-1-n {
 .action-button-small.grey.spin .cancel-button:hover {
   color: white;
 }
+.window.variable-editor {
+  height: 434px;
+}
+.variable-editor .description {
+  margin-top: 20px;
+}
+.variable-editor .description .description-input {
+  width: 80%;
+  padding: 0 5px;
+  height: 30px;
+}
