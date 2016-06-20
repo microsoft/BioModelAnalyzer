@@ -33,6 +33,7 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
     let queueClient = settings.StorageAccount.CreateCloudQueueClient()      
     let tableClient = settings.StorageAccount.CreateCloudTableClient()
     let table = tableClient.GetTableReference (getJobsTableName settings.Name)
+    let tableExec = tableClient.GetTableReference (getJobsExecutionTableName settings.Name)
     let blobClient = settings.StorageAccount.CreateCloudBlobClient()
     let container = blobClient.GetContainerReference (getBlobContainerName settings.Name)
     
@@ -42,17 +43,10 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
         blob.DownloadToStream(stream)
         stream.Position <- 0L
         stream :> System.IO.Stream
-
-    let getJobEntry (appId: AppId, jobId: JobId) = 
-        let retrieve = TableOperation.Retrieve<JobEntity>(appId, jobId)
-        match table.Execute retrieve with
-        | null -> None
-        | :? JobEntity as job -> Some job
-        | _ -> None
-        
+       
     let isExecuting (appId: AppId, jobId: JobId) = 
         let retrieve = TableOperation.Retrieve<JobExecutionEntity>(appId, jobId)
-        match table.Execute retrieve with
+        match tableExec.Execute retrieve with
         | null -> false
         | _ -> true
 
@@ -90,7 +84,7 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
             jobId
 
         member x.TryGetStatus (appId: AppId, jobId: JobId) : (JobStatus * string) option =
-            match getJobEntry (appId, jobId) with
+            match getJobEntry (appId, jobId) table with
             | None ->
                 logInfo (sprintf "Job %A not found" jobId)
                 None
@@ -102,7 +96,7 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
                 | _ -> JobStatus.Queued, job.StatusInformation
 
         member x.TryGetResult (appId: AppId, jobId: JobId) : IO.Stream option =
-            match getJobEntry (appId, jobId) with
+            match getJobEntry (appId, jobId) table with
             | None ->
                 logInfo (sprintf "Job %A not found" jobId)
                 None
