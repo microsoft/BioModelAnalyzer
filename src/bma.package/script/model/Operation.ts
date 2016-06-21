@@ -10,6 +10,18 @@
             Clone(): IOperand;
         }
 
+        export class FlexOperand implements IOperand {
+            constructor() { }
+
+            public GetFormula() {
+                return "";
+            }
+
+            public Clone() {
+                return new FlexOperand();
+            }
+        }
+
         export class NameOperand implements IOperand {
             private name: string;
             private id: any;

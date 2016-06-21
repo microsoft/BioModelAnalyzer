@@ -904,6 +904,7 @@
         .red{
             color:@darkred;
         }
+
 	}
 }
 
@@ -1038,9 +1039,32 @@
 .action-button-small{
     &.grey {
         &.spin{
+            margin-right:5px;
             &:hover{
                 background-color: @midgrey;
             }
+            .cancel-button{
+                display:inline-block;
+                margin-left:5px;
+                &:hover {
+                    color:white;
+                }
+            }
+        }
+    }
+}
+
+.window.variable-editor{
+    height:434px;
+}
+.variable-editor{
+    .description {
+        margin-top:20px;
+        
+        .description-input{
+            width:80%;
+            padding:0 5px;
+            height: 30px;
         }
     }
 }

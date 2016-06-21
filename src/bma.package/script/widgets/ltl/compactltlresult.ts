@@ -8,12 +8,13 @@
             status: "nottested",
             isexpanded: false,
             steps: 10,
-            error: undefined,
+            message: undefined,
             maxsteps: 999,
             ontestrequested: undefined,
             onstepschanged: undefined,
             onexpanded: undefined,
             onshowresultsrequested: undefined,
+            oncancelrequest: undefined,
         },
 
         _create: function () {
@@ -40,8 +41,8 @@
                     //if (this.options.isexpanded) {
 
                         var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                        if (that.options.error) {
-                            var errorMessage = $("<div>" + that.options.error + "</div>").addClass("red").appendTo(ltltestdiv);
+                        if (that.options.message) {
+                            var errorMessage = $("<div>" + that.options.message + "</div>").addClass("red").appendTo(ltltestdiv);
                         }
                         var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(ltltestdiv);
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
@@ -180,11 +181,21 @@
                     //}
                         break;
                 case "processinglra":
-                    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    var message = $("<div>processing as long job</div>").addClass("grey").appendTo(ltltestdiv);
+                    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").css("width", 150).addClass("default").appendTo(opDiv);
+                    var message = $("<div>processing as long job:</div>").addClass("grey").appendTo(ltltestdiv);
+                    var time = $("<div></div>").text(that.options.message).addClass("grey").appendTo(ltltestdiv);
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(ltltestdiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button></button>").appendTo(li);
+                    var li2 = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var cancelBtn = $("<button>Cancel</button>").addClass("cancel-button").appendTo(li2).click(function () {
+                        if (that.options.oncancelrequest !== undefined) {
+                            that.options.oncancelrequest();
+                        } else {
+                            that.options.status = "nottested";
+                            that._createView();
+                        }
+                    });
                     li.addClass("spin");
                     that.createWaitAnim().appendTo(btn);
                     break;
@@ -797,8 +808,8 @@
                         needRefreshStates = true;
                     }
                     break;
-                case "error":
-                    if (that.options.error !== value)
+                case "message":
+                    if (that.options.message !== value)
                         needRefreshStates = true;
                     break;
                 default:
