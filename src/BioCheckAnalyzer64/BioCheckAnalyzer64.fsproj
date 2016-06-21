@@ -103,7 +103,9 @@
     <Compile Include="..\BioCheckAnalyzer32\Marshal.fs">
       <Link>Marshal.fs</Link>
     </Compile>
-    <Compile Include="VariableEncoding.fs" />
+    <Compile Include="..\BioCheckAnalyzer32\VariableEncoding.fs">
+      <Link>VariableEncoding.fs</Link>
+    </Compile>
     <Compile Include="..\BioCheckAnalyzer32\Z.fs">
       <Link>Z.fs</Link>
     </Compile>
