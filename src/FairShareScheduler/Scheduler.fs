@@ -36,19 +36,10 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
     let tableExec = tableClient.GetTableReference (getJobsExecutionTableName settings.Name)
     let blobClient = settings.StorageAccount.CreateCloudBlobClient()
     let container = blobClient.GetContainerReference (getBlobContainerName settings.Name)
-    
-    let getBlobContent (blobName: string) =
-        let blob = container.GetBlockBlobReference(blobName)
-        let stream = new System.IO.MemoryStream()
-        blob.DownloadToStream(stream)
-        stream.Position <- 0L
-        stream :> System.IO.Stream
+
        
     let isExecuting (appId: AppId, jobId: JobId) = 
-        let retrieve = TableOperation.Retrieve<JobExecutionEntity>(appId, jobId)
-        match tableExec.Execute retrieve with
-        | null -> false
-        | _ -> true
+        tableExec |> tryGetJobExecutionEntry (appId, jobId) |> Option.isSome
 
     do 
         table.CreateIfNotExists() |> ignore  
@@ -67,7 +58,7 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
 
             let blobResName = getJobResultBlobName jobId settings.Name
 
-            let jobEntity = JobEntity(jobId, job.AppId)
+            let jobEntity = JobEntity(jobId, job.AppId) //, blobReq.Name, blobResName, status JobStatus.Queued, String.Empty, queueName)
             jobEntity.Request <- blobReq.Name
             jobEntity.Result <- blobResName
             jobEntity.Status <- status JobStatus.Queued
@@ -84,7 +75,7 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
             jobId
 
         member x.TryGetStatus (appId: AppId, jobId: JobId) : (JobStatus * string) option =
-            match getJobEntry (appId, jobId) table with
+            match tryGetJobEntry (appId, jobId) table with
             | None ->
                 logInfo (sprintf "Job %A not found" jobId)
                 None
@@ -94,17 +85,18 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
                 | JobStatus.Failed -> JobStatus.Failed, job.StatusInformation
                 | _ when isExecuting (appId, jobId) -> JobStatus.Executing, ""
                 | _ -> JobStatus.Queued, job.StatusInformation
+                |> Some
 
         member x.TryGetResult (appId: AppId, jobId: JobId) : IO.Stream option =
-            match getJobEntry (appId, jobId) table with
+            match tryGetJobEntry (appId, jobId) table with
             | None ->
                 logInfo (sprintf "Job %A not found" jobId)
                 None
             | Some job ->
                 match parseStatus job.Status with
-                | JobStatus.Succeeded -> getBlobContent job.Result
+                | JobStatus.Succeeded -> getBlobContent job.Result container |> Some
                 | _ ->  None
 
         member x.DeleteJob (appId: AppId, jobId: JobId) : bool =
-            Jobs.deleteJob (appId, jobId) (table, container)
+            Jobs.deleteJob (appId, jobId) (table, tableExec, container)
 

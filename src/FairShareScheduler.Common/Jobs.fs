@@ -55,6 +55,9 @@ type JobEntity(jobId : Guid, appId : AppId) =
     member val Status = "" with get, set
     member val StatusInformation = "" with get, set
     member val QueueName = "" with get, set
+
+    [<IgnoreProperty>]
+    member x.JobId = Guid.Parse(x.RowKey)
     
 type JobExecutionEntity(jobId : Guid, appId : AppId) =
     inherit TableEntity()
@@ -78,47 +81,57 @@ let parseQueueMessage (json : string) : JobId * AppId =
     js.["jobId"].Value<string>() |> Guid.Parse,
     js.["appId"].Value<string>() |> Guid.Parse
 
-let getJobEntry (appId: AppId, jobId: JobId) table = 
-    let retrieve = TableOperation.Retrieve<JobEntity>(appId, jobId)
-    match table.Execute retrieve with
+    
+let getBlobContent (blobName: string) (container : CloudBlobContainer) : IO.Stream =
+    let blob = container.GetBlockBlobReference(blobName)
+    let stream = new System.IO.MemoryStream()
+    blob.DownloadToStream(stream)
+    stream.Position <- 0L
+    stream :> System.IO.Stream
+
+let tryGetJobEntry (appId: AppId, jobId: JobId) (table : CloudTable) = 
+    let retrieve = TableOperation.Retrieve<JobEntity>(appId.ToString(), jobId.ToString())
+    let resp = table.Execute retrieve
+    match resp.Result with
     | null -> None
     | :? JobEntity as job -> Some job
     | _ -> None
     
-let getJobExecutionEntry (appId: AppId, jobId: JobId) table = 
-    let retrieve = TableOperation.Retrieve<JobExecutionEntity>(appId, jobId)
-    match table.Execute retrieve with
+let tryGetJobExecutionEntry (appId: AppId, jobId: JobId) (table : CloudTable) = 
+    let retrieve = TableOperation.Retrieve<JobExecutionEntity>(appId.ToString(), jobId.ToString())
+    let resp = table.Execute retrieve
+    match resp.Result with
     | null -> None
     | :? JobExecutionEntity as job -> Some job
     | _ -> None
 
+let internal ignoreExn (f : unit -> unit) (message : string) =
+    try
+        f()
+        true
+    with
+    | exn -> 
+        Trace.WriteLine(sprintf "%s: %A" message exn)
+        false
+
+let deleteBlob (blobName: string) (container : CloudBlobContainer) =
+    ignoreExn (fun() ->
+        let blob = container.GetBlockBlobReference(blobName)
+        blob.DeleteIfExists() |> ignore) 
+        (sprintf "Cannot delete blob %s" blobName)
+
 let deleteJob (appId: AppId, jobId: JobId) (table : CloudTable, tableExecution : CloudTable, container : CloudBlobContainer) : bool =
-    let ignoreExn (f : () -> ()) (message : string) =
-        try
-            f()
-            true
-        with
-        | exn -> 
-            Trace.WriteLine(sprtinf "%s: %A" message exn)
-            false
-
-    let deleteBlob (blobName: string) =
-        ignoreExn (fun() ->
-            let blob = container.GetBlockBlobReference(blobName)
-            blob.DeleteIfExists() |> ignore) 
-            (sprintf "Cannot delete blob %s" blobName)
-
-    match getJobEntry (appId, jobId) table with
+    match tryGetJobEntry (appId, jobId) table with
     | None ->
         Trace.WriteLine (sprintf "Job %O is not found" jobId)
         false
     | Some job -> 
         ignoreExn (fun () -> TableOperation.Delete job |> table.Execute |> ignore) "Cannot delete job entry" &&
         ignoreExn (fun () -> 
-            getJobExecutionEntry (appId, jobId) tableExecution
+            tryGetJobExecutionEntry (appId, jobId) tableExecution
             |> Option.iter(fun e ->
                 TableOperation.Delete e |> tableExecution.Execute |> ignore)) "Cannot delete information about job execution" &&
-        deleteBlob job.Result &&
-        deleteBlob job.Request
+        deleteBlob job.Result container &&
+        deleteBlob job.Request container
 
         
