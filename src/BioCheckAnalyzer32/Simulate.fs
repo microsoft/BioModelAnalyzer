@@ -54,9 +54,8 @@ let dfsAsyncFixPoint (qn:QN.qn) (state:Map<QN.var,int>) =
     let rec joinUnique a b =
         match a with
         | [] -> b
-        | head::tail -> match (List.tryFind (fun i -> i=head) b) with
-                        | Some(_) ->    joinUnique tail b
-                        | _ ->          joinUnique tail (head::b)
+        | head::tail -> if List.exists ((=) head) b then   joinUnique tail b
+                        else joinUnique tail (head::b)
     //discovered is a list of visited states
     let rec core (qn:QN.qn) (state:Map<QN.var,int>) discovered = 
         let discoveredList = match discovered with EndComponent(n) -> n
