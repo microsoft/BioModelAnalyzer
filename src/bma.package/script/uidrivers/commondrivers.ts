@@ -672,7 +672,7 @@ module BMA {
                                     url: that.serviceURL + that.userID + "/result?jobId=" + id,
                                     statusCode: {
                                         200: function (res) {
-                                            result.resolve(JSON.parse(res));
+                                            result.resolve(res);
                                         },
                                         404: function (xhr, textStatus, errorThrown) {
                                             result.reject(xhr, textStatus, errorThrown);
