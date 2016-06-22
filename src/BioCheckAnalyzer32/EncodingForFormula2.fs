@@ -3,6 +3,7 @@
 open LTL
 open QN
 open Microsoft.Z3
+open VariableEncoding
 
 
 type VariableRange = Map<QN.var, int list>
@@ -12,8 +13,8 @@ type FormulaConstraint = Map<FormulaLocation, Term>
 type FormulaConstraintList = FormulaConstraint list
 
 let create_z3_bool_var (location : FormulaLocation) time (z: Context) =
-    let var_name = BioCheckPlusZ3.get_z3_bool_var_formula_in_location_at_time location time
-    BioCheckPlusZ3.make_z3_bool_var var_name z
+    let var_name = enc_z3_bool_var_formula_in_location_at_time location time
+    make_z3_bool_var var_name z
 
 
 // Encode [phi] into [z]. As a by-product, return the map of constraints per location. 
@@ -37,8 +38,8 @@ let produce_constraints_for_truth_of_formula_at_time (phi : LTLFormulaType) (ran
                     // If the appropriate z3 variable is false then one of the values satisfying
                     // the proposition must be true
                     let last_value_not_satisfying_prop = List.nth range (first_value_satisfying_proposition-1)
-                    let z3_var_name = BioCheckPlusZ3.get_z3_bool_var_at_time_in_val var time last_value_not_satisfying_prop
-                    let z3_var = BioCheckPlusZ3.make_z3_bool_var z3_var_name z
+                    let z3_var_name = enc_z3_bool_var_at_time_in_val var time last_value_not_satisfying_prop
+                    let z3_var = make_z3_bool_var z3_var_name z
                     z.MkNot(z3_var)
 
         let encode_prop_lt var comparison_function range time =
@@ -52,8 +53,8 @@ let produce_constraints_for_truth_of_formula_at_time (phi : LTLFormulaType) (ran
                     z.MkFalse()
                 else
                     let last_value_satisfying_proposition = List.nth range (first_value_not_satisfying_proposition-1)
-                    let z3_var_name = BioCheckPlusZ3.get_z3_bool_var_at_time_in_val var time last_value_satisfying_proposition
-                    BioCheckPlusZ3.make_z3_bool_var z3_var_name z
+                    let z3_var_name = enc_z3_bool_var_at_time_in_val var time last_value_satisfying_proposition
+                    make_z3_bool_var z3_var_name z
         
         match phi with 
         | Until(loc, _, _)
@@ -277,8 +278,8 @@ let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (z : Context) (f
     let inside_loop time =
         if (time = last_time) then z.MkTrue()
         else
-            let name_of_loop_var = BioCheckPlusZ3.get_z3_bool_var_loop_at_time time
-            BioCheckPlusZ3.make_z3_bool_var name_of_loop_var z
+            let name_of_loop_var = enc_z3_bool_var_loop_at_time time
+            make_z3_bool_var name_of_loop_var z
     
     let encode_fairness (phi : LTLFormulaType) = 
         let _t,disjs = List.fold 

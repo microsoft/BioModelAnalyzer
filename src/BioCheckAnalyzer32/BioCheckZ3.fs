@@ -6,13 +6,9 @@ module BioCheckZ3
 
 open Microsoft.Z3
 
+open VariableEncoding
+
 open Expr
-
-// Naming convension for Z3 variables
-// Same functions appear in Z.fs and BioCheckPlusZ3
-let get_z3_int_var_at_time (node : QN.node) time = sprintf "v%d^%d" node.var time
-let make_z3_int_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkIntSort())
-
 
 let rec expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
     let node_min,node_max = node.range
@@ -31,7 +27,7 @@ let rec expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
                 else (z.MkRealNumeral 1, z.MkRealNumeral 0)
 
             let input_var = 
-                let v_t = get_z3_int_var_at_time v_defn time
+                let v_t = enc_z3_int_var_at_time v_defn time
                 let z_v_t = make_z3_int_var v_t z
                 z.MkToReal(z_v_t)
             z.MkAdd(z.MkMul(input_var,scale),displacement)
@@ -112,10 +108,10 @@ let rec expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
 
 
 let assert_target_function (node: QN.node) qn bounds start_time end_time (z : Context) =
-    let current_state_id = get_z3_int_var_at_time node start_time
+    let current_state_id = enc_z3_int_var_at_time node start_time
     let current_state = make_z3_int_var current_state_id z
 
-    let next_state_id = get_z3_int_var_at_time node end_time
+    let next_state_id = enc_z3_int_var_at_time node end_time
     let next_state = make_z3_int_var next_state_id z
 
     let T_applied = z.MkToInt(expr_to_z3 qn node node.f start_time z)
@@ -161,7 +157,7 @@ let assert_target_function (node: QN.node) qn bounds start_time end_time (z : Co
 
 
 let assert_bound (node : QN.node) (lower : int , upper : int) (time : int) (z : Context) =
-    let var_name = get_z3_int_var_at_time node time
+    let var_name = enc_z3_int_var_at_time node time
     let v = make_z3_int_var var_name z
     let lower_bound = z.Simplify (z.MkGe(v, z.MkIntNumeral lower))
     let upper_bound = z.Simplify (z.MkLe(v, z.MkIntNumeral upper))
@@ -284,8 +280,8 @@ let assert_states_equal (qn : QN.node list) start_time end_time (ctx : Context) 
     let mutable equal_condition = ctx.MkTrue()
 
     for node in qn do
-        let start_name = get_z3_int_var_at_time node start_time
-        let end_name = get_z3_int_var_at_time node end_time
+        let start_name = enc_z3_int_var_at_time node start_time
+        let end_name = enc_z3_int_var_at_time node end_time
         let start_var = make_z3_int_var start_name ctx 
         let end_var = make_z3_int_var end_name ctx 
         let eq = ctx.MkEq(start_var, end_var)

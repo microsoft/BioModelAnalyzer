@@ -8,12 +8,23 @@
         var _svgCnt = undefined;
         var _svg = undefined;
 
+        var _isAutomaticSizeUpdate = true;
+
         Object.defineProperty(this, "svg", {
             get: function () {
                 return _svg;
             },
         });
 
+        Object.defineProperty(this, "IsAutomaticSizeUpdate", {
+            get: function () {
+                return _isAutomaticSizeUpdate;
+            },
+            set: function (value) {
+                _isAutomaticSizeUpdate = value;
+                that.master.requestUpdateLayout();
+            }
+        });
 
         this.computeLocalBounds = function () {
             var _bbox = undefined;
@@ -42,22 +53,39 @@
             return (y - (plotRect.y + plotRect.height / 2)) * (-1) + plotRect.y + plotRect.height / 2;
         }
 
+        this.setSVGScreenSize = function (sizeToSet) {
+            _svgCnt.width(finalRect.width).height(finalRect.height);
+            _svg.configure({
+                width: _svgCnt.width(),
+                height: _svgCnt.height()
+            }, false);
+        }
+
         this.arrange = function (finalRect) {
             InteractiveDataDisplay.CanvasPlot.prototype.arrange.call(this, finalRect);
 
             if (_svgCnt === undefined) {
                 _svgCnt = $("<div></div>").css("overflow", "hidden").appendTo(that.host);
+                _svgCnt.width(finalRect.width).height(finalRect.height);
                 _svgCnt.svg({ onLoad: svgLoaded });
             }
 
-            _svgCnt.width(finalRect.width).height(finalRect.height);
+            var sizeChanged = false;
+            if (_isAutomaticSizeUpdate) {
+                sizeChanged = _svgCnt.width() !== finalRect.width || _svgCnt.height() !== finalRect.height;
+                if (sizeChanged) {
+                    _svgCnt.width(finalRect.width).height(finalRect.height);
+                }
+            }
 
             if (_svg !== undefined) {
                 var plotRect = that.visibleRect;
-                _svg.configure({
-                    width: _svgCnt.width(),
-                    height: _svgCnt.height()
-                }, false);
+                if (_isAutomaticSizeUpdate && sizeChanged) {
+                    _svg.configure({
+                        width: _svgCnt.width(),
+                        height: _svgCnt.height()
+                    }, false);
+                }
 
                 if (!isNaN(plotRect.y) && !isNaN(plotRect.height)) {
                     _svg.configure({
@@ -370,86 +398,55 @@
     InteractiveDataDisplay.register('scalableGridLines', function (jqDiv, master) { return new BMAExt.GridLinesPlot(jqDiv, master); });
 
 })(window.BMAExt = window.BMAExt || {}, InteractiveDataDisplay || {}, jQuery);
-//var Parser = require("jison").Parser;
-
-////Formula -> (DoubleLTLOperator Formula Formula) | (SingleLTLOperator Formula)
-////Formula -> State
-////State -> A|B|C...
-////DoubleLTLOperator ->  AND | OR | IMPLIES | UPTO | WEAKUNTIL | UNTIL | RELEASE
-////SingleLTLOperator -> NEXT | NOT | ALWAYS | EVENTUALLY
-
-//
 //%lex
 //%%
 
 //\s+                  { /* skip whitespace */}
 //"("                  { return '('; }
 //")"                  { return ')'; }
-//"AND"               { return 'DOUBLELTLOPERATOR'; }
-//"OR"                { return 'DOUBLELTLOPERATOR'; }
-//"IMPLIES"           { return 'DOUBLELTLOPERATOR'; }
-//"UPTO"              { return 'DOUBLELTLOPERATOR'; }
-//"WEAKUNTIL"         { return 'DOUBLELTLOPERATOR'; }
-//"UNTIL"             { return 'DOUBLELTLOPERATOR'; }
-//"RELEASE"           { return 'DOUBLELTLOPERATOR'; }
-//"NEXT"              { return 'SINGLELTLOPERATOR'; }
-//"NOT"               { return 'SINGLELTLOPERATOR'; }
-//"ALWAYS"            { return 'SINGLELTLOPERATOR'; }
-//"EVENTUALLY"        { return 'SINGLELTLOPERATOR'; }
+//"AND"               { return 'AND'; }
+//"OR"                { return 'OR'; }
+//"IMPLIES"           { return 'IMPLIES'; }
+//"UPTO"              { return 'UPTO'; }
+//"WEAKUNTIL"         { return 'WEAKUNTIL'; }
+//"UNTIL"             { return 'UNTIL'; }
+//"RELEASE"           { return 'RELEASE'; }
+//"NEXT"              { return 'NEXT'; }
+//"NOT"               { return 'NOT'; }
+//"ALWAYS"            { return 'ALWAYS'; }
+//"EVENTUALLY"        { return 'EVENTUALLY'; }
 //[a-zA-z0-9]+         { return 'STATE'; }
 //<<EOF>>         {return 'EOF';}
 
 ///lex
 
+//%right 'IMPLIES'
+//%left 'OR'
+//%left 'AND'
+//%left 'UNTIL' 'RELEASE' 'WEAKUNTIL' 'UPTO' 
+//%right 'NEXT' 'ALWAYS' 'EVENTUALLY' 'NOT'
+//%right SINGLELTLOPERATOR
+
 //%%
 //EXPRESSION
-//    : FORMULA EOF { print($1);    return $1;};
+//    : FORMULA EOF { return $1;};
 
 //FORMULA
-//    : "(" DOUBLELTLOPERATOR FORMULA FORMULA ")" { $$ =  { operator: $2, operand1: $3, operand2: $4}; }  
-//    | "(" SINGLELTLOPERATOR FORMULA ")"    { $$ = { operator: $2, operand: $3 }; }
-//    | STATE    { $$ = { state: $1} }    ;
+//    : FORMULA 'AND' FORMULA { $$ =  { operator: $2, operands: [$1, $3] }; }  
+//| FORMULA 'OR' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; }  
+//| FORMULA 'UNTIL' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; }  
+//| FORMULA 'RELEASE' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; }  
+//| FORMULA 'WEAKUNTIL' FORMULA { $$ =  { operator: $2, operands: [$1, $3]};}  
+//| FORMULA 'UPTO' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; }  
+//| FORMULA 'IMPLIES' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; }  
+//| SINGLELTLOPERATOR FORMULA    { $$ = { operator: $1, operands: [$2] }; }
+//| STATE    { $$ = { state: $1} }    ;
 
-
-
-//var grammar = {
-//    "lex": {
-//        "rules": [
-//           ["\\s+",                    "/* skip whitespace */"],
-//           ["\\(",                     "return '(';"],
-//           ["\\)",                     "return ')';"],
-//           ["AND\\b",                  "return 'DOUBLELTLOPERATOR';"],
-//           ["OR\\b",                   "return 'DOUBLELTLOPERATOR';"],
-//           ["IMPLIES\\b",              "return 'DOUBLELTLOPERATOR';"],
-//           ["UPTO\\b",                 "return 'DOUBLELTLOPERATOR';"],
-//           ["WEAKUNTIL\\b",            "return 'DOUBLELTLOPERATOR';"],
-//           ["UNTIL\\b",                "return 'DOUBLELTLOPERATOR';"],
-//           ["RELEASE\\b",              "return 'DOUBLELTLOPERATOR';"],
-//           ["NEXT\\b",                 "return 'SINGLELTLOPERATOR';"],
-//           ["NOT\\b",                  "return 'SINGLELTLOPERATOR';"],
-//           ["ALWAYS\\b",               "return 'SINGLELTLOPERATOR';"],
-//           ["EVENTUALLY\\b",           "return 'SINGLELTLOPERATOR';"],
-//           ["[a-zA-z0-9]+\\b",         "return 'STATE';"],
-//           ["$",                       "return 'EOF';"]
-//        ]
-//    },
-
-//    "bnf": {
-//        "expressions" :[[ "formula EOF",
-//                           "print($1); return $1;"  ]],
-
-//        "formula" :[[ "( DOUBLELTLOPERATOR FORMULA FORMULA )",  
-//                 "$$ = { operator: $2, operand1: $3, operand2: $4};" ],
-//              [ "( SINGLELTLOPERATOR FORMULA )",
-//                 "$$ = { operator: $2, operand: $3 };" ],
-//              [ "STATE",
-//                 "$$ = { state: $1 }"]]
-//    }
-//};
-
-//var parser = new Parser(grammar);
-
-//var parserSource = parser.generate();
+//SINGLELTLOPERATOR
+//    : 'NEXT' { $$ = $1; }
+//| 'NOT' { $$ = $1; }
+//| 'ALWAYS' { $$ = $1; }
+//| 'EVENTUALLY' { $$ = $1; };
 
 /* parser generated by jison 0.4.13 */
 /*
@@ -526,32 +523,51 @@
 */
 var BMA;
 (function (BMA) {
-    var parser = (function () {
-        var parser = {
-            trace: function trace() { },
+    var parser = (function(){
+        var parser = {trace: function trace(){},
             yy: {},
-            symbols_: { "error": 2, "EXPRESSION": 3, "FORMULA": 4, "EOF": 5, "(": 6, "DOUBLELTLOPERATOR": 7, ")": 8, "SINGLELTLOPERATOR": 9, "STATE": 10, "$accept": 0, "$end": 1 },
-            terminals_: { 2: "error", 5: "EOF", 6: "(", 7: "DOUBLELTLOPERATOR", 8: ")", 9: "SINGLELTLOPERATOR", 10: "STATE" },
-            productions_: [0, [3, 2], [4, 5], [4, 4], [4, 1]],
+            symbols_: {"error":2,"EXPRESSION":3,"FORMULA":4,"EOF":5,"AND":6,"OR":7,"UNTIL":8,"RELEASE":9,"WEAKUNTIL":10,"UPTO":11,"IMPLIES":12,"SINGLELTLOPERATOR":13,"STATE":14,"NEXT":15,"NOT":16,"ALWAYS":17,"EVENTUALLY":18,"$accept":0,"$end":1},
+            terminals_: {2:"error",5:"EOF",6:"AND",7:"OR",8:"UNTIL",9:"RELEASE",10:"WEAKUNTIL",11:"UPTO",12:"IMPLIES",14:"STATE",15:"NEXT",16:"NOT",17:"ALWAYS",18:"EVENTUALLY"},
+            productions_: [0,[3,2],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4,2],[4,1],[13,1],[13,1],[13,1],[13,1]],
             performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */
                 /**/) {
                 /* this == yyval */
 
                 var $0 = $$.length - 1;
                 switch (yystate) {
-                    case 1: return $$[$0 - 1];
+                    case 1: return $$[$0-1];
                         break;
-                    case 2: this.$ = { operator: $$[$0 - 3], operand1: $$[$0 - 2], operand2: $$[$0 - 1] };
+                    case 2: this.$ =  { operator: $$[$0-1], operands: [$$[$0-2], $$[$0]] }; 
                         break;
-                    case 3: this.$ = { operator: $$[$0 - 2], operand: $$[$0 - 1] };
+                    case 3: this.$ =  { operator: $$[$0-1], operands: [$$[$0-2], $$[$0]]}; 
                         break;
-                    case 4: this.$ = { state: $$[$0] }
+                    case 4: this.$ =  { operator: $$[$0-1], operands: [$$[$0-2], $$[$0]]}; 
+                        break;
+                    case 5: this.$ =  { operator: $$[$0-1], operands: [$$[$0-2], $$[$0]]}; 
+                        break;
+                    case 6: this.$ =  { operator: $$[$0-1], operands: [$$[$0-2], $$[$0]]};
+                        break;
+                    case 7: this.$ =  { operator: $$[$0-1], operands: [$$[$0-2], $$[$0]]}; 
+                        break;
+                    case 8: this.$ =  { operator: $$[$0-1], operands: [$$[$0-2], $$[$0]]}; 
+                        break;
+                    case 9: this.$ = { operator: $$[$0-1], operands: [$$[$0]] }; 
+                        break;
+                    case 10: this.$ = { state: $$[$0]} 
+                        break;
+                    case 11: this.$ = $$[$0]; 
+                        break;
+                    case 12: this.$ = $$[$0]; 
+                        break;
+                    case 13: this.$ = $$[$0]; 
+                        break;
+                    case 14: this.$ = $$[$0]; 
                         break;
                 }
             },
-            table: [{ 3: 1, 4: 2, 6: [1, 3], 10: [1, 4] }, { 1: [3] }, { 5: [1, 5] }, { 7: [1, 6], 9: [1, 7] }, { 5: [2, 4], 6: [2, 4], 8: [2, 4], 10: [2, 4] }, { 1: [2, 1] }, { 4: 8, 6: [1, 3], 10: [1, 4] }, { 4: 9, 6: [1, 3], 10: [1, 4] }, { 4: 10, 6: [1, 3], 10: [1, 4] }, { 8: [1, 11] }, { 8: [1, 12] }, { 5: [2, 3], 6: [2, 3], 8: [2, 3], 10: [2, 3] }, { 5: [2, 2], 6: [2, 2], 8: [2, 2], 10: [2, 2] }],
-            defaultActions: { 5: [2, 1] },
-            parseError: function parseError(str, hash) { if (hash.recoverable) { this.trace(str) } else { throw new Error(str) } },
+            table: [{3:1,4:2,13:3,14:[1,4],15:[1,5],16:[1,6],17:[1,7],18:[1,8]},{1:[3]},{5:[1,9],6:[1,10],7:[1,11],8:[1,12],9:[1,13],10:[1,14],11:[1,15],12:[1,16]},{4:17,13:3,14:[1,4],15:[1,5],16:[1,6],17:[1,7],18:[1,8]},{5:[2,10],6:[2,10],7:[2,10],8:[2,10],9:[2,10],10:[2,10],11:[2,10],12:[2,10]},{14:[2,11],15:[2,11],16:[2,11],17:[2,11],18:[2,11]},{14:[2,12],15:[2,12],16:[2,12],17:[2,12],18:[2,12]},{14:[2,13],15:[2,13],16:[2,13],17:[2,13],18:[2,13]},{14:[2,14],15:[2,14],16:[2,14],17:[2,14],18:[2,14]},{1:[2,1]},{4:18,13:3,14:[1,4],15:[1,5],16:[1,6],17:[1,7],18:[1,8]},{4:19,13:3,14:[1,4],15:[1,5],16:[1,6],17:[1,7],18:[1,8]},{4:20,13:3,14:[1,4],15:[1,5],16:[1,6],17:[1,7],18:[1,8]},{4:21,13:3,14:[1,4],15:[1,5],16:[1,6],17:[1,7],18:[1,8]},{4:22,13:3,14:[1,4],15:[1,5],16:[1,6],17:[1,7],18:[1,8]},{4:23,13:3,14:[1,4],15:[1,5],16:[1,6],17:[1,7],18:[1,8]},{4:24,13:3,14:[1,4],15:[1,5],16:[1,6],17:[1,7],18:[1,8]},{5:[2,9],6:[2,9],7:[2,9],8:[2,9],9:[2,9],10:[2,9],11:[2,9],12:[2,9]},{5:[2,2],6:[2,2],7:[2,2],8:[1,12],9:[1,13],10:[1,14],11:[1,15],12:[2,2]},{5:[2,3],6:[1,10],7:[2,3],8:[1,12],9:[1,13],10:[1,14],11:[1,15],12:[2,3]},{5:[2,4],6:[2,4],7:[2,4],8:[2,4],9:[2,4],10:[2,4],11:[2,4],12:[2,4]},{5:[2,5],6:[2,5],7:[2,5],8:[2,5],9:[2,5],10:[2,5],11:[2,5],12:[2,5]},{5:[2,6],6:[2,6],7:[2,6],8:[2,6],9:[2,6],10:[2,6],11:[2,6],12:[2,6]},{5:[2,7],6:[2,7],7:[2,7],8:[2,7],9:[2,7],10:[2,7],11:[2,7],12:[2,7]},{5:[2,8],6:[1,10],7:[1,11],8:[1,12],9:[1,13],10:[1,14],11:[1,15],12:[1,16]}],
+            defaultActions: {9:[2,1]},
+            parseError: function parseError(str,hash){if(hash.recoverable){this.trace(str)}else{throw new Error(str)}},
             parse: function parse(input) {
                 var self = this, stack = [0], vstack = [null], lstack = [], table = this.table, yytext = '', yylineno = 0, yyleng = 0, recovering = 0, TERROR = 2, EOF = 1;
                 var args = lstack.slice.call(arguments, 1);
@@ -681,119 +697,118 @@ var BMA;
                     }
                 }
                 return true;
-            }
-        };
+            }};
         /* generated by jison-lex 0.2.1 */
-        var lexer = (function () {
+        var lexer = (function(){
             var lexer = {
 
-                EOF: 1,
+                EOF:1,
 
-                parseError: function parseError(str, hash) { if (this.yy.parser) { this.yy.parser.parseError(str, hash) } else { throw new Error(str) } },
+                parseError:function parseError(str,hash){if(this.yy.parser){this.yy.parser.parseError(str,hash)}else{throw new Error(str)}},
 
                 // resets the lexer, sets new input
-                setInput: function (input) { this._input = input; this._more = this._backtrack = this.done = false; this.yylineno = this.yyleng = 0; this.yytext = this.matched = this.match = ""; this.conditionStack = ["INITIAL"]; this.yylloc = { first_line: 1, first_column: 0, last_line: 1, last_column: 0 }; if (this.options.ranges) { this.yylloc.range = [0, 0] } this.offset = 0; return this },
+                setInput:function (input){this._input=input;this._more=this._backtrack=this.done=false;this.yylineno=this.yyleng=0;this.yytext=this.matched=this.match="";this.conditionStack=["INITIAL"];this.yylloc={first_line:1,first_column:0,last_line:1,last_column:0};if(this.options.ranges){this.yylloc.range=[0,0]}this.offset=0;return this},
 
                 // consumes and returns one char from the input
-                input: function () { var ch = this._input[0]; this.yytext += ch; this.yyleng++; this.offset++; this.match += ch; this.matched += ch; var lines = ch.match(/(?:\r\n?|\n).*/g); if (lines) { this.yylineno++; this.yylloc.last_line++ } else { this.yylloc.last_column++ } if (this.options.ranges) { this.yylloc.range[1]++ } this._input = this._input.slice(1); return ch },
+                input:function (){var ch=this._input[0];this.yytext+=ch;this.yyleng++;this.offset++;this.match+=ch;this.matched+=ch;var lines=ch.match(/(?:\r\n?|\n).*/g);if(lines){this.yylineno++;this.yylloc.last_line++}else{this.yylloc.last_column++}if(this.options.ranges){this.yylloc.range[1]++}this._input=this._input.slice(1);return ch},
 
                 // unshifts one char (or a string) into the input
-                unput: function (ch) { var len = ch.length; var lines = ch.split(/(?:\r\n?|\n)/g); this._input = ch + this._input; this.yytext = this.yytext.substr(0, this.yytext.length - len - 1); this.offset -= len; var oldLines = this.match.split(/(?:\r\n?|\n)/g); this.match = this.match.substr(0, this.match.length - 1); this.matched = this.matched.substr(0, this.matched.length - 1); if (lines.length - 1) { this.yylineno -= lines.length - 1 } var r = this.yylloc.range; this.yylloc = { first_line: this.yylloc.first_line, last_line: this.yylineno + 1, first_column: this.yylloc.first_column, last_column: lines ? (lines.length === oldLines.length ? this.yylloc.first_column : 0) + oldLines[oldLines.length - lines.length].length - lines[0].length : this.yylloc.first_column - len }; if (this.options.ranges) { this.yylloc.range = [r[0], r[0] + this.yyleng - len] } this.yyleng = this.yytext.length; return this },
+                unput:function (ch){var len=ch.length;var lines=ch.split(/(?:\r\n?|\n)/g);this._input=ch+this._input;this.yytext=this.yytext.substr(0,this.yytext.length-len-1);this.offset-=len;var oldLines=this.match.split(/(?:\r\n?|\n)/g);this.match=this.match.substr(0,this.match.length-1);this.matched=this.matched.substr(0,this.matched.length-1);if(lines.length-1){this.yylineno-=lines.length-1}var r=this.yylloc.range;this.yylloc={first_line:this.yylloc.first_line,last_line:this.yylineno+1,first_column:this.yylloc.first_column,last_column:lines?(lines.length===oldLines.length?this.yylloc.first_column:0)+oldLines[oldLines.length-lines.length].length-lines[0].length:this.yylloc.first_column-len};if(this.options.ranges){this.yylloc.range=[r[0],r[0]+this.yyleng-len]}this.yyleng=this.yytext.length;return this},
 
                 // When called from action, caches matched text and appends it on next action
-                more: function () { this._more = true; return this },
+                more:function (){this._more=true;return this},
 
                 // When called from action, signals the lexer that this rule fails to match the input, so the next matching rule (regex) should be tested instead.
-                reject: function () { if (this.options.backtrack_lexer) { this._backtrack = true } else { return this.parseError("Lexical error on line " + (this.yylineno + 1) + ". You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n" + this.showPosition(), { text: "", token: null, line: this.yylineno }) } return this },
+                reject:function (){if(this.options.backtrack_lexer){this._backtrack=true}else{return this.parseError("Lexical error on line "+(this.yylineno+1)+". You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n"+this.showPosition(),{text:"",token:null,line:this.yylineno})}return this},
 
                 // retain first n characters of the match
-                less: function (n) { this.unput(this.match.slice(n)) },
+                less:function (n){this.unput(this.match.slice(n))},
 
                 // displays already matched input, i.e. for error messages
-                pastInput: function () { var past = this.matched.substr(0, this.matched.length - this.match.length); return (past.length > 20 ? "..." : "") + past.substr(-20).replace(/\n/g, "") },
+                pastInput:function (){var past=this.matched.substr(0,this.matched.length-this.match.length);return(past.length>20?"...":"")+past.substr(-20).replace(/\n/g,"")},
 
                 // displays upcoming input, i.e. for error messages
-                upcomingInput: function () { var next = this.match; if (next.length < 20) { next += this._input.substr(0, 20 - next.length) } return (next.substr(0, 20) + (next.length > 20 ? "..." : "")).replace(/\n/g, "") },
+                upcomingInput:function (){var next=this.match;if(next.length<20){next+=this._input.substr(0,20-next.length)}return(next.substr(0,20)+(next.length>20?"...":"")).replace(/\n/g,"")},
 
                 // displays the character position where the lexing error occurred, i.e. for error messages
-                showPosition: function () { var pre = this.pastInput(); var c = new Array(pre.length + 1).join("-"); return pre + this.upcomingInput() + "\n" + c + "^" },
+                showPosition:function (){var pre=this.pastInput();var c=new Array(pre.length+1).join("-");return pre+this.upcomingInput()+"\n"+c+"^"},
 
                 // test the lexed token: return FALSE when not a match, otherwise return token
-                test_match: function (match, indexed_rule) { var token, lines, backup; if (this.options.backtrack_lexer) { backup = { yylineno: this.yylineno, yylloc: { first_line: this.yylloc.first_line, last_line: this.last_line, first_column: this.yylloc.first_column, last_column: this.yylloc.last_column }, yytext: this.yytext, match: this.match, matches: this.matches, matched: this.matched, yyleng: this.yyleng, offset: this.offset, _more: this._more, _input: this._input, yy: this.yy, conditionStack: this.conditionStack.slice(0), done: this.done }; if (this.options.ranges) { backup.yylloc.range = this.yylloc.range.slice(0) } } lines = match[0].match(/(?:\r\n?|\n).*/g); if (lines) { this.yylineno += lines.length } this.yylloc = { first_line: this.yylloc.last_line, last_line: this.yylineno + 1, first_column: this.yylloc.last_column, last_column: lines ? lines[lines.length - 1].length - lines[lines.length - 1].match(/\r?\n?/)[0].length : this.yylloc.last_column + match[0].length }; this.yytext += match[0]; this.match += match[0]; this.matches = match; this.yyleng = this.yytext.length; if (this.options.ranges) { this.yylloc.range = [this.offset, this.offset += this.yyleng] } this._more = false; this._backtrack = false; this._input = this._input.slice(match[0].length); this.matched += match[0]; token = this.performAction.call(this, this.yy, this, indexed_rule, this.conditionStack[this.conditionStack.length - 1]); if (this.done && this._input) { this.done = false } if (token) { return token } else if (this._backtrack) { for (var k in backup) { this[k] = backup[k] } return false } return false },
+                test_match:function (match,indexed_rule){var token,lines,backup;if(this.options.backtrack_lexer){backup={yylineno:this.yylineno,yylloc:{first_line:this.yylloc.first_line,last_line:this.last_line,first_column:this.yylloc.first_column,last_column:this.yylloc.last_column},yytext:this.yytext,match:this.match,matches:this.matches,matched:this.matched,yyleng:this.yyleng,offset:this.offset,_more:this._more,_input:this._input,yy:this.yy,conditionStack:this.conditionStack.slice(0),done:this.done};if(this.options.ranges){backup.yylloc.range=this.yylloc.range.slice(0)}}lines=match[0].match(/(?:\r\n?|\n).*/g);if(lines){this.yylineno+=lines.length}this.yylloc={first_line:this.yylloc.last_line,last_line:this.yylineno+1,first_column:this.yylloc.last_column,last_column:lines?lines[lines.length-1].length-lines[lines.length-1].match(/\r?\n?/)[0].length:this.yylloc.last_column+match[0].length};this.yytext+=match[0];this.match+=match[0];this.matches=match;this.yyleng=this.yytext.length;if(this.options.ranges){this.yylloc.range=[this.offset,this.offset+=this.yyleng]}this._more=false;this._backtrack=false;this._input=this._input.slice(match[0].length);this.matched+=match[0];token=this.performAction.call(this,this.yy,this,indexed_rule,this.conditionStack[this.conditionStack.length-1]);if(this.done&&this._input){this.done=false}if(token){return token}else if(this._backtrack){for(var k in backup){this[k]=backup[k]}return false}return false},
 
                 // return next match in input
-                next: function () { if (this.done) { return this.EOF } if (!this._input) { this.done = true } var token, match, tempMatch, index; if (!this._more) { this.yytext = ""; this.match = "" } var rules = this._currentRules(); for (var i = 0; i < rules.length; i++) { tempMatch = this._input.match(this.rules[rules[i]]); if (tempMatch && (!match || tempMatch[0].length > match[0].length)) { match = tempMatch; index = i; if (this.options.backtrack_lexer) { token = this.test_match(tempMatch, rules[i]); if (token !== false) { return token } else if (this._backtrack) { match = false; continue } else { return false } } else if (!this.options.flex) { break } } } if (match) { token = this.test_match(match, rules[index]); if (token !== false) { return token } return false } if (this._input === "") { return this.EOF } else { return this.parseError("Lexical error on line " + (this.yylineno + 1) + ". Unrecognized text.\n" + this.showPosition(), { text: "", token: null, line: this.yylineno }) } },
+                next:function (){if(this.done){return this.EOF}if(!this._input){this.done=true}var token,match,tempMatch,index;if(!this._more){this.yytext="";this.match=""}var rules=this._currentRules();for(var i=0;i<rules.length;i++){tempMatch=this._input.match(this.rules[rules[i]]);if(tempMatch&&(!match||tempMatch[0].length>match[0].length)){match=tempMatch;index=i;if(this.options.backtrack_lexer){token=this.test_match(tempMatch,rules[i]);if(token!==false){return token}else if(this._backtrack){match=false;continue}else{return false}}else if(!this.options.flex){break}}}if(match){token=this.test_match(match,rules[index]);if(token!==false){return token}return false}if(this._input===""){return this.EOF}else{return this.parseError("Lexical error on line "+(this.yylineno+1)+". Unrecognized text.\n"+this.showPosition(),{text:"",token:null,line:this.yylineno})}},
 
                 // return next match that has a token
-                lex: function lex() { var r = this.next(); if (r) { return r } else { return this.lex() } },
+                lex:function lex(){var r=this.next();if(r){return r}else{return this.lex()}},
 
                 // activates a new lexer condition state (pushes the new lexer condition state onto the condition stack)
-                begin: function begin(condition) { this.conditionStack.push(condition) },
+                begin:function begin(condition){this.conditionStack.push(condition)},
 
                 // pop the previously active lexer condition state off the condition stack
-                popState: function popState() { var n = this.conditionStack.length - 1; if (n > 0) { return this.conditionStack.pop() } else { return this.conditionStack[0] } },
+                popState:function popState(){var n=this.conditionStack.length-1;if(n>0){return this.conditionStack.pop()}else{return this.conditionStack[0]}},
 
                 // produce the lexer rule set which is active for the currently active lexer condition state
-                _currentRules: function _currentRules() { if (this.conditionStack.length && this.conditionStack[this.conditionStack.length - 1]) { return this.conditions[this.conditionStack[this.conditionStack.length - 1]].rules } else { return this.conditions["INITIAL"].rules } },
+                _currentRules:function _currentRules(){if(this.conditionStack.length&&this.conditionStack[this.conditionStack.length-1]){return this.conditions[this.conditionStack[this.conditionStack.length-1]].rules}else{return this.conditions["INITIAL"].rules}},
 
                 // return the currently active lexer condition state; when an index argument is provided it produces the N-th previous condition state, if available
-                topState: function topState(n) { n = this.conditionStack.length - 1 - Math.abs(n || 0); if (n >= 0) { return this.conditionStack[n] } else { return "INITIAL" } },
+                topState:function topState(n){n=this.conditionStack.length-1-Math.abs(n||0);if(n>=0){return this.conditionStack[n]}else{return"INITIAL"}},
 
                 // alias for begin(condition)
-                pushState: function pushState(condition) { this.begin(condition) },
+                pushState:function pushState(condition){this.begin(condition)},
 
                 // return the number of states currently on the stack
-                stateStackSize: function stateStackSize() { return this.conditionStack.length },
+                stateStackSize:function stateStackSize(){return this.conditionStack.length},
                 options: {},
-                performAction: function anonymous(yy, yy_, $avoiding_name_collisions, YY_START
+                performAction: function anonymous(yy,yy_,$avoiding_name_collisions,YY_START
                     /**/) {
 
-                    var YYSTATE = YY_START;
-                    switch ($avoiding_name_collisions) {
+                    var YYSTATE=YY_START;
+                    switch($avoiding_name_collisions) {
                         case 0: /* skip whitespace */
                             break;
-                        case 1: return 6;
+                        case 1: return '('; 
                             break;
-                        case 2: return 8;
+                        case 2: return ')'; 
                             break;
-                        case 3: return 7;
+                        case 3: return 6; 
                             break;
-                        case 4: return 7;
+                        case 4: return 7; 
                             break;
-                        case 5: return 7;
+                        case 5: return 12; 
                             break;
-                        case 6: return 7;
+                        case 6: return 11; 
                             break;
-                        case 7: return 7;
+                        case 7: return 10; 
                             break;
-                        case 8: return 7;
+                        case 8: return 8; 
                             break;
-                        case 9: return 7;
+                        case 9: return 9; 
                             break;
-                        case 10: return 9;
+                        case 10: return 15; 
                             break;
-                        case 11: return 9;
+                        case 11: return 16; 
                             break;
-                        case 12: return 9;
+                        case 12: return 17; 
                             break;
-                        case 13: return 9;
+                        case 13: return 18; 
                             break;
-                        case 14: return 10;
+                        case 14: return 14; 
                             break;
-                        case 15: return 5;
+                        case 15:return 5;
                             break;
                     }
                 },
-                rules: [/^(?:\s+)/, /^(?:\()/, /^(?:\))/, /^(?:AND\b)/i, /^(?:OR\b)/i, /^(?:IMPLIES\b)/i, /^(?:UPTO\b)/i, /^(?:WEAKUNTIL\b)/i, /^(?:UNTIL\b)/i, /^(?:RELEASE\b)/i, /^(?:NEXT\b)/i, /^(?:NOT\b)/i, /^(?:ALWAYS\b)/i, /^(?:EVENTUALLY\b)/i, /^(?:[a-zA-z0-9]+)/, /^(?:$)/],
-                conditions: { "INITIAL": { "rules": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], "inclusive": true } }
+                rules: [/^(?:\s+)/,/^(?:\()/,/^(?:\))/,/^(?:AND\b)/i,/^(?:OR\b)/i,/^(?:IMPLIES\b)/i,/^(?:UPTO\b)/i,/^(?:WEAKUNTIL\b)/i,/^(?:UNTIL\b)/i,/^(?:RELEASE\b)/i,/^(?:NEXT\b)/i,/^(?:NOT\b)/i,/^(?:ALWAYS\b)/i,/^(?:EVENTUALLY\b)/i,/^(?:[a-zA-z0-9]+)/,/^(?:$)/],
+                conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"inclusive":true}}
             };
             return lexer;
         })();
         parser.lexer = lexer;
-        function Parser() {
+        function Parser () {
             this.yy = {};
         }
-        Parser.prototype = parser; parser.Parser = Parser;
+        Parser.prototype = parser;parser.Parser = Parser;
         return new Parser;
     })();
     BMA.parser = parser;
@@ -802,7 +817,7 @@ var BMA;
         exports.parser = parser;
         exports.Parser = parser.Parser;
         exports.parse = function () { return parser.parse.apply(parser, arguments); };
-        exports.main = function commonjsMain(args) { if (!args[1]) { console.log("Usage: " + args[0] + " FILE"); process.exit(1) } var source = require("fs").readFileSync(require("path").normalize(args[1]), "utf8"); return exports.parser.parse(source) };
+        exports.main = function commonjsMain(args){if(!args[1]){console.log("Usage: "+args[0]+" FILE");process.exit(1)}var source=require("fs").readFileSync(require("path").normalize(args[1]),"utf8");return exports.parser.parse(source)};
         if (typeof module !== 'undefined' && require.main === module) {
             exports.main(process.argv.slice(1));
         }
@@ -1300,20 +1315,89 @@ var BMA;
             return result;
         }
         ModelHelper.CreateClipboardContent = CreateClipboardContent;
+        function GetGridCell(x, y, grid) {
+            var cellX = Math.ceil((x - grid.xOrigin) / grid.xStep) - 1;
+            var cellY = Math.ceil((y - grid.yOrigin) / grid.yStep) - 1;
+            return { x: cellX, y: cellY };
+        }
+        ModelHelper.GetGridCell = GetGridCell;
+        /*
+        * Retrun cells which will occupied by container after its resize to @containerSize
+        */
+        function GetContainerExtraCells(container, containerSize) {
+            var result = [];
+            if (container !== undefined) {
+                var currentSize = container.Size;
+                if (containerSize > currentSize) {
+                    var diff = containerSize - currentSize;
+                    for (var i = 0; i < container.Size; i++) {
+                        for (var j = 0; j < diff; j++) {
+                            result.push({ x: container.PositionX + container.Size + j, y: container.PositionY + i });
+                        }
+                    }
+                    for (var i = 0; i < diff; i++) {
+                        for (var j = 0; j < containerSize; j++) {
+                            result.push({ x: container.PositionX + j, y: container.PositionY + container.Size + i });
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+        ModelHelper.GetContainerExtraCells = GetContainerExtraCells;
+        function IsGridCellEmpty(gridCell, model, layout, id, grid) {
+            var layouts = layout.Containers;
+            for (var i = 0; i < layouts.length; i++) {
+                if (layouts[i].Id === id)
+                    continue;
+                if (layouts[i].PositionX <= gridCell.x && layouts[i].PositionX + layouts[i].Size > gridCell.x &&
+                    layouts[i].PositionY <= gridCell.y && layouts[i].PositionY + layouts[i].Size > gridCell.y) {
+                    return false;
+                }
+            }
+            var result = [];
+            var variables = model.Variables;
+            var variableLayouts = layout.Variables;
+            for (var i = 0; i < variables.length; i++) {
+                var variable = variables[i];
+                var variableLayout = variableLayouts[i];
+                if (variable.Type !== "Constant")
+                    continue;
+                var vGridCell = GetGridCell(variableLayout.PositionX, variableLayout.PositionY, grid);
+                if (gridCell.x === vGridCell.x && gridCell.y === vGridCell.y) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        ModelHelper.IsGridCellEmpty = IsGridCellEmpty;
         function ResizeContainer(model, layout, containerId, containerSize, grid) {
             var container = layout.GetContainerById(containerId);
             if (container !== undefined) {
                 var sizeDiff = containerSize - container.Size;
+                var shouldMove = sizeDiff > 0;
                 var containerLayouts = layout.Containers;
                 var variables = model.Variables;
                 var variableLayouts = layout.Variables;
+                if (shouldMove) {
+                    //Check if there is enough size for extending without replacing other contents
+                    var wishfulCells = GetContainerExtraCells(container, containerSize);
+                    var hasNonEmpty = false;
+                    for (var i = 0; i < wishfulCells.length; i++) {
+                        if (!IsGridCellEmpty(wishfulCells[i], model, layout, containerId, grid)) {
+                            hasNonEmpty = true;
+                            break;
+                        }
+                    }
+                    shouldMove = hasNonEmpty;
+                }
                 var newCnt = [];
                 for (var i = 0; i < containerLayouts.length; i++) {
                     var cnt = containerLayouts[i];
                     if (cnt.Id === container.Id) {
                         newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, cnt.Name, containerSize, cnt.PositionX, cnt.PositionY));
                     }
-                    else if (cnt.PositionX > container.PositionX || cnt.PositionY > container.PositionY) {
+                    else if (shouldMove && (cnt.PositionX > container.PositionX || cnt.PositionY > container.PositionY)) {
                         newCnt.push(new BMA.Model.ContainerLayout(cnt.Id, cnt.Name, cnt.Size, cnt.PositionX > container.PositionX ? cnt.PositionX + sizeDiff : cnt.PositionX, cnt.PositionY > container.PositionY ? cnt.PositionY + sizeDiff : cnt.PositionY));
                     }
                     else
@@ -1329,16 +1413,21 @@ var BMA;
                         newVL.push(new BMA.Model.VariableLayout(vl.Id, cntX + (vl.PositionX - cntX) * containerSize / container.Size, cntY + (vl.PositionY - cntY) * containerSize / container.Size, 0, 0, vl.Angle));
                     }
                     else {
-                        if (v.Type === "Constant") {
-                            newVL.push(new BMA.Model.VariableLayout(vl.Id, vl.PositionX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX, vl.PositionY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY, 0, 0, vl.Angle));
+                        if (shouldMove) {
+                            if (v.Type === "Constant") {
+                                newVL.push(new BMA.Model.VariableLayout(vl.Id, vl.PositionX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX, vl.PositionY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY, 0, 0, vl.Angle));
+                            }
+                            else {
+                                var vCnt = layout.GetContainerById(v.ContainerId);
+                                var vCntX = vCnt.PositionX * grid.xStep + grid.xOrigin;
+                                var vCntY = vCnt.PositionY * grid.yStep + grid.yOrigin;
+                                var unsizedVposX = (vl.PositionX - vCntX) / vCnt.Size + vCntX;
+                                var unsizedVposY = (vl.PositionY - vCntY) / vCnt.Size + vCntY;
+                                newVL.push(new BMA.Model.VariableLayout(vl.Id, unsizedVposX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX, unsizedVposY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY, 0, 0, vl.Angle));
+                            }
                         }
                         else {
-                            var vCnt = layout.GetContainerById(v.ContainerId);
-                            var vCntX = vCnt.PositionX * grid.xStep + grid.xOrigin;
-                            var vCntY = vCnt.PositionY * grid.yStep + grid.yOrigin;
-                            var unsizedVposX = (vl.PositionX - vCntX) / vCnt.Size + vCntX;
-                            var unsizedVposY = (vl.PositionY - vCntY) / vCnt.Size + vCntY;
-                            newVL.push(new BMA.Model.VariableLayout(vl.Id, unsizedVposX > cntX + grid.xStep ? vl.PositionX + sizeDiff * grid.xStep : vl.PositionX, unsizedVposY > cntY + grid.yStep ? vl.PositionY + sizeDiff * grid.yStep : vl.PositionY, 0, 0, vl.Angle));
+                            newVL.push(vl);
                         }
                     }
                 }
@@ -1634,12 +1723,8 @@ var BMA;
                     var operator = window.OperatorsRegistry.GetOperatorByName(formula.operator.toUpperCase());
                     if (operator === undefined)
                         throw "Operator doesn't exist";
-                    if (operator.OperandsCount == 2) {
-                        operands.push(ConvertToOperation(formula.operand1, states));
-                        operands.push(ConvertToOperation(formula.operand2, states));
-                    }
-                    else {
-                        operands.push(ConvertToOperation(formula.operand, states));
+                    for (i = 0; i < formula.operands.length; i++) {
+                        operands.push(ConvertToOperation(formula.operands[i], states));
                     }
                     operation.Operator = operator;
                     operation.Operands = operands;
@@ -2996,13 +3081,15 @@ var BMA;
         })();
         Model.ContainerLayout = ContainerLayout;
         var VariableLayout = (function () {
-            function VariableLayout(id, positionX, positionY, cellX, cellY, angle) {
+            function VariableLayout(id, positionX, positionY, cellX, cellY, angle, TFdescription) {
+                if (TFdescription === void 0) { TFdescription = ""; }
                 this.id = id;
                 this.positionX = positionX;
                 this.positionY = positionY;
                 this.cellX = cellX;
                 this.cellY = cellY;
                 this.angle = angle;
+                this.TFdescription = TFdescription;
             }
             Object.defineProperty(VariableLayout.prototype, "Id", {
                 get: function () {
@@ -3042,6 +3129,13 @@ var BMA;
             Object.defineProperty(VariableLayout.prototype, "Angle", {
                 get: function () {
                     return this.angle;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(VariableLayout.prototype, "TFDescription", {
+                get: function () {
+                    return this.TFdescription ? this.TFdescription : "";
                 },
                 enumerable: true,
                 configurable: true
@@ -3515,6 +3609,7 @@ var BMA;
                             CellX: v.CellX,
                             CellY: v.CellY,
                             Angle: v.Angle,
+                            Description: v.TFDescription,
                         };
                     }),
                     Containers: layout.Containers.map(function (c) {
@@ -3543,7 +3638,7 @@ var BMA;
                     containers[i] = newContainer;
                 }
             }
-            var layout = new Model.Layout(containers, json.Layout.Variables.map(function (v) { return new Model.VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle); }));
+            var layout = new Model.Layout(containers, json.Layout.Variables.map(function (v) { return new Model.VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle, v.Description); }));
             return {
                 Model: model,
                 Layout: layout
@@ -3795,6 +3890,18 @@ var BMA;
 (function (BMA) {
     var LTLOperations;
     (function (LTLOperations) {
+        var FlexOperand = (function () {
+            function FlexOperand() {
+            }
+            FlexOperand.prototype.GetFormula = function () {
+                return "";
+            };
+            FlexOperand.prototype.Clone = function () {
+                return new FlexOperand();
+            };
+            return FlexOperand;
+        })();
+        LTLOperations.FlexOperand = FlexOperand;
         var NameOperand = (function () {
             function NameOperand(name, id) {
                 if (id === void 0) { id = undefined; }
@@ -4973,13 +5080,14 @@ var BMA;
                     name: this.variableEditor.bmaeditor('option', 'name'),
                     formula: this.variableEditor.bmaeditor('option', 'formula'),
                     rangeFrom: this.variableEditor.bmaeditor('option', 'rangeFrom'),
-                    rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo')
+                    rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo'),
+                    TFdescription: this.variableEditor.bmaeditor('option', 'TFdescription'),
                 };
             };
             VariableEditorDriver.prototype.SetValidation = function (val, message) {
                 this.variableEditor.bmaeditor("SetValidation", val, message);
             };
-            VariableEditorDriver.prototype.Initialize = function (variable, model) {
+            VariableEditorDriver.prototype.Initialize = function (variable, model, layout) {
                 this.variableEditor.bmaeditor('option', 'name', variable.Name);
                 var options = [];
                 var id = variable.Id;
@@ -4993,6 +5101,7 @@ var BMA;
                 this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
                 this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
                 this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
+                this.variableEditor.bmaeditor('option', 'TFdescription', layout.GetVariableById(variable.Id).TFDescription);
             };
             VariableEditorDriver.prototype.Show = function (x, y) {
                 this.variableEditor.show();
@@ -5372,43 +5481,76 @@ var BMA;
             BMALRAProcessingService.prototype.Invoke = function (data) {
                 var that = this;
                 var result = $.Deferred();
+                var promise = result.promise();
+                promise.abort = function () {
+                };
+                result.progress(function (res) {
+                    return res;
+                });
                 $.ajax({
                     type: "POST",
                     url: that.serviceURL + that.userID,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
-                    dataType: "json"
+                    dataType: "json",
                 }).done(function (id) {
+                    promise.abort = function () {
+                        console.log("Canceled");
+                        that.CancelRequest(id);
+                        result.reject();
+                    };
                     that.CheckStatusOfRequest(id, result);
                 }).fail(function (xhr, textStatus, errorThrown) {
                     result.reject(xhr, textStatus, errorThrown);
                 });
-                return result.promise();
+                return promise;
+            };
+            BMALRAProcessingService.prototype.CancelRequest = function (id) {
+                var that = this;
+                $.ajax({
+                    type: "DELETE",
+                    url: that.serviceURL + that.userID + "/?jobId=" + id,
+                });
             };
             BMALRAProcessingService.prototype.CheckStatusOfRequest = function (id, result) {
                 var that = this;
-                console.log("polling to LRA service ... ");
-                $.ajax({
-                    type: "GET",
-                    url: that.serviceURL + that.userID + "/?jobId=" + id,
-                }).done(function (res) {
-                    console.log("job status: " + res);
-                    if (res == "Succeeded") {
-                        $.ajax({
-                            type: "GET",
-                            url: that.serviceURL + that.userID + "/result?jobId=" + id,
-                        }).done(function (res) {
-                            result.resolve(JSON.parse(res));
-                        }).fail(function (xhr, textStatus, errorThrown) {
-                            result.reject(xhr, textStatus, errorThrown);
-                        });
-                    }
-                    else {
-                        setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
-                    }
-                }).fail(function (xhr, textStatus, errorThrown) {
-                    result.reject(xhr, textStatus, errorThrown);
-                });
+                if (result.state() == "pending") {
+                    console.log("polling to LRA service ... ");
+                    $.ajax({
+                        type: "GET",
+                        url: that.serviceURL + that.userID + "/?jobId=" + id,
+                        statusCode: {
+                            200: function (res) {
+                                $.ajax({
+                                    type: "GET",
+                                    url: that.serviceURL + that.userID + "/result?jobId=" + id,
+                                    statusCode: {
+                                        200: function (res) {
+                                            result.resolve(res);
+                                        },
+                                        404: function (xhr, textStatus, errorThrown) {
+                                            result.reject(xhr, textStatus, errorThrown);
+                                        }
+                                    }
+                                });
+                            },
+                            201: function (res) {
+                                result.notify(res);
+                                setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
+                            },
+                            202: function (res) {
+                                result.notify(res);
+                                setTimeout(function () { that.CheckStatusOfRequest(id, result); }, 10000);
+                            },
+                            203: function (xhr, textStatus, errorThrown) {
+                                result.reject(xhr, textStatus, errorThrown);
+                            },
+                            404: function (xhr, textStatus, errorThrown) {
+                                result.reject(xhr, textStatus, errorThrown);
+                            },
+                        }
+                    });
+                }
             };
             return BMALRAProcessingService;
         })();
@@ -6016,6 +6158,11 @@ var BMA;
                         if (that.showresultcallback !== undefined) {
                             that.showresultcallback(showpositive);
                         }
+                    },
+                    oncancelrequest: function () {
+                        if (that.oncancelrequestcallback !== undefined) {
+                            that.oncancelrequestcallback();
+                        }
                     }
                 });
             }
@@ -6039,14 +6186,14 @@ var BMA;
                     options.isexpanded = false;
                 }
                 if (message)
-                    options.error = message;
+                    options.message = message;
                 this.compactltlresult.compactltlresult(options);
             };
             LTLResultsCompactViewer.prototype.SetMessage = function (message) {
-                this.compactltlresult.compactltlresult({ "error": message });
+                this.compactltlresult.compactltlresult({ "message": message });
             };
             LTLResultsCompactViewer.prototype.GetMessage = function () {
-                return this.compactltlresult.compactltlresult("option", "error");
+                return this.compactltlresult.compactltlresult("option", "message");
             };
             LTLResultsCompactViewer.prototype.SetSteps = function (steps) {
                 if (steps && steps > 0) {
@@ -6071,17 +6218,22 @@ var BMA;
             LTLResultsCompactViewer.prototype.SetOnStepsChangedCallback = function (callback) {
                 this.onstepschangedcallback = callback;
             };
+            LTLResultsCompactViewer.prototype.SetOnCancelRequestCallback = function (callback) {
+                this.oncancelrequestcallback = callback;
+            };
             LTLResultsCompactViewer.prototype.Destroy = function () {
                 this.compactltlresult.compactltlresult({
                     ontestrequested: undefined,
                     onstepschanged: undefined,
                     onexpanded: undefined,
-                    onshowresultsrequested: undefined
+                    onshowresultsrequested: undefined,
+                    oncancelrequest: undefined,
                 });
                 this.ltlrequested = undefined;
                 this.expandedcallback = undefined;
                 this.showresultcallback = undefined;
                 this.onstepschangedcallback = undefined;
+                this.oncancelrequestcallback = undefined;
                 this.compactltlresult.compactltlresult("destroy");
                 this.compactltlresult.empty();
             };
@@ -6567,7 +6719,7 @@ var BMA;
                         var id = that.GetVariableAtPosition(args.x, args.y);
                         if (id !== undefined) {
                             that.editingId = id;
-                            that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
+                            that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout);
                             that.variableEditor.Show(args.screenX, args.screenY);
                             window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
                         }
@@ -6586,6 +6738,7 @@ var BMA;
                     var that = _this;
                     if (that.editingId !== undefined) {
                         var model = _this.undoRedoPresenter.Current.model; //add editingmodel
+                        var layout = _this.undoRedoPresenter.Current.layout;
                         var variables = model.Variables;
                         var editingVariableIndex = -1;
                         for (var i = 0; i < variables.length; i++) {
@@ -6598,6 +6751,7 @@ var BMA;
                             var params = that.variableEditor.GetVariableProperties();
                             //model.SetVariableProperties(variables[i].Id, params.name, params.rangeFrom, params.rangeTo, params.formula);//to editingmodel
                             var newVariables = [];
+                            var newVariablesLayout = [];
                             var newRelations = [];
                             for (var j = 0; j < model.Variables.length; j++) {
                                 if (model.Variables[j].Id === variables[i].Id) {
@@ -6610,6 +6764,10 @@ var BMA;
                             for (var j = 0; j < model.Relationships.length; j++) {
                                 newRelations.push(new BMA.Model.Relationship(model.Relationships[j].Id, model.Relationships[j].FromVariableId, model.Relationships[j].ToVariableId, model.Relationships[j].Type));
                             }
+                            for (var j = 0; j < layout.Variables.length; j++) {
+                                newVariablesLayout.push(new BMA.Model.VariableLayout(layout.Variables[j].Id, layout.Variables[j].PositionX, layout.Variables[j].PositionY, layout.Variables[j].CellX, layout.Variables[j].CellY, layout.Variables[j].Angle, (j == editingVariableIndex && params.TFdescription !== undefined) ?
+                                    params.TFdescription : layout.Variables[j].TFDescription));
+                            }
                             if (!(model.Variables[editingVariableIndex].Name === newVariables[editingVariableIndex].Name
                                 && model.Variables[editingVariableIndex].RangeFrom === newVariables[editingVariableIndex].RangeFrom
                                 && model.Variables[editingVariableIndex].RangeTo === newVariables[editingVariableIndex].RangeTo
@@ -6618,7 +6776,12 @@ var BMA;
                                 that.variableEditedId = that.editingId;
                                 that.isVariableEdited = true;
                             }
-                            that.RefreshOutput(that.editingModel);
+                            if (!(layout.Variables[editingVariableIndex].TFDescription == newVariablesLayout[editingVariableIndex].TFDescription)) {
+                                that.editingLayout = new BMA.Model.Layout(layout.Containers, newVariablesLayout);
+                                that.variableEditedId = that.editingId;
+                                that.isVariableEdited = true;
+                            }
+                            that.RefreshOutput(that.editingModel, that.editingLayout);
                         }
                     }
                 });
@@ -6631,7 +6794,7 @@ var BMA;
                             var variablesLayout = [];
                             var containersLayout = [];
                             for (var i = 0; i < layout.Variables.length; i++) {
-                                variablesLayout.push(new BMA.Model.VariableLayout(layout.Variables[i].Id, layout.Variables[i].PositionX, layout.Variables[i].PositionY, layout.Variables[i].CellX, layout.Variables[i].CellY, layout.Variables[i].Angle));
+                                variablesLayout.push(new BMA.Model.VariableLayout(layout.Variables[i].Id, layout.Variables[i].PositionX, layout.Variables[i].PositionY, layout.Variables[i].CellX, layout.Variables[i].CellY, layout.Variables[i].Angle, layout.Variables[i].TFDescription));
                             }
                             for (var i = 0; i < layout.Containers.length; i++) {
                                 containersLayout.push(new BMA.Model.ContainerLayout(layout.Containers[i].Id, (layout.Containers[i].Id === that.editingId) ?
@@ -6653,7 +6816,7 @@ var BMA;
                     var showPaste = that.clipboard !== undefined;
                     if (showPaste === true) {
                         if (that.clipboard.Container !== undefined) {
-                            showPaste = that.CanAddContainer(x, y, that.clipboard.Container.Size);
+                            showPaste = that.CanAddContainer(that.clipboard.Container.Id, x, y, that.clipboard.Container.Size);
                         }
                         else {
                             var variable = that.clipboard.Variables[0];
@@ -6742,7 +6905,7 @@ var BMA;
                                 var offsetX = variableLayout.PositionX - oldContainerOffset.x;
                                 var offsetY = variableLayout.PositionY - oldContainerOffset.y;
                                 variables.push(new BMA.Model.Variable(that.variableIndex, newContainerId, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
-                                variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, newContainerOffset.x + offsetX, newContainerOffset.y + offsetY, 0, 0, variableLayout.Angle));
+                                variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, newContainerOffset.x + offsetX, newContainerOffset.y + offsetY, 0, 0, variableLayout.Angle, variableLayout.TFDescription));
                             }
                             for (var i = 0; i < that.clipboard.Realtionships.length; i++) {
                                 var relationship = that.clipboard.Realtionships[i];
@@ -6762,7 +6925,7 @@ var BMA;
                             var gridCell = that.GetGridCell(that.contextElement.x, that.contextElement.y);
                             var container = that.GetContainerFromGridCell(gridCell);
                             variables.push(new BMA.Model.Variable(that.variableIndex, container && container.Id ? container.Id : 0, variable.Type, variable.Name, variable.RangeFrom, variable.RangeTo, variable.Formula));
-                            variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle));
+                            variableLayouts.push(new BMA.Model.VariableLayout(that.variableIndex++, that.contextElement.x, that.contextElement.y, 0, 0, variableLayout.Angle, variableLayout.TFDescription));
                             var newmodel = new BMA.Model.BioModel(model.Name, variables, model.Relationships);
                             var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                             that.undoRedoPresenter.Dup(newmodel, newlayout);
@@ -6780,7 +6943,7 @@ var BMA;
                     if (that.contextElement !== undefined && that.contextElement.type === "variable") {
                         var id = that.contextElement.id;
                         that.editingId = id;
-                        that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model);
+                        that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout);
                         that.variableEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
                         window.Commands.Execute("DrawingSurfaceVariableEditorOpened", undefined);
                     }
@@ -6822,7 +6985,7 @@ var BMA;
                         if (that.editingId !== undefined) {
                             var v = that.undoRedoPresenter.Current.model.GetVariableById(that.editingId);
                             if (v !== undefined) {
-                                that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, that.editingId).model, that.undoRedoPresenter.Current.model);
+                                that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, that.editingId).model, that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout);
                             }
                             else {
                                 that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(that.editingId));
@@ -6853,7 +7016,7 @@ var BMA;
                     _this.containerEditor.Hide();
                     if (that.isVariableEdited) {
                         that.editingModel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(that.variableEditedId, that.undoRedoPresenter.Current.model, that.editingModel);
-                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel, that.editingLayout ? that.editingLayout : appModel.Layout);
                         that.variableEditedId = undefined;
                         that.editingModel = undefined;
                         that.isVariableEdited = false;
@@ -6868,7 +7031,7 @@ var BMA;
                     _this.variableEditor.Hide();
                     if (that.isVariableEdited) {
                         that.editingModel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(that.variableEditedId, that.undoRedoPresenter.Current.model, that.editingModel);
-                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel, that.editingLayout ? that.editingLayout : appModel.Layout);
                         that.variableEditedId = undefined;
                         that.editingModel = undefined;
                         that.isVariableEdited = false;
@@ -6958,7 +7121,7 @@ var BMA;
                 variableEditorDriver.SetOnClosingCallback(function () {
                     if (that.isVariableEdited) {
                         that.editingModel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(that.variableEditedId, that.undoRedoPresenter.Current.model, that.editingModel);
-                        that.undoRedoPresenter.Dup(that.editingModel, appModel.Layout);
+                        that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel, that.editingLayout ? that.editingLayout : appModel.Layout);
                         that.editingModel = undefined;
                         that.variableEditedId = undefined;
                         that.isVariableEdited = false;
@@ -7015,7 +7178,7 @@ var BMA;
                         return;
                     }
                     else if (that.stagingVariable !== undefined) {
-                        that.stagingVariable.layout = new BMA.Model.VariableLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0);
+                        that.stagingVariable.layout = new BMA.Model.VariableLayout(that.stagingVariable.layout.Id, gesture.x1, gesture.y1, 0, 0, 0, that.stagingVariable.layout.TFDescription);
                         if (that.svg !== undefined) {
                             that.driver.DrawLayer2(that.CreateStagingSvg());
                         }
@@ -7053,8 +7216,8 @@ var BMA;
                         }
                     }
                     if (that.stagingContainer !== undefined) {
-                        var cx = that.stagingContainer.position.x;
-                        var cy = that.stagingContainer.position.y;
+                        var cx = that.stagingContainer.position.x - that.stagingContainer.container.Size * that.Grid.xStep / 3;
+                        var cy = that.stagingContainer.position.y - that.stagingContainer.container.Size * that.Grid.yStep / 3;
                         var cid = that.stagingContainer.container.Id;
                         that.stagingContainer = undefined;
                         if (!that.TryAddVariable(cx, cy, "Container", cid)) {
@@ -7337,13 +7500,14 @@ var BMA;
                     }
                 }
             };
-            DesignSurfacePresenter.prototype.CanAddContainer = function (x, y, size) {
+            DesignSurfacePresenter.prototype.CanAddContainer = function (id, x, y, size) {
                 var that = this;
                 var gridCell = that.GetGridCell(x, y);
                 for (var i = 0; i < size; i++) {
                     for (var j = 0; j < size; j++) {
                         var cellForCheck = { x: gridCell.x + i, y: gridCell.y + j };
-                        var checkCell = that.GetContainerFromGridCell(cellForCheck) === undefined && that.GetConstantsFromGridCell(cellForCheck).length === 0;
+                        var cnt = that.GetContainerFromGridCell(cellForCheck);
+                        var checkCell = (cnt === undefined || cnt.Id === id) && that.GetConstantsFromGridCell(cellForCheck).length === 0;
                         if (checkCell !== true)
                             return false;
                     }
@@ -7424,7 +7588,7 @@ var BMA;
                         var variableLayouts = layout.Variables.slice(0);
                         var gridCell = that.GetGridCell(x, y);
                         var container = layout.GetContainerById(id);
-                        if (that.CanAddContainer(x, y, container === undefined ? 1 : container.Size) === true) {
+                        if (that.CanAddContainer(id, x, y, container === undefined ? 1 : container.Size) === true) {
                             if (id !== undefined) {
                                 for (var i = 0; i < containerLayouts.length; i++) {
                                     if (containerLayouts[i].Id === id) {
@@ -7441,7 +7605,7 @@ var BMA;
                                             if (variables[j].ContainerId === id) {
                                                 var vlX = variableLayouts[j].PositionX;
                                                 var vlY = variableLayouts[j].PositionY;
-                                                variableLayouts[j] = new BMA.Model.VariableLayout(variableLayouts[j].Id, vlX - oldContainerOffset.x + newContainerOffset.x, vlY - oldContainerOffset.y + newContainerOffset.y, 0, 0, variableLayouts[j].Angle);
+                                                variableLayouts[j] = new BMA.Model.VariableLayout(variableLayouts[j].Id, vlX - oldContainerOffset.x + newContainerOffset.x, vlY - oldContainerOffset.y + newContainerOffset.y, 0, 0, variableLayouts[j].Angle, variableLayouts[j].TFDescription);
                                             }
                                         }
                                     }
@@ -7464,7 +7628,7 @@ var BMA;
                         if (id !== undefined) {
                             for (var i = 0; i < variables.length; i++) {
                                 if (variables[i].Id === id) {
-                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0, variableLayouts[i].TFDescription);
                                 }
                             }
                         }
@@ -7491,7 +7655,7 @@ var BMA;
                                     if (vrbl.ContainerId !== container.Id) {
                                         variables[i] = new BMA.Model.Variable(vrbl.Id, container.Id, vrbl.Type, vrbl.Name, vrbl.RangeFrom, vrbl.RangeTo, vrbl.Formula);
                                     }
-                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, 0, variableLayouts[i].TFDescription);
                                 }
                             }
                         }
@@ -7532,7 +7696,7 @@ var BMA;
                                     if (vrbl.ContainerId !== container.Id) {
                                         variables[i] = new BMA.Model.Variable(vrbl.Id, container.Id, vrbl.Type, vrbl.Name, vrbl.RangeFrom, vrbl.RangeTo, vrbl.Formula);
                                     }
-                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, angle);
+                                    variableLayouts[i] = new BMA.Model.VariableLayout(id, x, y, 0, 0, angle, variableLayouts[i].TFDescription);
                                 }
                             }
                         }
@@ -7582,6 +7746,8 @@ var BMA;
                 for (var i = 0; i < variables.length; i++) {
                     var variable = variables[i];
                     var variableLayout = variableLayouts[i];
+                    if (variable.Type !== "Constant")
+                        continue;
                     var vGridCell = this.GetGridCell(variableLayout.PositionX, variableLayout.PositionY);
                     if (gridCell.x === vGridCell.x && gridCell.y === vGridCell.y) {
                         result.push({ variable: variable, variableLayout: variableLayout });
@@ -8717,68 +8883,64 @@ var BMA;
                         })
                             .done(function (res2) {
                             that.driver.ActiveMode();
-                            if (res2.CounterExamples !== null) {
+                            if (res2.CounterExamples !== null && res2.CounterExamples.length > 0) {
                                 that.driver.HideStartFurtherTestingToggler();
-                                if (res2.CounterExamples.length === 0) {
+                                var bif = null, osc = null, fix = null;
+                                for (var i = 0; i < res2.CounterExamples.length; i++) {
+                                    switch (res2.CounterExamples[i].Status) {
+                                        case "Bifurcation":
+                                            bif = res2.CounterExamples[i];
+                                            break;
+                                        case "Cycle":
+                                            osc = res2.CounterExamples[i];
+                                            break;
+                                        case "Fixpoint":
+                                            fix = res2.CounterExamples[i];
+                                            break;
+                                    }
+                                }
+                                var data = [];
+                                var headers = [];
+                                var tabLabels = [];
+                                if (bif !== null) {
+                                    var parseBifurcations = that.ParseBifurcations(bif.Variables);
+                                    var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
+                                    data.push(bifurcationsView);
+                                    headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
+                                    var label = $('<div></div>').addClass('further-testing-tab');
+                                    var icon = $('<div></div>').addClass('bifurcations-icon').appendTo(label);
+                                    var text = $('<div></div>').text('Bifurcations').appendTo(label);
+                                    tabLabels.push(label);
+                                }
+                                if (osc !== null) {
+                                    var parseOscillations = that.ParseOscillations(osc.Variables);
+                                    var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
+                                    data.push(oscillationsView);
+                                    headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
+                                    var label = $('<div></div>').addClass('further-testing-tab');
+                                    var icon = $('<div></div>').addClass('oscillations-icon').appendTo(label);
+                                    var text = $('<div></div>').text('Oscillations').appendTo(label);
+                                    tabLabels.push(label);
+                                }
+                                if (fix !== null && bif === null && osc === null) {
+                                    try {
+                                        var parseFix = that.ParseFixPoint(fix.Variables);
+                                        window.Commands.Execute("ProofByFurtherTesting", {
+                                            issucceeded: true,
+                                            message: 'Further testing has been determined the model to be stable with the following stable state',
+                                            fixPoint: parseFix
+                                        });
+                                        OnProofStarting();
+                                    }
+                                    catch (ex) {
+                                        that.messagebox.Show("FurtherTesting error: Invalid service response");
+                                        that.driver.ShowStartFurtherTestingToggler();
+                                    }
+                                    ;
                                 }
                                 else {
-                                    var bif = null, osc = null, fix = null;
-                                    for (var i = 0; i < res2.CounterExamples.length; i++) {
-                                        switch (res2.CounterExamples[i].Status) {
-                                            case "Bifurcation":
-                                                bif = res2.CounterExamples[i];
-                                                break;
-                                            case "Cycle":
-                                                osc = res2.CounterExamples[i];
-                                                break;
-                                            case "Fixpoint":
-                                                fix = res2.CounterExamples[i];
-                                                break;
-                                        }
-                                    }
-                                    var data = [];
-                                    var headers = [];
-                                    var tabLabels = [];
-                                    if (bif !== null) {
-                                        var parseBifurcations = that.ParseBifurcations(bif.Variables);
-                                        var bifurcationsView = that.CreateBifurcationsView(that.variables, parseBifurcations);
-                                        data.push(bifurcationsView);
-                                        headers.push(["Cell", "Name", "Calculated Bound", "Fix1", "Fix2"]);
-                                        var label = $('<div></div>').addClass('further-testing-tab');
-                                        var icon = $('<div></div>').addClass('bifurcations-icon').appendTo(label);
-                                        var text = $('<div></div>').text('Bifurcations').appendTo(label);
-                                        tabLabels.push(label);
-                                    }
-                                    if (osc !== null) {
-                                        var parseOscillations = that.ParseOscillations(osc.Variables);
-                                        var oscillationsView = that.CreateOscillationsView(that.variables, parseOscillations);
-                                        data.push(oscillationsView);
-                                        headers.push(["Cell", "Name", "Calculated Bound", "Oscillation"]);
-                                        var label = $('<div></div>').addClass('further-testing-tab');
-                                        var icon = $('<div></div>').addClass('oscillations-icon').appendTo(label);
-                                        var text = $('<div></div>').text('Oscillations').appendTo(label);
-                                        tabLabels.push(label);
-                                    }
-                                    if (fix !== null && bif === null && osc === null) {
-                                        try {
-                                            var parseFix = that.ParseFixPoint(fix.Variables);
-                                            window.Commands.Execute("ProofByFurtherTesting", {
-                                                issucceeded: true,
-                                                message: 'Further testing has been determined the model to be stable with the following stable state',
-                                                fixPoint: parseFix
-                                            });
-                                            OnProofStarting();
-                                        }
-                                        catch (ex) {
-                                            that.messagebox.Show("FurtherTesting error: Invalid service response");
-                                            that.driver.ShowStartFurtherTestingToggler();
-                                        }
-                                        ;
-                                    }
-                                    else {
-                                        that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
-                                        that.driver.ShowResults(that.data);
-                                    }
+                                    that.data = { tabLabels: tabLabels, tableHeaders: headers, data: data };
+                                    that.driver.ShowResults(that.data);
                                 }
                             }
                             else {
@@ -10130,6 +10292,7 @@ var BMA;
             this._plot.aspectRatio = 1;
             var svgPlot = that._plot.get(svgPlotDiv[0]);
             this._svgPlot = svgPlot;
+            //this._svgPlot.IsAutomaticSizeUpdate = false;
             var lightSvgPlot = that._plot.get(svgPlotDiv2[0]);
             this._lightSvgPlot = lightSvgPlot;
             this._domPlot = that._plot.get(domPlotDiv[0]);
@@ -11937,6 +12100,7 @@ var BMA;
             operators1: ["+", "-", "*", "/"],
             operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
             inputs: [],
+            TFdescription: "",
             formula: "",
             approved: undefined,
             oneditorclosing: undefined
@@ -12059,6 +12223,16 @@ var BMA;
                 that._setOption("rangeTo", valu - 1);
                 window.Commands.Execute("VariableEdited", {});
             });
+            var descriptionDiv = $("<div></div>")
+                .addClass("description")
+                .appendTo(that.element);
+            $('<div></div>')
+                .addClass("window-title")
+                .text("Description")
+                .appendTo(descriptionDiv);
+            this.description = $("<input type='text'>")
+                .addClass("description-input")
+                .appendTo(descriptionDiv);
             var formulaDiv = $('<div></div>')
                 .addClass('target-function')
                 .appendTo(that.element);
@@ -12187,6 +12361,10 @@ var BMA;
                 that._setOption("formula", that.formulaTextArea.val());
                 window.Commands.Execute("VariableEdited", {});
             });
+            this.description.bind("input change", function () {
+                that.options.TFdescription = that.description.val();
+                window.Commands.Execute("VariableEdited", {});
+            });
         },
         _inputsArray: function () {
             var inputs = this.options.inputs;
@@ -12228,6 +12406,11 @@ var BMA;
                     if (this.formulaTextArea.val() !== that.options.formula)
                         this.formulaTextArea.val(that.options.formula);
                     window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
+                    break;
+                case "TFdescription":
+                    that.options.TFdescription = value;
+                    if (this.description.val() !== that.options.TFdescription)
+                        this.description.val(that.options.TFdescription);
                     break;
                 case "inputs":
                     this.options.inputs = value;
@@ -14171,12 +14354,13 @@ jQuery.fn.extend({
             status: "nottested",
             isexpanded: false,
             steps: 10,
-            error: undefined,
+            message: undefined,
             maxsteps: 999,
             ontestrequested: undefined,
             onstepschanged: undefined,
             onexpanded: undefined,
             onshowresultsrequested: undefined,
+            oncancelrequest: undefined,
         },
         _create: function () {
             this.element.empty();
@@ -14196,8 +14380,8 @@ jQuery.fn.extend({
                 case "nottested":
                     //if (this.options.isexpanded) {
                     var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    if (that.options.error) {
-                        var errorMessage = $("<div>" + that.options.error + "</div>").addClass("red").appendTo(ltltestdiv);
+                    if (that.options.message) {
+                        var errorMessage = $("<div>" + that.options.message + "</div>").addClass("red").appendTo(ltltestdiv);
                     }
                     var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(ltltestdiv);
                     var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
@@ -14323,11 +14507,22 @@ jQuery.fn.extend({
                     //}
                     break;
                 case "processinglra":
-                    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    var message = $("<div>processing as long job</div>").addClass("grey").appendTo(ltltestdiv);
+                    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").css("width", 150).addClass("default").appendTo(opDiv);
+                    var message = $("<div>processing as long job:</div>").addClass("grey").appendTo(ltltestdiv);
+                    var time = $("<div></div>").text(that.options.message).addClass("grey").appendTo(ltltestdiv);
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(ltltestdiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button></button>").appendTo(li);
+                    var li2 = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var cancelBtn = $("<button>Cancel</button>").addClass("cancel-button").appendTo(li2).click(function () {
+                        if (that.options.oncancelrequest !== undefined) {
+                            that.options.oncancelrequest();
+                        }
+                        else {
+                            that.options.status = "nottested";
+                            that._createView();
+                        }
+                    });
                     li.addClass("spin");
                     that.createWaitAnim().appendTo(btn);
                     break;
@@ -14864,8 +15059,8 @@ jQuery.fn.extend({
                         needRefreshStates = true;
                     }
                     break;
-                case "error":
-                    if (that.options.error !== value)
+                case "message":
+                    if (that.options.message !== value)
                         needRefreshStates = true;
                     break;
                 default:
@@ -15519,7 +15714,7 @@ jQuery.fn.extend({
                 $('<div></div>').addClass('bounce' + i).appendTo(snipper);
             }
             if (islra) {
-                $('<div></div>').css("display", "inline-block").css("margin-left", 5).text("(lra)").appendTo(snipperCnt);
+                $('<div></div>').css("display", "inline-block").css("margin-left", 5).text("(long)").appendTo(snipperCnt);
             }
             return snipperCnt;
         },
@@ -16767,7 +16962,7 @@ var BMA;
                                     else {
                                         operation.AnalysisStatus = "processinglra," + tempStatus[1];
                                     }
-                                    that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
+                                    var lrapromise = that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
                                         that.ProcessLTLResults(res, polarityResults2, operation, opVersion, undefined);
                                     }).fail(function (xhr, textStatus, errorThrown) {
                                         if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
@@ -16787,6 +16982,19 @@ var BMA;
                                         }
                                         domplot.updateLayout();
                                         that.OnOperationsChanged(false);
+                                    }).progress(function (res) {
+                                        driver.SetMessage(res);
+                                        domplot.updateLayout();
+                                        that.OnOperationsChanged(false);
+                                    });
+                                    driver.SetOnCancelRequestCallback(function () {
+                                        var status = operation.AnalysisStatus.split(', ');
+                                        var parsedstatus = status[1] ? status[1] : "nottested";
+                                        driver.SetStatus(parsedstatus);
+                                        operation.AnalysisStatus = parsedstatus;
+                                        domplot.updateLayout();
+                                        that.OnOperationsChanged(false, true);
+                                        lrapromise.abort();
                                     });
                                 });
                             }).fail(function (xhr, textStatus, errorThrown) {
@@ -17150,6 +17358,36 @@ var BMA;
                         return f + ')';
                     };
                 };
+                var functionformulacreator = function (funcname) {
+                    return function (op) {
+                        var f = funcname + '(';
+                        for (var i = 0; i < op.length - 1 /*because last can be FlexSlot*/; i++) {
+                            f += ', ' + op[i].GetFormula();
+                        }
+                        if (op[op.length - 1] instanceof LTLOperations.FlexOperand) {
+                            f += ")";
+                        }
+                        else {
+                            f += +", " + op[op.length - 1].GetFormula() + ")";
+                        }
+                        return f;
+                    };
+                };
+                var operatorformulacreator = function (funcname) {
+                    return function (op) {
+                        var f = '(' + op[0].GetFormula();
+                        for (var i = 1; i < op.length - 1 /*because last can be FlexSlot*/; i++) {
+                            f += +" " + funcname + " " + op[i].GetFormula();
+                        }
+                        if (op[op.length - 1] instanceof LTLOperations.FlexOperand) {
+                            f += ")";
+                        }
+                        else {
+                            f += +" " + funcname + " " + op[op.length - 1].GetFormula() + ")";
+                        }
+                        return f;
+                    };
+                };
                 this.operators.push(new LTLOperations.Operator('AND', 2, formulacreator('And')));
                 this.operators.push(new LTLOperations.Operator('OR', 2, formulacreator('Or')));
                 this.operators.push(new LTLOperations.Operator('IMPLIES', 2, formulacreator('Implies')));
@@ -17161,6 +17399,21 @@ var BMA;
                 this.operators.push(new LTLOperations.Operator('WEAKUNTIL', 2, formulacreator('Weakuntil')));
                 this.operators.push(new LTLOperations.Operator('UNTIL', 2, formulacreator('Until')));
                 this.operators.push(new LTLOperations.Operator('RELEASE', 2, formulacreator('Release')));
+                /*
+                //Target Function Editor operators
+
+                this.operators.push(new Operator('AVG', 2, functionformulacreator('avg')));
+                this.operators.push(new Operator('MIN', 2, functionformulacreator('min')));
+                this.operators.push(new Operator('MAX', 2, functionformulacreator('max')));
+
+                this.operators.push(new Operator('CEIL', 1, formulacreator('ceil')));
+                this.operators.push(new Operator('FLOOR', 1, formulacreator('floor')));
+
+                this.operators.push(new Operator('/', 2, operatorformulacreator('/')));
+                this.operators.push(new Operator('*', Number.POSITIVE_INFINITY, operatorformulacreator('*')));
+                this.operators.push(new Operator('+', Number.POSITIVE_INFINITY, operatorformulacreator('+')));
+                this.operators.push(new Operator('-', Number.POSITIVE_INFINITY, operatorformulacreator('-')));
+                */
             }
             Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
                 get: function () {

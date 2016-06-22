@@ -9,33 +9,12 @@
 module BioCheckPlusZ3
 
 open Microsoft.Z3
+open VariableEncoding
 
 open Expr
 open QN
 
 type VariableRange = Map<QN.var, int list>
-
-// Naming convension for Z3 variables
-// Some of these functions appear also in Z.fs and BioCheckZ3.fs
-let get_z3_int_var_at_time (node : QN.node) time = sprintf "v%d^%d" node.var time
-
-let get_z3_bool_var_at_time_in_val_from_var variable time value = sprintf "v%d^%d^%d" variable time value
-
-let get_z3_bool_var_at_time_in_val (node : QN.node) time value =  get_z3_bool_var_at_time_in_val_from_var node.var time value
-
-// let get_z3_bool_var_trans_of_var_at_time (node : QN.node) time = sprintf "tv%d^%d" node.var time
-
-let get_z3_bool_var_formula_in_location_at_time (location : int list) time =
-    let f_with_location = List.fold (fun name value -> sprintf "%s^%d" name value) "f" location
-    sprintf "%s^^%d" f_with_location time
-
-let get_z3_bool_var_loop_at_time time = sprintf "l^%d" time
-
-let get_z3_bool_var_trans_of_var_from_time_to_time_in_val (node : QN.node) from_time to_time value = sprintf "tv%d^%d^%d^%d" node.var from_time to_time value
-
-let make_z3_bool_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkBoolSort())
-let make_z3_int_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkIntSort())
-
 
 // A variable ranging over values i_1,...,i_n can be encoded by n-1 Boolean variables with
 // unary encoding.
@@ -100,7 +79,7 @@ let rec expr_to_real (qn : QN.node list) (node : QN.node) expr var_values =
 
 // Allocate Bollean variables per all the values except the last one
 let allocate_bool_vars (node : QN.node) (list_of_poss_values : int list) (time :int) (z : Context) =
-    let make_var_name item = get_z3_bool_var_at_time_in_val node time item
+    let make_var_name item = enc_z3_bool_var_at_time_in_val node time item
     let allocate_z3_bool_var item =  make_z3_bool_var (make_var_name(item)) z
     if list_of_poss_values.IsEmpty then 
         []
@@ -114,7 +93,7 @@ let allocate_loop_vars (z : Context) length =
         []
     else
         let times  = [ 0 .. length-2 ]
-        let allocate_z3_bool_var item =  make_z3_bool_var (get_z3_bool_var_loop_at_time(item)) z
+        let allocate_z3_bool_var item =  make_z3_bool_var (enc_z3_bool_var_loop_at_time(item)) z
         List.map allocate_z3_bool_var times
         
 
@@ -179,11 +158,11 @@ let constraint_for_valuation_of_vars_is_equivalent (range1 : VariableRange) time
     let value_of_var_at_time_is_val varname time prev curr last = 
         match prev with
         | -1 -> if curr = last then z.MkTrue() 
-                else make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time curr) z
-        | _ -> if curr = last then z.MkNot(make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time prev) z)
+                else make_z3_bool_var (enc_z3_bool_var_at_time_in_val_from_var varname time curr) z
+        | _ -> if curr = last then z.MkNot(make_z3_bool_var (enc_z3_bool_var_at_time_in_val_from_var varname time prev) z)
                else
-                    let z3_var = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time curr) z
-                    let z3_var_prev = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time prev) z
+                    let z3_var = make_z3_bool_var (enc_z3_bool_var_at_time_in_val_from_var varname time curr) z
+                    let z3_var_prev = make_z3_bool_var (enc_z3_bool_var_at_time_in_val_from_var varname time prev) z
                     z.MkAnd( z.MkNot(z3_var_prev), z3_var)
 
     let value_of_var_at_time_is_not_val varname time prev curr last = 
@@ -296,19 +275,15 @@ let constraint_for_target_function_boolean (qn:QN.node list) (node : QN.node) in
 
         // 4. Create the actual constraints that say that the values of variables respect the "follow the target function" in their changes.
         // ==================================================================================================================================
-        let gensym =
-            let x = ref 0 
-            (fun () -> incr x; !x)
-
         // Create the constraint corresponding to one entry in the table of the target function
         // Allocate a Boolean variable for this constraint
         // Assert the constraint
         // return the new Bool var
         let create_transition_option_var list_of_vals next_val = 
             // Allocate a Boolean z3 variable for this transitions
-            let make_var_name item = get_z3_bool_var_trans_of_var_from_time_to_time_in_val node prev current item
+            let make_var_name item = enc_z3_bool_var_trans_of_var_from_time_to_time_uniqueid node prev current item
             let allocate_z3_bool_var item =  make_z3_bool_var (make_var_name(item)) z
-            let new_var = allocate_z3_bool_var (gensym ())
+            let new_var = allocate_z3_bool_var (gensym "")
         
             // Create a list of constraints corresponding to the values of the inputs in previous time step
             let constraint_from_input_and_val (input : QN.node) value = Map.find value (Map.find input map_of_input_vars_to_map_of_values_to_constraints)
@@ -343,13 +318,13 @@ let constraint_for_loop_at_time time last (z : Context) =
         if (time = last) then
             z.MkTrue ()
         else 
-            let loop_var_t = get_z3_bool_var_loop_at_time time
+            let loop_var_t = enc_z3_bool_var_loop_at_time time
             make_z3_bool_var loop_var_t z
 
     if (time = 0) then
         z3_loop_var_t
     else 
-        let loop_var_t_min_1 = get_z3_bool_var_loop_at_time (time-1)
+        let loop_var_t_min_1 = enc_z3_bool_var_loop_at_time (time-1)
         let z3_loop_var_t_min_1 =  make_z3_bool_var loop_var_t_min_1 z
         let not_z3_loop_var_t_min_1 = z.MkNot(z3_loop_var_t_min_1)
         z.MkAnd(not_z3_loop_var_t_min_1,z3_loop_var_t)
@@ -360,7 +335,7 @@ let constraint_for_time_is_part_of_loop time last (z : Context) =
         if (time = last) then
             z.MkTrue()
         else
-            let loop_var_t = get_z3_bool_var_loop_at_time time
+            let loop_var_t = enc_z3_bool_var_loop_at_time time
             make_z3_bool_var loop_var_t z
     z3_loop_var_t
 
@@ -370,7 +345,7 @@ let constraint_for_loop_closes_at_last time (z : Context) =
     if time = 0 then
         z.MkTrue()
     else
-        let loop_var_t_minus_1 = get_z3_bool_var_loop_at_time (time - 1)
+        let loop_var_t_minus_1 = enc_z3_bool_var_loop_at_time (time - 1)
         let z3_loop_var_t_minus_1 = make_z3_bool_var loop_var_t_minus_1 z
         z.MkNot(z3_loop_var_t_minus_1)
 

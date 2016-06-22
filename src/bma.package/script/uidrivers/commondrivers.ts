@@ -134,12 +134,13 @@ module BMA {
                 this.variableEditor.click(function (e) { e.stopPropagation(); });
             }
 
-            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number } {
+            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; TFdescription: string } {
                 return {
                     name: this.variableEditor.bmaeditor('option', 'name'),
                     formula: this.variableEditor.bmaeditor('option', 'formula'),
                     rangeFrom: this.variableEditor.bmaeditor('option', 'rangeFrom'),
-                    rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo')
+                    rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo'),
+                    TFdescription: this.variableEditor.bmaeditor('option', 'TFdescription'),
                 };
             }
 
@@ -147,7 +148,7 @@ module BMA {
                 this.variableEditor.bmaeditor("SetValidation", val, message);
             }
 
-            public Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel) {
+            public Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel, layout: BMA.Model.Layout) {
                 this.variableEditor.bmaeditor('option', 'name', variable.Name);
                 var options = [];
                 var id = variable.Id;
@@ -161,7 +162,7 @@ module BMA {
                 this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
                 this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
                 this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
-
+                this.variableEditor.bmaeditor('option', 'TFdescription', layout.GetVariableById(variable.Id).TFDescription);
 
             }
 
@@ -621,46 +622,83 @@ module BMA {
             public Invoke(data): JQueryPromise<any> {
                 var that = this;
                 var result = $.Deferred();
+                var promise = result.promise();
+                (<any>promise).abort = function () {
+                };
+
+                result.progress(function (res) {
+                    return res;
+                });
 
                 $.ajax({
                     type: "POST",
                     url: that.serviceURL + that.userID,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
-                    dataType: "json"
+                    dataType: "json",
                 }).done(function (id) {
+                    (<any>promise).abort = function () {
+                        console.log("Canceled");
+                        that.CancelRequest(id);
+                        result.reject();
+                    };
                     that.CheckStatusOfRequest(id, result);
                 }).fail(function (xhr, textStatus, errorThrown) {
                     result.reject(xhr, textStatus, errorThrown);
                 });
+                
+                return promise;
+            }
 
-                return result.promise();
+            private CancelRequest(id) {
+                var that = this;
+                $.ajax({
+                    type: "DELETE",
+                    url: that.serviceURL + that.userID + "/?jobId=" + id,
+                });
             }
 
             private CheckStatusOfRequest(id, result) {
                 var that = this;
-                console.log("polling to LRA service ... ");
-                $.ajax({
-                    type: "GET",
-                    url: that.serviceURL + that.userID + "/?jobId=" + id,
-                }).done(function (res) {
-                    console.log("job status: " + res);
-                    if (res == "Succeeded") {
-                        $.ajax({
-                            type: "GET",
-                            url: that.serviceURL + that.userID + "/result?jobId=" + id,
-                        }).done(function (res) {
-                            result.resolve(JSON.parse(res));
-                        }).fail(function (xhr, textStatus, errorThrown) {
-                            result.reject(xhr, textStatus, errorThrown);
-                        });
-                    } else {
-                        setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
-                    }
-                }).fail(function (xhr, textStatus, errorThrown) {
-                    result.reject(xhr, textStatus, errorThrown);
-                })
+                if (result.state() == "pending") {
+                    console.log("polling to LRA service ... ");
+                    $.ajax({
+                        type: "GET",
+                        url: that.serviceURL + that.userID + "/?jobId=" + id,
+                        statusCode: {
+                            200: function (res) {
+                                $.ajax({
+                                    type: "GET",
+                                    url: that.serviceURL + that.userID + "/result?jobId=" + id,
+                                    statusCode: {
+                                        200: function (res) {
+                                            result.resolve(res);
+                                        },
+                                        404: function (xhr, textStatus, errorThrown) {
+                                            result.reject(xhr, textStatus, errorThrown);
+                                        }
+                                    }
+                                });
+                            },
+                            201: function (res) {
+                                result.notify(res);
+                                setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
+                            },
+                            202: function (res) {
+                                result.notify(res);
+                                setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
+                            },
+                            203: function (xhr, textStatus, errorThrown) {
+                                result.reject(xhr, textStatus, errorThrown);
+                            },
+                            404: function (xhr, textStatus, errorThrown) {
+                                result.reject(xhr, textStatus, errorThrown);
+                            },
+                        }
+                    });
+                }
             }
+            
         }
 
         export class LTLAnalyzeService implements IServiceDriver {

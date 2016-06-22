@@ -39,15 +39,21 @@ module BMA {
             Invoke(data): JQueryPromise<any>;
         }
 
+        /*
+        export interface JQueryPromise<any> {
+            abort: Function;
+        }
+        */
+
         export interface IExportService {
             Export(content: string, name: string, extension: string)
         }
 
         export interface IVariableEditor {
             GetVariableProperties(): {
-                name: string; formula: string; rangeFrom: number; rangeTo: number;
+                name: string; formula: string; rangeFrom: number; rangeTo: number; TFdescription: string;
             };
-            Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel);
+            Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel, layout: BMA.Model.Layout);
             Show(x: number, y: number);
             Hide();
             SetValidation(val: boolean, message: string);

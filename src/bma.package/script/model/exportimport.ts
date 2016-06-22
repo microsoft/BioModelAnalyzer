@@ -106,6 +106,7 @@
                             CellX: v.CellX,
                             CellY: v.CellY,
                             Angle: v.Angle,
+                            Description: v.TFDescription,
                         }
                     }),
                     Containers: layout.Containers.map(c => {
@@ -143,7 +144,7 @@
             }
 
             var layout = new Layout(containers,
-                json.Layout.Variables.map(v => new VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle)));
+                json.Layout.Variables.map(v => new VariableLayout(v.Id, v.PositionX, v.PositionY, v.CellX, v.CellY, v.Angle, v.Description)));
 
 
             return {

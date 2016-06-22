@@ -4,6 +4,7 @@ module EncodingForFormula
 open LTL
 open QN
 open Microsoft.Z3
+open VariableEncoding
 
 
 type VariableRange = Map<QN.var, int list>
@@ -33,8 +34,8 @@ let encode_location_of_constant time (formula : LTLFormulaType) =
     | _ -> []
 
 let create_z3_bool_var (location : FormulaLocation) time (z: Context) =
-    let var_name = BioCheckPlusZ3.get_z3_bool_var_formula_in_location_at_time location time
-    BioCheckPlusZ3.make_z3_bool_var var_name z
+    let var_name = enc_z3_bool_var_formula_in_location_at_time location time
+    make_z3_bool_var var_name z
 
 
 // Inefficient:
@@ -92,15 +93,15 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
                         z.MkTrue()
                     else
                         let value_satisfying_prop = List.nth range index_of_value_satisfying_proposition
-                        let z3_var_name = BioCheckPlusZ3.get_z3_bool_var_at_time_in_val var time value_satisfying_prop
-                        BioCheckPlusZ3.make_z3_bool_var z3_var_name z
+                        let z3_var_name = enc_z3_bool_var_at_time_in_val var time value_satisfying_prop
+                        make_z3_bool_var z3_var_name z
                 let neg_z3_var_before = 
                     if (index_of_value_satisfying_proposition = 0) then 
                         z.MkTrue()
                     else
                         let value_before = List.nth range (index_of_value_satisfying_proposition-1)
-                        let z3_var_before = BioCheckPlusZ3.get_z3_bool_var_at_time_in_val var time value_before
-                        z.MkNot(BioCheckPlusZ3.make_z3_bool_var z3_var_before z)
+                        let z3_var_before = enc_z3_bool_var_at_time_in_val var time value_before
+                        z.MkNot(make_z3_bool_var z3_var_before z)
                 z.MkAnd(z3_var,neg_z3_var_before)
 
 (*        let compute_constraint_for_prop_neq var comparison_function range time = 
@@ -142,8 +143,8 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
                     // If the appropriate z3 variable is false then one of the values satisfying
                     // the proposition must be true
                     let last_value_not_satisfying_prop = List.nth range (first_value_satisfying_proposition-1)
-                    let z3_var_name = BioCheckPlusZ3.get_z3_bool_var_at_time_in_val var time last_value_not_satisfying_prop
-                    let z3_var = BioCheckPlusZ3.make_z3_bool_var z3_var_name z
+                    let z3_var_name = enc_z3_bool_var_at_time_in_val var time last_value_not_satisfying_prop
+                    let z3_var = make_z3_bool_var z3_var_name z
                     z.MkNot(z3_var)
 
         let compute_constraint_for_prop_lt var comparison_function range time =
@@ -163,8 +164,8 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
                     // If the appropriate z3 variable is true then one of the values satisfying
                     // the proposition is true
                     let last_value_satisfying_proposition = List.nth range (first_value_not_satisfying_proposition-1)
-                    let z3_var_name = BioCheckPlusZ3.get_z3_bool_var_at_time_in_val var time last_value_satisfying_proposition
-                    BioCheckPlusZ3.make_z3_bool_var z3_var_name z
+                    let z3_var_name = enc_z3_bool_var_at_time_in_val var time last_value_satisfying_proposition
+                    make_z3_bool_var z3_var_name z
 
         // Prepare the necessary z3 constraints for the operands
         let l_op_encode =
@@ -696,8 +697,8 @@ let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (network : QN) (
         then
             z.MkTrue()
         else
-            let name_of_loop_var = BioCheckPlusZ3.get_z3_bool_var_loop_at_time time
-            BioCheckPlusZ3.make_z3_bool_var name_of_loop_var z
+            let name_of_loop_var = enc_z3_bool_var_loop_at_time time
+            make_z3_bool_var name_of_loop_var z
     
     let encode_fairness_for_formula (ltl_formula : LTLFormulaType) = 
         let time = ref 0
