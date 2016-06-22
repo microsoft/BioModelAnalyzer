@@ -71,10 +71,10 @@ module BMA {
                 this.operators.push(new Operator('AND', 2, formulacreator('And')));
                 this.operators.push(new Operator('OR', 2, formulacreator('Or')));
                 this.operators.push(new Operator('IMPLIES', 2, formulacreator('Implies')));
-                this.operators.push(new Operator('NOT', 1, formulacreator('Not')));
-                this.operators.push(new Operator('NEXT', 1, formulacreator('Next')));
-                this.operators.push(new Operator('ALWAYS', 1, formulacreator('Always')));
-                this.operators.push(new Operator('EVENTUALLY', 1, formulacreator('Eventually')));
+                this.operators.push(new Operator('NOT', 1, formulacreator('Not'), true));
+                this.operators.push(new Operator('NEXT', 1, formulacreator('Next'), true));
+                this.operators.push(new Operator('ALWAYS', 1, formulacreator('Always'), true));
+                this.operators.push(new Operator('EVENTUALLY', 1, formulacreator('Eventually'), true));
                 this.operators.push(new Operator('UPTO', 2, formulacreator('Upto')));
                 this.operators.push(new Operator('WEAKUNTIL', 2, formulacreator('Weakuntil')));
                 this.operators.push(new Operator('UNTIL', 2, formulacreator('Until')));
