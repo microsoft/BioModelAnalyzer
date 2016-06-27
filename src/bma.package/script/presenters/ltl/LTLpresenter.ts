@@ -199,7 +199,7 @@
                                     BMA.LTLOperations.RefreshStatesInOperation(op, states);
                                 }
                                 if (statesChanged.shouldNotify) window.Commands.Execute("InvalidStatesImported", {});
-                                var merged = that.MergeStates(that.appModel.States, states);
+                                var merged = BMA.ModelHelper.MergeStates(that.appModel.States, states);
                                 that.appModel.States = merged.states;
                                 that.UpdateOperationStates(op, merged.map);
                                 that.statespresenter.UpdateStatesFromModel();
@@ -229,7 +229,7 @@
                                     BMA.LTLOperations.RefreshStatesInOperation(op, states);
                                 }
                                 if (statesChanged.shouldNotify) window.Commands.Execute("InvalidStatesImported", {});
-                                var merged = that.MergeStates(that.appModel.States, states);
+                                var merged = BMA.ModelHelper.MergeStates(that.appModel.States, states);
                                 that.appModel.States = merged.states;
                                 that.UpdateOperationStates(op, merged.map);
                                 that.statespresenter.UpdateStatesFromModel();
@@ -265,7 +265,7 @@
 
                     var stateName = BMA.ModelHelper.GenerateStateName(that.appModel.States, undefined);
                     var newState = new BMA.LTLOperations.Keyframe(stateName, "", keyframeEqs);
-                    var merged = that.MergeStates(that.appModel.States, [newState]);
+                    var merged = BMA.ModelHelper.MergeStates(that.appModel.States, [newState]);
                     that.appModel.States = merged.states;
                     that.statespresenter.UpdateStatesFromModel();
                     if (that.tppresenter)
@@ -324,34 +324,6 @@
                 return result;
             }
 
-            private MergeStates(currentStates: BMA.LTLOperations.Keyframe[], newStates: BMA.LTLOperations.Keyframe[]): { states: BMA.LTLOperations.Keyframe[]; map: any } {
-                var result = {
-                    states: [],
-                    map: {}
-                };
-
-                result.states = currentStates;
-
-                for (var i = 0; i < newStates.length; i++) {
-                    var newState = newStates[i];
-                    var exist = false;
-                    for (var j = 0; j < currentStates.length; j++) {
-                        var curState = currentStates[j];
-                        if (curState.GetFormula() === newState.GetFormula()) {
-                            exist = true;
-                            result.map[newState.Name] = curState.Name;
-                        }
-                    }
-                    if (!exist) {
-                        var addedState = newState.Clone();
-                        addedState.Name = BMA.ModelHelper.GenerateStateName(currentStates, newState);//String.fromCharCode(65 + result.states.length);
-                        result.states.push(addedState);
-                        result.map[newState.Name] = addedState.Name;
-                    }
-                }
-
-                return result;
-            }
 
             public CreateCSV(ltlDataToExport, sep): string {
                 var csv = '';

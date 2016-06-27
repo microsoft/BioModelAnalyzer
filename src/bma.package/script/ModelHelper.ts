@@ -557,5 +557,50 @@
             }
             throw "Operation was not found";
         }
+
+        export function MergeStates(currentStates: BMA.LTLOperations.Keyframe[], newStates: BMA.LTLOperations.Keyframe[]): { states: BMA.LTLOperations.Keyframe[]; map: any } {
+            var result = {
+                states: [],
+                map: {}
+            };
+
+            result.states = currentStates.slice(0);
+
+            for (var i = 0; i < newStates.length; i++) {
+                var newState = newStates[i];
+                var exist = false;
+                for (var j = 0; j < currentStates.length; j++) {
+                    var curState = currentStates[j];
+                    if (curState.GetFormula() === newState.GetFormula()) {
+                        exist = true;
+                        result.map[newState.Name] = curState.Name;
+                    }
+                }
+                if (!exist) {
+                    var addedState = newState.Clone();
+                    addedState.Name = BMA.ModelHelper.GenerateStateName(currentStates, newState);//String.fromCharCode(65 + result.states.length);
+                    result.states.push(addedState);
+                    result.map[newState.Name] = addedState.Name;
+                }
+            }
+
+            return result;
+        }
+
+        export function MergeTwoStatesInOne(state1: BMA.LTLOperations.Keyframe, state2: BMA.LTLOperations.Keyframe): BMA.LTLOperations.Keyframe {
+            var newState = new BMA.LTLOperations.Keyframe("A", "", []);
+            
+            for (var i = 0; i < state1.Operands.length; i++)
+                newState.Operands.push(state1.Operands[i].Clone());
+
+            if (state1.GetFormula() !== state2.GetFormula()) {
+                for (var i = 0; i < state2.Operands.length; i++) {
+                    if (newState.Operands.indexOf(state2.Operands[i]) == -1) 
+                        newState.Operands.push(state2.Operands[i].Clone());
+                }
+            }
+
+            return newState;
+        }
     }
 } 

@@ -32,11 +32,28 @@
 
         function ConvertToOperation(formula, states) {
             if (formula && formula.state && states) {
-                for (var i = 0; i < states.length; i++) {
-                    if (states[i].Name == formula.state)
-                        return states[i].Clone();
+                if (formula.state.variable === undefined) {
+                    for (var i = 0; i < states.length; i++) {
+                        if (states[i].Name == formula.state)
+                            return states[i].Clone();
+                    }
+                    if (formula.state.toUpperCase() == "OSCILLATION")
+                        return new BMA.LTLOperations.OscillationKeyframe();
+                    if (formula.state.toUpperCase() == "SELFLOOP")
+                        return new BMA.LTLOperations.SelfLoopKeyframe();
+                    if (formula.state.toUpperCase() == "TRUE")
+                        return new BMA.LTLOperations.TrueKeyframe();
+                    return undefined;
+                } else if (formula.state.variable && formula.state.operator && formula.state.const !== undefined) {
+                    var state = new BMA.LTLOperations.Keyframe("A", "", [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(formula.state.variable),
+                        formula.state.operator, new BMA.LTLOperations.ConstOperand(formula.state.const))]);
+                    var mergedStates = BMA.ModelHelper.MergeStates(states, [state]);
+                    states = mergedStates.states.slice(0);
+                    for (var i = 0; i < mergedStates.states.length; i++)
+                        if (mergedStates.states[i].Name == mergedStates.map[state.Name])
+                            return mergedStates.states[i].Clone();
+                    return undefined;
                 }
-                return undefined;
             } else {
                 if (formula && formula.operator) {
                     var operation = new BMA.LTLOperations.Operation();
@@ -45,6 +62,21 @@
                     if (operator === undefined) throw "Operator doesn't exist";
                     for (i = 0; i < formula.operands.length; i++) {
                         operands.push(ConvertToOperation(formula.operands[i], states));
+                    }
+                    if (operator.Name == "AND") {
+                        if (formula.operands[0] && formula.operands[0].state && formula.operands[1] && formula.operands[1].state) {
+                            if (operands[0].GetFormula() == operands[1].GetFormula())
+                                return operands[0].Clone();
+                            if (formula.operands[0].state.variable && formula.operands[1].state.variable) {
+                                var newState = BMA.ModelHelper.MergeTwoStatesInOne(operands[0], operands[1]);
+                                var mergedStates = BMA.ModelHelper.MergeStates(states, [newState]);
+                                states = mergedStates.states.slice(0);
+                                for (var i = 0; i < mergedStates.states.length; i++)
+                                    if (mergedStates.states[i].Name == mergedStates.map[newState.Name])
+                                        return mergedStates.states[i].Clone();
+                                return undefined;
+                            }
+                        }
                     }
                     operation.Operator = operator;
                     operation.Operands = operands;
@@ -102,6 +134,7 @@
                             new BMA.LTLOperations.Keyframe("A", "", []),
                             new BMA.LTLOperations.Keyframe("B", "", []),
                             new BMA.LTLOperations.Keyframe("C", "", []),
+                            new BMA.LTLOperations.Keyframe("D", "", [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a"), "=", new BMA.LTLOperations.ConstOperand(2))]),
                         ]);
 
                     RenderToSvg(svgDiv, jqSvg, parsed);
