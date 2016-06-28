@@ -745,7 +745,7 @@ module BMA {
 
                     if (this.createStateRequested !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer({
-                            columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                            columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                             createStateRequested: that.createStateRequested
                         });
                         this.createStateRequested = undefined;

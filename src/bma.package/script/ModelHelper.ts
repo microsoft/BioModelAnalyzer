@@ -515,31 +515,38 @@
             return { width: width, height: height };
         }
 
-        export function ConvertFormulaToOperation(formula: string, states: BMA.LTLOperations.Keyframe[]): BMA.LTLOperations.Operation {
+        export function ConvertFormulaToOperation(formula: string, states: BMA.LTLOperations.Keyframe[]):
+            { operation: BMA.LTLOperations.Operation, states: BMA.LTLOperations.Keyframe[] } {
             var parsedFormula;
             try {
                 var parsedFormula = BMA.parser.parse(formula);
-                var operation = ConvertToOperation(parsedFormula, states);
-                if (operation instanceof BMA.LTLOperations.Operation) return operation;
+                var result = ConvertToOperation(parsedFormula, states);
+                var operation = result.operation;
+                if (operation instanceof BMA.LTLOperations.Operation) 
+                    return {
+                        operation: operation,
+                        states: result.states
+                    };
             } catch (ex) {
                 alert(ex);
             }
             return undefined;
         }
 
-        export function ConvertToOperation(formula: any, states: BMA.LTLOperations.Keyframe[]): BMA.LTLOperations.IOperand  {
+        export function ConvertToOperation(formula: any, states: BMA.LTLOperations.Keyframe[]):
+            { operation: BMA.LTLOperations.IOperand, states: BMA.LTLOperations.Keyframe[], formula?: any } {
             if (!formula) throw "Nothing to import";
             if (formula.state && states) {
                 for (var i = 0; i < states.length; i++) {
                     if (states[i].Name == formula.state)
-                        return states[i].Clone();
+                        return { operation: states[i].Clone(), states: states };
                 }
                 if (formula.state.toUpperCase() == "OSCILLATION")
-                    return new BMA.LTLOperations.OscillationKeyframe();
+                    return { operation: new BMA.LTLOperations.OscillationKeyframe(), states: states };
                 if (formula.state.toUpperCase() == "SELFLOOP")
-                    return new BMA.LTLOperations.SelfLoopKeyframe();
+                    return { operation: new BMA.LTLOperations.SelfLoopKeyframe(), states: states };
                 if (formula.state.toUpperCase() == "TRUE")
-                    return new BMA.LTLOperations.TrueKeyframe();
+                    return { operation: new BMA.LTLOperations.TrueKeyframe(), states: states };
                 return undefined;
             } else {
                 if (formula.operator) {
@@ -552,7 +559,7 @@
                     }
                     operation.Operator = operator;
                     operation.Operands = operands;
-                    return operation;
+                    return { operation: operation, states: states, formula: formula };
                 }
             }
             throw "Operation was not found";
@@ -593,12 +600,12 @@
             for (var i = 0; i < state1.Operands.length; i++)
                 newState.Operands.push(state1.Operands[i].Clone());
 
-            if (state1.GetFormula() !== state2.GetFormula()) {
+            //if (state1.GetFormula() !== state2.GetFormula()) {
                 for (var i = 0; i < state2.Operands.length; i++) {
-                    if (newState.Operands.indexOf(state2.Operands[i]) == -1) 
+                    //if (newState.Operands.indexOf(state2.Operands[i]) == -1) 
                         newState.Operands.push(state2.Operands[i].Clone());
                 }
-            }
+            //}
 
             return newState;
         }

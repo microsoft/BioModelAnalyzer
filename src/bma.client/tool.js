@@ -1727,9 +1727,13 @@ var BMA;
             var parsedFormula;
             try {
                 var parsedFormula = BMA.parser.parse(formula);
-                var operation = ConvertToOperation(parsedFormula, states);
+                var result = ConvertToOperation(parsedFormula, states);
+                var operation = result.operation;
                 if (operation instanceof BMA.LTLOperations.Operation)
-                    return operation;
+                    return {
+                        operation: operation,
+                        states: result.states
+                    };
             }
             catch (ex) {
                 alert(ex);
@@ -1743,14 +1747,14 @@ var BMA;
             if (formula.state && states) {
                 for (var i = 0; i < states.length; i++) {
                     if (states[i].Name == formula.state)
-                        return states[i].Clone();
+                        return { operation: states[i].Clone(), states: states };
                 }
                 if (formula.state.toUpperCase() == "OSCILLATION")
-                    return new BMA.LTLOperations.OscillationKeyframe();
+                    return { operation: new BMA.LTLOperations.OscillationKeyframe(), states: states };
                 if (formula.state.toUpperCase() == "SELFLOOP")
-                    return new BMA.LTLOperations.SelfLoopKeyframe();
+                    return { operation: new BMA.LTLOperations.SelfLoopKeyframe(), states: states };
                 if (formula.state.toUpperCase() == "TRUE")
-                    return new BMA.LTLOperations.TrueKeyframe();
+                    return { operation: new BMA.LTLOperations.TrueKeyframe(), states: states };
                 return undefined;
             }
             else {
@@ -1765,7 +1769,7 @@ var BMA;
                     }
                     operation.Operator = operator;
                     operation.Operands = operands;
-                    return operation;
+                    return { operation: operation, states: states, formula: formula };
                 }
             }
             throw "Operation was not found";
@@ -1776,7 +1780,7 @@ var BMA;
                 states: [],
                 map: {}
             };
-            result.states = currentStates;
+            result.states = currentStates.slice(0);
             for (var i = 0; i < newStates.length; i++) {
                 var newState = newStates[i];
                 var exist = false;
@@ -1801,12 +1805,12 @@ var BMA;
             var newState = new BMA.LTLOperations.Keyframe("A", "", []);
             for (var i = 0; i < state1.Operands.length; i++)
                 newState.Operands.push(state1.Operands[i].Clone());
-            if (state1.GetFormula() !== state2.GetFormula()) {
-                for (var i = 0; i < state2.Operands.length; i++) {
-                    if (newState.Operands.indexOf(state2.Operands[i]) == -1)
-                        newState.Operands.push(state2.Operands[i].Clone());
-                }
+            //if (state1.GetFormula() !== state2.GetFormula()) {
+            for (var i = 0; i < state2.Operands.length; i++) {
+                //if (newState.Operands.indexOf(state2.Operands[i]) == -1) 
+                newState.Operands.push(state2.Operands[i].Clone());
             }
+            //}
             return newState;
         }
         ModelHelper.MergeTwoStatesInOne = MergeTwoStatesInOne;
@@ -5292,7 +5296,7 @@ var BMA;
             SimulationExpandedDriver.prototype.SetOnCreateStateRequested = function (callback) {
                 if (this.viewer !== undefined) {
                     this.viewer.simulationexpanded({
-                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                         createStateRequested: callback
                     });
                 }
@@ -6291,7 +6295,7 @@ var BMA;
                     }
                     if (this.createStateRequested !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer({
-                            columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                            columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                             createStateRequested: that.createStateRequested
                         });
                         this.createStateRequested = undefined;
@@ -8315,7 +8319,7 @@ var BMA;
                 };
                 container.coloredtableviewer({
                     onContextMenuItemSelected: createStateRequested,
-                    columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                    columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                     header: header,
                     numericData: table,
                     colorData: color
@@ -11730,7 +11734,7 @@ var BMA;
                     that.options.createStateRequested(args);
             };
             this.big_table.progressiontable({
-                columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                 onContextMenuItemSelected: onContextMenuItemSelected
             });
             randomise.click(function () {
@@ -15921,7 +15925,8 @@ var BMA;
                         var fileReader = new FileReader();
                         fileReader.onload = function () {
                             var fileContent = fileReader.result;
-                            var operation = BMA.ModelHelper.ConvertFormulaToOperation(fileContent, that.appModel.States);
+                            var result = BMA.ModelHelper.ConvertFormulaToOperation(fileContent, that.appModel.States);
+                            var operation = result.operation;
                             if (operation instanceof BMA.LTLOperations.Operation) {
                                 var op = operation;
                                 var states = that.GetStates(op);

@@ -373,7 +373,7 @@ module BMA {
             public SetOnCreateStateRequested(callback) {
                 if (this.viewer !== undefined) {
                     this.viewer.simulationexpanded({
-                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                         createStateRequested: callback
                     });
                 } else {
