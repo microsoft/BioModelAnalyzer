@@ -5197,7 +5197,7 @@ var BMA;
             SimulationExpandedDriver.prototype.SetOnCreateStateRequested = function (callback) {
                 if (this.viewer !== undefined) {
                     this.viewer.simulationexpanded({
-                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                         createStateRequested: callback
                     });
                 }
@@ -6196,7 +6196,7 @@ var BMA;
                     }
                     if (this.createStateRequested !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer({
-                            columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                            columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                             createStateRequested: that.createStateRequested
                         });
                         this.createStateRequested = undefined;
@@ -6427,7 +6427,7 @@ var BMA;
             LTLResultsViewer.prototype.SetOnCreateStateRequested = function (callback) {
                 if (this.ltlResultsViewer !== undefined) {
                     this.ltlResultsViewer.ltlresultsviewer({
-                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                         createStateRequested: callback
                     });
                 }
@@ -8220,7 +8220,7 @@ var BMA;
                 };
                 container.coloredtableviewer({
                     onContextMenuItemSelected: createStateRequested,
-                    columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                    columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                     header: header,
                     numericData: table,
                     colorData: color
@@ -10737,6 +10737,8 @@ var BMA;
         },
         ClearData: function () {
             this.data.empty();
+            var rands = this.init.find("tr").not(":first-child").children("td:nth-child(2)");
+            rands.parent().removeClass("red");
         },
         AddData: function (data) {
             var that = this;
@@ -11635,7 +11637,7 @@ var BMA;
                     that.options.createStateRequested(args);
             };
             this.big_table.progressiontable({
-                columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                 onContextMenuItemSelected: onContextMenuItemSelected
             });
             randomise.click(function () {

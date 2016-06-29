@@ -393,7 +393,7 @@
 
                 container.coloredtableviewer({
                     onContextMenuItemSelected: createStateRequested,
-                    columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                    columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                     header: header,
                     numericData: table,
                     colorData: color
