@@ -1002,7 +1002,7 @@ module BMA {
             public SetOnCreateStateRequested(callback) {
                 if (this.ltlResultsViewer !== undefined) {
                     this.ltlResultsViewer.ltlresultsviewer({
-                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                         createStateRequested: callback
                     });
                 } else {
