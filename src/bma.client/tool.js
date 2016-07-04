@@ -1199,7 +1199,7 @@ var BMA;
                         width += (calcLW.width + paddingX);
                     }
                     else {
-                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i });
+                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i, isFlex: true });
                         width += (keyFrameSize + paddingX);
                     }
                     if (!operator.isFunction && i > 0) {
@@ -4857,7 +4857,7 @@ var BMA;
             };
             OperationLayout.prototype.HiglightEmptySlotsInternal = function (color, layoutPart) {
                 if (layoutPart !== undefined) {
-                    if (layoutPart.isEmpty) {
+                    if (layoutPart.isEmpty && !layoutPart.isFlex) {
                         this.svg.change(layoutPart.svgref, {
                             fill: color
                         });
@@ -12641,37 +12641,120 @@ jQuery.fn.extend({
             });
             svgDiv.droppable({
                 drop: function (arg, ui) {
-                    var op = new BMA.LTLOperations.Operation();
-                    var operator = undefined;
-                    for (var i = 0; i < operatorsArr.length; i++) {
-                        if (operatorsArr[i].Name === ui.draggable.attr("data-operator")) {
-                            op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].OperandsCount, undefined, operatorsArr[i].isFunction);
-                            break;
+                    if (ui.draggable.attr("data-operator") !== undefined) {
+                        var op = new BMA.LTLOperations.Operation();
+                        var operator = undefined;
+                        for (var i = 0; i < operatorsArr.length; i++) {
+                            if (operatorsArr[i].Name === ui.draggable.attr("data-operator")) {
+                                op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].OperandsCount, undefined, operatorsArr[i].isFunction);
+                                break;
+                            }
                         }
-                    }
-                    op.Operands = [];
-                    if (op.Operator.OperandsCount > 1) {
-                        op.Operands.push(undefined);
-                        op.Operands.push(undefined);
-                    }
-                    else {
-                        op.Operands.push(undefined);
-                    }
-                    var opL = that.operationLayout;
-                    if (opL === undefined) {
-                        that.options.operation = op;
-                        that._refresh();
-                    }
-                    else {
-                        var parentOffset = $(this).offset();
-                        var relX = arg.pageX - parentOffset.left;
-                        var relY = arg.pageY - parentOffset.top;
-                        var svgCoords = that._getSVGCoords(relX, relY);
-                        var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
-                        if (emptyCell !== undefined) {
-                            emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                        op.Operands = [];
+                        if (op.Operator.OperandsCount > 1) {
+                            op.Operands.push(undefined);
+                            op.Operands.push(undefined);
+                        }
+                        else {
+                            op.Operands.push(undefined);
+                        }
+                        var opL = that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = op;
                             that._refresh();
                         }
+                        else {
+                            var parentOffset = $(this).offset();
+                            var relX = arg.pageX - parentOffset.left;
+                            var relY = arg.pageY - parentOffset.top;
+                            var svgCoords = that._getSVGCoords(relX, relY);
+                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                                that._refresh();
+                            }
+                        }
+                    }
+                }
+            });
+            var draggableWidth = svgDiv.width();
+            var draggableHeight = svgDiv.height();
+            var draggableDiv = $("<div></div>").width(draggableWidth).height(draggableHeight);
+            var canvas = $("<canvas></canvas>").attr("width", draggableWidth).attr("height", draggableHeight).appendTo(draggableDiv)[0];
+            var opToDrag = undefined;
+            svgDiv.draggable({
+                helper: function () {
+                    return draggableDiv;
+                },
+                cursorAt: { left: 0, top: 0 },
+                //opacity: 0.4,
+                cursor: "pointer",
+                start: function (arg, ui) {
+                    canvas.height = canvas.height;
+                    var opL = that.operationLayout;
+                    var parentOffset = $(this).offset();
+                    var relX = arg.pageX - parentOffset.left;
+                    var relY = arg.pageY - parentOffset.top;
+                    var svgCoords = that._getSVGCoords(relX, relY);
+                    opToDrag = opL.UnpinOperation(svgCoords.x, svgCoords.y);
+                    if (opToDrag !== undefined) {
+                        if (opToDrag.isRoot) {
+                            that.options.operation = undefined;
+                            that.operationLayout = undefined;
+                        }
+                        var keyFrameSize = 26;
+                        var padding = { x: 5, y: 10 };
+                        var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, opToDrag.operation, padding, keyFrameSize);
+                        var scale = { x: 1, y: 1 };
+                        var offset = 0;
+                        var w = opSize.width + offset;
+                        if (w > draggableWidth) {
+                            scale = {
+                                x: draggableWidth / w,
+                                y: draggableWidth / w
+                            };
+                        }
+                        canvas.width = scale.x * opSize.width + 2 * padding.x;
+                        canvas.height = scale.y * opSize.height + 2 * padding.y;
+                        var opPosition = { x: scale.x * opSize.width / 2 + padding.x, y: padding.y + Math.floor(scale.y * opSize.height / 2) };
+                        BMA.LTLOperations.RenderOperation(canvas, opToDrag.operation, opPosition, scale, {
+                            padding: padding,
+                            keyFrameSize: keyFrameSize,
+                            stroke: "black",
+                            fill: "white",
+                            isRoot: true,
+                            strokeWidth: 1,
+                            borderThickness: 1
+                        });
+                        that._refresh();
+                    }
+                },
+                drag: function (arg, ui) {
+                    return opToDrag !== undefined;
+                },
+                stop: function (arg, ui) {
+                    if (opToDrag !== undefined) {
+                        var opL = that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = opToDrag.operation;
+                            that._refresh();
+                        }
+                        else {
+                            var parentOffset = $(this).offset();
+                            var relX = arg.pageX - parentOffset.left;
+                            var relY = arg.pageY - parentOffset.top;
+                            var svgCoords = that._getSVGCoords(relX, relY);
+                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = opToDrag.operation;
+                                that._refresh();
+                            }
+                            else {
+                                opToDrag.parentoperation.Operands[opToDrag.parentoperationindex] = opToDrag.operation;
+                            }
+                        }
+                        opToDrag = undefined;
+                        that._refresh();
                     }
                 }
             });
@@ -17346,9 +17429,9 @@ var BMA;
                 /*
                 //Target Function Editor operators
 
-                this.operators.push(new Operator('AVG', 2, functionformulacreator('avg')));
-                this.operators.push(new Operator('MIN', 2, functionformulacreator('min')));
-                this.operators.push(new Operator('MAX', 2, functionformulacreator('max')));
+                this.operators.push(new Operator('AVG', Number.POSITIVE_INFINITY, functionformulacreator('avg')));
+                this.operators.push(new Operator('MIN', Number.POSITIVE_INFINITY, functionformulacreator('min')));
+                this.operators.push(new Operator('MAX', Number.POSITIVE_INFINITY, functionformulacreator('max')));
 
                 this.operators.push(new Operator('CEIL', 1, formulacreator('ceil')));
                 this.operators.push(new Operator('FLOOR', 1, formulacreator('floor')));
