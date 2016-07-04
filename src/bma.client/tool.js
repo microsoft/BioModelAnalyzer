@@ -1723,11 +1723,11 @@ var BMA;
             return { width: width, height: height };
         }
         ModelHelper.GetScrollBarSize = GetScrollBarSize;
-        function ConvertFormulaToOperation(formula, states) {
+        function ConvertFormulaToOperation(formula, states, model) {
             var parsedFormula;
             try {
                 var parsedFormula = BMA.parser.parse(formula);
-                var result = ConvertToOperation(parsedFormula, states);
+                var result = ConvertToOperation(parsedFormula, states, model);
                 var operation = result.operation;
                 if (operation instanceof BMA.LTLOperations.Operation)
                     return {
@@ -1741,7 +1741,7 @@ var BMA;
             return undefined;
         }
         ModelHelper.ConvertFormulaToOperation = ConvertFormulaToOperation;
-        function ConvertToOperation(formula, states) {
+        function ConvertToOperation(formula, states, model) {
             if (!formula)
                 throw "Nothing to import";
             if (formula.state && states) {
@@ -1765,7 +1765,7 @@ var BMA;
                     if (operator === undefined)
                         throw "Operator doesn't exist";
                     for (i = 0; i < formula.operands.length; i++) {
-                        operands.push(ConvertToOperation(formula.operands[i], states));
+                        operands.push(ConvertToOperation(formula.operands[i], states, model));
                     }
                     operation.Operator = operator;
                     operation.Operands = operands;
@@ -1781,22 +1781,31 @@ var BMA;
                 map: {}
             };
             result.states = currentStates.slice(0);
+            var statesToAdd = [];
             for (var i = 0; i < newStates.length; i++) {
                 var newState = newStates[i];
                 var exist = false;
+                var oldStates = {};
                 for (var j = 0; j < currentStates.length; j++) {
                     var curState = currentStates[j];
                     if (curState.GetFormula() === newState.GetFormula()) {
                         exist = true;
+                        oldStates[curState.Name] = curState;
                         result.map[newState.Name] = curState.Name;
                     }
                 }
-                if (!exist) {
-                    var addedState = newState.Clone();
-                    addedState.Name = BMA.ModelHelper.GenerateStateName(currentStates, newState); //String.fromCharCode(65 + result.states.length);
-                    result.states.push(addedState);
-                    result.map[newState.Name] = addedState.Name;
+                if (oldStates[newState.Name]) {
+                    result.map[newState.Name] = newState.Name;
                 }
+                if (!exist) {
+                    statesToAdd.push(newState.Clone());
+                }
+            }
+            for (var i = 0; i < statesToAdd.length; i++) {
+                var addedState = statesToAdd[i].Clone();
+                addedState.Name = BMA.ModelHelper.GenerateStateName(result.states, statesToAdd[i]); //String.fromCharCode(65 + result.states.length);
+                result.states.push(addedState);
+                result.map[statesToAdd[i].Name] = addedState.Name;
             }
             return result;
         }
@@ -15927,7 +15936,7 @@ var BMA;
                         var fileReader = new FileReader();
                         fileReader.onload = function () {
                             var fileContent = fileReader.result;
-                            var result = BMA.ModelHelper.ConvertFormulaToOperation(fileContent, that.appModel.States);
+                            var result = BMA.ModelHelper.ConvertFormulaToOperation(fileContent, that.appModel.States, that.appModel.BioModel);
                             var operation = result.operation;
                             if (operation instanceof BMA.LTLOperations.Operation) {
                                 var op = operation;

@@ -1,6 +1,14 @@
 ﻿describe("BMA.ModelHelper.ConvertFormulaToOperation", () => {
     window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
 
+    var variables = [
+        new BMA.Model.Variable(1, 0, "Default", "a", 0, 1, ""),
+        new BMA.Model.Variable(2, 0, "Default", "b", 0, 1, ""),
+        new BMA.Model.Variable(3, 0, "Default", "c", 0, 1, ""),
+        new BMA.Model.Variable(4, 0, "Default", "d", 0, 1, "")
+    ];
+    var model = new BMA.Model.BioModel("model1", variables, []);
+
     var A = new BMA.LTLOperations.Keyframe("A", "", []);
     var B = new BMA.LTLOperations.Keyframe("B", "", []);
     var C = new BMA.LTLOperations.Keyframe("C", "", []);
@@ -10,7 +18,7 @@
 
     var ConvertFormulaToOperation = function (formula, states) {
         var parsedFormula = BMA.parser.parse(formula);
-        var operation = BMA.ModelHelper.ConvertToOperation(parsedFormula, states);
+        var operation = BMA.ModelHelper.ConvertToOperation(parsedFormula, states, model);
         if (operation instanceof BMA.LTLOperations.Operation) return operation;
     };
     

@@ -218,7 +218,7 @@
                         var fileReader: any = new FileReader();
                         fileReader.onload = function () {
                             var fileContent = fileReader.result;
-                            var result = BMA.ModelHelper.ConvertFormulaToOperation(fileContent, that.appModel.States);
+                            var result = BMA.ModelHelper.ConvertFormulaToOperation(fileContent, that.appModel.States, that.appModel.BioModel);
                             var operation = result.operation;
 
                             if (operation instanceof BMA.LTLOperations.Operation) {

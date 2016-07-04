@@ -515,12 +515,12 @@
             return { width: width, height: height };
         }
 
-        export function ConvertFormulaToOperation(formula: string, states: BMA.LTLOperations.Keyframe[]):
+        export function ConvertFormulaToOperation(formula: string, states: BMA.LTLOperations.Keyframe[], model: BMA.Model.BioModel):
             { operation: BMA.LTLOperations.Operation, states: BMA.LTLOperations.Keyframe[] } {
             var parsedFormula;
             try {
                 var parsedFormula = BMA.parser.parse(formula);
-                var result = ConvertToOperation(parsedFormula, states);
+                var result = ConvertToOperation(parsedFormula, states, model);
                 var operation = result.operation;
                 if (operation instanceof BMA.LTLOperations.Operation) 
                     return {
@@ -533,7 +533,7 @@
             return undefined;
         }
 
-        export function ConvertToOperation(formula: any, states: BMA.LTLOperations.Keyframe[]):
+        export function ConvertToOperation(formula: any, states: BMA.LTLOperations.Keyframe[], model: BMA.Model.BioModel):
             { operation: BMA.LTLOperations.IOperand, states: BMA.LTLOperations.Keyframe[], formula?: any } {
             if (!formula) throw "Nothing to import";
             if (formula.state && states) {
@@ -555,7 +555,7 @@
                     var operator = window.OperatorsRegistry.GetOperatorByName(formula.operator.toUpperCase());
                     if (operator === undefined) throw "Operator doesn't exist";
                     for (i = 0; i < formula.operands.length; i++) {
-                        operands.push(ConvertToOperation(formula.operands[i], states));
+                        operands.push(ConvertToOperation(formula.operands[i], states, model));
                     }
                     operation.Operator = operator;
                     operation.Operands = operands;
@@ -572,23 +572,33 @@
             };
 
             result.states = currentStates.slice(0);
+            var statesToAdd = [];
 
             for (var i = 0; i < newStates.length; i++) {
                 var newState = newStates[i];
                 var exist = false;
+                var oldStates = {};
                 for (var j = 0; j < currentStates.length; j++) {
                     var curState = currentStates[j];
                     if (curState.GetFormula() === newState.GetFormula()) {
                         exist = true;
+                        oldStates[curState.Name] = curState;
                         result.map[newState.Name] = curState.Name;
                     }
                 }
+                if (oldStates[newState.Name]) {
+                    result.map[newState.Name] = newState.Name;
+                } 
                 if (!exist) {
-                    var addedState = newState.Clone();
-                    addedState.Name = BMA.ModelHelper.GenerateStateName(currentStates, newState);//String.fromCharCode(65 + result.states.length);
-                    result.states.push(addedState);
-                    result.map[newState.Name] = addedState.Name;
+                    statesToAdd.push(newState.Clone());
                 }
+            }
+
+            for (var i = 0; i < statesToAdd.length; i++) {
+                var addedState = statesToAdd[i].Clone();
+                addedState.Name = BMA.ModelHelper.GenerateStateName(result.states, statesToAdd[i]);//String.fromCharCode(65 + result.states.length);
+                result.states.push(addedState);
+                result.map[statesToAdd[i].Name] = addedState.Name;
             }
 
             return result;
