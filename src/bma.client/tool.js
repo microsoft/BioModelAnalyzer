@@ -1206,6 +1206,14 @@ var BMA;
                         width += operatorWidth + paddingX;
                     }
                 }
+                //Adding empty slot for operators with flexible operands count
+                if (!isFinite(operator.OperandsCount) && operands[operands.length - 1] !== undefined) {
+                    layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: operands.length });
+                    width += (keyFrameSize + paddingX);
+                    if (!operator.isFunction) {
+                        width += operatorWidth + paddingX;
+                    }
+                }
                 layout.layer = layer + 1;
                 layout.width = width;
                 return layout;
@@ -3871,18 +3879,19 @@ var BMA;
 (function (BMA) {
     var LTLOperations;
     (function (LTLOperations) {
-        var FlexOperand = (function () {
-            function FlexOperand() {
-            }
-            FlexOperand.prototype.GetFormula = function () {
+        /*
+        export class FlexOperand implements IOperand {
+            constructor() { }
+
+            public GetFormula() {
                 return "";
-            };
-            FlexOperand.prototype.Clone = function () {
+            }
+
+            public Clone() {
                 return new FlexOperand();
-            };
-            return FlexOperand;
-        })();
-        LTLOperations.FlexOperand = FlexOperand;
+            }
+        }
+        */
         var NameOperand = (function () {
             function NameOperand(name, id) {
                 if (id === void 0) { id = undefined; }
@@ -12536,13 +12545,13 @@ jQuery.fn.extend({
             operators.width(350);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
             var operatorsArr = [
-                { Name: "+", OperandsCount: 4, isFunction: false },
-                { Name: "-", OperandsCount: 2, isFunction: false },
-                { Name: "*", OperandsCount: 3, isFunction: false },
+                { Name: "+", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
+                { Name: "-", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
+                { Name: "*", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
                 { Name: "/", OperandsCount: 2, isFunction: false },
-                { Name: "AVG", OperandsCount: 6, isFunction: true },
-                { Name: "MIN", OperandsCount: 2, isFunction: true },
-                { Name: "MAX", OperandsCount: 2, isFunction: true },
+                { Name: "AVG", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
+                { Name: "MIN", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
+                { Name: "MAX", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
                 { Name: "CEIL", OperandsCount: 1, isFunction: false },
                 { Name: "FLOOR", OperandsCount: 1, isFunction: false },
             ];
@@ -12641,7 +12650,11 @@ jQuery.fn.extend({
                         }
                     }
                     op.Operands = [];
-                    for (var i = 0; i < op.Operator.OperandsCount; i++) {
+                    if (op.Operator.OperandsCount > 1) {
+                        op.Operands.push(undefined);
+                        op.Operands.push(undefined);
+                    }
+                    else {
                         op.Operands.push(undefined);
                     }
                     var opL = that.operationLayout;
@@ -17291,12 +17304,14 @@ var BMA;
                         for (var i = 0; i < op.length - 1 /*because last can be FlexSlot*/; i++) {
                             f += ', ' + op[i].GetFormula();
                         }
-                        if (op[op.length - 1] instanceof LTLOperations.FlexOperand) {
+                        /*
+                        if (op[op.length - 1] instanceof FlexOperand) {
                             f += ")";
+                        } else {
+                            f += +  ", " + op[op.length - 1].GetFormula() + ")";
                         }
-                        else {
-                            f += +", " + op[op.length - 1].GetFormula() + ")";
-                        }
+                        */
+                        f += +", " + op[op.length - 1].GetFormula() + ")";
                         return f;
                     };
                 };
@@ -17306,12 +17321,14 @@ var BMA;
                         for (var i = 1; i < op.length - 1 /*because last can be FlexSlot*/; i++) {
                             f += +" " + funcname + " " + op[i].GetFormula();
                         }
-                        if (op[op.length - 1] instanceof LTLOperations.FlexOperand) {
+                        /*
+                        if (op[op.length - 1] instanceof FlexOperand) {
                             f += ")";
+                        } else {
+                            f += + " " + funcname + " " + op[op.length - 1].GetFormula() + ")";
                         }
-                        else {
-                            f += +" " + funcname + " " + op[op.length - 1].GetFormula() + ")";
-                        }
+                        */
+                        f += +" " + funcname + " " + op[op.length - 1].GetFormula() + ")";
                         return f;
                     };
                 };

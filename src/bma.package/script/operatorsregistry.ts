@@ -40,11 +40,15 @@ module BMA {
                         for (var i = 0; i < op.length - 1 /*because last can be FlexSlot*/; i++) {
                             f += ', ' + op[i].GetFormula();
                         }
+
+                        /*
                         if (op[op.length - 1] instanceof FlexOperand) {
                             f += ")";
                         } else {
                             f += +  ", " + op[op.length - 1].GetFormula() + ")";
                         }
+                        */
+                        f += +  ", " + op[op.length - 1].GetFormula() + ")";
 
                         return f;
                     }
@@ -56,12 +60,14 @@ module BMA {
                         for (var i = 1; i < op.length - 1 /*because last can be FlexSlot*/; i++) {
                             f += + " " + funcname + " " + op[i].GetFormula();
                         }
-
+                        /*
                         if (op[op.length - 1] instanceof FlexOperand) {
                             f += ")";
                         } else {
                             f += + " " + funcname + " " + op[op.length - 1].GetFormula() + ")";
                         }
+                        */
+                        f += + " " + funcname + " " + op[op.length - 1].GetFormula() + ")";
 
                         return f;
                     }

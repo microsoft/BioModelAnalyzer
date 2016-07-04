@@ -21,13 +21,13 @@
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
 
             var operatorsArr = [
-                { Name: "+", OperandsCount: 4, isFunction: false },
-                { Name: "-", OperandsCount: 2, isFunction: false },
-                { Name: "*", OperandsCount: 3, isFunction: false },
+                { Name: "+", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
+                { Name: "-", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
+                { Name: "*", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
                 { Name: "/", OperandsCount: 2, isFunction: false },
-                { Name: "AVG", OperandsCount: 6, isFunction: true },
-                { Name: "MIN", OperandsCount: 2, isFunction: true },
-                { Name: "MAX", OperandsCount: 2, isFunction: true },
+                { Name: "AVG", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
+                { Name: "MIN", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
+                { Name: "MAX", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
                 { Name: "CEIL", OperandsCount: 1, isFunction: false },
                 { Name: "FLOOR", OperandsCount: 1, isFunction: false },
             ];
@@ -140,7 +140,10 @@
                         }
                     }
                     op.Operands = [];
-                    for (var i = 0; i < op.Operator.OperandsCount; i++) {
+                    if (op.Operator.OperandsCount > 1) {
+                        op.Operands.push(undefined);
+                        op.Operands.push(undefined);
+                    } else {
                         op.Operands.push(undefined);
                     }
                     var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
