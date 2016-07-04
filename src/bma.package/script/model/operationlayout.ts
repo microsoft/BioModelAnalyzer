@@ -638,7 +638,7 @@
 
             private HiglightEmptySlotsInternal(color: string, layoutPart: any) {
                 if (layoutPart !== undefined) {
-                    if (layoutPart.isEmpty) {
+                    if (layoutPart.isEmpty && !layoutPart.isFlex) {
                         this.svg.change(layoutPart.svgref, {
                             fill: color
                         });

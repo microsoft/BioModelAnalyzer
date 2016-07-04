@@ -89,9 +89,9 @@ module BMA {
                 /*
                 //Target Function Editor operators
 
-                this.operators.push(new Operator('AVG', 2, functionformulacreator('avg')));
-                this.operators.push(new Operator('MIN', 2, functionformulacreator('min')));
-                this.operators.push(new Operator('MAX', 2, functionformulacreator('max')));
+                this.operators.push(new Operator('AVG', Number.POSITIVE_INFINITY, functionformulacreator('avg')));
+                this.operators.push(new Operator('MIN', Number.POSITIVE_INFINITY, functionformulacreator('min')));
+                this.operators.push(new Operator('MAX', Number.POSITIVE_INFINITY, functionformulacreator('max')));
 
                 this.operators.push(new Operator('CEIL', 1, formulacreator('ceil')));
                 this.operators.push(new Operator('FLOOR', 1, formulacreator('floor')));

@@ -200,7 +200,7 @@
                         layout.operands.push(calcLW);
                         width += (calcLW.width + paddingX);
                     } else {
-                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i });
+                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i, isFlex: true });
                         width += (keyFrameSize + paddingX);
                     }
 
