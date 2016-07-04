@@ -70,16 +70,35 @@
                         enumModels(access_token, r.id);
                     }).fail(function() { window.alert("Failed to create BioModelAnalyzer folder"); })
                 }
+                enumShared(access_token);
             }).fail(function() { window.alert("Failed to enum root folder items") });
-        }
+        }        
 
         function enumModels(access_token, folder_id) {
             oneDriveApi(access_token, "GET", "/drive/items/" + folder_id + "/children").done(function(r) {
                 var list = $("#models");
                 $.each(r.value, function(i) {
-                    $('<li/>').html(r.value[i].name).appendTo(list);
+                    var item = r.value[i];
+                    if(item.file) {
+                        var text = item.name;
+                        if(item.shared)
+                            text += " (shared by me)";
+                        $('<li/>').html(text).appendTo(list);
+                    }
                 });
             }).fail(function() { window.alert("Failed to enum contents of BioModelAnalyzer folder")} );   
+        }
+
+        function enumShared(access_token) {
+            oneDriveApi(access_token, "GET", "/drive/view.sharedWithMe").done(function(r) {
+                var list = $("#models");
+                $.each(r.value, function(i) {
+                    var item = r.value[i];
+                    if(item.remoteItem.file && item.remoteItem.file.mimeType == "application/json") {
+                        $('<li/>').html(item.name + " (shared with me)").appendTo(list);
+                    }
+                });              
+            }).fail(function() { window.alert("Failed to enum items shared with me")} );
         }
 
         $(function() {
