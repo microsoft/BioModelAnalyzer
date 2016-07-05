@@ -41,84 +41,97 @@ module JobProperties =
     let Result = "Result"
     let QueueName = "QueueName"
 
-type JobEntity(entryId : Guid, appId : AppId) =
+type JobEntity(jobId : Guid, appId : AppId) =
     inherit TableEntity()
 
     do 
-        base.RowKey <- entryId.ToString()
+        base.RowKey <- jobId.ToString()
         base.PartitionKey <- appId.ToString()
 
     new() = JobEntity(Guid.Empty, Guid.Empty) 
 
-    member val JobId = Guid.Empty with get, set
     member val Request = "" with get, set
     member val Result = "" with get, set
     member val Status = "" with get, set
     member val StatusInformation = "" with get, set
     member val QueueName = "" with get, set
 
-    member x.Clone() =
-        let e = JobEntity()
-        e.RowKey <- x.RowKey
-        e.PartitionKey <- x.PartitionKey
-        e.JobId <- x.JobId
-        e.Request <- x.Request
-        e.Result <- x.Result
-        e.Status <- x.Status
-        e.StatusInformation <- x.StatusInformation
-        e.QueueName <- x.QueueName
-        e
+    [<IgnoreProperty>]
+    member x.JobId = Guid.Parse(x.RowKey)
+    
+type JobExecutionEntity(jobId : Guid, appId : AppId) =
+    inherit TableEntity()
+
+    do 
+        base.RowKey <- jobId.ToString()
+        base.PartitionKey <- appId.ToString()
+
+    new() = JobExecutionEntity(Guid.Empty, Guid.Empty) 
 
 type JobMessage() =
-    member val entryId = "" with get, set
+    member val jobId = "" with get, set
     member val appId = "" with get, set
 
 
-let buildQueueMessage (entryId : Guid, appId : AppId) =
-    sprintf "{ 'entryId' : '%O', 'appId' : '%O' }" entryId appId
+let buildQueueMessage (jobId : JobId, appId : AppId) =
+    sprintf "{ 'jobId' : '%O', 'appId' : '%O' }" jobId appId
 
-let parseQueueMessage (json : string) : Guid * AppId =
+let parseQueueMessage (json : string) : JobId * AppId =
     let js = JObject.Parse json
-    js.["entryId"].Value<string>() |> Guid.Parse,
+    js.["jobId"].Value<string>() |> Guid.Parse,
     js.["appId"].Value<string>() |> Guid.Parse
 
-let getJobEntries (appId: AppId, jobId: JobId) (table : CloudTable) = 
-    let query = 
-        TableQuery<JobEntity>()
-            .Where(
-                TableQuery.CombineFilters(
-                    TableQuery.GenerateFilterCondition(JobProperties.AppId, QueryComparisons.Equal, appId.ToString()),
-                    TableOperators.And,
-                    TableQuery.GenerateFilterConditionForGuid(JobProperties.JobId, QueryComparisons.Equal, jobId)))
-    table.ExecuteQuery(query)
+    
+let getBlobContent (blobName: string) (container : CloudBlobContainer) : IO.Stream =
+    let blob = container.GetBlockBlobReference(blobName)
+    let stream = new System.IO.MemoryStream()
+    blob.DownloadToStream(stream)
+    stream.Position <- 0L
+    stream :> System.IO.Stream
 
-let deleteJob (appId: AppId, jobId: JobId) (table : CloudTable, container : CloudBlobContainer) : bool =
-    let deleteBlob (blobName: string) =
-        try
-            let blob = container.GetBlockBlobReference(blobName)
-            blob.DeleteIfExists() |> ignore
-        with
-        | exn -> Trace.WriteLine (sprintf "Cannot delete blob %s: %A" blobName exn)
+let tryGetJobEntry (appId: AppId, jobId: JobId) (table : CloudTable) = 
+    let retrieve = TableOperation.Retrieve<JobEntity>(appId.ToString(), jobId.ToString())
+    let resp = table.Execute retrieve
+    match resp.Result with
+    | null -> None
+    | :? JobEntity as job -> Some job
+    | _ -> None
+    
+let tryGetJobExecutionEntry (appId: AppId, jobId: JobId) (table : CloudTable) = 
+    let retrieve = TableOperation.Retrieve<JobExecutionEntity>(appId.ToString(), jobId.ToString())
+    let resp = table.Execute retrieve
+    match resp.Result with
+    | null -> None
+    | :? JobExecutionEntity as job -> Some job
+    | _ -> None
 
-    match getJobEntries (appId, jobId) table |> Seq.toList with
-    | [] ->
+let internal ignoreExn (f : unit -> unit) (message : string) =
+    try
+        f()
+        true
+    with
+    | exn -> 
+        Trace.WriteLine(sprintf "%s: %A" message exn)
+        false
+
+let deleteBlob (blobName: string) (container : CloudBlobContainer) =
+    ignoreExn (fun() ->
+        let blob = container.GetBlockBlobReference(blobName)
+        blob.DeleteIfExists() |> ignore) 
+        (sprintf "Cannot delete blob %s" blobName)
+
+let deleteJob (appId: AppId, jobId: JobId) (table : CloudTable, tableExecution : CloudTable, container : CloudBlobContainer) : bool =
+    match tryGetJobEntry (appId, jobId) table with
+    | None ->
         Trace.WriteLine (sprintf "Job %O is not found" jobId)
         false
-    | jobEntries -> 
-        let fails =
-            jobEntries 
-            |> List.fold(fun fails entry -> 
-                try
-                    TableOperation.Delete entry |> table.Execute |> ignore
-                    fails
-                with
-                | exn -> 
-                    Trace.WriteLine (sprintf "Failed to delete the job entry %A: %A" entry.RowKey exn)
-                    exn :: fails
-                ) []
-        let job = jobEntries.Head
-        deleteBlob job.Result
-        deleteBlob job.Request
-        match fails with
-        | [] -> true
-        | _ -> raise (AggregateException("Failed to delete some or all entries for the job", fails))
+    | Some job -> 
+        ignoreExn (fun () -> TableOperation.Delete job |> table.Execute |> ignore) "Cannot delete job entry" &&
+        ignoreExn (fun () -> 
+            tryGetJobExecutionEntry (appId, jobId) tableExecution
+            |> Option.iter(fun e ->
+                TableOperation.Delete e |> tableExecution.Execute |> ignore)) "Cannot delete information about job execution" &&
+        deleteBlob job.Result container &&
+        deleteBlob job.Request container
+
+        

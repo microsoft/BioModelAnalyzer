@@ -30,77 +30,97 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
     let container = blobClient.GetContainerReference (getBlobContainerName schedulerName)
     let tableClient = storageAccount.CreateCloudTableClient()
     let table = tableClient.GetTableReference (getJobsTableName schedulerName)   
+    let tableExec = tableClient.GetTableReference (getJobsExecutionTableName schedulerName)  
     
     let mutable disp : IDisposable option = None     
 
-    let tryGetJob (entryId:JobId, appId:AppId) : JobEntity option =
-        let rkey = entryId.ToString()
-        let pkey = appId.ToString()
-        let retrieveOperation = TableOperation.Retrieve<JobEntity>(pkey, rkey)
-        let r = table.Execute(retrieveOperation)
-        match r.Result with
-        | null -> None // couldn't be retrieved (considering as not found)
-        | _ as job -> job :?> JobEntity |> Some
 
-    let upsertStatus (job : JobEntity) (jobStatus:JobStatus) (info:string) =
-        job.Status <- status jobStatus
-        job.StatusInformation <- info
-        let op = TableOperation.InsertOrReplace(job)
-        let entity = table.Execute(op)
+    let upsertExecution (jobId:JobId, appId:AppId) =
+        let e = JobExecutionEntity(jobId, appId)
+        let op = TableOperation.InsertOrReplace(e)
+        let entity = tableExec.Execute(op)
         match entity.Result with
-        | null -> failwith "Couldn't retrieve job entry when upserting it"
-        | _ -> ()
+        | null -> failwith "Couldn't retrieve job execution entry when upserting it"
+        | :? JobExecutionEntity -> ()
+        | _ -> failwith "Unexpected type of the job execution entry"
+        
+    let deleteExecution (jobId:JobId, appId:AppId) =
+        // http://stackoverflow.com/questions/16170915/best-practice-in-deleting-azure-table-entities-in-foreach-loop
+        let e = DynamicTableEntity(appId.ToString(), jobId.ToString())
+        e.ETag <- "*"
+        let op = TableOperation.Delete(e)
+        tableExec.Execute(op) |> ignore
 
-    let getJobRequest (blobName : string) =
-        let blob = container.GetBlockBlobReference(blobName)
-        let stream = new System.IO.MemoryStream()
-        blob.DownloadToStream(stream)
-        stream.Position <- 0L
-        stream :> System.IO.Stream
+    let getJobRequest (blobName : string) = getBlobContent blobName container
 
     let putResult (resultBlobName:string) (result : IO.Stream) =                
         let blob = container.GetBlockBlobReference(resultBlobName)
         blob.UploadFromStream(result)
 
     let isCancellationRequested (entryId:JobId, appId:AppId) : bool =
-        tryGetJob (entryId, appId) |> Option.isNone
+        tryGetJobEntry (appId, entryId) table |> Option.isNone
+        
+    // Returns true if the status is set to the succeeded or failed (by this worker or by another worker);
+    // returns false if the job has been cancelled.
+    let updateStatus (job:JobEntity) newStatus info =
+        job.Status <- status newStatus
+        job.StatusInformation <- info
+        let update = TableOperation.Replace job
+        try
+            table.Execute update |> ignore
+            true
+        with
+        | :? StorageException as se when se.RequestInformation.HttpStatusCode = 404 -> // entity was deleted, i.e. the job is cancelled
+            Trace.WriteLine("Received 404 when tried to update status; the job has been cancelled")
+            false
+        | :? StorageException as se when se.RequestInformation.HttpStatusCode = 412 -> // update condition not satisfied, i.e. the job status has been already changed
+            Trace.WriteLine("Received 412 when tried to update status; the job has been completed already")
+            true
+            
 
-    let poisonMessage (entryId, appId) =
-        match tryGetJob (entryId, appId) with
-        | Some job -> 
-            job.RowKey <- Guid.NewGuid().ToString() 
-            upsertStatus job JobStatus.Failed (sprintf "The worker failed more than %d times during execution of the job %A" settings.Retries job.JobId)
-        | None -> () // nothing to do; the job is either cancelled or complete&cleared
+    let poisonMessage (jobId, appId) =
+        try
+            match tryGetJobEntry (appId, jobId) table with
+            | Some job -> 
+                updateStatus job JobStatus.Failed (sprintf "The job %O failed more than %d times" jobId settings.Retries) |> ignore
+                deleteBlob job.Result container |> ignore
+                deleteExecution (jobId, appId)
+            | None -> () // nothing to do; the job is either cancelled or complete&cleared
+        with
+        | exn ->
+            Trace.WriteLine(sprintf "The job %O failed more than %d times; failed to clean the job: %A" jobId settings.Retries exn)
 
-    let handleMessage (doJob: Guid * IO.Stream -> IO.Stream) (entryId, appId) =
-        match tryGetJob (entryId, appId) with
-        | Some job -> // job status is "Queued"
-            //sprintf "Received job ticket %O" jobId |> info
-            job.RowKey <- Guid.NewGuid().ToString() // new entry id
-
-            upsertStatus job JobStatus.Executing String.Empty
-
+    let handleMessage (doJob: Guid * IO.Stream -> IO.Stream) (jobId, appId) =
+        match tryGetJobEntry (appId, jobId) table with
+        | Some job when job.Status = "Queued" ->
+            upsertExecution (jobId, appId) // inform that we are handling the job            
+            Trace.WriteLine(sprintf "Job %O is started" jobId)
+            
             use jobReq = getJobRequest job.Request
-
             let mutable result = Choice2Of2(null)
             try
                 let r = ManageableAction.Do 
                             (fun () -> doJob (job.JobId, jobReq)) settings.JobTimeout // do this job with time limitation
-                            (fun () -> isCancellationRequested (entryId, appId)) settings.CancellationCheckInterval  // check if cancellation is requested
+                            (fun () -> isCancellationRequested (jobId, appId)) settings.CancellationCheckInterval // check if cancellation is requested
                 result <- Choice1Of2 r
-                //sprintf "Job %O request is complete" jobId |> info
+                Trace.WriteLine(sprintf "Job %O succeeded" jobId)
             with
             | exn -> // job failed
-                //sprintf "Job %O failed" jobId |> error
-                result <- Choice2Of2(exn)
-                
+                Trace.WriteLine(sprintf "Job %O failed: %A" jobId exn)
+                result <- Choice2Of2 exn
+                        
             match result with
             | Choice1Of2 outcome ->
                 outcome |> putResult job.Result
                 outcome.Dispose()
-                upsertStatus job JobStatus.Succeeded String.Empty
+                let notCancelled = updateStatus job JobStatus.Succeeded String.Empty
+                if not notCancelled then deleteBlob job.Result container |> ignore
             | Choice2Of2 exn ->
-                upsertStatus job JobStatus.Failed (sprintf "Job execution failed: %A" exn)
+                updateStatus job JobStatus.Failed (sprintf "Job execution failed: %A" exn) |> ignore
+        
+            deleteExecution (jobId, appId) 
+            
+        | Some _ // status is either Succeeded or Failed
         | None -> () // nothing to do; the job is either cancelled or complete&cleared
 
     let selectQueue () =
@@ -132,14 +152,6 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
         | exn -> 
             raise exn 
 
-    let clean (jobId, appId) =
-        match tryGetJob (jobId, appId) with
-        | Some job -> // removing the main job entry, where status is 'Queued'
-            TableOperation.Delete job |> table.Execute |> ignore 
-        | None -> // it was cancelled
-            Trace.WriteLine(sprintf "Job %A was cancelled; cleaning the table" jobId)
-            Jobs.deleteJob (appId, jobId) (table, container) |> ignore
-
     let tryNextMessage (doJob: Guid * IO.Stream -> IO.Stream) () =
         match selectQueue() with
         | Some queue ->            
@@ -147,23 +159,20 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
             | null -> false          
             | m when m.DequeueCount < settings.Retries ->
                 use lease = new AutoLeaseRenewal(queue, m, settings.VisibilityTimeout)
-                let ticket = parse m
-                ticket |> handleMessage doJob // fails only because of infrastructure problems
+                parse m |> handleMessage doJob // fails only because of infrastructure problems
                 deleteMessage queue m
-                clean ticket
                 true
             | m ->
                 Trace.WriteLine(sprintf "Message '%s' is poisoned" m.AsString)
-                let ticket = parse m
-                ticket |> poisonMessage // the Jobs table will contain new entry where status is Failed.
+                parse m |> poisonMessage // the Jobs table will contain new entry where status is Failed.
                 deleteMessage queue m
-                clean ticket
                 true
         | None -> false
 
     do
         container.CreateIfNotExists() |> ignore
         table.CreateIfNotExists() |> ignore
+        tableExec.CreateIfNotExists() |> ignore
         
 
     interface IWorker with
