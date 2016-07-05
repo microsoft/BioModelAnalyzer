@@ -1,6 +1,6 @@
 swagger: '2.0'
 
-# This is your document metadata
+# LTL Query Web API (long-running jobs)
 info:
   version: "0.0.1"
   title: FairShareScheduler
@@ -9,7 +9,6 @@ basePath: /api/lra
 
 host: localhost:8223
 
-# Describe your paths here
 paths:
   /{appId}:
     post:
