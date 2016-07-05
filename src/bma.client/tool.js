@@ -1090,47 +1090,28 @@ var BMA;
                         context.fill();
                         context.stroke();
                         var operands = operation.operands;
-                        switch (operands.length) {
-                            case 1:
-                                renderLayoutPart(operands[0], {
-                                    x: pos.x + halfWidth - operands[0].width / 2 - paddingX,
-                                    y: pos.y
-                                }, undefined);
-                                context.font = "10px Segoe-UI";
-                                context.fillStyle = "rgb(96,96,96)";
-                                context.fillText(operation.operator, pos.x - halfWidth + paddingX, pos.y);
-                                //context.fill();
-                                break;
-                            case 2:
-                                if (!layoutPart.isFunction) {
-                                    renderLayoutPart(operands[0], {
-                                        x: pos.x - halfWidth + operands[0].width / 2 + paddingX,
-                                        y: pos.y
-                                    }, undefined);
-                                    renderLayoutPart(operands[1], {
-                                        x: pos.x + halfWidth - operands[1].width / 2 - paddingX,
-                                        y: pos.y
-                                    }, undefined);
+                        var offset = pos.x - halfWidth + paddingX;
+                        if (layoutPart.isFunction || operands.length === 1) {
+                            context.font = "10px Segoe-UI";
+                            context.fillStyle = "rgb(96,96,96)";
+                            context.fillText(operation.operator, offset, pos.y);
+                            offset += layoutPart.operatorWidth + paddingX;
+                        }
+                        for (var i = 0; i < operands.length; i++) {
+                            offset += operands[i].width / 2;
+                            renderLayoutPart(operands[i], {
+                                x: offset,
+                                y: pos.y
+                            }, undefined);
+                            offset += operands[i].width / 2 + paddingX;
+                            if (!layoutPart.isFunction) {
+                                if (i < operands.length - 1) {
                                     context.font = "10px Segoe-UI";
                                     context.fillStyle = "rgb(96,96,96)";
-                                    context.fillText(operation.operator, pos.x - halfWidth + operands[0].width + 2 * paddingX, pos.y);
+                                    context.fillText(operation.operator, offset, pos.y);
                                 }
-                                else {
-                                    renderLayoutPart(operands[0], {
-                                        x: pos.x + halfWidth - operands[1].width - paddingX - operands[0].width / 2 - paddingX,
-                                        y: pos.y
-                                    }, undefined);
-                                    renderLayoutPart(operands[1], {
-                                        x: pos.x + halfWidth - operands[1].width / 2 - paddingX,
-                                        y: pos.y
-                                    }, undefined);
-                                    context.font = "10px Segoe-UI";
-                                    context.fillStyle = "rgb(96,96,96)";
-                                    context.fillText(operation.operator, pos.x - halfWidth + paddingX, pos.y);
-                                }
-                                break;
-                            default:
-                                break;
+                                offset += layoutPart.operatorWidth + paddingX;
+                            }
                         }
                     }
                     else {
@@ -1218,10 +1199,18 @@ var BMA;
                         width += (calcLW.width + paddingX);
                     }
                     else {
-                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i });
+                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i, isFlex: true });
                         width += (keyFrameSize + paddingX);
                     }
                     if (!operator.isFunction && i > 0) {
+                        width += operatorWidth + paddingX;
+                    }
+                }
+                //Adding empty slot for operators with flexible operands count
+                if (!isFinite(operator.OperandsCount) && operands[operands.length - 1] !== undefined) {
+                    layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: operands.length });
+                    width += (keyFrameSize + paddingX);
+                    if (!operator.isFunction) {
                         width += operatorWidth + paddingX;
                     }
                 }
@@ -3890,18 +3879,19 @@ var BMA;
 (function (BMA) {
     var LTLOperations;
     (function (LTLOperations) {
-        var FlexOperand = (function () {
-            function FlexOperand() {
-            }
-            FlexOperand.prototype.GetFormula = function () {
+        /*
+        export class FlexOperand implements IOperand {
+            constructor() { }
+
+            public GetFormula() {
                 return "";
-            };
-            FlexOperand.prototype.Clone = function () {
+            }
+
+            public Clone() {
                 return new FlexOperand();
-            };
-            return FlexOperand;
-        })();
-        LTLOperations.FlexOperand = FlexOperand;
+            }
+        }
+        */
         var NameOperand = (function () {
             function NameOperand(name, id) {
                 if (id === void 0) { id = undefined; }
@@ -4580,19 +4570,17 @@ var BMA;
                 layout.position = position;
                 if (layout.operands !== undefined) {
                     var w = layout.operatorWidth;
-                    switch (layout.operands.length) {
-                        case 1:
-                            var x = position.x + layout.width / 2 - layout.operands[0].width / 2 - padding.x;
-                            this.SetPositionOffsets(layout.operands[0], { x: x, y: position.y });
-                            break;
-                        case 2:
-                            var x1 = position.x + layout.width / 2 - layout.operands[1].width / 2 - padding.x;
-                            this.SetPositionOffsets(layout.operands[1], { x: x1, y: position.y });
-                            var x2 = layout.isFunction ? position.x + layout.width / 2 - layout.operands[1].width - padding.x - layout.operands[0].width / 2 - padding.x : position.x - layout.width / 2 + layout.operands[0].width / 2 + padding.x;
-                            this.SetPositionOffsets(layout.operands[0], { x: x2, y: position.y });
-                            break;
-                        default:
-                            break;
+                    var offset = position.x - layout.width / 2 + padding.x;
+                    if (layout.isFunction || layout.operands.length === 1) {
+                        offset += w + padding.x;
+                    }
+                    for (var i = 0; i < layout.operands.length; i++) {
+                        offset += layout.operands[i].width / 2;
+                        this.SetPositionOffsets(layout.operands[i], { x: offset, y: position.y });
+                        offset += layout.operands[i].width / 2 + padding.x;
+                        if (!layout.isFunction) {
+                            offset += w + padding.x;
+                        }
                     }
                 }
             };
@@ -4667,49 +4655,29 @@ var BMA;
                         });
                         layoutPart.svgref = opSVG;
                         var operands = operation.operands;
-                        if (operands.length == 1) {
-                            svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
+                        var offset = position.x - halfWidth + paddingX;
+                        if (layoutPart.isFunction || operands.length === 1) {
+                            svg.text(this.renderGroup, offset, position.y + 3, operation.operator, {
                                 "font-size": 10,
                                 "fill": "rgb(96,96,96)"
                             });
-                            this.RenderLayoutPart(svg, {
-                                x: position.x + halfWidth - operands[0].width / 2 - paddingX,
-                                y: position.y
-                            }, operands[0], undefined);
+                            offset += layoutPart.operatorWidth + paddingX;
                         }
-                        else {
+                        for (var i = 0; i < operands.length; i++) {
+                            offset += operands[i].width / 2;
+                            this.RenderLayoutPart(svg, {
+                                x: offset,
+                                y: position.y
+                            }, operands[i], undefined);
+                            offset += operands[i].width / 2 + paddingX;
                             if (!layoutPart.isFunction) {
-                                var wOffset = operands[0].width + paddingX;
-                                this.RenderLayoutPart(svg, {
-                                    x: position.x - halfWidth + operands[0].width / 2 + paddingX,
-                                    y: position.y
-                                }, operands[0], undefined);
-                                for (var i = 1; i < operands.length; i++) {
-                                    svg.text(this.renderGroup, position.x - halfWidth + paddingX + wOffset, position.y + 3, operation.operator, {
+                                if (i < operands.length - 1) {
+                                    svg.text(this.renderGroup, offset, position.y + 3, operation.operator, {
                                         "font-size": 10,
                                         "fill": "rgb(96,96,96)"
                                     });
-                                    wOffset += layoutPart.operatorWidth + paddingX;
-                                    this.RenderLayoutPart(svg, {
-                                        x: position.x - halfWidth + wOffset + paddingX + operands[i].width / 2,
-                                        y: position.y
-                                    }, operands[i], undefined);
-                                    wOffset += paddingX + operands[i].width;
                                 }
-                            }
-                            else {
-                                svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
-                                    "font-size": 10,
-                                    "fill": "rgb(96,96,96)"
-                                });
-                                var wOffset = layoutPart.operatorWidth + paddingX;
-                                for (var i = 0; i < operands.length; i++) {
-                                    this.RenderLayoutPart(svg, {
-                                        x: position.x - halfWidth + wOffset + paddingX + operands[i].width / 2,
-                                        y: position.y
-                                    }, operands[i], undefined);
-                                    wOffset += paddingX + operands[i].width;
-                                }
+                                offset += layoutPart.operatorWidth + paddingX;
                             }
                         }
                     }
@@ -4804,69 +4772,35 @@ var BMA;
                 var operands = layoutPart.operands;
                 if (operands === undefined)
                     return layoutPart;
-                switch (operands.length) {
-                    case 1:
-                        if (operands[0].isEmpty) {
-                            if (accountEmpty) {
-                                var pos = {
-                                    x: position.x + halfWidth - operands[0].width / 2 - paddingX,
-                                    y: position.y
-                                };
-                                if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
-                                    return operands[0];
-                            }
-                            return layoutPart;
-                        }
+                var offset = position.x - halfWidth + paddingX;
+                if (layoutPart.isFunction || operands.length === 1) {
+                    offset += layoutPart.operatorWidth + paddingX;
+                }
+                for (var i = 0; i < layoutPart.operands.length; i++) {
+                    offset += layoutPart.operands[i].width / 2;
+                    if (!operands[i].isEmpty) {
                         var highlighted = this.GetIntersectedChild(x, y, {
-                            x: position.x + halfWidth - operands[0].width / 2 - paddingX,
+                            x: offset,
                             y: position.y
-                        }, operands[0], accountEmpty);
-                        return highlighted !== undefined ? highlighted : layoutPart;
-                        break;
-                    case 2:
-                        if (!operands[0].isEmpty) {
-                            var xPos = layoutPart.isFunction ? position.x + halfWidth - operands[0].width / 2 - paddingX - operands[1].width - paddingX : position.x - halfWidth + operands[0].width / 2 + paddingX;
-                            var highlighted1 = this.GetIntersectedChild(x, y, {
-                                x: xPos,
+                        }, operands[i], accountEmpty);
+                        if (highlighted !== undefined) {
+                            return highlighted;
+                        }
+                    }
+                    else {
+                        if (accountEmpty) {
+                            var pos1 = {
+                                x: offset,
                                 y: position.y
-                            }, operands[0], accountEmpty);
-                            if (highlighted1 !== undefined) {
-                                return highlighted1;
-                            }
+                            };
+                            if (Math.sqrt(Math.pow(pos1.x - x, 2) + Math.pow(pos1.y - y, 2)) <= this.keyFrameSize / 2)
+                                return operands[i];
                         }
-                        else {
-                            if (accountEmpty) {
-                                var pos = {
-                                    x: layoutPart.isFunction ? position.x + halfWidth - operands[0].width / 2 - paddingX - operands[1].width - paddingX : position.x - halfWidth + operands[0].width / 2 + paddingX,
-                                    y: position.y
-                                };
-                                if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
-                                    return operands[0];
-                            }
-                        }
-                        if (!operands[1].isEmpty) {
-                            var highlighted2 = this.GetIntersectedChild(x, y, {
-                                x: position.x + halfWidth - operands[1].width / 2 - paddingX,
-                                y: position.y
-                            }, operands[1], accountEmpty);
-                            if (highlighted2 !== undefined) {
-                                return highlighted2;
-                            }
-                        }
-                        else {
-                            if (accountEmpty) {
-                                var pos = {
-                                    x: position.x + halfWidth - operands[1].width / 2 - paddingX,
-                                    y: position.y
-                                };
-                                if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
-                                    return operands[1];
-                            }
-                        }
-                        return layoutPart;
-                        break;
-                    default:
-                        throw "Highlighting of operators with " + operands.length + " operands is not supported";
+                    }
+                    offset += layoutPart.operands[i].width / 2 + paddingX;
+                    if (!layoutPart.isFunction) {
+                        offset += layoutPart.operatorWidth + paddingX;
+                    }
                 }
                 return layoutPart;
             };
@@ -4923,7 +4857,7 @@ var BMA;
             };
             OperationLayout.prototype.HiglightEmptySlotsInternal = function (color, layoutPart) {
                 if (layoutPart !== undefined) {
-                    if (layoutPart.isEmpty) {
+                    if (layoutPart.isEmpty && !layoutPart.isFlex) {
                         this.svg.change(layoutPart.svgref, {
                             fill: color
                         });
@@ -5272,7 +5206,7 @@ var BMA;
             SimulationExpandedDriver.prototype.SetOnCreateStateRequested = function (callback) {
                 if (this.viewer !== undefined) {
                     this.viewer.simulationexpanded({
-                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                         createStateRequested: callback
                     });
                 }
@@ -6271,7 +6205,7 @@ var BMA;
                     }
                     if (this.createStateRequested !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer({
-                            columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                            columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                             createStateRequested: that.createStateRequested
                         });
                         this.createStateRequested = undefined;
@@ -6502,7 +6436,7 @@ var BMA;
             LTLResultsViewer.prototype.SetOnCreateStateRequested = function (callback) {
                 if (this.ltlResultsViewer !== undefined) {
                     this.ltlResultsViewer.ltlresultsviewer({
-                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                         createStateRequested: callback
                     });
                 }
@@ -8295,7 +8229,7 @@ var BMA;
                 };
                 container.coloredtableviewer({
                     onContextMenuItemSelected: createStateRequested,
-                    columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                    columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                     header: header,
                     numericData: table,
                     colorData: color
@@ -10812,6 +10746,8 @@ var BMA;
         },
         ClearData: function () {
             this.data.empty();
+            var rands = this.init.find("tr").not(":first-child").children("td:nth-child(2)");
+            rands.parent().removeClass("red");
         },
         AddData: function (data) {
             var that = this;
@@ -11710,7 +11646,7 @@ var BMA;
                     that.options.createStateRequested(args);
             };
             this.big_table.progressiontable({
-                columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                 onContextMenuItemSelected: onContextMenuItemSelected
             });
             randomise.click(function () {
@@ -12609,13 +12545,13 @@ jQuery.fn.extend({
             operators.width(350);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
             var operatorsArr = [
-                { Name: "+", OperandsCount: 4, isFunction: false },
-                { Name: "-", OperandsCount: 2, isFunction: false },
-                { Name: "*", OperandsCount: 3, isFunction: false },
+                { Name: "+", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
+                { Name: "-", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
+                { Name: "*", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
                 { Name: "/", OperandsCount: 2, isFunction: false },
-                { Name: "AVG", OperandsCount: 6, isFunction: true },
-                { Name: "MIN", OperandsCount: 2, isFunction: true },
-                { Name: "MAX", OperandsCount: 2, isFunction: true },
+                { Name: "AVG", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
+                { Name: "MIN", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
+                { Name: "MAX", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
                 { Name: "CEIL", OperandsCount: 1, isFunction: false },
                 { Name: "FLOOR", OperandsCount: 1, isFunction: false },
             ];
@@ -12705,33 +12641,120 @@ jQuery.fn.extend({
             });
             svgDiv.droppable({
                 drop: function (arg, ui) {
-                    var op = new BMA.LTLOperations.Operation();
-                    var operator = undefined;
-                    for (var i = 0; i < operatorsArr.length; i++) {
-                        if (operatorsArr[i].Name === ui.draggable.attr("data-operator")) {
-                            op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].OperandsCount, undefined, operatorsArr[i].isFunction);
-                            break;
+                    if (ui.draggable.attr("data-operator") !== undefined) {
+                        var op = new BMA.LTLOperations.Operation();
+                        var operator = undefined;
+                        for (var i = 0; i < operatorsArr.length; i++) {
+                            if (operatorsArr[i].Name === ui.draggable.attr("data-operator")) {
+                                op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].OperandsCount, undefined, operatorsArr[i].isFunction);
+                                break;
+                            }
                         }
-                    }
-                    op.Operands = [];
-                    for (var i = 0; i < op.Operator.OperandsCount; i++) {
-                        op.Operands.push(undefined);
-                    }
-                    var opL = that.operationLayout;
-                    if (opL === undefined) {
-                        that.options.operation = op;
-                        that._refresh();
-                    }
-                    else {
-                        var parentOffset = $(this).offset();
-                        var relX = arg.pageX - parentOffset.left;
-                        var relY = arg.pageY - parentOffset.top;
-                        var svgCoords = that._getSVGCoords(relX, relY);
-                        var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
-                        if (emptyCell !== undefined) {
-                            emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                        op.Operands = [];
+                        if (op.Operator.OperandsCount > 1) {
+                            op.Operands.push(undefined);
+                            op.Operands.push(undefined);
+                        }
+                        else {
+                            op.Operands.push(undefined);
+                        }
+                        var opL = that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = op;
                             that._refresh();
                         }
+                        else {
+                            var parentOffset = $(this).offset();
+                            var relX = arg.pageX - parentOffset.left;
+                            var relY = arg.pageY - parentOffset.top;
+                            var svgCoords = that._getSVGCoords(relX, relY);
+                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                                that._refresh();
+                            }
+                        }
+                    }
+                }
+            });
+            var draggableWidth = svgDiv.width();
+            var draggableHeight = svgDiv.height();
+            var draggableDiv = $("<div></div>").width(draggableWidth).height(draggableHeight);
+            var canvas = $("<canvas></canvas>").attr("width", draggableWidth).attr("height", draggableHeight).appendTo(draggableDiv)[0];
+            var opToDrag = undefined;
+            svgDiv.draggable({
+                helper: function () {
+                    return draggableDiv;
+                },
+                cursorAt: { left: 0, top: 0 },
+                //opacity: 0.4,
+                cursor: "pointer",
+                start: function (arg, ui) {
+                    canvas.height = canvas.height;
+                    var opL = that.operationLayout;
+                    var parentOffset = $(this).offset();
+                    var relX = arg.pageX - parentOffset.left;
+                    var relY = arg.pageY - parentOffset.top;
+                    var svgCoords = that._getSVGCoords(relX, relY);
+                    opToDrag = opL.UnpinOperation(svgCoords.x, svgCoords.y);
+                    if (opToDrag !== undefined) {
+                        if (opToDrag.isRoot) {
+                            that.options.operation = undefined;
+                            that.operationLayout = undefined;
+                        }
+                        var keyFrameSize = 26;
+                        var padding = { x: 5, y: 10 };
+                        var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, opToDrag.operation, padding, keyFrameSize);
+                        var scale = { x: 1, y: 1 };
+                        var offset = 0;
+                        var w = opSize.width + offset;
+                        if (w > draggableWidth) {
+                            scale = {
+                                x: draggableWidth / w,
+                                y: draggableWidth / w
+                            };
+                        }
+                        canvas.width = scale.x * opSize.width + 2 * padding.x;
+                        canvas.height = scale.y * opSize.height + 2 * padding.y;
+                        var opPosition = { x: scale.x * opSize.width / 2 + padding.x, y: padding.y + Math.floor(scale.y * opSize.height / 2) };
+                        BMA.LTLOperations.RenderOperation(canvas, opToDrag.operation, opPosition, scale, {
+                            padding: padding,
+                            keyFrameSize: keyFrameSize,
+                            stroke: "black",
+                            fill: "white",
+                            isRoot: true,
+                            strokeWidth: 1,
+                            borderThickness: 1
+                        });
+                        that._refresh();
+                    }
+                },
+                drag: function (arg, ui) {
+                    return opToDrag !== undefined;
+                },
+                stop: function (arg, ui) {
+                    if (opToDrag !== undefined) {
+                        var opL = that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = opToDrag.operation;
+                            that._refresh();
+                        }
+                        else {
+                            var parentOffset = $(this).offset();
+                            var relX = arg.pageX - parentOffset.left;
+                            var relY = arg.pageY - parentOffset.top;
+                            var svgCoords = that._getSVGCoords(relX, relY);
+                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = opToDrag.operation;
+                                that._refresh();
+                            }
+                            else {
+                                opToDrag.parentoperation.Operands[opToDrag.parentoperationindex] = opToDrag.operation;
+                            }
+                        }
+                        opToDrag = undefined;
+                        that._refresh();
                     }
                 }
             });
@@ -17364,12 +17387,14 @@ var BMA;
                         for (var i = 0; i < op.length - 1 /*because last can be FlexSlot*/; i++) {
                             f += ', ' + op[i].GetFormula();
                         }
-                        if (op[op.length - 1] instanceof LTLOperations.FlexOperand) {
+                        /*
+                        if (op[op.length - 1] instanceof FlexOperand) {
                             f += ")";
+                        } else {
+                            f += +  ", " + op[op.length - 1].GetFormula() + ")";
                         }
-                        else {
-                            f += +", " + op[op.length - 1].GetFormula() + ")";
-                        }
+                        */
+                        f += +", " + op[op.length - 1].GetFormula() + ")";
                         return f;
                     };
                 };
@@ -17379,22 +17404,24 @@ var BMA;
                         for (var i = 1; i < op.length - 1 /*because last can be FlexSlot*/; i++) {
                             f += +" " + funcname + " " + op[i].GetFormula();
                         }
-                        if (op[op.length - 1] instanceof LTLOperations.FlexOperand) {
+                        /*
+                        if (op[op.length - 1] instanceof FlexOperand) {
                             f += ")";
+                        } else {
+                            f += + " " + funcname + " " + op[op.length - 1].GetFormula() + ")";
                         }
-                        else {
-                            f += +" " + funcname + " " + op[op.length - 1].GetFormula() + ")";
-                        }
+                        */
+                        f += +" " + funcname + " " + op[op.length - 1].GetFormula() + ")";
                         return f;
                     };
                 };
                 this.operators.push(new LTLOperations.Operator('AND', 2, formulacreator('And')));
                 this.operators.push(new LTLOperations.Operator('OR', 2, formulacreator('Or')));
                 this.operators.push(new LTLOperations.Operator('IMPLIES', 2, formulacreator('Implies')));
-                this.operators.push(new LTLOperations.Operator('NOT', 1, formulacreator('Not')));
-                this.operators.push(new LTLOperations.Operator('NEXT', 1, formulacreator('Next')));
-                this.operators.push(new LTLOperations.Operator('ALWAYS', 1, formulacreator('Always')));
-                this.operators.push(new LTLOperations.Operator('EVENTUALLY', 1, formulacreator('Eventually')));
+                this.operators.push(new LTLOperations.Operator('NOT', 1, formulacreator('Not'), true));
+                this.operators.push(new LTLOperations.Operator('NEXT', 1, formulacreator('Next'), true));
+                this.operators.push(new LTLOperations.Operator('ALWAYS', 1, formulacreator('Always'), true));
+                this.operators.push(new LTLOperations.Operator('EVENTUALLY', 1, formulacreator('Eventually'), true));
                 this.operators.push(new LTLOperations.Operator('UPTO', 2, formulacreator('Upto')));
                 this.operators.push(new LTLOperations.Operator('WEAKUNTIL', 2, formulacreator('Weakuntil')));
                 this.operators.push(new LTLOperations.Operator('UNTIL', 2, formulacreator('Until')));
@@ -17402,9 +17429,9 @@ var BMA;
                 /*
                 //Target Function Editor operators
 
-                this.operators.push(new Operator('AVG', 2, functionformulacreator('avg')));
-                this.operators.push(new Operator('MIN', 2, functionformulacreator('min')));
-                this.operators.push(new Operator('MAX', 2, functionformulacreator('max')));
+                this.operators.push(new Operator('AVG', Number.POSITIVE_INFINITY, functionformulacreator('avg')));
+                this.operators.push(new Operator('MIN', Number.POSITIVE_INFINITY, functionformulacreator('min')));
+                this.operators.push(new Operator('MAX', Number.POSITIVE_INFINITY, functionformulacreator('max')));
 
                 this.operators.push(new Operator('CEIL', 1, formulacreator('ceil')));
                 this.operators.push(new Operator('FLOOR', 1, formulacreator('floor')));

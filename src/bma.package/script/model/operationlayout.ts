@@ -285,7 +285,7 @@
                 }
             }
 
-            
+
 
             private SetPositionOffsets(layout, position) {
                 var padding = this.padding;
@@ -294,21 +294,19 @@
                 if (layout.operands !== undefined) {
                     var w = layout.operatorWidth;
 
-                    switch (layout.operands.length) {
-                        case 1:
-                            var x = position.x + layout.width / 2 - layout.operands[0].width / 2 - padding.x;
-                            this.SetPositionOffsets(layout.operands[0], { x: x, y: position.y });
-                            break;
-                        case 2:
-                            var x1 = position.x + layout.width / 2 - layout.operands[1].width / 2 - padding.x;
-                            this.SetPositionOffsets(layout.operands[1], { x: x1, y: position.y });
+                    var offset = position.x - layout.width / 2 + padding.x;
+                    if (layout.isFunction || layout.operands.length === 1) {
+                        offset += w + padding.x;
+                    }
 
-                            var x2 = layout.isFunction ? position.x + layout.width / 2 - layout.operands[1].width - padding.x - layout.operands[0].width / 2 - padding.x : position.x - layout.width / 2 + layout.operands[0].width / 2 + padding.x;
-                            this.SetPositionOffsets(layout.operands[0], { x: x2, y: position.y });
-                            break;
-                        default:
-                            break;
-                        //throw "Unsupported number of operands";
+                    for (var i = 0; i < layout.operands.length; i++) {
+                        offset += layout.operands[i].width / 2;
+                        this.SetPositionOffsets(layout.operands[i], { x: offset, y: position.y });
+                        offset += layout.operands[i].width / 2 + padding.x;
+
+                        if (!layout.isFunction) {
+                            offset += w + padding.x;
+                        }
                     }
                 }
             }
@@ -387,70 +385,41 @@
                             strokeWidth: strokeWidth,
                             fill: "transparent"
                         });
-                        
+
 
                         layoutPart.svgref = opSVG;
 
                         var operands = operation.operands;
-                        if (operands.length == 1) {
 
-                            svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
+                        var offset = position.x - halfWidth + paddingX;
+                        if (layoutPart.isFunction || operands.length === 1) {
+                            svg.text(this.renderGroup, offset, position.y + 3, operation.operator, {
                                 "font-size": 10,
                                 "fill": "rgb(96,96,96)"
                             });
+                            offset += layoutPart.operatorWidth + paddingX;
+                        }
+                        for (var i = 0; i < operands.length; i++) {
+                            offset += operands[i].width / 2;
 
                             this.RenderLayoutPart(svg, {
-                                x: position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
+                                x: offset,
                                 y: position.y
                             },
-                                operands[0], undefined);
+                                operands[i], undefined);
 
-                        } else {
+                            offset += operands[i].width / 2 + paddingX;
                             if (!layoutPart.isFunction) {
-                                var wOffset: any = (<any>operands[0]).width + paddingX;
-                                this.RenderLayoutPart(svg, {
-                                    x: position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
-                                    y: position.y
-                                },
-                                    operands[0], undefined);
-
-                                for (var i = 1; i < operands.length; i++) {
-                                    svg.text(this.renderGroup, position.x - halfWidth + paddingX + wOffset, position.y + 3, operation.operator, {
+                                if (i < operands.length - 1) {
+                                    svg.text(this.renderGroup, offset, position.y + 3, operation.operator, {
                                         "font-size": 10,
                                         "fill": "rgb(96,96,96)"
                                     });
-
-                                    wOffset += layoutPart.operatorWidth + paddingX;
-
-                                    this.RenderLayoutPart(svg, {
-                                        x: position.x - halfWidth + wOffset + paddingX + (<any>operands[i]).width / 2,
-                                        y: position.y
-                                    },
-                                        operands[i], undefined);
-
-                                    wOffset += paddingX + (<any>operands[i]).width;
                                 }
-
-                            } else {
-
-                                svg.text(this.renderGroup, position.x - halfWidth + paddingX, position.y + 3, operation.operator, {
-                                    "font-size": 10,
-                                    "fill": "rgb(96,96,96)"
-                                });
-
-                                var wOffset:any = layoutPart.operatorWidth + paddingX;
-                                for (var i = 0; i < operands.length; i++) {
-                                    this.RenderLayoutPart(svg, {
-                                        x: position.x - halfWidth + wOffset + paddingX + (<any>operands[i]).width / 2,
-                                        y: position.y
-                                    },
-                                        operands[i], undefined);
-
-                                    wOffset += paddingX + (<any>operands[i]).width;
-                                }
-
+                                offset += layoutPart.operatorWidth + paddingX;
                             }
                         }
+
                     } else {
                         var stateGroup = svg.group(this.renderGroup, {
                             transform: "translate(" + position.x + ", " + position.y + ")"
@@ -571,82 +540,39 @@
                 if (operands === undefined)
                     return layoutPart;
 
-                switch (operands.length) {
-                    case 1:
+                var offset = position.x - halfWidth + paddingX;
 
-                        if (operands[0].isEmpty) {
-                            if (accountEmpty) {
-                                var pos = {
-                                    x: position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
-                                    y: position.y
-                                };
+                if (layoutPart.isFunction || operands.length === 1) {
+                    offset += layoutPart.operatorWidth + paddingX;
+                }
 
-                                if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
-                                    return operands[0];
-                            }
+                for (var i = 0; i < layoutPart.operands.length; i++) {
+                    offset += layoutPart.operands[i].width / 2;
 
-                            return layoutPart;
-                        }
-
+                    if (!operands[i].isEmpty) {
                         var highlighted = this.GetIntersectedChild(x, y, {
-                            x: position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
+                            x: offset,
                             y: position.y
-                        }, operands[0], accountEmpty);
-
-                        return highlighted !== undefined ? highlighted : layoutPart;
-
-                        break;
-                    case 2:
-
-                        if (!operands[0].isEmpty) {
-                            var xPos = layoutPart.isFunction ? position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX - (<any>operands[1]).width - paddingX : position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX
-                            var highlighted1 = this.GetIntersectedChild(x, y, {
-                                x: xPos,
-                                y: position.y
-                            }, operands[0], accountEmpty);
-
-                            if (highlighted1 !== undefined) {
-                                return highlighted1;
-                            }
-                        } else {
-                            if (accountEmpty) {
-                                var pos = {
-                                    x: layoutPart.isFunction ? position.x + halfWidth - (<any>operands[0]).width / 2 - paddingX - (<any>operands[1]).width - paddingX : position.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
-                                    y: position.y
-                                };
-
-                                if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
-                                    return operands[0];
-                            }
+                        }, operands[i], accountEmpty);
+                        if (highlighted !== undefined) {
+                            return highlighted;
                         }
-
-                        if (!operands[1].isEmpty) {
-                            var highlighted2 = this.GetIntersectedChild(x, y, {
-                                x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
+                    } else {
+                        if (accountEmpty) {
+                            var pos1 = {
+                                x: offset,
                                 y: position.y
-                            }, operands[1], accountEmpty);
+                            };
 
-                            if (highlighted2 !== undefined) {
-                                return highlighted2;
-                            }
-                        } else {
-                            if (accountEmpty) {
-                                var pos = {
-                                    x: position.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
-                                    y: position.y
-                                };
-
-                                if (Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <= this.keyFrameSize / 2)
-                                    return operands[1];
-                            }
+                            if (Math.sqrt(Math.pow(pos1.x - x, 2) + Math.pow(pos1.y - y, 2)) <= this.keyFrameSize / 2)
+                                return operands[i];
                         }
+                    }
 
-                        return layoutPart;
-
-                        break;
-                    default:
-                        throw "Highlighting of operators with " + operands.length + " operands is not supported";
-
+                    offset += layoutPart.operands[i].width / 2 + paddingX;
+                    if (!layoutPart.isFunction) {
+                        offset += layoutPart.operatorWidth + paddingX;
+                    }
                 }
 
                 return layoutPart;
@@ -712,7 +638,7 @@
 
             private HiglightEmptySlotsInternal(color: string, layoutPart: any) {
                 if (layoutPart !== undefined) {
-                    if (layoutPart.isEmpty) {
+                    if (layoutPart.isEmpty && !layoutPart.isFlex) {
                         this.svg.change(layoutPart.svgref, {
                             fill: color
                         });

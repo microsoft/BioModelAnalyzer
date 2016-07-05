@@ -75,57 +75,32 @@
                         context.stroke();
 
                         var operands = operation.operands;
-                        switch (operands.length) {
-                            case 1:
 
-                                renderLayoutPart(operands[0], {
-                                    x: pos.x + halfWidth - (<any>operands[0]).width / 2 - paddingX,
-                                    y: pos.y
-                                }, undefined);
-
-                                context.font = "10px Segoe-UI";
-                                context.fillStyle = "rgb(96,96,96)";
-                                context.fillText(operation.operator, pos.x - halfWidth + paddingX, pos.y);
-                                //context.fill();
-
-                                break;
-                            case 2:
-
-                                if (!layoutPart.isFunction) {
-                                    renderLayoutPart(operands[0], {
-                                        x: pos.x - halfWidth + (<any>operands[0]).width / 2 + paddingX,
-                                        y: pos.y
-                                    }, undefined);
-
-                                    renderLayoutPart(operands[1], {
-                                        x: pos.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
-                                        y: pos.y
-                                    }, undefined);
-
-                                    context.font = "10px Segoe-UI";
-                                    context.fillStyle = "rgb(96,96,96)";
-                                    context.fillText(operation.operator, pos.x - halfWidth + (<any>operands[0]).width + 2 * paddingX, pos.y);
-                                } else {
-                                    renderLayoutPart(operands[0], {
-                                        x: pos.x + halfWidth - (<any>operands[1]).width - paddingX - (<any>operands[0]).width / 2 - paddingX,
-                                        y: pos.y
-                                    }, undefined);
-
-                                    renderLayoutPart(operands[1], {
-                                        x: pos.x + halfWidth - (<any>operands[1]).width / 2 - paddingX,
-                                        y: pos.y
-                                    }, undefined);
-
-                                    context.font = "10px Segoe-UI";
-                                    context.fillStyle = "rgb(96,96,96)";
-                                    context.fillText(operation.operator, pos.x - halfWidth + paddingX, pos.y);
-                                }
-
-                                break;
-                            default:
-                                break;
-                            //throw "Rendering of operators with " + operands.length + " operands is not supported";
+                        var offset = pos.x - halfWidth + paddingX;
+                        if (layoutPart.isFunction || operands.length === 1) {
+                            context.font = "10px Segoe-UI";
+                            context.fillStyle = "rgb(96,96,96)";
+                            context.fillText(operation.operator, offset, pos.y);
+                            offset += layoutPart.operatorWidth + paddingX;
                         }
+                        for (var i = 0; i < operands.length; i++) {
+                            offset += operands[i].width / 2;
+                            renderLayoutPart(operands[i], {
+                                x: offset,
+                                y: pos.y
+                            }, undefined);
+
+                            offset += operands[i].width / 2 + paddingX;
+                            if (!layoutPart.isFunction) {
+                                if (i < operands.length - 1) {
+                                    context.font = "10px Segoe-UI";
+                                    context.fillStyle = "rgb(96,96,96)";
+                                    context.fillText(operation.operator, offset, pos.y);
+                                }
+                                offset += layoutPart.operatorWidth + paddingX;
+                            }
+                        }
+
                     } else {
                         var hks = operationAppearance.keyFrameSize / 2;
 
@@ -141,7 +116,7 @@
                             var name = layoutPart.name;
                             var fs = 16;
                             context.font = "16px Segoe-UI";
-                            
+
                             var width = context.measureText(name).width;
                             if (width > hks) {
                                 fs = fs * hks / width;
@@ -153,7 +128,7 @@
                         } else {
                             var img = new Image();
                             img.src = GetKeyframeImagePath(layoutPart.type, "..");
-                            
+
                             img.onload = () => {
                                 context.save();
                                 context.transform(scale.x, 0, 0, scale.y, position.x, position.y);
@@ -206,12 +181,13 @@
                 var operands = (<BMA.LTLOperations.Operation>op).Operands;
                 var layer = 0;
                 var operatorWidth = getOperatorWidth(operator.Name, 10);
-                var width = paddingX; 
+                var width = paddingX;
                 if (operator.isFunction || operands.length === 1) {
                     width += operatorWidth + paddingX;
                 }
 
                 layout.operatorWidth = operatorWidth;
+
 
                 for (var i = 0; i < operands.length; i++) {
                     var operand = operands[i];
@@ -223,14 +199,21 @@
                         layer = Math.max(layer, calcLW.layer);
                         layout.operands.push(calcLW);
                         width += (calcLW.width + paddingX);
-                        
                     } else {
-                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i });
+                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i, isFlex: true });
                         width += (keyFrameSize + paddingX);
-
                     }
 
                     if (!operator.isFunction && i > 0) {
+                        width += operatorWidth + paddingX;
+                    }
+                }
+
+                //Adding empty slot for operators with flexible operands count
+                if (!isFinite(operator.OperandsCount) && operands[operands.length - 1] !== undefined) {
+                    layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: operands.length });
+                    width += (keyFrameSize + paddingX);
+                    if (!operator.isFunction) {
                         width += operatorWidth + paddingX;
                     }
                 }

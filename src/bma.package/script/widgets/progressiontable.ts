@@ -138,6 +138,8 @@
 
         ClearData: function () {
             this.data.empty();
+            var rands = this.init.find("tr").not(":first-child").children("td:nth-child(2)");
+            rands.parent().removeClass("red");
         },
 
         AddData: function (data) {

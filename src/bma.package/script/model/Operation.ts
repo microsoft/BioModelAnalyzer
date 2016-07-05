@@ -10,6 +10,7 @@
             Clone(): IOperand;
         }
 
+        /*
         export class FlexOperand implements IOperand {
             constructor() { }
 
@@ -21,6 +22,7 @@
                 return new FlexOperand();
             }
         }
+        */
 
         export class NameOperand implements IOperand {
             private name: string;
