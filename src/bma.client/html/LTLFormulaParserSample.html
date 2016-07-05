@@ -19,13 +19,17 @@
 
     <script type="text/javascript">
 
+        function printStates(states) {
+            for (var i = 0; i < states.length; i++)
+                $("<p>" + states[i].Name + ": " + states[i].GetFormula() + "</p>").appendTo($("#textoutput"));
+        }
+
         function ConvertFormulaToOperation(formula, states, model) {
             var parsedFormula;
             try {
                 var parsedFormula = BMA.parser.parse(formula);
                 var result = ConvertToOperation(parsedFormula, states, model);
-                for (var i = 0; i < result.states.length; i++)
-                    $("<p>" + result.states[i].Name + ": " + result.states[i].GetFormula() + "</p>").appendTo($("#textoutput"));
+                printStates(result.states);
                 return result.operation;
             } catch (ex) {
                 throw ex;
@@ -189,6 +193,16 @@
 
             window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
 
+            var states = [
+                           new BMA.LTLOperations.Keyframe("A", "", []),
+                           new BMA.LTLOperations.Keyframe("B", "", []),
+                           new BMA.LTLOperations.Keyframe("C", "", []),
+                           new BMA.LTLOperations.Keyframe("D", "",
+                               [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(2))]),
+            ];
+
+            printStates(states);
+
             $("#inp").change(function () {
                 try {
                     $("#textoutput").text("");
@@ -199,14 +213,7 @@
                         new BMA.Model.Variable(4, 0, "Default", "d", 0, 1, "")
                     ];
                     var model = new BMA.Model.BioModel("model1", variables, []);
-                    var parsed = ConvertFormulaToOperation($("#inp").val(),
-                        [
-                            new BMA.LTLOperations.Keyframe("A", "", []),
-                            new BMA.LTLOperations.Keyframe("B", "", []),
-                            new BMA.LTLOperations.Keyframe("C", "", []),
-                            new BMA.LTLOperations.Keyframe("D", "",
-                                [new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(2))]),
-                        ], model);
+                    var parsed = ConvertFormulaToOperation($("#inp").val(), states, model);
 
                     RenderToSvg(svgDiv, jqSvg, parsed);
                     //$("#textoutput").text(JSON.stringify(parsed));
