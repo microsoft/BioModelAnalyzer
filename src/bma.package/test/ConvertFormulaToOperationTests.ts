@@ -8,7 +8,7 @@
         new BMA.Model.Variable(4, 0, "Default", "d", 0, 1, "")
     ];
     var model = new BMA.Model.BioModel("model1", variables, []);
-
+    
     var A = new BMA.LTLOperations.Keyframe("A", "", []);
     var B = new BMA.LTLOperations.Keyframe("B", "", []);
     var C = new BMA.LTLOperations.Keyframe("C", "", []);
@@ -18,8 +18,9 @@
 
     var ConvertFormulaToOperation = function (formula, states) {
         var parsedFormula = BMA.parser.parse(formula);
-        var operation = BMA.ModelHelper.ConvertToOperation(parsedFormula, states, model);
-        if (operation instanceof BMA.LTLOperations.Operation) return operation;
+        var result = BMA.ModelHelper.ConvertToOperation(parsedFormula, states, model);
+        if (result.operation instanceof BMA.LTLOperations.Operation) return result.operation;
+        return undefined;
     };
     
     describe("Should parse double ltl operations", () => {
@@ -206,6 +207,68 @@
         });
     });
 
+    describe("Should parse ltl operations and states expressions", () => {
+
+        it("should create state D with given expressions", () => {
+            var kfmeq1 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(1));
+            var kfmeq2 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(2));
+            var kfmeq3 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(3));
+            var D = new BMA.LTLOperations.Keyframe("D", "", [kfmeq3, kfmeq1, kfmeq2]);
+            var operation = new BMA.LTLOperations.Operation();
+            operation.Operator = window.OperatorsRegistry.GetOperatorByName("NEXT");
+            operation.Operands = [A];
+            var operation1 = new BMA.LTLOperations.Operation();
+            operation1.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
+            operation1.Operands = [D, operation];
+            expect(ConvertFormulaToOperation("a=1 and a=2 and a=3 and next A", [A, B, C])).toEqual(operation1);
+        });
+
+        it("should create states D, E, F with given expressions", () => {
+            var kfmeq1 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(1));
+            var kfmeq2 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(2));
+            var kfmeq3 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(3));
+            var D = new BMA.LTLOperations.Keyframe("D", "", [kfmeq1]);
+            var E = new BMA.LTLOperations.Keyframe("E", "", [kfmeq2]);
+            var F = new BMA.LTLOperations.Keyframe("F", "", [kfmeq3]);
+            var operation = new BMA.LTLOperations.Operation();
+            operation.Operator = window.OperatorsRegistry.GetOperatorByName("NEXT");
+            operation.Operands = [D];
+            var operation1 = new BMA.LTLOperations.Operation();
+            operation1.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
+            operation1.Operands = [operation, E];
+            var operation2 = new BMA.LTLOperations.Operation();
+            operation2.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
+            operation2.Operands = [operation1, F];
+            var operation3 = new BMA.LTLOperations.Operation();
+            operation3.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
+            operation3.Operands = [operation2, A];
+            expect(ConvertFormulaToOperation("next a=1 and a=2 and a=3 and A", [A, B, C])).toEqual(operation3);
+        });
+
+        it("should create states D, E, F with given expressions and ignore non-existing state", () => {
+            var kfmeq1 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(1));
+            var kfmeq2 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(2));
+            var kfmeq3 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(3));
+            var D = new BMA.LTLOperations.Keyframe("D", "", [kfmeq1]);
+            var E = new BMA.LTLOperations.Keyframe("E", "", [kfmeq2]);
+            var F = new BMA.LTLOperations.Keyframe("F", "", [kfmeq3]);
+            var operation = new BMA.LTLOperations.Operation();
+            operation.Operator = window.OperatorsRegistry.GetOperatorByName("NEXT");
+            operation.Operands = [D];
+            var operation1 = new BMA.LTLOperations.Operation();
+            operation1.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
+            operation1.Operands = [operation, E];
+            var operation2 = new BMA.LTLOperations.Operation();
+            operation2.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
+            operation2.Operands = [operation1, F];
+            var operation3 = new BMA.LTLOperations.Operation();
+            operation3.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
+            operation3.Operands = [operation2, undefined];
+            expect(ConvertFormulaToOperation("next a=1 and a=2 and a=3 and V", [A, B, C])).toEqual(operation3);
+        });
+
+    });
+
     describe("Should throw exceptions for wrong formulas", () => {
         
         it("should throw exception for 'A AND B)'", () => {
@@ -238,6 +301,10 @@
 
         it("should throw exception for null", () => {
             expect(ConvertFormulaToOperation.bind(this, null, [A, B, C])).toThrow();
+        });
+
+        it("should throw exception because of non-existing variable", () => {
+            expect(ConvertFormulaToOperation.bind(this, "next A=1 and a=2 and a=3 and A", [A, B, C])).toThrow();
         });
 
     });

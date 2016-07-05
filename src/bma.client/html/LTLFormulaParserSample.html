@@ -42,7 +42,7 @@
             var mergedStates = BMA.ModelHelper.MergeStates(oldStates, [newState]);
             for (var i = 0; i < mergedStates.states.length; i++)
                 if (mergedStates.states[i].Name == mergedStates.map[newState.Name]) {
-                    formula = { state: mergedStates.states[i].Name };
+                    var formula = { state: mergedStates.states[i].Name };
                     return { operation: mergedStates.states[i].Clone(), states: mergedStates.states, formula: formula };
                 }
             return undefined;

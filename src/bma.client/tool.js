@@ -1749,21 +1749,93 @@ var BMA;
             return undefined;
         }
         ModelHelper.ConvertFormulaToOperation = ConvertFormulaToOperation;
+        function UpdateOperationStates(operation, mergedStates) {
+            var that = this;
+            for (var i = 0; i < operation.Operands.length; i++) {
+                var op = operation.Operands[i];
+                if (op instanceof BMA.LTLOperations.Keyframe) {
+                    if (mergedStates.map[op.Name]) {
+                        for (var j = 0; j < mergedStates.states.length; j++)
+                            if (mergedStates.states[j].Name == mergedStates.map[op.Name]
+                                && mergedStates.states[j].GetFormula() == op.GetFormula())
+                                op.Name = mergedStates.map[op.Name];
+                    }
+                    else
+                        op = undefined;
+                }
+                else if (op instanceof BMA.LTLOperations.Operation) {
+                    BMA.ModelHelper.UpdateOperationStates(op, mergedStates);
+                }
+            }
+        }
+        ModelHelper.UpdateOperationStates = UpdateOperationStates;
+        function UpdateStatesAfterMerging(oldStates, state1, state2) {
+            var newState = BMA.ModelHelper.MergeTwoStatesInOne(state1, state2);
+            var mergedStates = BMA.ModelHelper.MergeStates(oldStates, [newState]);
+            for (var i = 0; i < mergedStates.states.length; i++)
+                if (mergedStates.states[i].Name == mergedStates.map[newState.Name]) {
+                    var formula = { state: mergedStates.states[i].Name };
+                    return { operation: mergedStates.states[i].Clone(), states: mergedStates.states, formula: formula };
+                }
+            return undefined;
+        }
+        ModelHelper.UpdateStatesAfterMerging = UpdateStatesAfterMerging;
         function ConvertToOperation(formula, states, model) {
             if (!formula)
                 throw "Nothing to import";
+            //if (formula.state && states) {
+            //    for (var i = 0; i < states.length; i++) {
+            //        if (states[i].Name == formula.state)
+            //            return { operation: states[i].Clone(), states: states };
+            //    }
+            //    if (formula.state.toUpperCase() == "OSCILLATION")
+            //        return { operation: new BMA.LTLOperations.OscillationKeyframe(), states: states };
+            //    if (formula.state.toUpperCase() == "SELFLOOP")
+            //        return { operation: new BMA.LTLOperations.SelfLoopKeyframe(), states: states };
+            //    if (formula.state.toUpperCase() == "TRUE")
+            //        return { operation: new BMA.LTLOperations.TrueKeyframe(), states: states };
+            //    return undefined;
+            //} else {
+            //    if (formula.operator) {
+            //        var operation = new BMA.LTLOperations.Operation();
+            //        var operands = [];
+            //        var operator = window.OperatorsRegistry.GetOperatorByName(formula.operator.toUpperCase());
+            //        if (operator === undefined) throw "Operator doesn't exist";
+            //        for (i = 0; i < formula.operands.length; i++) {
+            //            operands.push(ConvertToOperation(formula.operands[i], states, model));
+            //        }
+            //        operation.Operator = operator;
+            //        operation.Operands = operands;
+            //        return { operation: operation, states: states, formula: formula };
+            //    }
+            //}
+            //throw "Operation was not found";
             if (formula.state && states) {
-                for (var i = 0; i < states.length; i++) {
-                    if (states[i].Name == formula.state)
-                        return { operation: states[i].Clone(), states: states };
+                if (formula.state.variable === undefined) {
+                    for (var i = 0; i < states.length; i++) {
+                        if (states[i].Name == formula.state)
+                            return { operation: states[i].Clone(), states: states };
+                    }
+                    if (formula.state.toUpperCase() == "OSCILLATION")
+                        return { operation: new BMA.LTLOperations.OscillationKeyframe(), states: states };
+                    if (formula.state.toUpperCase() == "SELFLOOP")
+                        return { operation: new BMA.LTLOperations.SelfLoopKeyframe(), states: states };
+                    if (formula.state.toUpperCase() == "TRUE")
+                        return { operation: new BMA.LTLOperations.TrueKeyframe(), states: states };
+                    return undefined;
                 }
-                if (formula.state.toUpperCase() == "OSCILLATION")
-                    return { operation: new BMA.LTLOperations.OscillationKeyframe(), states: states };
-                if (formula.state.toUpperCase() == "SELFLOOP")
-                    return { operation: new BMA.LTLOperations.SelfLoopKeyframe(), states: states };
-                if (formula.state.toUpperCase() == "TRUE")
-                    return { operation: new BMA.LTLOperations.TrueKeyframe(), states: states };
-                return undefined;
+                else if (formula.state.variable && formula.state.operator && formula.state.const !== undefined) {
+                    var variableID = model.GetIdByName(formula.state.variable);
+                    if (variableID.length == 0)
+                        throw "Variable '" + formula.state.variable + "' is not found";
+                    var state = new BMA.LTLOperations.Keyframe("A", "", [
+                        new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(formula.state.variable, parseFloat(variableID[0])), formula.state.operator, new BMA.LTLOperations.ConstOperand(parseFloat(formula.state.const)))]);
+                    var mergedStates = BMA.ModelHelper.MergeStates(states, [state]);
+                    for (var i = 0; i < mergedStates.states.length; i++)
+                        if (mergedStates.states[i].Name == mergedStates.map[state.Name])
+                            return { operation: mergedStates.states[i].Clone(), states: mergedStates.states };
+                    return undefined;
+                }
             }
             else {
                 if (formula.operator) {
@@ -1772,15 +1844,59 @@ var BMA;
                     var operator = window.OperatorsRegistry.GetOperatorByName(formula.operator.toUpperCase());
                     if (operator === undefined)
                         throw "Operator doesn't exist";
+                    var newStates = [];
+                    var formulaChanged = false;
                     for (i = 0; i < formula.operands.length; i++) {
-                        operands.push(ConvertToOperation(formula.operands[i], states, model));
+                        var result = ConvertToOperation(formula.operands[i], states, model);
+                        if (result !== undefined) {
+                            newStates.push(result.states);
+                            operands.push(result.operation);
+                            if (result.formula) {
+                                formula.operands[i] = result.formula;
+                                formulaChanged = true;
+                            }
+                        }
+                        else {
+                            operands.push(result);
+                        }
+                    }
+                    if (operator.Name == "AND") {
+                        if (formula.operands[0] && formula.operands[0].state && formula.operands[1] && formula.operands[1].state) {
+                            //if (operands[0].GetFormula() == operands[1].GetFormula())
+                            //    return { operation: operands[0].Clone(), states: states };
+                            if (formula.operands[0].state.variable && formula.operands[1].state.variable) {
+                                return BMA.ModelHelper.UpdateStatesAfterMerging(states, operands[0], operands[1]);
+                            }
+                            else if (formula.operands[0].state.variable && formulaChanged) {
+                                for (var j = 0; j < newStates[1].length; j++)
+                                    if (newStates[1][j].Name == formula.operands[1].state) {
+                                        return BMA.ModelHelper.UpdateStatesAfterMerging(states, operands[0], newStates[1][j]);
+                                    }
+                                return undefined;
+                            }
+                            else if (formula.operands[1].state.variable && formulaChanged) {
+                                for (var j = 0; j < newStates[0].length; j++)
+                                    if (newStates[0][j].Name == formula.operands[0].state) {
+                                        return BMA.ModelHelper.UpdateStatesAfterMerging(states, operands[1], newStates[0][j]);
+                                    }
+                                return undefined;
+                            }
+                        }
                     }
                     operation.Operator = operator;
                     operation.Operands = operands;
+                    for (var i = 0; i < newStates.length; i++) {
+                        if (JSON.stringify(states) !== JSON.stringify(newStates[i])) {
+                            var mergedStates = BMA.ModelHelper.MergeStates(states, newStates[i]);
+                            states = mergedStates.states;
+                        }
+                    }
+                    if (mergedStates)
+                        BMA.ModelHelper.UpdateOperationStates(operation, mergedStates);
                     return { operation: operation, states: states, formula: formula };
                 }
             }
-            throw "Operation was not found";
+            throw "Operation was not found"; //return undefined;
         }
         ModelHelper.ConvertToOperation = ConvertToOperation;
         function MergeStates(currentStates, newStates) {
