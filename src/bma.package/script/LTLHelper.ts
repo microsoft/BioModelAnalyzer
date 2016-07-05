@@ -188,6 +188,7 @@
 
                 layout.operatorWidth = operatorWidth;
 
+
                 for (var i = 0; i < operands.length; i++) {
                     var operand = operands[i];
 
@@ -198,14 +199,21 @@
                         layer = Math.max(layer, calcLW.layer);
                         layout.operands.push(calcLW);
                         width += (calcLW.width + paddingX);
-
                     } else {
-                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i });
+                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: i, isFlex: true });
                         width += (keyFrameSize + paddingX);
-
                     }
 
                     if (!operator.isFunction && i > 0) {
+                        width += operatorWidth + paddingX;
+                    }
+                }
+
+                //Adding empty slot for operators with flexible operands count
+                if (!isFinite(operator.OperandsCount) && operands[operands.length - 1] !== undefined) {
+                    layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: operands.length });
+                    width += (keyFrameSize + paddingX);
+                    if (!operator.isFunction) {
                         width += operatorWidth + paddingX;
                     }
                 }

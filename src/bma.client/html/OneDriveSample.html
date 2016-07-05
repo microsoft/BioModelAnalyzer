@@ -2,95 +2,126 @@
 <html>
 <head>
     <title>Client-Side JavaScript Code Sample</title>
+    <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="//js.live.net/v5.0/wl.js"></script>
-</head>
-<body>
-    <div id="signin"></div>
-    <label id="info"></label>
-    <script>
-        WL.Event.subscribe("auth.login", onLogin);
-        WL.init({
-            client_id: "000000004C12BD9C",
-            redirect_uri: "http://bmanew.cloudapp.net/html/callback.html",
-            scope: "wl.signin",
-            response_type: "token"
-        });
-        WL.ui({
-            name: "signin",
-            element: "signin"
-        });
+    <script type="text/javascript">
+    
+        // For bmanew.cloudapp.net
+        // var client_id = "000000004C12BD9C";
+        // var redirect_uri = "http://bmanew.cloudapp.net/html/callback.html";
+        
+        // For localhost
+        var client_id = "09bbffb5-d7c4-48aa-acbc-eff955bc0487"
+        var redirect_uri = "http://localhost/callback.html";  
+
         function onLogin(session) {
             if (!session.error) {
+                $("#access_token").html("access_token: " + session.session.access_token);
                 WL.api({
                     path: "me",
                     method: "GET"
                 }).then(
                     function (response) {
-                        document.getElementById("info").innerText =
-                            "Hello, " + response.first_name + " " + response.last_name + "!";
+                        $("#user_name").html("User: " + response.first_name + " " + response.last_name);
+                        $("#user_pic").attr("src", "https://apis.live.net/v5.0/" + response.id + "/picture");
+                        findBMAFolder(session.session.access_token);
                     },
                     function (responseFailed) {
-                        document.getElementById("info").innerText =
-                            "Error calling API: " + responseFailed.error.message;
+                        $("#user_name").html("Failed retrieving user info: " + responseFailed.error.message);
                     }
                 );
             }
             else {
-                document.getElementById("info").innerText =
-                    "Error signing in: " + session.error_description;
+                $("#access_token").html("Error signing in: " + session.error_description);
             }
         }
-    </script>
-</body>
-</html>
-
-
-
-<!--<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>OneDrive access sample page</title>
-    <script src="../Scripts/jquery-2.1.1.min.js"></script>
-    <script src="../Scripts/jquery-ui-1.10.4.min.js"></script>
-    <script src="../js/wl.js"></script>
-
-    <script type="text/javascript">
-
-        WL.init({ client_id: "000000004C12BD9C", redirect_uri: "http://bmaclienttest2.azurewebsites.net/bma.client/html/callback.html" });
-        WL.Event.subscribe("auth.login", onLogin);
-        WL.Event.subscribe("auth.sessionChange", onSessionChange);
-
-        var session = WL.getSession();
-        if (session) {
-            log("You are already signed in!");
-        } else {
-            WL.login({ scope: "wl.signin" });
-        }
-
-        function onLogin() {
-            var session = WL.getSession();
-            if (session) {
-                log("You are signed in!");
+        
+        function oneDriveApi(access_token, method, uri, body) {
+            var settings = { 
+                method: method
+            };
+            if(body) {
+                settings.data = JSON.stringify(body);
+                settings.contentType = "application/json; charset=utf-8";
             }
+//            settings.headers = { "Authorization": "bearer " + access_token };
+            return $.ajax("https://api.onedrive.com/v1.0" + uri + "?access_token=" + access_token, settings);                
+        }
+        
+        function findBMAFolder(access_token) {
+            oneDriveApi(access_token, "GET", "/drive/root/children").done(function(r) {
+                var bmaFolderId = null;
+                for(var i = 0;i<r.value.length;i++)
+                    if(r.value[i].folder && r.value[i].name == "BioModelAnalyzer") {
+                        bmaFolderId = r.value[i].id;
+                        break; 
+                    }
+                // Check for @odata.next if there are more than 200 items
+                if(bmaFolderId) {
+                    $("#folder_id").html("BMA folder id: " + bmaFolderId);
+                    enumModels(access_token, bmaFolderId);                    
+                } else {
+                    var folder = {
+                        "name": "BioModelAnalyzer",
+                        "folder": { }
+                    }
+                    oneDriveApi(access_token, "POST", "/drive/root/children", folder).done(function(r) {
+                        $("#folder_id").html("BMA folder id: " + r.id + " (just created)");
+                        enumModels(access_token, r.id);
+                    }).fail(function() { window.alert("Failed to create BioModelAnalyzer folder"); })
+                }
+                enumShared(access_token);
+            }).fail(function() { window.alert("Failed to enum root folder items") });
+        }        
+
+        function enumModels(access_token, folder_id) {
+            oneDriveApi(access_token, "GET", "/drive/items/" + folder_id + "/children").done(function(r) {
+                var list = $("#models");
+                $.each(r.value, function(i) {
+                    var item = r.value[i];
+                    if(item.file) {
+                        var text = item.name;
+                        if(item.shared)
+                            text += " (shared by me)";
+                        $('<li/>').html(text).appendTo(list);
+                    }
+                });
+            }).fail(function() { window.alert("Failed to enum contents of BioModelAnalyzer folder")} );   
         }
 
-        function onSessionChange() {
-            var session = WL.getSession();
-            if (session) {
-                log("Your session has changed.");
-            }
+        function enumShared(access_token) {
+            oneDriveApi(access_token, "GET", "/drive/view.sharedWithMe").done(function(r) {
+                var list = $("#models");
+                $.each(r.value, function(i) {
+                    var item = r.value[i];
+                    if(item.remoteItem.file && item.remoteItem.file.mimeType == "application/json") {
+                        $('<li/>').html(item.name + " (shared with me)").appendTo(list);
+                    }
+                });              
+            }).fail(function() { window.alert("Failed to enum items shared with me")} );
         }
 
-        function log(message) {
-            var child = document.createTextNode(message);
-            var parent = document.getElementById('JsOutputDiv') || document.body;
-            parent.appendChild(child);
-            parent.appendChild(document.createElement("br"));
-        }
-
+        $(function() {
+            WL.Event.subscribe("auth.login", onLogin);
+            WL.init({
+                client_id: client_id,
+                redirect_uri: redirect_uri,
+                scope: [ "wl.signin", "onedrive.readwrite" ],
+                response_type: "token"
+            });
+            WL.ui({
+                name: "signin",
+                element: "signin"
+            });                
+        });
     </script>
 </head>
-<body>
-    <div id="JsOutputDiv"></div>
+<body>    
+    <div id="signin"></div>
+    <div id="access_token"></div>
+    <div id="user_name"></div>
+    <div><img id="user_pic" src="data:image/jpeg;base64,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"></img></src>
+    <div id="folder_id"></div>
+    <ul id="models"></ul>
 </body>
-</html>-->
+</html>

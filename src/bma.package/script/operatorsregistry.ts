@@ -40,11 +40,15 @@ module BMA {
                         for (var i = 0; i < op.length - 1 /*because last can be FlexSlot*/; i++) {
                             f += ', ' + op[i].GetFormula();
                         }
+
+                        /*
                         if (op[op.length - 1] instanceof FlexOperand) {
                             f += ")";
                         } else {
                             f += +  ", " + op[op.length - 1].GetFormula() + ")";
                         }
+                        */
+                        f += +  ", " + op[op.length - 1].GetFormula() + ")";
 
                         return f;
                     }
@@ -56,12 +60,14 @@ module BMA {
                         for (var i = 1; i < op.length - 1 /*because last can be FlexSlot*/; i++) {
                             f += + " " + funcname + " " + op[i].GetFormula();
                         }
-
+                        /*
                         if (op[op.length - 1] instanceof FlexOperand) {
                             f += ")";
                         } else {
                             f += + " " + funcname + " " + op[op.length - 1].GetFormula() + ")";
                         }
+                        */
+                        f += + " " + funcname + " " + op[op.length - 1].GetFormula() + ")";
 
                         return f;
                     }
@@ -83,9 +89,9 @@ module BMA {
                 /*
                 //Target Function Editor operators
 
-                this.operators.push(new Operator('AVG', 2, functionformulacreator('avg')));
-                this.operators.push(new Operator('MIN', 2, functionformulacreator('min')));
-                this.operators.push(new Operator('MAX', 2, functionformulacreator('max')));
+                this.operators.push(new Operator('AVG', Number.POSITIVE_INFINITY, functionformulacreator('avg')));
+                this.operators.push(new Operator('MIN', Number.POSITIVE_INFINITY, functionformulacreator('min')));
+                this.operators.push(new Operator('MAX', Number.POSITIVE_INFINITY, functionformulacreator('max')));
 
                 this.operators.push(new Operator('CEIL', 1, formulacreator('ceil')));
                 this.operators.push(new Operator('FLOOR', 1, formulacreator('floor')));
