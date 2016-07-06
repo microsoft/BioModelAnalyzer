@@ -82,13 +82,13 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
         try
             match tryGetJobEntry (appId, jobId) table with
             | Some job -> 
-                updateStatus job JobStatus.Failed (sprintf "The job %O failed more than %d times" jobId settings.Retries) |> ignore
+                updateStatus job JobStatus.Failed (sprintf "The job %O has failed %d times" jobId settings.Retries) |> ignore
                 deleteBlob job.Result container |> ignore
                 deleteExecution (jobId, appId)
             | None -> () // nothing to do; the job is either cancelled or complete&cleared
         with
         | exn ->
-            Trace.WriteLine(sprintf "The job %O failed more than %d times; failed to clean the job: %A" jobId settings.Retries exn)
+            Trace.WriteLine(sprintf "The job %O has failed %d times; failed to clean the job: %A" jobId settings.Retries exn)
 
     let handleMessage (doJob: Guid * IO.Stream -> IO.Stream) (jobId, appId) =
         match tryGetJobEntry (appId, jobId) table with
@@ -157,7 +157,7 @@ type internal FairShareWorker(storageAccount : CloudStorageAccount, schedulerNam
         | Some queue ->            
             match queue.GetMessage(visibilityTimeout = Nullable settings.VisibilityTimeout) with       
             | null -> false          
-            | m when m.DequeueCount < settings.Retries ->
+            | m when m.DequeueCount <= settings.Retries ->
                 use lease = new AutoLeaseRenewal(queue, m, settings.VisibilityTimeout)
                 parse m |> handleMessage doJob // fails only because of infrastructure problems
                 deleteMessage queue m

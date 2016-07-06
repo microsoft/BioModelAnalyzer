@@ -77,3 +77,22 @@ let ``Enqueue an incorrect job and get the error message``() =
     let jobId = scheduler.AddJob(job)
     let failure = waitFailure (appId, jobId) scheduler
     StringAssert.Contains("System.FormatException", failure, "Error message")
+
+[<Test; Timeout(180000)>]
+let ``Enqueue a too long job and get the error message``() =
+    let appId = Guid.NewGuid()
+    use body = JObject(JProperty("sleep", Timeout.Infinite), JProperty("result", appId)) |> asStream
+    let job = { AppId = appId; Body = body }
+    let jobId = scheduler.AddJob(job)
+    let failure = waitFailure (appId, jobId) scheduler
+    StringAssert.Contains("System.TimeoutException", failure, "Error message")
+
+
+[<Test; Timeout(180000)>]
+let ``Enqueue a poison job and get the error message``() =
+    let appId = Guid.NewGuid()
+    use body = JObject(JProperty("failworker", true)) |> asStream
+    let job = { AppId = appId; Body = body }
+    let jobId = scheduler.AddJob(job)
+    let failure = waitFailure (appId, jobId) scheduler
+    StringAssert.Contains("failed 2 times", failure, "Error message")

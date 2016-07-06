@@ -29,6 +29,19 @@ namespace FairShareScheduler.Mockup
             var input_s = reader.ReadToEnd();
             var query = JObject.Parse(input_s);
 
+            JToken value;
+            if(query.TryGetValue("failworker", out value) && value.Value<bool>())
+            {
+                Trace.TraceInformation("Query requests to fail the worker");
+                var t = new Thread(() =>
+                {
+                    throw new Exception("Query requests to fail the worker");
+                });
+                t.IsBackground = false;
+                t.Start();
+                t.Join();
+            }
+
             var sleep = query["sleep"].Value<int>();
             Thread.Sleep(sleep);
             var output_s = new JObject(new JProperty("result", query["result"].ToString()));
