@@ -34,6 +34,7 @@ let perform job =
 
 
 [<Test; Timeout(600000)>]
+[<Category("Deployment")>]
 let ``Statuses for sample ltl queries are verified``() =
     let outcome =
         Directory.EnumerateFiles("LTLQueries", "*.request.json")
@@ -47,7 +48,10 @@ let ``Statuses for sample ltl queries are verified``() =
                 Trace.WriteLine(sprintf "Job %s is done." jobName)
 
                 let expected = JObject.Parse(File.ReadAllText(Path.Combine(dir, sprintf "%s.response.json" jobName)))               
-                if expected.["Item1"].["Status"] = resp.["Item1"].["Status"] then None
+                if 
+                    expected.["Item1"].["Status"] = resp.["Item1"].["Status"] &&
+                    expected.["Item1"].["Error"] = resp.["Item1"].["Error"] 
+                then None
                 else failwithf "Response status for the job %s differs from expected" jobName
             with 
             | exn ->
