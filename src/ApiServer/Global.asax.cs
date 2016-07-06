@@ -61,7 +61,7 @@ namespace bma.client
 
             IScheduler scheduler;
             string schedulerName = "ltlpolarity"; // todo: can differ for different controllers; use setter injection with name?
-            int maxNumberOfQueues = 3; // todo: should take from settings table
+            int maxNumberOfQueues = 10; // todo: should take from settings table
 
             FairShareSchedulerSettings settings = new FairShareSchedulerSettings(storageAccount, maxNumberOfQueues, schedulerName);
             scheduler = new FairShareScheduler(settings);

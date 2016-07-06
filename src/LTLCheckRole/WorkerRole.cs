@@ -29,7 +29,7 @@ namespace LTLCheckRole
 
             try
             {
-                worker.Process(DoJob, TimeSpan.FromSeconds(1.0), TimeSpan.FromMinutes(2.0));
+                worker.Process(DoJob, TimeSpan.FromSeconds(0.5), TimeSpan.FromMinutes(1.0));
             }
             finally
             {
