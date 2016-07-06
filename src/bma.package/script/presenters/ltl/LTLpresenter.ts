@@ -223,7 +223,7 @@
 
                             if (operation instanceof BMA.LTLOperations.Operation) {
                                 var op = <BMA.LTLOperations.Operation>operation;
-                                var states = that.GetStates(op);
+                                var states = result.states;//that.GetStates(op);
                                 var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(that.appModel.BioModel, that.appModel.Layout, states);
                                 if (statesChanged.isChanged) {
                                     states = statesChanged.states;
