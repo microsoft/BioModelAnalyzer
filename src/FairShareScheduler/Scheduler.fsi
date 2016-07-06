@@ -27,3 +27,5 @@ type FairShareScheduler =
     interface IScheduler
     new : FairShareSchedulerSettings -> FairShareScheduler
 
+    static member CleanAll : name:string -> storageAccount:CloudStorageAccount -> unit
+

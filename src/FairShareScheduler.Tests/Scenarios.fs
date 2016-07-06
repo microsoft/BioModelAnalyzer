@@ -8,13 +8,26 @@ open System.IO
 open bma.Cloud.Jobs
 open System.Threading
 open Newtonsoft.Json.Linq
+open FSharp.Collections.ParallelSeq
+open System.Diagnostics
 
 let settings = 
     { StorageAccount = CloudStorageAccount.DevelopmentStorageAccount
     ; MaxNumberOfQueues = 3
     ; Name = "testscenarios" }
 
-let scheduler : IScheduler = upcast FairShareScheduler(settings) 
+let mutable scheduler : IScheduler option = None;
+
+let getScheduler() = scheduler.Value
+
+[<TestFixtureSetUp>]
+let Prepare() = 
+    Trace.WriteLine("Cleaning the scheduler data...")
+    FairShareScheduler.CleanAll settings.Name settings.StorageAccount
+    Trace.WriteLine("Initializing scheduler...")
+    scheduler <- Some(upcast FairShareScheduler(settings))
+    
+
 
 let asStream (obj : JObject) = 
     let ms = new MemoryStream()
@@ -49,6 +62,16 @@ let waitFailure (appId, jobId) (scheduler : IScheduler) =
         | Some message -> Some message
         | None -> Thread.Sleep(100); None) 
 
+let waitExecuting (appId, jobId) (scheduler : IScheduler) =
+    let isExecuting() =
+        match scheduler.TryGetStatus (appId, jobId) with
+        | Some (JobStatus.Executing, _) -> true
+        | Some (JobStatus.Failed, message) -> failwithf "Job has failed: %s" message
+        | Some (JobStatus.Succeeded, _) 
+        | Some (JobStatus.Queued, _) -> false
+        | _ -> failwith "Failed to get the job status"
+    while not (isExecuting()) do Thread.Sleep(100)
+
 let getResult (appId, jobId) (scheduler : IScheduler) =
     match scheduler.TryGetResult (appId, jobId) with
     | Some (s) -> 
@@ -57,20 +80,23 @@ let getResult (appId, jobId) (scheduler : IScheduler) =
         JObject.Parse(s)
     | _ -> failwith "Failed to get the job result"
 
-
-[<Test; Timeout(180000)>]
-let ``Enqueue a job and get its result``() =
-    let appId = Guid.NewGuid()
-    use body = JObject(JProperty("sleep", 100), JProperty("result", appId)) |> asStream
+let doJob (appId:AppId) (duration:int) (scheduler : IScheduler) = 
+    use body = JObject(JProperty("sleep", duration), JProperty("result", appId)) |> asStream
     let job = { AppId = appId; Body = body }
     let jobId = scheduler.AddJob(job)
     waitSuccess (appId, jobId) scheduler
     let r = getResult (appId, jobId) scheduler
     Assert.AreEqual(appId.ToString(), r.["result"].Value<string>(), "Result is incorrect")
-    ()
+
+
+[<Test; Timeout(180000)>]
+let ``Enqueue a job and get its result``() =
+    let appId = Guid.NewGuid()
+    doJob appId 100 (getScheduler())
 
 [<Test; Timeout(180000)>]
 let ``Enqueue an incorrect job and get the error message``() =
+    let scheduler = getScheduler()
     let appId = Guid.NewGuid()
     use body = JObject(JProperty("sleep", "not-a-double"), JProperty("result", appId)) |> asStream
     let job = { AppId = appId; Body = body }
@@ -80,6 +106,7 @@ let ``Enqueue an incorrect job and get the error message``() =
 
 [<Test; Timeout(180000)>]
 let ``Enqueue a too long job and get the error message``() =
+    let scheduler = getScheduler()
     let appId = Guid.NewGuid()
     use body = JObject(JProperty("sleep", Timeout.Infinite), JProperty("result", appId)) |> asStream
     let job = { AppId = appId; Body = body }
@@ -90,9 +117,51 @@ let ``Enqueue a too long job and get the error message``() =
 
 [<Test; Timeout(180000)>]
 let ``Enqueue a poison job and get the error message``() =
+    let scheduler = getScheduler()
     let appId = Guid.NewGuid()
     use body = JObject(JProperty("failworker", true)) |> asStream
     let job = { AppId = appId; Body = body }
     let jobId = scheduler.AddJob(job)
     let failure = waitFailure (appId, jobId) scheduler
     StringAssert.Contains("failed 2 times", failure, "Error message")
+
+[<Test; Timeout(180000)>]
+let ``Cancel the job immediately``() =
+    let scheduler = getScheduler()
+    let appId = Guid.NewGuid()
+    use body = JObject(JProperty("sleep", Timeout.Infinite), JProperty("result", appId)) |> asStream
+    let job = { AppId = appId; Body = body }
+    let jobId = scheduler.AddJob(job)
+    Assert.IsTrue(scheduler.DeleteJob (appId, jobId), "Job wasn't deleted")
+    Assert.AreEqual(None, scheduler.TryGetStatus (appId, jobId), "Job must not be found")
+
+[<Test; Timeout(180000)>]
+let ``Cancel the job after it is executing``() =
+    let scheduler = getScheduler()
+    let appId = Guid.NewGuid()
+    use body = JObject(JProperty("sleep", Timeout.Infinite), JProperty("result", appId)) |> asStream
+    let job = { AppId = appId; Body = body }
+    let jobId = scheduler.AddJob(job)
+    waitExecuting (appId, jobId) scheduler
+    Assert.IsTrue(scheduler.DeleteJob (appId, jobId), "Job wasn't deleted")
+    Assert.AreEqual(None, scheduler.TryGetStatus (appId, jobId), "Job must not be found")
+
+
+[<Test; Timeout(1800000)>]
+let ``Massive jobs handling``() =
+    let scheduler = getScheduler()
+    let appsN = 10
+    let jobsN = 50
+    let duration = 1
+    
+    let app () =
+        let appId = Guid.NewGuid()
+        Seq.init jobsN id
+        |> PSeq.iter (fun i ->
+            Trace.WriteLine(sprintf "App %O starts job %d" appId i)
+            doJob appId duration scheduler
+            Trace.WriteLine(sprintf "App %O succeeded job %d" appId i))
+    Seq.init appsN id
+    |> PSeq.iter (fun _ -> app ())
+
+

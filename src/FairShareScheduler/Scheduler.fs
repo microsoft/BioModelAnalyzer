@@ -43,6 +43,7 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
 
     do 
         table.CreateIfNotExists() |> ignore  
+        tableExec.CreateIfNotExists() |> ignore  
         container.CreateIfNotExists() |> ignore
 
 
@@ -100,3 +101,17 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
         member x.DeleteJob (appId: AppId, jobId: JobId) : bool =
             Jobs.deleteJob (appId, jobId) (table, tableExec, container)
 
+    static member CleanAll (name:string) (storageAccount : CloudStorageAccount) =
+        let tableClient = storageAccount.CreateCloudTableClient()
+        let table = tableClient.GetTableReference (getJobsTableName name)
+        table.DeleteIfExists() |> ignore
+        let table = tableClient.GetTableReference (getJobsExecutionTableName name)
+        table.DeleteIfExists() |> ignore
+        
+        let blobClient = storageAccount.CreateCloudBlobClient()
+        let container = blobClient.GetContainerReference (getBlobContainerName name)
+        container.DeleteIfExists() |> ignore
+
+        let queueClient = storageAccount.CreateCloudQueueClient()      
+        queueClient.ListQueues(getName "" name)
+        |> Seq.iter(fun queue -> queue.DeleteIfExists() |> ignore)
