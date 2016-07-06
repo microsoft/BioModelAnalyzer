@@ -62,10 +62,12 @@ type internal ManageableAction<'a> private (f : unit -> 'a, timeout: TimeSpan, i
         | 1 -> // cancelled
             Trace.WriteLine("Action is cancelled")
             thread.Abort()
+            thread.Join() // We must wait for the thread to join because of Z3 which cannot be run in parallel
             raise (OperationCanceledException())
         | WaitHandle.WaitTimeout | _ -> 
             doCheck <- false
             thread.Abort()
+            thread.Join() // We must wait for the thread to join because of Z3 which cannot be run in parallel
             Trace.WriteLine("Timeout while waiting for the function to succeed")
             raise (TimeoutException "Timeout while waiting for the function to succeed")
 

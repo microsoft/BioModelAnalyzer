@@ -63,7 +63,7 @@ namespace FairShareScheduler.Mockup
         {
             Trace.TraceInformation("FairShareScheduler.Mockup.Worker is running");
 
-            worker.Process(DoJob, TimeSpan.FromSeconds(1.0), TimeSpan.FromMinutes(2.0));
+            worker.Process(DoJob, TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(10.0));
         }
 
         public override bool OnStart()
