@@ -3,12 +3,19 @@
 
 (function ($) {
     $.widget("BMA.formulaeditor", {
+        _tpViewer: undefined,
+        _clipboardOps: [],
+
         _create: function () {
             var that = this;
             var root = this.element;
 
+            root.css("display", "flex").css("flex-direcition", "row");
+
+            var leftContainer = $("<div></div>").width("80%").appendTo(root);
             //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
-            var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
+            var widthStr = "calc(100% - 20px)";
+            var toolbar = $("<div></div>").addClass("temporal-toolbar").css("margin-top", 0).width(widthStr).appendTo(leftContainer);
             
             //Adding states
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("Variables<br>").appendTo(toolbar);
@@ -48,7 +55,7 @@
                     $("<div></div>").addClass("hole").appendTo(opDiv);
                     spaceStr = "";
                 }
-                
+
                 var opStr = operator.Name;
                 if (opStr === "+" || opStr === "+" || opStr === "+" || opStr === "+") {
                     opStr = "&nbsp;" + opStr + "&nbsp;";
@@ -98,7 +105,7 @@
             */
 
             //Adding drawing surface
-            var svgDiv = $("<div></div>").css("background-color", "white").height(200).width("100%").appendTo(root);
+            var svgDiv = $("<div></div>").css("background-color", "white").height(200).width("100%").appendTo(leftContainer);
             that.svgDiv = svgDiv;
 
             var pixofs = 0;
@@ -118,10 +125,14 @@
                 }
             });
 
+            //Adding clipboard panel
+            var tpViewer = $("<div></div>").width("20%").height(301).css("background-color", "lightgray").appendTo(root);
+            that._tpViewer = tpViewer.temporalpropertiesviewer({ "showDefaultIcon": false, rightOffset: 3 });
+
             svgDiv.mousemove(function (arg) {
                 if (that.operationLayout !== undefined && that.operationLayout.IsVisible) {
                     var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
-                    var parentOffset = $(this).offset(); 
+                    var parentOffset = $(this).offset();
                     var relX = arg.pageX - parentOffset.left;
                     var relY = arg.pageY - parentOffset.top;
                     var svgCoords = that._getSVGCoords(relX, relY);
@@ -163,13 +174,33 @@
                                 that._refresh();
                             }
                         }
+
+                    } else if (draggableDiv.attr("data-dragsource") === "clipboard") {
+                        var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = opToDrag.Operation;
+                            that._refresh();
+                        } else {
+                            var parentOffset = $(this).offset();
+                            var relX = arg.pageX - parentOffset.left;
+                            var relY = arg.pageY - parentOffset.top;
+                            var svgCoords = that._getSVGCoords(relX, relY);
+                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = opToDrag.Operation;
+                                that._refresh();
+                            }
+                        }
+
+                        opToDrag = undefined;
+                        draggableDiv.attr("data-dragsource", undefined);
                     }
                 }
             });
 
             var draggableWidth = svgDiv.width();
             var draggableHeight = svgDiv.height();
-            var draggableDiv = $("<div></div>").width(draggableWidth).height(draggableHeight);
+            var draggableDiv = $("<div></div>").width(draggableWidth).height(draggableHeight).css("z-index", 100);
             var canvas = $("<canvas></canvas>").attr("width", draggableWidth).attr("height", draggableHeight).appendTo(draggableDiv)[0];
             var opToDrag = undefined;
 
@@ -181,6 +212,7 @@
                 //opacity: 0.4,
                 cursor: "pointer",
                 start: function (arg, ui) {
+                    draggableDiv.attr("data-dragsource", "editor");
                     canvas.height = canvas.height;
 
                     var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
@@ -212,7 +244,7 @@
                         }
 
                         canvas.width = scale.x * opSize.width + 2 * padding.x;
-                        canvas.height = scale.y *  opSize.height + 2 * padding.y;
+                        canvas.height = scale.y * opSize.height + 2 * padding.y;
 
                         var opPosition = { x: scale.x * opSize.width / 2 + padding.x, y: padding.y + Math.floor(scale.y * opSize.height / 2) };
 
@@ -220,19 +252,20 @@
                             padding: padding,
                             keyFrameSize: keyFrameSize,
                             stroke: "black",
-                            fill: "white", 
+                            fill: "white",
                             isRoot: true,
                             strokeWidth: 1,
                             borderThickness: 1
                         });
 
                         that._refresh();
-                    } 
+                    }
                 },
                 drag: function (arg, ui) {
                     return opToDrag !== undefined;
                 },
                 stop: function (arg, ui) {
+                    /*
                     if (opToDrag !== undefined) {
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                         if (opL === undefined) {
@@ -252,13 +285,13 @@
                             }
                         }
 
-                        opToDrag = undefined;
+                        //opToDrag = undefined;
                         that._refresh();
                     }
+                    draggableDiv.attr("data-dragsource", undefined);
+                    */
                 }
             });
-
-
 
             //Context menu
             var holdCords = {
@@ -311,6 +344,90 @@
                     that._processContextMenuOption(ui.cmd);
                 }
             });
+
+            tpViewer.droppable({
+                tolerance: "pointer",
+                drop: function (arg, ui) {
+                    if (ui.draggable.attr("data-dragsource") === "clipboard")
+                        return;
+
+                    if (opToDrag !== undefined) {
+                        that._clipboardOps.push({ operation: opToDrag.operation, status: "nottested" });
+                        that._tpViewer.temporalpropertiesviewer({ "operations": that._clipboardOps });
+                    }
+
+                    opToDrag = undefined;
+                    draggableDiv.attr("data-dragsource", undefined);
+                }
+            });
+
+            tpViewer.draggable({
+                helper: function () {
+                    return draggableDiv;
+                },
+                cursorAt: { left: 0, top: 0 },
+                //opacity: 0.4,
+                cursor: "pointer",
+                start: function (arg, ui) {
+                    draggableDiv.attr("data-dragsource", "clipboard");
+                    canvas.height = canvas.height;
+
+                    var parentOffset = $(this).offset();
+                    var relX = arg.pageX - parentOffset.left;
+                    var relY = arg.pageY - parentOffset.top;
+
+                    var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+                    var parentOffset = $(this).offset();
+                    var relX = arg.pageX - parentOffset.left;
+                    var relY = arg.pageY - parentOffset.top;
+                    var svgCoords = that._getSVGCoords(relX, relY);
+                    var dragOperation = tpViewer.temporalpropertiesviewer("getOperationByY", relY);
+
+                    if (dragOperation === undefined || dragOperation === null)
+                        return;
+
+                    opToDrag = new BMA.LTLOperations.OperationLayout(that._svg, dragOperation, { x: 0, y: 0 });
+                    opToDrag.IsVisible = false;
+
+                    if (opToDrag !== undefined) {
+
+                        var keyFrameSize = 26;
+                        var padding = { x: 5, y: 10 };
+                        var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, opToDrag.operation, padding, keyFrameSize);
+                        var scale = { x: 1, y: 1 };
+                        var offset = 0;
+                        var w = opSize.width + offset;
+
+                        if (w > draggableWidth) {
+                            scale = {
+                                x: draggableWidth / w,
+                                y: draggableWidth / w
+                            };
+                        }
+
+                        canvas.width = scale.x * opSize.width + 2 * padding.x;
+                        canvas.height = scale.y * opSize.height + 2 * padding.y;
+
+                        var opPosition = { x: scale.x * opSize.width / 2 + padding.x, y: padding.y + Math.floor(scale.y * opSize.height / 2) };
+
+                        BMA.LTLOperations.RenderOperation(canvas, opToDrag.operation, opPosition, scale, {
+                            padding: padding,
+                            keyFrameSize: keyFrameSize,
+                            stroke: "black",
+                            fill: "white",
+                            isRoot: true,
+                            strokeWidth: 1,
+                            borderThickness: 1
+                        });
+
+                        that._refresh();
+                    }
+                },
+                drag: function (arg, ui) {
+                    return opToDrag !== undefined;
+                }
+            });
+
         },
 
         _processContextMenuOption(option) {
@@ -333,8 +450,8 @@
                 default:
                     break;
             }
-            
-            this._refresh();  
+
+            this._refresh();
         },
 
         _getSVGCoords: function (x, y) {
@@ -385,6 +502,8 @@
                     that.operationLayout = undefined;
                 }
             }
+
+
         },
 
         _setOption: function (key, value) {
