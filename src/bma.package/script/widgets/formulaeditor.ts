@@ -126,8 +126,33 @@
             });
 
             //Adding clipboard panel
-            var tpViewer = $("<div></div>").width("20%").height(301).css("background-color", "lightgray").appendTo(root);
-            that._tpViewer = tpViewer.temporalpropertiesviewer({ "showDefaultIcon": false, rightOffset: 3 });
+            var clipboardPanel = $("<div></div>").width("20%").height(301).addClass("temporal-dropzones").appendTo(root);
+
+            //Adding copy zone
+            var tpViewer = $("<div></div>").addClass("dropzone copy").css("top", 0).css("left", 0).width("100%").height("calc(80% - 2px)").appendTo(clipboardPanel);
+
+            var defaultCopyZoneIcon = $("<div></div>").css("position", "absolute").width("100%").height("95%").css("text-align", "center");
+            $("<span></span>").css("display", "inline-block").css("vertical-align", "middle").height("100%").appendTo(defaultCopyZoneIcon);
+            $('<img>').attr('src', "../images/LTL-copy.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultCopyZoneIcon);
+
+            that._tpViewer = tpViewer.temporalpropertiesviewer({
+                rightOffset: 15,
+                defaultIcon: defaultCopyZoneIcon
+            });
+
+            //Adding delete zone
+            var deleteZone = $("<div></div>").addClass("dropzone delete").css("left", 0).css("bottom", 0).css("right", 0).width("100%").height("calc(20% - 2px)").appendTo(clipboardPanel);
+            var defaultDeleteZoneIcon = $("<div></div>").width("100%").height("95%").css("text-align", "center").appendTo(deleteZone);
+            $("<span></span>").css("display", "inline-block").css("vertical-align", "middle").height("100%").appendTo(defaultDeleteZoneIcon);
+            $('<img>').attr('src', "../images/LTL-delete.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultDeleteZoneIcon);
+
+            deleteZone.droppable({
+                tolerance: "pointer",
+                drop: function (arg, ui) {
+                    opToDrag = undefined;
+                    draggableDiv.attr("data-dragsource", undefined);
+                }
+            });
 
             svgDiv.mousemove(function (arg) {
                 if (that.operationLayout !== undefined && that.operationLayout.IsVisible) {
@@ -141,6 +166,7 @@
             });
 
             svgDiv.droppable({
+                tolerance: "pointer",
                 drop: function (arg, ui) {
 
                     if (ui.draggable.attr("data-operator") !== undefined) {
@@ -178,7 +204,7 @@
                     } else if (draggableDiv.attr("data-dragsource") === "clipboard") {
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                         if (opL === undefined) {
-                            that.options.operation = opToDrag.Operation;
+                            that.options.operation = opToDrag.operation.Clone();
                             that._refresh();
                         } else {
                             var parentOffset = $(this).offset();
@@ -187,7 +213,7 @@
                             var svgCoords = that._getSVGCoords(relX, relY);
                             var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
                             if (emptyCell !== undefined) {
-                                emptyCell.operation.Operands[emptyCell.operandIndex] = opToDrag.Operation;
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = opToDrag.operation.Clone();
                                 that._refresh();
                             }
                         }
@@ -265,7 +291,7 @@
                     return opToDrag !== undefined;
                 },
                 stop: function (arg, ui) {
-                    /*
+
                     if (opToDrag !== undefined) {
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                         if (opL === undefined) {
@@ -289,7 +315,7 @@
                         that._refresh();
                     }
                     draggableDiv.attr("data-dragsource", undefined);
-                    */
+
                 }
             });
 
@@ -352,8 +378,16 @@
                         return;
 
                     if (opToDrag !== undefined) {
-                        that._clipboardOps.push({ operation: opToDrag.operation, status: "nottested" });
+                        that._clipboardOps.push({ operation: opToDrag.operation.Clone(), status: "nottested" });
                         that._tpViewer.temporalpropertiesviewer({ "operations": that._clipboardOps });
+
+                        var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = opToDrag.operation;
+                            that._refresh();
+                        } else {
+                            opToDrag.parentoperation.Operands[opToDrag.parentoperationindex] = opToDrag.operation;
+                        }
                     }
 
                     opToDrag = undefined;
@@ -378,15 +412,13 @@
 
                     var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                     var parentOffset = $(this).offset();
-                    var relX = arg.pageX - parentOffset.left;
                     var relY = arg.pageY - parentOffset.top;
-                    var svgCoords = that._getSVGCoords(relX, relY);
                     var dragOperation = tpViewer.temporalpropertiesviewer("getOperationByY", relY);
 
                     if (dragOperation === undefined || dragOperation === null)
                         return;
 
-                    opToDrag = new BMA.LTLOperations.OperationLayout(that._svg, dragOperation, { x: 0, y: 0 });
+                    opToDrag = { operation: dragOperation };
                     opToDrag.IsVisible = false;
 
                     if (opToDrag !== undefined) {

@@ -21,8 +21,13 @@
             root.css("overflow-y", "auto").css("overflow-x", "hidden").css("position", "relative");
 
             this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
-            $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
-            $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
+
+            if (that.options.defaultIcon === undefined) {
+                $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
+                $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
+            } else {
+                that.options.defaultIcon.appendTo(this.attentionDiv);
+            }
 
             if (!that.options.showDefaultIcon) {
                 that.attentionDiv.hide();
@@ -287,6 +292,10 @@
                             that.attentionDiv.show();
                         }
                     }
+                    break;
+                case "defaultIcon":
+                    this.attentionDiv.empty();
+                    value.appendTo(this.attentionDiv);
                     break;
                 case "rightOffset":
                     break;
