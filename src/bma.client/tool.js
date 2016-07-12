@@ -1123,7 +1123,7 @@ var BMA;
                         context.closePath();
                         context.fill();
                         context.stroke();
-                        if (layoutPart.type === "keyframe") {
+                        if (layoutPart.type === "keyframe" || layoutPart.type === "other") {
                             var name = layoutPart.name;
                             var fs = 16;
                             context.font = "16px Segoe-UI";
@@ -1235,8 +1235,10 @@ var BMA;
                     layout.type = "keyframe";
                     layout.name = operation.Name;
                 }
-                else
-                    throw "Unknown Keyframe type";
+                else {
+                    layout.type = "other";
+                    layout.name = operation.Name;
+                }
                 return layout;
             }
         }
@@ -4687,7 +4689,7 @@ var BMA;
                         });
                         var uniquename = this.GenerateUUID();
                         var path = svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)", id: uniquename });
-                        if (layoutPart.type === "keyframe") {
+                        if (layoutPart.type === "keyframe" || layoutPart.type === "other") {
                             var textGroup = svg.group(stateGroup, {});
                             var label = svg.text(textGroup, 0, 0, layoutPart.name, {
                                 "font-size": 16,
@@ -12533,6 +12535,10 @@ jQuery.fn.extend({
     $.widget("BMA.formulaeditor", {
         _tpViewer: undefined,
         _clipboardOps: [],
+        options: {
+            operation: undefined,
+            variables: [{ Name: "A" }, { Name: "B" }, { Name: "C" }]
+        },
         _create: function () {
             var that = this;
             var root = this.element;
@@ -12544,7 +12550,7 @@ jQuery.fn.extend({
             //Adding states
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("Variables<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
-            //this._refreshStates();
+            this._refreshStates();
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             operators.width(350);
@@ -12634,6 +12640,16 @@ jQuery.fn.extend({
                     that._refresh();
                 }
             });
+            svgDiv.mousemove(function (arg) {
+                if (that.operationLayout !== undefined && that.operationLayout.IsVisible) {
+                    var opL = that.operationLayout;
+                    var parentOffset = $(this).offset();
+                    var relX = arg.pageX - parentOffset.left;
+                    var relY = arg.pageY - parentOffset.top;
+                    var svgCoords = that._getSVGCoords(relX, relY);
+                    opL.HighlightAtPosition(svgCoords.x, svgCoords.y);
+                }
+            });
             //Adding clipboard panel
             var clipboardPanel = $("<div></div>").width("20%").height(301).addClass("temporal-dropzones").appendTo(root);
             //Adding copy zone
@@ -12650,82 +12666,6 @@ jQuery.fn.extend({
             var defaultDeleteZoneIcon = $("<div></div>").width("100%").height("95%").css("text-align", "center").appendTo(deleteZone);
             $("<span></span>").css("display", "inline-block").css("vertical-align", "middle").height("100%").appendTo(defaultDeleteZoneIcon);
             $('<img>').attr('src', "../images/LTL-delete.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultDeleteZoneIcon);
-            deleteZone.droppable({
-                tolerance: "pointer",
-                drop: function (arg, ui) {
-                    opToDrag = undefined;
-                    draggableDiv.attr("data-dragsource", undefined);
-                }
-            });
-            svgDiv.mousemove(function (arg) {
-                if (that.operationLayout !== undefined && that.operationLayout.IsVisible) {
-                    var opL = that.operationLayout;
-                    var parentOffset = $(this).offset();
-                    var relX = arg.pageX - parentOffset.left;
-                    var relY = arg.pageY - parentOffset.top;
-                    var svgCoords = that._getSVGCoords(relX, relY);
-                    opL.HighlightAtPosition(svgCoords.x, svgCoords.y);
-                }
-            });
-            svgDiv.droppable({
-                tolerance: "pointer",
-                drop: function (arg, ui) {
-                    if (ui.draggable.attr("data-operator") !== undefined) {
-                        var op = new BMA.LTLOperations.Operation();
-                        var operator = undefined;
-                        for (var i = 0; i < operatorsArr.length; i++) {
-                            if (operatorsArr[i].Name === ui.draggable.attr("data-operator")) {
-                                op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].OperandsCount, undefined, operatorsArr[i].isFunction);
-                                break;
-                            }
-                        }
-                        op.Operands = [];
-                        if (op.Operator.OperandsCount > 1) {
-                            op.Operands.push(undefined);
-                            op.Operands.push(undefined);
-                        }
-                        else {
-                            op.Operands.push(undefined);
-                        }
-                        var opL = that.operationLayout;
-                        if (opL === undefined) {
-                            that.options.operation = op;
-                            that._refresh();
-                        }
-                        else {
-                            var parentOffset = $(this).offset();
-                            var relX = arg.pageX - parentOffset.left;
-                            var relY = arg.pageY - parentOffset.top;
-                            var svgCoords = that._getSVGCoords(relX, relY);
-                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
-                            if (emptyCell !== undefined) {
-                                emptyCell.operation.Operands[emptyCell.operandIndex] = op;
-                                that._refresh();
-                            }
-                        }
-                    }
-                    else if (draggableDiv.attr("data-dragsource") === "clipboard") {
-                        var opL = that.operationLayout;
-                        if (opL === undefined) {
-                            that.options.operation = opToDrag.operation.Clone();
-                            that._refresh();
-                        }
-                        else {
-                            var parentOffset = $(this).offset();
-                            var relX = arg.pageX - parentOffset.left;
-                            var relY = arg.pageY - parentOffset.top;
-                            var svgCoords = that._getSVGCoords(relX, relY);
-                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
-                            if (emptyCell !== undefined) {
-                                emptyCell.operation.Operands[emptyCell.operandIndex] = opToDrag.operation.Clone();
-                                that._refresh();
-                            }
-                        }
-                        opToDrag = undefined;
-                        draggableDiv.attr("data-dragsource", undefined);
-                    }
-                }
-            });
             var draggableWidth = svgDiv.width();
             var draggableHeight = svgDiv.height();
             var draggableDiv = $("<div></div>").width(draggableWidth).height(draggableHeight).css("z-index", 100);
@@ -12809,49 +12749,80 @@ jQuery.fn.extend({
                     draggableDiv.attr("data-dragsource", undefined);
                 }
             });
-            //Context menu
-            var holdCords = {
-                holdX: 0,
-                holdY: 0
-            };
-            $(document).on('vmousedown', function (event) {
-                holdCords.holdX = event.pageX;
-                holdCords.holdY = event.pageY;
-            });
-            svgDiv.contextmenu({
-                addClass: "temporal-properties-contextmenu",
-                delegate: root,
-                autoFocus: true,
-                preventContextMenuForPopup: true,
-                preventSelect: true,
-                //taphold: true,
-                menu: [
-                    //{ title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
-                    //{ title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
-                    //{ title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
-                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
-                ],
-                beforeOpen: function (event, ui) {
-                    ui.menu.zIndex(50);
-                    var x = event.pageX;
-                    var y = event.pageY;
-                    var left = x - svgDiv.offset().left;
-                    var top = y - svgDiv.offset().top;
-                    var svgCoords = that._getSVGCoords(left, top);
-                    if (that.operationLayout !== undefined) {
-                        that.contextElement = {
-                            x: svgCoords.x,
-                            y: svgCoords.y,
-                        };
+            svgDiv.droppable({
+                tolerance: "pointer",
+                drop: function (arg, ui) {
+                    if (ui.draggable.attr("data-operator") !== undefined) {
+                        //New operator is dropped
+                        var op = new BMA.LTLOperations.Operation();
+                        var operator = undefined;
+                        for (var i = 0; i < operatorsArr.length; i++) {
+                            if (operatorsArr[i].Name === ui.draggable.attr("data-operator")) {
+                                op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].OperandsCount, undefined, operatorsArr[i].isFunction);
+                                break;
+                            }
+                        }
+                        op.Operands = [];
+                        if (op.Operator.OperandsCount > 1) {
+                            op.Operands.push(undefined);
+                            op.Operands.push(undefined);
+                        }
+                        else {
+                            op.Operands.push(undefined);
+                        }
+                        var opL = that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = op;
+                            that._refresh();
+                        }
+                        else {
+                            var parentOffset = $(this).offset();
+                            var relX = arg.pageX - parentOffset.left;
+                            var relY = arg.pageY - parentOffset.top;
+                            var svgCoords = that._getSVGCoords(relX, relY);
+                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                                that._refresh();
+                            }
+                        }
                     }
-                },
-                select: function (event, ui) {
-                    var args = {};
-                    var x = event.pageX;
-                    var y = event.pageY;
-                    args.left = x - svgDiv.offset().left;
-                    args.top = y - svgDiv.offset().top;
-                    that._processContextMenuOption(ui.cmd);
+                    else if (ui.draggable.attr("data-state") !== undefined) {
+                        //New variable is dropped
+                        var kf = new BMA.LTLOperations.NameOperand(ui.draggable.attr("data-state"), undefined); //new BMA.LTLOperations.Keyframe(ui.draggable.attr("data-state"), "", [  ]);
+                        var opL = that.operationLayout;
+                        if (opL !== undefined) {
+                            var parentOffset = $(this).offset();
+                            var relX = arg.pageX - parentOffset.left;
+                            var relY = arg.pageY - parentOffset.top;
+                            var svgCoords = that._getSVGCoords(relX, relY);
+                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = kf;
+                                that._refresh();
+                            }
+                        }
+                    }
+                    else if (draggableDiv.attr("data-dragsource") === "clipboard") {
+                        var opL = that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = opToDrag.operation.Clone();
+                            that._refresh();
+                        }
+                        else {
+                            var parentOffset = $(this).offset();
+                            var relX = arg.pageX - parentOffset.left;
+                            var relY = arg.pageY - parentOffset.top;
+                            var svgCoords = that._getSVGCoords(relX, relY);
+                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = opToDrag.operation.Clone();
+                                that._refresh();
+                            }
+                        }
+                        opToDrag = undefined;
+                        draggableDiv.attr("data-dragsource", undefined);
+                    }
                 }
             });
             tpViewer.droppable({
@@ -12928,6 +12899,91 @@ jQuery.fn.extend({
                     return opToDrag !== undefined;
                 }
             });
+            deleteZone.droppable({
+                tolerance: "pointer",
+                drop: function (arg, ui) {
+                    opToDrag = undefined;
+                    draggableDiv.attr("data-dragsource", undefined);
+                }
+            });
+            /*
+            //Context menu
+            var holdCords = {
+                holdX: 0,
+                holdY: 0
+            };
+            
+            $(document).on('vmousedown', function (event) {
+                holdCords.holdX = event.pageX;
+                holdCords.holdY = event.pageY;
+            });
+
+            svgDiv.contextmenu({
+                addClass: "temporal-properties-contextmenu",
+                delegate: root,
+                autoFocus: true,
+                preventContextMenuForPopup: true,
+                preventSelect: true,
+                //taphold: true,
+                menu: [
+                    //{ title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
+                    //{ title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
+                    //{ title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
+                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
+                    //{ title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }] },
+                    //{ title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
+                ],
+                beforeOpen: function (event, ui) {
+                    ui.menu.zIndex(50);
+                    var x = event.pageX;
+                    var y = event.pageY;
+                    var left = x - svgDiv.offset().left;
+                    var top = y - svgDiv.offset().top;
+                    var svgCoords = that._getSVGCoords(left, top);
+                    if (that.operationLayout !== undefined) {
+                        that.contextElement = {
+                            x: svgCoords.x,
+                            y: svgCoords.y,
+                        }
+                    }
+
+                },
+                select: function (event, ui) {
+                    var args: any = {};
+                    var x = event.pageX;
+                    var y = event.pageY;
+                    args.left = x - svgDiv.offset().left;
+                    args.top = y - svgDiv.offset().top;
+
+                    that._processContextMenuOption(ui.cmd);
+                }
+            });
+            */
+        },
+        _refreshStates: function () {
+            var that = this;
+            this.statesbtns.empty();
+            for (var i = 0; i < this.options.variables.length; i++) {
+                var stateName = this.options.variables[i].Name;
+                //var stateTooltip = that._convertForTooltip(that.options.states[i]);
+                var stateDiv = $("<div></div>")
+                    .addClass("state-button")
+                    .addClass("ltl-tp-droppable")
+                    .attr("data-state", stateName)
+                    .css("z-index", 6)
+                    .css("cursor", "pointer")
+                    .text(stateName)
+                    .appendTo(that.statesbtns);
+                stateDiv.draggable({
+                    helper: "clone",
+                    cursorAt: { left: 0, top: 0 },
+                    opacity: 0.4,
+                    cursor: "pointer",
+                    start: function (event, ui) {
+                        //that._executeCommand("AddStateSelect", $(this).attr("data-state"));
+                    }
+                });
+            }
         },
         _processContextMenuOption: function (option) {
             var that = this;
