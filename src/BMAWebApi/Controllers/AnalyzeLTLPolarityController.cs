@@ -67,9 +67,7 @@ namespace bma.client.Controllers
         // POST api/AnalyzeLTL
         public Tuple<LTLAnalysisResult, LTLAnalysisResult> Post([FromBody]LTLPolarityAnalysisInputDTO input)
         {
-
             var log = new DefaultLogService();
-            // LTL Proof
             try
             {
                 string formula = input.Formula;

@@ -60,6 +60,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{CC7BADC4-D
 		..\..\docs\WebAPI\FairShareScheduler.yaml = ..\..\docs\WebAPI\FairShareScheduler.yaml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Jobs", "Jobs", "{9C3EDDD9-AFD3-4C20-9BDD-0389E6387231}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalyzeLTL", "..\..\src\Jobs\AnalyzeLTL\AnalyzeLTL.csproj", "{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -299,6 +303,18 @@ Global
 		{DF15D215-F176-428F-8E7B-52C47AEDA7D7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DF15D215-F176-428F-8E7B-52C47AEDA7D7}.Release|x64.ActiveCfg = Release|Any CPU
 		{DF15D215-F176-428F-8E7B-52C47AEDA7D7}.Release|x64.Build.0 = Release|Any CPU
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}.Debug|x64.Build.0 = Debug|Any CPU
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}.nuget|Any CPU.Build.0 = Release|Any CPU
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}.nuget|x64.ActiveCfg = Release|Any CPU
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}.nuget|x64.Build.0 = Release|Any CPU
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}.Release|x64.ActiveCfg = Release|Any CPU
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -313,5 +329,6 @@ Global
 		{850DF26E-27B2-4766-99DE-B815616C0D90} = {3A75A43A-30CB-4D92-89EB-7DA995979C52}
 		{A66E4EE3-5D4E-4889-90EC-36317A4DE882} = {3A75A43A-30CB-4D92-89EB-7DA995979C52}
 		{47E591BB-EB9E-41B0-A488-F271177D2616} = {3A75A43A-30CB-4D92-89EB-7DA995979C52}
+		{F27A4A37-7FDE-473E-AC6A-DCB38451BBF4} = {9C3EDDD9-AFD3-4C20-9BDD-0389E6387231}
 	EndGlobalSection
 EndGlobal

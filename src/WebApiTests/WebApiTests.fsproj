@@ -81,6 +81,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HttpPost.fs" />
+    <Compile Include="LTLTests.fs" />
+    <Compile Include="JobsConsoleAppTests.fs" />
     <Compile Include="WebApiTests.fs" />
     <None Include="packages.config" />
     <None Include="App.config" />
@@ -114,6 +116,13 @@
     <None Include="LTLQueries\PhosCas.response.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jobs\AnalyzeLTL\AnalyzeLTL.csproj">
+      <Name>AnalyzeLTL</Name>
+      <Project>{f27a4a37-7fde-473e-ac6a-dcb38451bbf4}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '11.0'">
