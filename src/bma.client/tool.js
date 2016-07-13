@@ -439,7 +439,8 @@
 //    : FORMULA EOF { return $1;};
 
 //FORMULA
-//    : FORMULA 'AND' FORMULA { $$ =  { operator: $2, operands: [$1, $3] }; }  
+//    : "(" FORMULA ")" { $$ = $2; }
+//| FORMULA 'AND' FORMULA { $$ =  { operator: $2, operands: [$1, $3] }; }  
 //| FORMULA 'OR' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; }  
 //| FORMULA 'UNTIL' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; }  
 //| FORMULA 'RELEASE' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; }  
@@ -554,9 +555,9 @@ var BMA;
         var parser = {
             trace: function trace() { },
             yy: {},
-            symbols_: { "error": 2, "e": 3, "FORMULA": 4, "EOF": 5, "AND": 6, "OR": 7, "UNTIL": 8, "RELEASE": 9, "WEAKUNTIL": 10, "UPTO": 11, "IMPLIES": 12, "SINGLELTLOPERATOR": 13, "VARIABLE": 14, "RIGHTPART": 15, "<=": 16, "CONST": 17, ">=": 18, "!=": 19, "=": 20, "<": 21, ">": 22, "NEXT": 23, "NOT": 24, "ALWAYS": 25, "EVENTUALLY": 26, "$accept": 0, "$end": 1 },
-            terminals_: { 2: "error", 5: "EOF", 6: "AND", 7: "OR", 8: "UNTIL", 9: "RELEASE", 10: "WEAKUNTIL", 11: "UPTO", 12: "IMPLIES", 14: "VARIABLE", 16: "<=", 17: "CONST", 18: ">=", 19: "!=", 20: "=", 21: "<", 22: ">", 23: "NEXT", 24: "NOT", 25: "ALWAYS", 26: "EVENTUALLY" },
-            productions_: [0, [3, 2], [4, 3], [4, 3], [4, 3], [4, 3], [4, 3], [4, 3], [4, 3], [4, 2], [4, 2], [15, 0], [15, 2], [15, 2], [15, 2], [15, 2], [15, 2], [15, 2], [13, 1], [13, 1], [13, 1], [13, 1]],
+            symbols_: { "error": 2, "e": 3, "FORMULA": 4, "EOF": 5, "(": 6, ")": 7, "AND": 8, "OR": 9, "UNTIL": 10, "RELEASE": 11, "WEAKUNTIL": 12, "UPTO": 13, "IMPLIES": 14, "SINGLELTLOPERATOR": 15, "VARIABLE": 16, "RIGHTPART": 17, "<=": 18, "CONST": 19, ">=": 20, "!=": 21, "=": 22, "<": 23, ">": 24, "NEXT": 25, "NOT": 26, "ALWAYS": 27, "EVENTUALLY": 28, "$accept": 0, "$end": 1 },
+            terminals_: { 2: "error", 5: "EOF", 6: "(", 7: ")", 8: "AND", 9: "OR", 10: "UNTIL", 11: "RELEASE", 12: "WEAKUNTIL", 13: "UPTO", 14: "IMPLIES", 16: "VARIABLE", 18: "<=", 19: "CONST", 20: ">=", 21: "!=", 22: "=", 23: "<", 24: ">", 25: "NEXT", 26: "NOT", 27: "ALWAYS", 28: "EVENTUALLY" },
+            productions_: [0, [3, 2], [4, 3], [4, 3], [4, 3], [4, 3], [4, 3], [4, 3], [4, 3], [4, 3], [4, 2], [4, 2], [17, 0], [17, 2], [17, 2], [17, 2], [17, 2], [17, 2], [17, 2], [15, 1], [15, 1], [15, 1], [15, 1]],
             performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */
                 /**/) {
                 /* this == yyval */
@@ -565,7 +566,7 @@ var BMA;
                 switch (yystate) {
                     case 1: return $$[$0 - 1];
                         break;
-                    case 2: this.$ = { operator: $$[$0 - 1], operands: [$$[$0 - 2], $$[$0]] };
+                    case 2: this.$ = $$[$0 - 1];
                         break;
                     case 3: this.$ = { operator: $$[$0 - 1], operands: [$$[$0 - 2], $$[$0]] };
                         break;
@@ -579,11 +580,11 @@ var BMA;
                         break;
                     case 8: this.$ = { operator: $$[$0 - 1], operands: [$$[$0 - 2], $$[$0]] };
                         break;
-                    case 9: this.$ = { operator: $$[$0 - 1], operands: [$$[$0]] };
+                    case 9: this.$ = { operator: $$[$0 - 1], operands: [$$[$0 - 2], $$[$0]] };
                         break;
-                    case 10: this.$ = { state: $$[$0] == null ? $$[$0 - 1] : { variable: $$[$0 - 1], operator: $$[$0].operator, const: $$[$0].const } };
+                    case 10: this.$ = { operator: $$[$0 - 1], operands: [$$[$0]] };
                         break;
-                    case 12: this.$ = { operator: $$[$0 - 1], const: $$[$0] };
+                    case 11: this.$ = { state: $$[$0] == null ? $$[$0 - 1] : { variable: $$[$0 - 1], operator: $$[$0].operator, const: $$[$0].const } };
                         break;
                     case 13: this.$ = { operator: $$[$0 - 1], const: $$[$0] };
                         break;
@@ -595,7 +596,7 @@ var BMA;
                         break;
                     case 17: this.$ = { operator: $$[$0 - 1], const: $$[$0] };
                         break;
-                    case 18: this.$ = $$[$0];
+                    case 18: this.$ = { operator: $$[$0 - 1], const: $$[$0] };
                         break;
                     case 19: this.$ = $$[$0];
                         break;
@@ -603,10 +604,12 @@ var BMA;
                         break;
                     case 21: this.$ = $$[$0];
                         break;
+                    case 22: this.$ = $$[$0];
+                        break;
                 }
             },
-            table: [{ 3: 1, 4: 2, 13: 3, 14: [1, 4], 23: [1, 5], 24: [1, 6], 25: [1, 7], 26: [1, 8] }, { 1: [3] }, { 5: [1, 9], 6: [1, 10], 7: [1, 11], 8: [1, 12], 9: [1, 13], 10: [1, 14], 11: [1, 15], 12: [1, 16] }, { 4: 17, 13: 3, 14: [1, 4], 23: [1, 5], 24: [1, 6], 25: [1, 7], 26: [1, 8] }, { 5: [2, 11], 6: [2, 11], 7: [2, 11], 8: [2, 11], 9: [2, 11], 10: [2, 11], 11: [2, 11], 12: [2, 11], 15: 18, 16: [1, 19], 18: [1, 20], 19: [1, 21], 20: [1, 22], 21: [1, 23], 22: [1, 24] }, { 14: [2, 18], 23: [2, 18], 24: [2, 18], 25: [2, 18], 26: [2, 18] }, { 14: [2, 19], 23: [2, 19], 24: [2, 19], 25: [2, 19], 26: [2, 19] }, { 14: [2, 20], 23: [2, 20], 24: [2, 20], 25: [2, 20], 26: [2, 20] }, { 14: [2, 21], 23: [2, 21], 24: [2, 21], 25: [2, 21], 26: [2, 21] }, { 1: [2, 1] }, { 4: 25, 13: 3, 14: [1, 4], 23: [1, 5], 24: [1, 6], 25: [1, 7], 26: [1, 8] }, { 4: 26, 13: 3, 14: [1, 4], 23: [1, 5], 24: [1, 6], 25: [1, 7], 26: [1, 8] }, { 4: 27, 13: 3, 14: [1, 4], 23: [1, 5], 24: [1, 6], 25: [1, 7], 26: [1, 8] }, { 4: 28, 13: 3, 14: [1, 4], 23: [1, 5], 24: [1, 6], 25: [1, 7], 26: [1, 8] }, { 4: 29, 13: 3, 14: [1, 4], 23: [1, 5], 24: [1, 6], 25: [1, 7], 26: [1, 8] }, { 4: 30, 13: 3, 14: [1, 4], 23: [1, 5], 24: [1, 6], 25: [1, 7], 26: [1, 8] }, { 4: 31, 13: 3, 14: [1, 4], 23: [1, 5], 24: [1, 6], 25: [1, 7], 26: [1, 8] }, { 5: [2, 9], 6: [2, 9], 7: [2, 9], 8: [2, 9], 9: [2, 9], 10: [2, 9], 11: [2, 9], 12: [2, 9] }, { 5: [2, 10], 6: [2, 10], 7: [2, 10], 8: [2, 10], 9: [2, 10], 10: [2, 10], 11: [2, 10], 12: [2, 10] }, { 17: [1, 32] }, { 17: [1, 33] }, { 17: [1, 34] }, { 17: [1, 35] }, { 17: [1, 36] }, { 17: [1, 37] }, { 5: [2, 2], 6: [2, 2], 7: [2, 2], 8: [1, 12], 9: [1, 13], 10: [1, 14], 11: [1, 15], 12: [2, 2] }, { 5: [2, 3], 6: [1, 10], 7: [2, 3], 8: [1, 12], 9: [1, 13], 10: [1, 14], 11: [1, 15], 12: [2, 3] }, { 5: [2, 4], 6: [2, 4], 7: [2, 4], 8: [2, 4], 9: [2, 4], 10: [2, 4], 11: [2, 4], 12: [2, 4] }, { 5: [2, 5], 6: [2, 5], 7: [2, 5], 8: [2, 5], 9: [2, 5], 10: [2, 5], 11: [2, 5], 12: [2, 5] }, { 5: [2, 6], 6: [2, 6], 7: [2, 6], 8: [2, 6], 9: [2, 6], 10: [2, 6], 11: [2, 6], 12: [2, 6] }, { 5: [2, 7], 6: [2, 7], 7: [2, 7], 8: [2, 7], 9: [2, 7], 10: [2, 7], 11: [2, 7], 12: [2, 7] }, { 5: [2, 8], 6: [1, 10], 7: [1, 11], 8: [1, 12], 9: [1, 13], 10: [1, 14], 11: [1, 15], 12: [1, 16] }, { 5: [2, 12], 6: [2, 12], 7: [2, 12], 8: [2, 12], 9: [2, 12], 10: [2, 12], 11: [2, 12], 12: [2, 12] }, { 5: [2, 13], 6: [2, 13], 7: [2, 13], 8: [2, 13], 9: [2, 13], 10: [2, 13], 11: [2, 13], 12: [2, 13] }, { 5: [2, 14], 6: [2, 14], 7: [2, 14], 8: [2, 14], 9: [2, 14], 10: [2, 14], 11: [2, 14], 12: [2, 14] }, { 5: [2, 15], 6: [2, 15], 7: [2, 15], 8: [2, 15], 9: [2, 15], 10: [2, 15], 11: [2, 15], 12: [2, 15] }, { 5: [2, 16], 6: [2, 16], 7: [2, 16], 8: [2, 16], 9: [2, 16], 10: [2, 16], 11: [2, 16], 12: [2, 16] }, { 5: [2, 17], 6: [2, 17], 7: [2, 17], 8: [2, 17], 9: [2, 17], 10: [2, 17], 11: [2, 17], 12: [2, 17] }],
-            defaultActions: { 9: [2, 1] },
+            table: [{ 3: 1, 4: 2, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 1: [3] }, { 5: [1, 10], 8: [1, 11], 9: [1, 12], 10: [1, 13], 11: [1, 14], 12: [1, 15], 13: [1, 16], 14: [1, 17] }, { 4: 18, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 19, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 5: [2, 12], 7: [2, 12], 8: [2, 12], 9: [2, 12], 10: [2, 12], 11: [2, 12], 12: [2, 12], 13: [2, 12], 14: [2, 12], 17: 20, 18: [1, 21], 20: [1, 22], 21: [1, 23], 22: [1, 24], 23: [1, 25], 24: [1, 26] }, { 6: [2, 19], 16: [2, 19], 25: [2, 19], 26: [2, 19], 27: [2, 19], 28: [2, 19] }, { 6: [2, 20], 16: [2, 20], 25: [2, 20], 26: [2, 20], 27: [2, 20], 28: [2, 20] }, { 6: [2, 21], 16: [2, 21], 25: [2, 21], 26: [2, 21], 27: [2, 21], 28: [2, 21] }, { 6: [2, 22], 16: [2, 22], 25: [2, 22], 26: [2, 22], 27: [2, 22], 28: [2, 22] }, { 1: [2, 1] }, { 4: 27, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 28, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 29, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 30, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 31, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 32, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 33, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 7: [1, 34], 8: [1, 11], 9: [1, 12], 10: [1, 13], 11: [1, 14], 12: [1, 15], 13: [1, 16], 14: [1, 17] }, { 5: [2, 10], 7: [2, 10], 8: [2, 10], 9: [2, 10], 10: [2, 10], 11: [2, 10], 12: [2, 10], 13: [2, 10], 14: [2, 10] }, { 5: [2, 11], 7: [2, 11], 8: [2, 11], 9: [2, 11], 10: [2, 11], 11: [2, 11], 12: [2, 11], 13: [2, 11], 14: [2, 11] }, { 19: [1, 35] }, { 19: [1, 36] }, { 19: [1, 37] }, { 19: [1, 38] }, { 19: [1, 39] }, { 19: [1, 40] }, { 5: [2, 3], 7: [2, 3], 8: [2, 3], 9: [2, 3], 10: [1, 13], 11: [1, 14], 12: [1, 15], 13: [1, 16], 14: [2, 3] }, { 5: [2, 4], 7: [2, 4], 8: [1, 11], 9: [2, 4], 10: [1, 13], 11: [1, 14], 12: [1, 15], 13: [1, 16], 14: [2, 4] }, { 5: [2, 5], 7: [2, 5], 8: [2, 5], 9: [2, 5], 10: [2, 5], 11: [2, 5], 12: [2, 5], 13: [2, 5], 14: [2, 5] }, { 5: [2, 6], 7: [2, 6], 8: [2, 6], 9: [2, 6], 10: [2, 6], 11: [2, 6], 12: [2, 6], 13: [2, 6], 14: [2, 6] }, { 5: [2, 7], 7: [2, 7], 8: [2, 7], 9: [2, 7], 10: [2, 7], 11: [2, 7], 12: [2, 7], 13: [2, 7], 14: [2, 7] }, { 5: [2, 8], 7: [2, 8], 8: [2, 8], 9: [2, 8], 10: [2, 8], 11: [2, 8], 12: [2, 8], 13: [2, 8], 14: [2, 8] }, { 5: [2, 9], 7: [2, 9], 8: [1, 11], 9: [1, 12], 10: [1, 13], 11: [1, 14], 12: [1, 15], 13: [1, 16], 14: [1, 17] }, { 5: [2, 2], 7: [2, 2], 8: [2, 2], 9: [2, 2], 10: [2, 2], 11: [2, 2], 12: [2, 2], 13: [2, 2], 14: [2, 2] }, { 5: [2, 13], 7: [2, 13], 8: [2, 13], 9: [2, 13], 10: [2, 13], 11: [2, 13], 12: [2, 13], 13: [2, 13], 14: [2, 13] }, { 5: [2, 14], 7: [2, 14], 8: [2, 14], 9: [2, 14], 10: [2, 14], 11: [2, 14], 12: [2, 14], 13: [2, 14], 14: [2, 14] }, { 5: [2, 15], 7: [2, 15], 8: [2, 15], 9: [2, 15], 10: [2, 15], 11: [2, 15], 12: [2, 15], 13: [2, 15], 14: [2, 15] }, { 5: [2, 16], 7: [2, 16], 8: [2, 16], 9: [2, 16], 10: [2, 16], 11: [2, 16], 12: [2, 16], 13: [2, 16], 14: [2, 16] }, { 5: [2, 17], 7: [2, 17], 8: [2, 17], 9: [2, 17], 10: [2, 17], 11: [2, 17], 12: [2, 17], 13: [2, 17], 14: [2, 17] }, { 5: [2, 18], 7: [2, 18], 8: [2, 18], 9: [2, 18], 10: [2, 18], 11: [2, 18], 12: [2, 18], 13: [2, 18], 14: [2, 18] }],
+            defaultActions: { 10: [2, 1] },
             parseError: function parseError(str, hash) { if (hash.recoverable) { this.trace(str) } else { throw new Error(str) } },
             parse: function parse(input) {
                 var self = this, stack = [0], vstack = [null], lstack = [], table = this.table, yytext = '', yylineno = 0, yyleng = 0, recovering = 0, TERROR = 2, EOF = 1;
@@ -808,47 +811,47 @@ var BMA;
                     switch ($avoiding_name_collisions) {
                         case 0: /* skip whitespace */
                             break;
-                        case 1: return '(';
+                        case 1: return 6;
                             break;
-                        case 2: return ')';
+                        case 2: return 7;
                             break;
-                        case 3: return 18;
+                        case 3: return 20;
                             break;
-                        case 4: return 16;
+                        case 4: return 18;
                             break;
-                        case 5: return 22;
+                        case 5: return 24;
                             break;
-                        case 6: return 21;
+                        case 6: return 23;
                             break;
-                        case 7: return 20;
+                        case 7: return 22;
                             break;
-                        case 8: return 19;
+                        case 8: return 21;
                             break;
-                        case 9: return 6;
+                        case 9: return 8;
                             break;
-                        case 10: return 7;
+                        case 10: return 9;
                             break;
-                        case 11: return 12;
+                        case 11: return 14;
                             break;
-                        case 12: return 11;
+                        case 12: return 13;
                             break;
-                        case 13: return 10;
+                        case 13: return 12;
                             break;
-                        case 14: return 8;
+                        case 14: return 10;
                             break;
-                        case 15: return 9;
+                        case 15: return 11;
                             break;
-                        case 16: return 23;
+                        case 16: return 25;
                             break;
-                        case 17: return 24;
+                        case 17: return 26;
                             break;
-                        case 18: return 25;
+                        case 18: return 27;
                             break;
-                        case 19: return 26;
+                        case 19: return 28;
                             break;
-                        case 20: return 17;
+                        case 20: return 19;
                             break;
-                        case 21: return 14;
+                        case 21: return 16;
                             break;
                         case 22: return 5;
                             break;
@@ -867,7 +870,6 @@ var BMA;
         return new Parser;
     })();
     BMA.parser = parser;
-
 
     if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
         exports.parser = parser;
@@ -1179,7 +1181,7 @@ var BMA;
                         context.closePath();
                         context.fill();
                         context.stroke();
-                        if (layoutPart.type === "keyframe") {
+                        if (layoutPart.type === "keyframe" || layoutPart.type === "other") {
                             var name = layoutPart.name;
                             var fs = 16;
                             context.font = "16px Segoe-UI";
@@ -1291,8 +1293,10 @@ var BMA;
                     layout.type = "keyframe";
                     layout.name = operation.Name;
                 }
-                else
-                    throw "Unknown Keyframe type";
+                else {
+                    layout.type = "other";
+                    layout.name = operation.Name;
+                }
                 return layout;
             }
         }
@@ -1870,14 +1874,14 @@ var BMA;
                             else if (formula.operands[0].state.variable && formulaChanged) {
                                 for (var j = 0; j < newStates[1].length; j++)
                                     if (newStates[1][j].Name == formula.operands[1].state) {
-                                        return BMA.ModelHelper.UpdateStatesAfterMerging(states, operands[0], newStates[1][j]);
+                                        return BMA.ModelHelper.UpdateStatesAfterMerging(states, newStates[1][j], operands[0]);
                                     }
                                 return undefined;
                             }
                             else if (formula.operands[1].state.variable && formulaChanged) {
                                 for (var j = 0; j < newStates[0].length; j++)
                                     if (newStates[0][j].Name == formula.operands[0].state) {
-                                        return BMA.ModelHelper.UpdateStatesAfterMerging(states, operands[1], newStates[0][j]);
+                                        return BMA.ModelHelper.UpdateStatesAfterMerging(states, newStates[0][j], operands[1]);
                                     }
                                 return undefined;
                             }
@@ -1899,6 +1903,110 @@ var BMA;
             throw "Operation was not found"; //return undefined;
         }
         ModelHelper.ConvertToOperation = ConvertToOperation;
+        function CompareOperationsPriority(op1, op2) {
+            var getPriority = function (op) {
+                var opPriority;
+                switch (op.Operator.Name) {
+                    case "NEXT":
+                        opPriority = 1;
+                        break;
+                    case "ALWAYS":
+                        opPriority = 1;
+                        break;
+                    case "EVENTUALLY":
+                        opPriority = 1;
+                        break;
+                    case "NOT":
+                        opPriority = 1;
+                        break;
+                    case "UNTIL":
+                        opPriority = 2;
+                        break;
+                    case "RELEASE":
+                        opPriority = 2;
+                        break;
+                    case "WEAKUNTIL":
+                        opPriority = 2;
+                        break;
+                    case "UPTO":
+                        opPriority = 2;
+                        break;
+                    case "AND":
+                        opPriority = 3;
+                        break;
+                    case "OR":
+                        opPriority = 4;
+                        break;
+                    case "IMPLIES":
+                        opPriority = 5;
+                        break;
+                    default:
+                        opPriority = 6;
+                        break;
+                }
+                return opPriority;
+            };
+            if (op2 instanceof BMA.LTLOperations.Operation && getPriority(op1) < getPriority(op2))
+                return 1;
+            else if (op2 instanceof BMA.LTLOperations.Operation && getPriority(op1) == getPriority(op2) && getPriority(op1) !== 5)
+                return 2;
+            else
+                return 0;
+        }
+        ModelHelper.CompareOperationsPriority = CompareOperationsPriority;
+        function ConvertOperationToString(operation, extendedStates) {
+            if (extendedStates === void 0) { extendedStates = false; }
+            var op = "";
+            if (operation instanceof BMA.LTLOperations.Keyframe) {
+                if (extendedStates) {
+                    if (operation.Operands.length == 0)
+                        throw "Unsuitable states are found";
+                    op += "(";
+                    for (var i = 0; i < operation.Operands.length; i++) {
+                        if (i != 0)
+                            op += "and ";
+                        var operand = operation.Operands[i];
+                        //op += operand.GetFormula() + " ";
+                        if (operand instanceof BMA.LTLOperations.KeyframeEquation)
+                            op += operand.LeftOperand.Name + operand.Operator + operand.RightOperand.Value + " ";
+                        else
+                            throw "Unknown type of keyframe equation";
+                    }
+                    op = op.trim() + ") ";
+                }
+                else {
+                    var name = operation.Name ? operation.Name : "Unnamed";
+                    op += name + " ";
+                }
+            }
+            else if (operation instanceof BMA.LTLOperations.SelfLoopKeyframe) {
+                op += "SelfLoop ";
+            }
+            else if (operation instanceof BMA.LTLOperations.OscillationKeyframe) {
+                op += "Oscillation ";
+            }
+            else if (operation instanceof BMA.LTLOperations.TrueKeyframe) {
+                op += "True ";
+            }
+            else if (operation instanceof BMA.LTLOperations.Operation) {
+                if (operation.Operator.OperandsCount == 2) {
+                    op += (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[0]) == 1 ? "(" + (BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates)).trim() + ") " :
+                        BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates)) + operation.Operator.Name.toLowerCase() + " " +
+                        (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[1]) ? "(" + BMA.ModelHelper.ConvertOperationToString(operation.Operands[1], extendedStates).trim() + ") " :
+                            BMA.ModelHelper.ConvertOperationToString(operation.Operands[1], extendedStates));
+                }
+                else if (operation.Operator.OperandsCount == 1) {
+                    op += operation.Operator.Name.toLowerCase() + " " + (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[0]) == 1 ?
+                        "(" + BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates).trim() + ") " :
+                        BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates));
+                }
+            }
+            else if (!operation) {
+                op += "undefined" + " ";
+            }
+            return op;
+        }
+        ModelHelper.ConvertOperationToString = ConvertOperationToString;
         function MergeStates(currentStates, newStates) {
             var result = {
                 states: [],
@@ -4142,6 +4250,13 @@ var BMA;
             NameOperand.prototype.Clone = function () {
                 return new NameOperand(this.name, this.id);
             };
+            NameOperand.prototype.Equals = function (op) {
+                if (op instanceof BMA.LTLOperations.NameOperand) {
+                    return this.name === op.Name && this.id === op.Id;
+                }
+                else
+                    return false;
+            };
             return NameOperand;
         })();
         LTLOperations.NameOperand = NameOperand;
@@ -4161,6 +4276,13 @@ var BMA;
             };
             ConstOperand.prototype.Clone = function () {
                 return new ConstOperand(this.const);
+            };
+            ConstOperand.prototype.Equals = function (op) {
+                if (op instanceof BMA.LTLOperations.ConstOperand) {
+                    return this.const === op.Value;
+                }
+                else
+                    return false;
             };
             return ConstOperand;
         })();
@@ -4197,6 +4319,13 @@ var BMA;
             };
             KeyframeEquation.prototype.Clone = function () {
                 return new KeyframeEquation(this.leftOperand.Clone(), this.operator, this.rightOperand.Clone());
+            };
+            KeyframeEquation.prototype.Equals = function (op) {
+                if (op instanceof BMA.LTLOperations.KeyframeEquation) {
+                    return this.leftOperand.Equals(op.LeftOperand) && this.operator == op.Operator && this.rightOperand.Equals(op.RightOperand);
+                }
+                else
+                    return false;
             };
             return KeyframeEquation;
         })();
@@ -4250,6 +4379,14 @@ var BMA;
             DoubleKeyframeEquation.prototype.Clone = function () {
                 return new DoubleKeyframeEquation(this.leftOperand.Clone(), this.leftOperator, this.middleOperand.Clone(), this.rightOperator, this.rightOperand.Clone());
             };
+            DoubleKeyframeEquation.prototype.Equals = function (op) {
+                if (op instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                    return this.leftOperand.Equals(op.LeftOperand) && this.leftOperator == op.LeftOperator && this.middleOperand.Equals(op.MiddleOperand)
+                        && this.rightOperator == op.RightOperator && this.rightOperand.Equals(op.RightOperand);
+                }
+                else
+                    return false;
+            };
             DoubleKeyframeEquation.prototype.Invert = function (operator) {
                 switch (operator) {
                     case ">":
@@ -4276,6 +4413,13 @@ var BMA;
             TrueKeyframe.prototype.Clone = function () {
                 return new TrueKeyframe();
             };
+            TrueKeyframe.prototype.Equals = function (op) {
+                if (op instanceof BMA.LTLOperations.TrueKeyframe) {
+                    return true;
+                }
+                else
+                    return false;
+            };
             return TrueKeyframe;
         })();
         LTLOperations.TrueKeyframe = TrueKeyframe;
@@ -4288,6 +4432,13 @@ var BMA;
             SelfLoopKeyframe.prototype.Clone = function () {
                 return new SelfLoopKeyframe();
             };
+            SelfLoopKeyframe.prototype.Equals = function (op) {
+                if (op instanceof BMA.LTLOperations.SelfLoopKeyframe) {
+                    return true;
+                }
+                else
+                    return false;
+            };
             return SelfLoopKeyframe;
         })();
         LTLOperations.SelfLoopKeyframe = SelfLoopKeyframe;
@@ -4299,6 +4450,13 @@ var BMA;
             };
             OscillationKeyframe.prototype.Clone = function () {
                 return new OscillationKeyframe();
+            };
+            OscillationKeyframe.prototype.Equals = function (op) {
+                if (op instanceof BMA.LTLOperations.OscillationKeyframe) {
+                    return true;
+                }
+                else
+                    return false;
             };
             return OscillationKeyframe;
         })();
@@ -4349,6 +4507,67 @@ var BMA;
             };
             Keyframe.prototype.Clone = function () {
                 return new BMA.LTLOperations.Keyframe(this.name, this.description, this.operands.slice(0));
+            };
+            Keyframe.prototype.CompareOperands = function (operands) {
+                if (this.operands.length !== operands.length)
+                    return false;
+                var isEqual = true;
+                var sortOps = function (x, y) {
+                    if (x instanceof KeyframeEquation && y instanceof KeyframeEquation) {
+                        if (x.Equals(y))
+                            return 0;
+                        var xLeft = x.LeftOperand, yLeft = y.LeftOperand;
+                        if (xLeft instanceof NameOperand && yLeft instanceof NameOperand) {
+                            return xLeft.Name < yLeft.Name ? -1 : 1;
+                        }
+                        else if (xLeft instanceof ConstOperand) {
+                            if (yLeft instanceof ConstOperand)
+                                return xLeft.Value < yLeft.Value ? -1 : 1;
+                            else
+                                return 1;
+                        }
+                        else
+                            return -1;
+                    }
+                    else if (x instanceof DoubleKeyframeEquation) {
+                        if (y instanceof DoubleKeyframeEquation) {
+                            if (x.Equals(y))
+                                return 0;
+                            var xLeft = x.LeftOperand, yLeft = y.LeftOperand;
+                            if (xLeft instanceof NameOperand && yLeft instanceof NameOperand) {
+                                return xLeft.Name < yLeft.Name ? -1 : 1;
+                            }
+                            else if (xLeft instanceof ConstOperand) {
+                                if (yLeft instanceof ConstOperand)
+                                    return xLeft.Value < yLeft.Value ? -1 : 1;
+                                else
+                                    return 1;
+                            }
+                            else
+                                return -1;
+                        }
+                        else
+                            return 1;
+                    }
+                    else
+                        return -1;
+                };
+                var operands1 = this.operands.sort(sortOps);
+                var operands2 = operands.sort(sortOps);
+                for (var i = 0; i < operands1.length; i++) {
+                    if (!isEqual)
+                        return false;
+                    isEqual = isEqual && operands1[i].Equals(operands2[i]);
+                }
+                return isEqual;
+            };
+            Keyframe.prototype.Equals = function (op) {
+                if (op instanceof BMA.LTLOperations.Keyframe) {
+                    var isEqual = this.name == op.Name && this.description == op.Description;
+                    return isEqual && this.CompareOperands(op.Operands);
+                }
+                else
+                    return false;
             };
             return Keyframe;
         })();
@@ -4430,9 +4649,22 @@ var BMA;
                     operands.push(this.operands[i] === undefined ? undefined : this.operands[i].Clone());
                 }
                 var result = new Operation();
-                result.Operator = new Operator(this.operator.Name, this.operator.OperandsCount, this.operator.Function);
+                result.Operator = new Operator(this.operator.Name, this.operator.OperandsCount, this.operator.Function, this.Operator.IsFunction);
                 result.Operands = operands;
                 return result;
+            };
+            Operation.prototype.Equals = function (operation) {
+                if (operation instanceof Operation && this.operator == operation.operator) {
+                    var isEqual = true;
+                    for (var i = 0; i < this.operands.length; i++) {
+                        isEqual = isEqual && (this.operands[i] && operation.Operands[i] ?
+                            this.operands[i].Equals(operation.Operands[i])
+                            : (this.operands[i] === undefined && operation.Operands[i] === undefined) ? true : false);
+                    }
+                    return isEqual;
+                }
+                else
+                    return false;
             };
             return Operation;
         })();
@@ -4911,7 +5143,7 @@ var BMA;
                         });
                         var uniquename = this.GenerateUUID();
                         var path = svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)", id: uniquename });
-                        if (layoutPart.type === "keyframe") {
+                        if (layoutPart.type === "keyframe" || layoutPart.type === "other") {
                             var textGroup = svg.group(stateGroup, {});
                             var label = svg.text(textGroup, 0, 0, layoutPart.name, {
                                 "font-size": 16,
@@ -5920,6 +6152,7 @@ var BMA;
             function TemporalPropertiesEditorDriver(commands, popupWindow) {
                 this.statesToSet = [];
                 this.ftvcallback = undefined;
+                this.oneditformulacallback = undefined;
                 this.popupWindow = popupWindow;
                 this.commands = commands;
             }
@@ -5995,9 +6228,25 @@ var BMA;
                     this.tpeditor.temporalpropertieseditor({ onfittoview: callback });
                 }
             };
+            TemporalPropertiesEditorDriver.prototype.SetFormulasEditorCallback = function (callback) {
+                this.oneditformulacallback = callback;
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor({ oneditformula: callback });
+                }
+            };
             TemporalPropertiesEditorDriver.prototype.SetCopyZoneIcon = function (operation) {
                 if (this.tpeditor !== undefined) {
                     this.tpeditor.temporalpropertieseditor({ copyzoneoperation: operation });
+                }
+            };
+            TemporalPropertiesEditorDriver.prototype.ShowFormulaEditor = function (formula) {
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor("showFormulaEditor", formula);
+                }
+            };
+            TemporalPropertiesEditorDriver.prototype.HideFormulaEditor = function () {
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor("hideFormulaEditor");
                 }
             };
             return TemporalPropertiesEditorDriver;
@@ -12755,15 +13004,24 @@ jQuery.fn.extend({
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 (function ($) {
     $.widget("BMA.formulaeditor", {
+        _tpViewer: undefined,
+        _clipboardOps: [],
+        options: {
+            operation: undefined,
+            variables: [{ Name: "A" }, { Name: "B" }, { Name: "C" }]
+        },
         _create: function () {
             var that = this;
             var root = this.element;
+            root.css("display", "flex").css("flex-direcition", "row");
+            var leftContainer = $("<div></div>").width("80%").appendTo(root);
             //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
-            var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
+            var widthStr = "calc(100% - 20px)";
+            var toolbar = $("<div></div>").addClass("temporal-toolbar").css("margin-top", 0).width(widthStr).appendTo(leftContainer);
             //Adding states
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("Variables<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
-            //this._refreshStates();
+            this._refreshStates();
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             operators.width(350);
@@ -12838,7 +13096,7 @@ jQuery.fn.extend({
             });
             */
             //Adding drawing surface
-            var svgDiv = $("<div></div>").css("background-color", "white").height(200).width("100%").appendTo(root);
+            var svgDiv = $("<div></div>").css("background-color", "white").height(200).width("100%").appendTo(leftContainer);
             that.svgDiv = svgDiv;
             var pixofs = 0;
             svgDiv.svg({
@@ -12863,47 +13121,25 @@ jQuery.fn.extend({
                     opL.HighlightAtPosition(svgCoords.x, svgCoords.y);
                 }
             });
-            svgDiv.droppable({
-                drop: function (arg, ui) {
-                    if (ui.draggable.attr("data-operator") !== undefined) {
-                        var op = new BMA.LTLOperations.Operation();
-                        var operator = undefined;
-                        for (var i = 0; i < operatorsArr.length; i++) {
-                            if (operatorsArr[i].Name === ui.draggable.attr("data-operator")) {
-                                op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].OperandsCount, undefined, operatorsArr[i].isFunction);
-                                break;
-                            }
-                        }
-                        op.Operands = [];
-                        if (op.Operator.OperandsCount > 1) {
-                            op.Operands.push(undefined);
-                            op.Operands.push(undefined);
-                        }
-                        else {
-                            op.Operands.push(undefined);
-                        }
-                        var opL = that.operationLayout;
-                        if (opL === undefined) {
-                            that.options.operation = op;
-                            that._refresh();
-                        }
-                        else {
-                            var parentOffset = $(this).offset();
-                            var relX = arg.pageX - parentOffset.left;
-                            var relY = arg.pageY - parentOffset.top;
-                            var svgCoords = that._getSVGCoords(relX, relY);
-                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
-                            if (emptyCell !== undefined) {
-                                emptyCell.operation.Operands[emptyCell.operandIndex] = op;
-                                that._refresh();
-                            }
-                        }
-                    }
-                }
+            //Adding clipboard panel
+            var clipboardPanel = $("<div></div>").width("20%").height(301).addClass("temporal-dropzones").appendTo(root);
+            //Adding copy zone
+            var tpViewer = $("<div></div>").addClass("dropzone copy").css("top", 0).css("left", 0).width("100%").height("calc(80% - 2px)").appendTo(clipboardPanel);
+            var defaultCopyZoneIcon = $("<div></div>").css("position", "absolute").width("100%").height("95%").css("text-align", "center");
+            $("<span></span>").css("display", "inline-block").css("vertical-align", "middle").height("100%").appendTo(defaultCopyZoneIcon);
+            $('<img>').attr('src', "../images/LTL-copy.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultCopyZoneIcon);
+            that._tpViewer = tpViewer.temporalpropertiesviewer({
+                rightOffset: 15,
+                defaultIcon: defaultCopyZoneIcon
             });
+            //Adding delete zone
+            var deleteZone = $("<div></div>").addClass("dropzone delete").css("left", 0).css("bottom", 0).css("right", 0).width("100%").height("calc(20% - 2px)").appendTo(clipboardPanel);
+            var defaultDeleteZoneIcon = $("<div></div>").width("100%").height("95%").css("text-align", "center").appendTo(deleteZone);
+            $("<span></span>").css("display", "inline-block").css("vertical-align", "middle").height("100%").appendTo(defaultDeleteZoneIcon);
+            $('<img>').attr('src', "../images/LTL-delete.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultDeleteZoneIcon);
             var draggableWidth = svgDiv.width();
             var draggableHeight = svgDiv.height();
-            var draggableDiv = $("<div></div>").width(draggableWidth).height(draggableHeight);
+            var draggableDiv = $("<div></div>").width(draggableWidth).height(draggableHeight).css("z-index", 100);
             var canvas = $("<canvas></canvas>").attr("width", draggableWidth).attr("height", draggableHeight).appendTo(draggableDiv)[0];
             var opToDrag = undefined;
             svgDiv.draggable({
@@ -12914,6 +13150,7 @@ jQuery.fn.extend({
                 //opacity: 0.4,
                 cursor: "pointer",
                 start: function (arg, ui) {
+                    draggableDiv.attr("data-dragsource", "editor");
                     canvas.height = canvas.height;
                     var opL = that.operationLayout;
                     var parentOffset = $(this).offset();
@@ -12977,20 +13214,181 @@ jQuery.fn.extend({
                                 opToDrag.parentoperation.Operands[opToDrag.parentoperationindex] = opToDrag.operation;
                             }
                         }
-                        opToDrag = undefined;
+                        //opToDrag = undefined;
                         that._refresh();
+                    }
+                    draggableDiv.attr("data-dragsource", undefined);
+                }
+            });
+            svgDiv.droppable({
+                tolerance: "pointer",
+                drop: function (arg, ui) {
+                    if (ui.draggable.attr("data-operator") !== undefined) {
+                        //New operator is dropped
+                        var op = new BMA.LTLOperations.Operation();
+                        var operator = undefined;
+                        for (var i = 0; i < operatorsArr.length; i++) {
+                            if (operatorsArr[i].Name === ui.draggable.attr("data-operator")) {
+                                op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].OperandsCount, undefined, operatorsArr[i].isFunction);
+                                break;
+                            }
+                        }
+                        op.Operands = [];
+                        if (op.Operator.OperandsCount > 1) {
+                            op.Operands.push(undefined);
+                            op.Operands.push(undefined);
+                        }
+                        else {
+                            op.Operands.push(undefined);
+                        }
+                        var opL = that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = op;
+                            that._refresh();
+                        }
+                        else {
+                            var parentOffset = $(this).offset();
+                            var relX = arg.pageX - parentOffset.left;
+                            var relY = arg.pageY - parentOffset.top;
+                            var svgCoords = that._getSVGCoords(relX, relY);
+                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                                that._refresh();
+                            }
+                        }
+                    }
+                    else if (ui.draggable.attr("data-state") !== undefined) {
+                        //New variable is dropped
+                        var kf = new BMA.LTLOperations.NameOperand(ui.draggable.attr("data-state"), undefined); //new BMA.LTLOperations.Keyframe(ui.draggable.attr("data-state"), "", [  ]);
+                        var opL = that.operationLayout;
+                        if (opL !== undefined) {
+                            var parentOffset = $(this).offset();
+                            var relX = arg.pageX - parentOffset.left;
+                            var relY = arg.pageY - parentOffset.top;
+                            var svgCoords = that._getSVGCoords(relX, relY);
+                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = kf;
+                                that._refresh();
+                            }
+                        }
+                    }
+                    else if (draggableDiv.attr("data-dragsource") === "clipboard") {
+                        var opL = that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = opToDrag.operation.Clone();
+                            that._refresh();
+                        }
+                        else {
+                            var parentOffset = $(this).offset();
+                            var relX = arg.pageX - parentOffset.left;
+                            var relY = arg.pageY - parentOffset.top;
+                            var svgCoords = that._getSVGCoords(relX, relY);
+                            var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
+                            if (emptyCell !== undefined) {
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = opToDrag.operation.Clone();
+                                that._refresh();
+                            }
+                        }
+                        opToDrag = undefined;
+                        draggableDiv.attr("data-dragsource", undefined);
                     }
                 }
             });
+            tpViewer.droppable({
+                tolerance: "pointer",
+                drop: function (arg, ui) {
+                    if (ui.draggable.attr("data-dragsource") === "clipboard")
+                        return;
+                    if (opToDrag !== undefined) {
+                        that._clipboardOps.push({ operation: opToDrag.operation.Clone(), status: "nottested" });
+                        that._tpViewer.temporalpropertiesviewer({ "operations": that._clipboardOps });
+                        var opL = that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = opToDrag.operation;
+                            that._refresh();
+                        }
+                        else {
+                            opToDrag.parentoperation.Operands[opToDrag.parentoperationindex] = opToDrag.operation;
+                        }
+                    }
+                    opToDrag = undefined;
+                    draggableDiv.attr("data-dragsource", undefined);
+                }
+            });
+            tpViewer.draggable({
+                helper: function () {
+                    return draggableDiv;
+                },
+                cursorAt: { left: 0, top: 0 },
+                //opacity: 0.4,
+                cursor: "pointer",
+                start: function (arg, ui) {
+                    draggableDiv.attr("data-dragsource", "clipboard");
+                    canvas.height = canvas.height;
+                    var parentOffset = $(this).offset();
+                    var relX = arg.pageX - parentOffset.left;
+                    var relY = arg.pageY - parentOffset.top;
+                    var opL = that.operationLayout;
+                    var parentOffset = $(this).offset();
+                    var relY = arg.pageY - parentOffset.top;
+                    var dragOperation = tpViewer.temporalpropertiesviewer("getOperationByY", relY);
+                    if (dragOperation === undefined || dragOperation === null)
+                        return;
+                    opToDrag = { operation: dragOperation };
+                    opToDrag.IsVisible = false;
+                    if (opToDrag !== undefined) {
+                        var keyFrameSize = 26;
+                        var padding = { x: 5, y: 10 };
+                        var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, opToDrag.operation, padding, keyFrameSize);
+                        var scale = { x: 1, y: 1 };
+                        var offset = 0;
+                        var w = opSize.width + offset;
+                        if (w > draggableWidth) {
+                            scale = {
+                                x: draggableWidth / w,
+                                y: draggableWidth / w
+                            };
+                        }
+                        canvas.width = scale.x * opSize.width + 2 * padding.x;
+                        canvas.height = scale.y * opSize.height + 2 * padding.y;
+                        var opPosition = { x: scale.x * opSize.width / 2 + padding.x, y: padding.y + Math.floor(scale.y * opSize.height / 2) };
+                        BMA.LTLOperations.RenderOperation(canvas, opToDrag.operation, opPosition, scale, {
+                            padding: padding,
+                            keyFrameSize: keyFrameSize,
+                            stroke: "black",
+                            fill: "white",
+                            isRoot: true,
+                            strokeWidth: 1,
+                            borderThickness: 1
+                        });
+                        that._refresh();
+                    }
+                },
+                drag: function (arg, ui) {
+                    return opToDrag !== undefined;
+                }
+            });
+            deleteZone.droppable({
+                tolerance: "pointer",
+                drop: function (arg, ui) {
+                    opToDrag = undefined;
+                    draggableDiv.attr("data-dragsource", undefined);
+                }
+            });
+            /*
             //Context menu
             var holdCords = {
                 holdX: 0,
                 holdY: 0
             };
+            
             $(document).on('vmousedown', function (event) {
                 holdCords.holdX = event.pageX;
                 holdCords.holdY = event.pageY;
             });
+
             svgDiv.contextmenu({
                 addClass: "temporal-properties-contextmenu",
                 delegate: root,
@@ -13003,6 +13401,8 @@ jQuery.fn.extend({
                     //{ title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
                     //{ title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
+                    //{ title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }] },
+                    //{ title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
                 ],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);
@@ -13015,18 +13415,46 @@ jQuery.fn.extend({
                         that.contextElement = {
                             x: svgCoords.x,
                             y: svgCoords.y,
-                        };
+                        }
                     }
+
                 },
                 select: function (event, ui) {
-                    var args = {};
+                    var args: any = {};
                     var x = event.pageX;
                     var y = event.pageY;
                     args.left = x - svgDiv.offset().left;
                     args.top = y - svgDiv.offset().top;
+
                     that._processContextMenuOption(ui.cmd);
                 }
             });
+            */
+        },
+        _refreshStates: function () {
+            var that = this;
+            this.statesbtns.empty();
+            for (var i = 0; i < this.options.variables.length; i++) {
+                var stateName = this.options.variables[i].Name;
+                //var stateTooltip = that._convertForTooltip(that.options.states[i]);
+                var stateDiv = $("<div></div>")
+                    .addClass("state-button")
+                    .addClass("ltl-tp-droppable")
+                    .attr("data-state", stateName)
+                    .css("z-index", 6)
+                    .css("cursor", "pointer")
+                    .text(stateName)
+                    .appendTo(that.statesbtns);
+                stateDiv.draggable({
+                    helper: "clone",
+                    cursorAt: { left: 0, top: 0 },
+                    opacity: 0.4,
+                    cursor: "pointer",
+                    start: function (event, ui) {
+                        //that._executeCommand("AddStateSelect", $(this).attr("data-state"));
+                    }
+                });
+            }
         },
         _processContextMenuOption: function (option) {
             var that = this;
@@ -15340,7 +15768,8 @@ jQuery.fn.extend({
             states: [],
             drawingSurfaceHeight: "calc(100% - 113px - 30px)",
             onfittoview: undefined,
-            onaddstaterequested: undefined
+            onaddstaterequested: undefined,
+            oneditformula: undefined,
         },
         _refreshStates: function () {
             var that = this;
@@ -15548,6 +15977,17 @@ jQuery.fn.extend({
             dropzonescnt.width("100%");
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dropzonescnt);
             dropzones.width("100%");
+            this.editFormulaCnt = $("<div></div>").css("position", "absolute").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).css("top", 10).prependTo(dom.host).hide();
+            this.editFormulaCnt.width("80%");
+            this.editFormula = $("<input value='Edit Formula' >").appendTo(this.editFormulaCnt);
+            this.editFormula.width("80%");
+            var editFormulaBtn = $("<div></div>").css("background", "url('../images/check.png') no-repeat center").appendTo(this.editFormulaCnt)
+                .css("height", "20px").css("width", "20px").css("margin-left", 10).css("display", "inline-block")
+                .click(function () {
+                if (that.options.oneditformula !== undefined) {
+                    that.options.oneditformula(that.editFormula.val());
+                }
+            });
             /*
             this.copyzone = $("<div></div>").addClass("dropzone copy").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dropzones);
             this.copyzone.width("calc(50% - 15px - 3px)");
@@ -15601,7 +16041,8 @@ jQuery.fn.extend({
                     { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
                     { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
-                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }] },
+                    { title: "Edit as text", cmd: "EditAsText", },
+                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }, { title: "extended text", cmd: "ExportAsTextExtended" }] },
                     { title: "Import from", cmd: "Import", uiIcon: "ui-icon-import", children: [{ title: "json", cmd: "ImportAsJson" }, { title: "text", cmd: "ImportAsText" }] },
                 ],
                 beforeOpen: function (event, ui) {
@@ -15765,7 +16206,14 @@ jQuery.fn.extend({
         },
         updateLayout: function () {
             this._drawingSurface.drawingsurface("updateLayout");
-        }
+        },
+        showFormulaEditor: function (formula) {
+            this.editFormula.val(formula);
+            this.editFormulaCnt.show(); //.removeClass("hidden");
+        },
+        hideFormulaEditor: function () {
+            this.editFormulaCnt.hide(); //.addClass("hidden");
+        },
     });
 }(jQuery));
 //# sourceMappingURL=tpeditor.js.map
@@ -15775,17 +16223,28 @@ jQuery.fn.extend({
         _pixelOffset: 10,
         _anims: [],
         _images: [],
+        _operationHeights: [],
         options: {
             operations: [],
-            padding: { x: 3, y: 5 }
+            padding: { x: 3, y: 5 },
+            showDefaultIcon: true,
+            rightOffset: 80
         },
         _create: function () {
             var that = this;
             var root = this.element;
             root.css("overflow-y", "auto").css("overflow-x", "hidden").css("position", "relative");
             this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
-            $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
-            $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
+            if (that.options.defaultIcon === undefined) {
+                $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
+                $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
+            }
+            else {
+                that.options.defaultIcon.appendTo(this.attentionDiv);
+            }
+            if (!that.options.showDefaultIcon) {
+                that.attentionDiv.hide();
+            }
             that.canvasDiv = $("<div></div>").width(root.width()).appendTo(root);
             that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).width(root.width()).appendTo(that.canvasDiv);
             var patterns = [
@@ -15805,6 +16264,16 @@ jQuery.fn.extend({
             }
             that.refresh();
         },
+        getOperationByY: function (y) {
+            var that = this;
+            if (that._operationHeights !== undefined && that._operationHeights.length > 0) {
+                for (var i = 0; i < that._operationHeights.length; i++) {
+                    if (y >= that._operationHeights[i].y && y <= that._operationHeights[i].y + that._operationHeights[i].height)
+                        return that._operationHeights[i].operation;
+                }
+            }
+            return null;
+        },
         refresh: function () {
             var that = this;
             var canvas = (this._canvas[0]);
@@ -15812,6 +16281,7 @@ jQuery.fn.extend({
             var padding = { x: 5, y: 10 };
             var maxHeight = keyFrameSize * 4;
             var context = canvas.getContext("2d");
+            that._operationHeights = [];
             var PIXEL_RATIO = (function () {
                 var dpr = window.devicePixelRatio || 1;
                 var bsr = context.webkitBackingStorePixelRatio ||
@@ -15835,7 +16305,7 @@ jQuery.fn.extend({
                 var op = operations[i].operation;
                 var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, op, padding, keyFrameSize);
                 var scale = { x: 1, y: 1 };
-                var offset = 80;
+                var offset = that.options.rightOffset;
                 var w = opSize.width + offset;
                 if (w > width) {
                     scale = {
@@ -15908,6 +16378,11 @@ jQuery.fn.extend({
                     }
                     context.fillText(text, opSize.width + 10, opPosition.y);
                 }
+                that._operationHeights.push({
+                    y: height,
+                    height: opSize.height + this.options.padding.y,
+                    operation: operations[i].operation
+                });
                 height += opSize.height + this.options.padding.y;
             }
         },
@@ -15975,11 +16450,29 @@ jQuery.fn.extend({
                     }
                     else {
                         that.canvasDiv.hide();
-                        that.attentionDiv.show();
+                        if (that.options.showDefaultIcon) {
+                            that.attentionDiv.show();
+                        }
                     }
                     break;
                 case "padding":
                     //this.refresh();
+                    break;
+                case "showDefaultIcon":
+                    if (!value) {
+                        that.attentionDiv.hide();
+                    }
+                    else {
+                        if (that.options.operations === undefined || value.length === 0) {
+                            that.attentionDiv.show();
+                        }
+                    }
+                    break;
+                case "defaultIcon":
+                    this.attentionDiv.empty();
+                    value.appendTo(this.attentionDiv);
+                    break;
+                case "rightOffset":
                     break;
                 default:
                     break;
@@ -16112,7 +16605,12 @@ var BMA;
                 });
                 commands.On("ExportLTLFormulaAsText", function (args) {
                     if (args.operation !== undefined) {
-                        exportService.Export(args.operation, "operation", "txt");
+                        exportService.Export(BMA.ModelHelper.ConvertOperationToString(args.operation), "operation", "txt");
+                    }
+                });
+                commands.On("ExportLTLFormulaAsTextExtended", function (args) {
+                    if (args.operation !== undefined) {
+                        exportService.Export(BMA.ModelHelper.ConvertOperationToString(args.operation, true), "operation", "txt");
                     }
                 });
                 commands.On("ImportLTLFormulaAsJson", function (args) {
@@ -16367,6 +16865,7 @@ var BMA;
                 var _this = this;
                 this.controlPanelPadding = 3;
                 this.isUpdateControlRequested = false;
+                this.editingOperation = undefined;
                 this.zoomConstraints = {
                     minWidth: 100,
                     maxWidth: 1000
@@ -16549,7 +17048,14 @@ var BMA;
                     if (_this.contextElement !== undefined) {
                         var operationDescr = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
                         var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
-                        commands.Execute("ExportLTLFormulaAsText", { operation: clonned.GetFormula() });
+                        commands.Execute("ExportLTLFormulaAsText", { operation: clonned });
+                    }
+                });
+                commands.On("TemporalPropertiesEditorExportAsTextExtended", function (args) {
+                    if (_this.contextElement !== undefined) {
+                        var operationDescr = _this.contextElement.operationlayoutref.PickOperation(_this.contextElement.x, _this.contextElement.y);
+                        var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
+                        commands.Execute("ExportLTLFormulaAsTextExtended", { operation: clonned });
                     }
                 });
                 commands.On("TemporalPropertiesEditorImportAsJson", function (args) {
@@ -16564,6 +17070,13 @@ var BMA;
                         commands.Execute("ImportLTLFormulaAsText", {
                             position: { x: _this.contextElement.x, y: _this.contextElement.y }
                         });
+                    }
+                });
+                commands.On("TemporalPropertiesEditorEditAsText", function (args) {
+                    if (_this.contextElement !== undefined) {
+                        _this.editingOperation = that.contextElement.operationlayoutref;
+                        var opFormula = BMA.ModelHelper.ConvertOperationToString(_this.contextElement.operationlayoutref.operation.Clone());
+                        tpEditorDriver.ShowFormulaEditor(opFormula);
                     }
                 });
                 commands.On("TemporalPropertiesEditorCut", function (args) {
@@ -16683,6 +17196,42 @@ var BMA;
                 });
                 tpEditorDriver.SetFitToViewCallback(function () {
                     that.FitToView();
+                });
+                tpEditorDriver.SetFormulasEditorCallback(function (formula) {
+                    if (_this.editingOperation !== undefined) {
+                        var result = BMA.ModelHelper.ConvertFormulaToOperation(formula, _this.appModel.States, _this.appModel.BioModel);
+                        var operation = result.operation;
+                        if (operation instanceof BMA.LTLOperations.Operation && !_this.editingOperation.Operation.Equals(operation)) {
+                            var states = result.states;
+                            var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(that.appModel.BioModel, that.appModel.Layout, states);
+                            if (statesChanged.isChanged) {
+                                states = statesChanged.states;
+                                BMA.LTLOperations.RefreshStatesInOperation(operation, states);
+                            }
+                            if (statesChanged.shouldNotify)
+                                window.Commands.Execute("InvalidStatesImported", {});
+                            var merged = BMA.ModelHelper.MergeStates(that.appModel.States, states);
+                            that.states = merged.states;
+                            tpEditorDriver.SetStates(merged.states);
+                            var idx;
+                            for (var i = 0; i < that.operations.length; i++) {
+                                if (that.operations[i].Operation.Equals(_this.editingOperation.Operation)) {
+                                    idx = i;
+                                    break;
+                                }
+                            }
+                            if (idx !== undefined) {
+                                that.ClearOperationTag(that.operations[idx], true);
+                                that.operations[idx] = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), operation.Clone(), _this.editingOperation.Position);
+                                that.editingOperation = undefined;
+                                that.InitializeOperationTag(that.operations[idx]);
+                                that.OnOperationsChanged(true, true);
+                                that.FitToView();
+                                that.commands.Execute("KeyframesChanged", { states: merged.states });
+                            }
+                        }
+                        tpEditorDriver.HideFormulaEditor();
+                    }
                 });
                 this.InitializeDragndrop();
                 this.CreateSvgHeaders();

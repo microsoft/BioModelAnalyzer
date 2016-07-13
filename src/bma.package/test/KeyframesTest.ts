@@ -10,6 +10,12 @@
         return undefined;
     }
 
+    public Equals(op: BMA.LTLOperations.IOperand) {
+        if (op instanceof TestOperand) {
+            return this.test == op.test;
+        } else return false;
+    }
+
 }
 
 describe('Keyframes',() => {

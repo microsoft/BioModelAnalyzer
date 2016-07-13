@@ -50,6 +50,8 @@ module BMA {
 
             private statesPresenter: BMA.LTL.StatesPresenter;
 
+            private editingOperation: BMA.LTLOperations.OperationLayout = undefined;
+
             private zoomConstraints = {
                 minWidth: 100,
                 maxWidth: 1000
@@ -275,7 +277,15 @@ module BMA {
                     if (this.contextElement !== undefined) {
                         var operationDescr = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
                         var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
-                        commands.Execute("ExportLTLFormulaAsText", { operation: (<BMA.LTLOperations.IOperand>clonned).GetFormula() });
+                        commands.Execute("ExportLTLFormulaAsText", { operation: clonned });
+                    }
+                });
+
+                commands.On("TemporalPropertiesEditorExportAsTextExtended", (args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        var operationDescr = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
+                        var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
+                        commands.Execute("ExportLTLFormulaAsTextExtended", { operation: clonned });
                     }
                 });
 
@@ -292,6 +302,14 @@ module BMA {
                         commands.Execute("ImportLTLFormulaAsText", {
                             position: { x: this.contextElement.x, y: this.contextElement.y }
                         });
+                    }
+                });
+
+                commands.On("TemporalPropertiesEditorEditAsText", (args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        this.editingOperation = that.contextElement.operationlayoutref;
+                        var opFormula = BMA.ModelHelper.ConvertOperationToString(this.contextElement.operationlayoutref.operation.Clone());
+                        tpEditorDriver.ShowFormulaEditor(opFormula);
                     }
                 });
 
@@ -434,6 +452,44 @@ module BMA {
 
                 tpEditorDriver.SetFitToViewCallback(() => {
                     that.FitToView();
+                });
+
+                tpEditorDriver.SetFormulasEditorCallback((formula) => {
+                    if (this.editingOperation !== undefined) {
+                        var result = BMA.ModelHelper.ConvertFormulaToOperation(formula, this.appModel.States, this.appModel.BioModel);
+                        var operation = result.operation;
+
+                        if (operation instanceof BMA.LTLOperations.Operation && !this.editingOperation.Operation.Equals(operation)) {
+                            var states = result.states;
+                            var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(that.appModel.BioModel, that.appModel.Layout, states);
+                            if (statesChanged.isChanged) {
+                                states = statesChanged.states;
+                                BMA.LTLOperations.RefreshStatesInOperation(operation, states);
+                            }
+                            if (statesChanged.shouldNotify) window.Commands.Execute("InvalidStatesImported", {});
+                            var merged = BMA.ModelHelper.MergeStates(that.appModel.States, states);
+                            that.states = merged.states;
+                            tpEditorDriver.SetStates(merged.states);
+                            var idx;
+                            for (var i = 0; i < that.operations.length; i++) {
+                                if (that.operations[i].Operation.Equals(this.editingOperation.Operation)) {
+                                    idx = i;
+                                    break;
+                                }
+                            }
+                            if (idx !== undefined) {
+                                that.ClearOperationTag(that.operations[idx], true);
+                                that.operations[idx] = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), operation.Clone(), this.editingOperation.Position);
+                                that.editingOperation = undefined;
+                                that.InitializeOperationTag(that.operations[idx]);
+                                that.OnOperationsChanged(true, true);
+                                that.FitToView();
+                                that.commands.Execute("KeyframesChanged", { states: merged.states });
+                            }
+                        }
+
+                        tpEditorDriver.HideFormulaEditor();
+                    }
                 });
 
                 this.InitializeDragndrop();

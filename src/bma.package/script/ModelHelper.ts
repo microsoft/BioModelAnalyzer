@@ -646,13 +646,13 @@
                             } else if (formula.operands[0].state.variable && formulaChanged) {
                                 for (var j = 0; j < newStates[1].length; j++)
                                     if (newStates[1][j].Name == formula.operands[1].state) {
-                                        return BMA.ModelHelper.UpdateStatesAfterMerging(states, operands[0], newStates[1][j]);
+                                        return BMA.ModelHelper.UpdateStatesAfterMerging(states, newStates[1][j], operands[0]);
                                     }
                                 return undefined;
                             } else if (formula.operands[1].state.variable && formulaChanged) {
                                 for (var j = 0; j < newStates[0].length; j++)
                                     if (newStates[0][j].Name == formula.operands[0].state) {
-                                        return BMA.ModelHelper.UpdateStatesAfterMerging(states, operands[1], newStates[0][j]);
+                                        return BMA.ModelHelper.UpdateStatesAfterMerging(states, newStates[0][j], operands[1]);
                                     }
                                 return undefined;
                             }
@@ -676,6 +676,100 @@
                 }
             }
             throw "Operation was not found";//return undefined;
+        }
+
+        export function CompareOperationsPriority(op1: BMA.LTLOperations.Operation, op2: BMA.LTLOperations.IOperand) {
+
+            var getPriority = function (op) {
+                var opPriority;
+                switch (op.Operator.Name) {
+                    case "NEXT":
+                        opPriority = 1;
+                        break;
+                    case "ALWAYS":
+                        opPriority = 1;
+                        break;
+                    case "EVENTUALLY":
+                        opPriority = 1;
+                        break;
+                    case "NOT":
+                        opPriority = 1;
+                        break;
+                    case "UNTIL":
+                        opPriority = 2;
+                        break;
+                    case "RELEASE":
+                        opPriority = 2;
+                        break;
+                    case "WEAKUNTIL":
+                        opPriority = 2;
+                        break;
+                    case "UPTO":
+                        opPriority = 2;
+                        break;
+                    case "AND":
+                        opPriority = 3;
+                        break;
+                    case "OR":
+                        opPriority = 4;
+                        break;
+                    case "IMPLIES":
+                        opPriority = 5;
+                        break;
+                    default: opPriority = 6;
+                        break;
+                }
+                return opPriority;
+            }
+
+            if (op2 instanceof BMA.LTLOperations.Operation && getPriority(op1) < getPriority(op2))
+                return 1;
+            else if (op2 instanceof BMA.LTLOperations.Operation && getPriority(op1) == getPriority(op2) && getPriority(op1) !== 5)
+                return 2;
+            else return 0;
+        }
+
+        export function ConvertOperationToString(operation: BMA.LTLOperations.IOperand, extendedStates: boolean = false): string {
+            var op ="";
+            if (operation instanceof BMA.LTLOperations.Keyframe) {
+                if (extendedStates) {
+                    if (operation.Operands.length == 0) throw "Unsuitable states are found";
+                    op += "(";
+                    for (var i = 0; i < operation.Operands.length; i++) {
+                        if (i != 0)
+                            op += "and ";
+                        var operand = operation.Operands[i];
+                        //op += operand.GetFormula() + " ";
+                        if (operand instanceof BMA.LTLOperations.KeyframeEquation)
+                            op += (<BMA.LTLOperations.NameOperand>operand.LeftOperand).Name + operand.Operator + (<BMA.LTLOperations.ConstOperand>operand.RightOperand).Value + " ";
+                        else throw "Unknown type of keyframe equation";
+                    }
+                    op = op.trim() + ") ";
+                } else {
+                    var name = operation.Name ? operation.Name : "Unnamed";
+                    op += name + " ";
+                }
+            } else if (operation instanceof BMA.LTLOperations.SelfLoopKeyframe) {
+                op += "SelfLoop ";
+            } else if (operation instanceof BMA.LTLOperations.OscillationKeyframe) {
+                op += "Oscillation ";
+            } else if (operation instanceof BMA.LTLOperations.TrueKeyframe) {
+                op += "True ";
+            } else if (operation instanceof BMA.LTLOperations.Operation) {
+                if (operation.Operator.OperandsCount == 2) {
+                    op += (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[0]) == 1 ? "(" + (BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates)).trim() + ") " :
+                        BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates)) + operation.Operator.Name.toLowerCase() + " " +
+                    (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[1]) ? "(" + BMA.ModelHelper.ConvertOperationToString(operation.Operands[1], extendedStates).trim() + ") " :
+                        BMA.ModelHelper.ConvertOperationToString(operation.Operands[1], extendedStates));
+                } else if (operation.Operator.OperandsCount == 1) {
+                    op += operation.Operator.Name.toLowerCase() + " " + (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[0]) == 1 ?
+                        "(" + BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates).trim() + ") " :
+                        BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates));
+                }
+            } else if (!operation) {
+                op += "undefined" + " ";
+            }
+            return op;
         }
 
         export function MergeStates(currentStates: BMA.LTLOperations.Keyframe[], newStates: BMA.LTLOperations.Keyframe[]): { states: BMA.LTLOperations.Keyframe[]; map: any } {

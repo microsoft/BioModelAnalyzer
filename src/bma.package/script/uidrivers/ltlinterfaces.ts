@@ -58,6 +58,9 @@ module BMA {
             SetDeleteZoneVisibility(isVisible: boolean);
             SetFitToViewCallback(callback: Function);
             SetCopyZoneIcon(operation: BMA.LTLOperations.Operation);
+            SetFormulasEditorCallback(callback: Function);
+            ShowFormulaEditor(formula: string);
+            HideFormulaEditor();
         }
 
         export interface ITemporalPropertiesViewer {

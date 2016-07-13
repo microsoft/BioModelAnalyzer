@@ -125,6 +125,7 @@ module BMA {
             private contextMenuDriver: IContextMenu;
             private statesToSet = [];
             private ftvcallback: Function = undefined;
+            private oneditformulacallback: Function = undefined;
 
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
@@ -223,9 +224,28 @@ module BMA {
                 }
             }
 
+            SetFormulasEditorCallback(callback: Function) {
+                this.oneditformulacallback = callback;
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor({ oneditformula: callback });
+                }
+            }
+
             SetCopyZoneIcon(operation: BMA.LTLOperations.Operation) {
                 if (this.tpeditor !== undefined) {
                     this.tpeditor.temporalpropertieseditor({ copyzoneoperation: operation });
+                }
+            }
+
+            ShowFormulaEditor(formula: string) {
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor("showFormulaEditor", formula);
+                }
+            }
+
+            HideFormulaEditor() {
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor("hideFormulaEditor");
                 }
             }
         }

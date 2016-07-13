@@ -1,4 +1,4 @@
-﻿describe("BMA.ModelHelper.ConvertFormulaToOperation", () => {
+﻿describe("BMA.ModelHelper.ConvertFormulaToOperationAndBack", () => {
     window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
 
     var variables = [
@@ -29,6 +29,7 @@
             operation.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
             operation.Operands = [A, B];
             expect(ConvertFormulaToOperation("A AND B", [A, B, C])).toEqual(operation);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation)).toEqual("A and B ");
         });
 
         it("should return operation for 'A IMPLIES B'", () => {
@@ -36,6 +37,7 @@
             operation.Operator = window.OperatorsRegistry.GetOperatorByName("IMPLIES");
             operation.Operands = [A, B];
             expect(ConvertFormulaToOperation("A IMPLIES B", [A, B, C])).toEqual(operation);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation)).toEqual("A implies B ");
         });
 
         it("should return operation for 'A OR B'", () => {
@@ -43,6 +45,7 @@
             operation.Operator = window.OperatorsRegistry.GetOperatorByName("OR");
             operation.Operands = [A, B];
             expect(ConvertFormulaToOperation("A OR B", [A, B, C])).toEqual(operation);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation)).toEqual("A or B ");
         });
 
         it("should return operation for 'A UPTO B'", () => {
@@ -50,6 +53,7 @@
             operation.Operator = window.OperatorsRegistry.GetOperatorByName("UPTO");
             operation.Operands = [A, B];
             expect(ConvertFormulaToOperation("A UPTO B", [A, B, C])).toEqual(operation);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation)).toEqual("A upto B ");
         });
 
         it("should return operation for 'A UNTIL B'", () => {
@@ -57,6 +61,7 @@
             operation.Operator = window.OperatorsRegistry.GetOperatorByName("UNTIL");
             operation.Operands = [A, B];
             expect(ConvertFormulaToOperation("A UNTIL B", [A, B, C])).toEqual(operation);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation)).toEqual("A until B ");
         });
 
         it("should return operation for 'A RELEASE B'", () => {
@@ -64,6 +69,7 @@
             operation.Operator = window.OperatorsRegistry.GetOperatorByName("RELEASE");
             operation.Operands = [A, B];
             expect(ConvertFormulaToOperation("A RELEASE B", [A, B, C])).toEqual(operation);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation)).toEqual("A release B ");
         });
     });
 
@@ -74,6 +80,7 @@
             operation.Operator = window.OperatorsRegistry.GetOperatorByName("NOT");
             operation.Operands = [B];
             expect(ConvertFormulaToOperation("NOT B", [A, B, C])).toEqual(operation);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation)).toEqual("not B ");
         });
 
         it("should return operation for 'NEXT B'", () => {
@@ -81,6 +88,7 @@
             operation.Operator = window.OperatorsRegistry.GetOperatorByName("NEXT");
             operation.Operands = [B];
             expect(ConvertFormulaToOperation("NEXT B", [A, B, C])).toEqual(operation);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation)).toEqual("next B ");
         });
 
         it("should return operation for 'ALWAYS B'", () => {
@@ -88,6 +96,7 @@
             operation.Operator = window.OperatorsRegistry.GetOperatorByName("ALWAYS");
             operation.Operands = [B];
             expect(ConvertFormulaToOperation("ALWAYS B", [A, B, C])).toEqual(operation);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation)).toEqual("always B ");
         });
 
         it("should return operation for 'EVENTUALLY B'", () => {
@@ -95,6 +104,7 @@
             operation.Operator = window.OperatorsRegistry.GetOperatorByName("EVENTUALLY");
             operation.Operands = [B];
             expect(ConvertFormulaToOperation("EVENTUALLY B", [A, B, C])).toEqual(operation);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation)).toEqual("eventually B ");
         });
     });
 
@@ -108,6 +118,7 @@
             operation1.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
             operation1.Operands = [operation, B]
             expect(ConvertFormulaToOperation("NOT A AND B", [A, B, C])).toEqual(operation1);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation1)).toEqual("not A and B ");
         });
 
         it("should return operation for 'A AND NOT B'", () => {
@@ -118,6 +129,7 @@
             operation1.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
             operation1.Operands = [A, operation]
             expect(ConvertFormulaToOperation("A AND NOT B", [A, B, C])).toEqual(operation1);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation1)).toEqual("A and not B ");
         });
 
         it("should return operation for 'NEXT NOT B'", () => {
@@ -128,6 +140,7 @@
             operation.Operator = window.OperatorsRegistry.GetOperatorByName("NEXT");
             operation.Operands = [operation1];
             expect(ConvertFormulaToOperation("NEXT NOT B", [A, B, C])).toEqual(operation);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation)).toEqual("next not B ");
         });
 
         it("should return operation for 'A UPTO C AND ALWAYS B'", () => {
@@ -141,6 +154,7 @@
             operation2.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
             operation2.Operands = [operation1, operation];
             expect(ConvertFormulaToOperation("A UPTO C AND ALWAYS B", [A, B, C])).toEqual(operation2);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation2)).toEqual("A upto C and always B ");
         });
 
         it("should return operation for 'A AND C UPTO ALWAYS B'", () => {
@@ -154,6 +168,7 @@
             operation2.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
             operation2.Operands = [A, operation1];
             expect(ConvertFormulaToOperation("A AND C UPTO ALWAYS B", [A, B, C])).toEqual(operation2);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation2)).toEqual("A and C upto always B ");
         });
 
         it("should return operation for 'A AND C OR B'", () => {
@@ -164,6 +179,7 @@
             operation1.Operator = window.OperatorsRegistry.GetOperatorByName("OR");
             operation1.Operands = [operation, B];
             expect(ConvertFormulaToOperation("A AND C OR B", [A, B, C])).toEqual(operation1);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation1)).toEqual("A and C or B ");
         });
 
         it("should return operation for 'A OR C AND B'", () => {
@@ -174,6 +190,7 @@
             operation1.Operator = window.OperatorsRegistry.GetOperatorByName("OR");
             operation1.Operands = [A, operation];
             expect(ConvertFormulaToOperation("A OR C AND B", [A, B, C])).toEqual(operation1);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation1)).toEqual("A or C and B ");
         });
 
         it("should return operation for 'A UNTIL C RELEASE B'", () => {
@@ -184,6 +201,7 @@
             operation1.Operator = window.OperatorsRegistry.GetOperatorByName("RELEASE");
             operation1.Operands = [operation, B];
             expect(ConvertFormulaToOperation("A UNTIL C RELEASE B", [A, B, C])).toEqual(operation1);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation1)).toEqual("A until C release B ");
         });
 
         it("should return operation for 'A IMPLIES C IMPLIES B'", () => {
@@ -194,6 +212,7 @@
             operation1.Operator = window.OperatorsRegistry.GetOperatorByName("IMPLIES");
             operation1.Operands = [A, operation];
             expect(ConvertFormulaToOperation("A IMPLIES C IMPLIES B", [A, B, C])).toEqual(operation1);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation1)).toEqual("A implies C implies B ");
         });
 
         it("should return operation for 'A IMPLIES B AND C'", () => {
@@ -204,6 +223,7 @@
             operation1.Operator = window.OperatorsRegistry.GetOperatorByName("IMPLIES");
             operation1.Operands = [A, operation];
             expect(ConvertFormulaToOperation("A IMPLIES B AND C", [A, B, C])).toEqual(operation1);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation1)).toEqual("A implies B and C ");
         });
     });
 
@@ -213,7 +233,7 @@
             var kfmeq1 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(1));
             var kfmeq2 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(2));
             var kfmeq3 = new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand("a", 1), "=", new BMA.LTLOperations.ConstOperand(3));
-            var D = new BMA.LTLOperations.Keyframe("D", "", [kfmeq3, kfmeq1, kfmeq2]);
+            var D = new BMA.LTLOperations.Keyframe("D", "", [kfmeq1, kfmeq2, kfmeq3]);
             var operation = new BMA.LTLOperations.Operation();
             operation.Operator = window.OperatorsRegistry.GetOperatorByName("NEXT");
             operation.Operands = [A];
@@ -221,6 +241,7 @@
             operation1.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
             operation1.Operands = [D, operation];
             expect(ConvertFormulaToOperation("a=1 and a=2 and a=3 and next A", [A, B, C])).toEqual(operation1);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation1)).toEqual("D and next A ");
         });
 
         it("should create states D, E, F with given expressions", () => {
@@ -243,6 +264,7 @@
             operation3.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
             operation3.Operands = [operation2, A];
             expect(ConvertFormulaToOperation("next a=1 and a=2 and a=3 and A", [A, B, C])).toEqual(operation3);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation3)).toEqual("next D and E and F and A ");
         });
 
         it("should create states D, E, F with given expressions and ignore non-existing state", () => {
@@ -265,6 +287,39 @@
             operation3.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
             operation3.Operands = [operation2, undefined];
             expect(ConvertFormulaToOperation("next a=1 and a=2 and a=3 and V", [A, B, C])).toEqual(operation3);
+            expect(BMA.ModelHelper.ConvertOperationToString(operation3)).toEqual("next D and E and F and undefined ");
+        });
+
+    });
+
+    describe("Should parse formulas in right order", () => {
+
+        it("In this case 'Always' should have lowest priority", () => {
+            var operation = new BMA.LTLOperations.Operation();
+            operation.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
+            operation.Operands = [A, B];
+            var operation1 = new BMA.LTLOperations.Operation();
+            operation1.Operator = window.OperatorsRegistry.GetOperatorByName("UPTO");
+            operation1.Operands = [operation, C];
+            var operation2 = new BMA.LTLOperations.Operation();
+            operation2.Operator = window.OperatorsRegistry.GetOperatorByName("ALWAYS");
+            operation2.Operands = [operation1];
+            expect(BMA.ModelHelper.ConvertOperationToString(operation2)).toEqual("always ((A and B) upto C) ");
+            expect(ConvertFormulaToOperation(BMA.ModelHelper.ConvertOperationToString(operation2), [A, B, C])).toEqual(operation2);
+        });
+
+        it("Operations with equal priority", () => {
+            var operation = new BMA.LTLOperations.Operation();
+            operation.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
+            operation.Operands = [A, B];
+            var operation1 = new BMA.LTLOperations.Operation();
+            operation1.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
+            operation1.Operands = [C, operation];
+            var operation2 = new BMA.LTLOperations.Operation();
+            operation2.Operator = window.OperatorsRegistry.GetOperatorByName("AND");
+            operation2.Operands = [A, operation1];
+            expect(BMA.ModelHelper.ConvertOperationToString(operation2)).toEqual("A and (C and (A and B)) ");
+            expect(ConvertFormulaToOperation(BMA.ModelHelper.ConvertOperationToString(operation2), [A, B, C])).toEqual(operation2);
         });
 
     });

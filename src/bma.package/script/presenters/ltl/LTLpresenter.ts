@@ -178,9 +178,16 @@
 
                 commands.On("ExportLTLFormulaAsText", (args) => {
                     if (args.operation !== undefined) {
-                        exportService.Export(args.operation, "operation", "txt");
+                        exportService.Export(BMA.ModelHelper.ConvertOperationToString(args.operation), "operation", "txt");
                     }
                 });
+
+                commands.On("ExportLTLFormulaAsTextExtended", (args) => {
+                    if (args.operation !== undefined) {
+                        exportService.Export(BMA.ModelHelper.ConvertOperationToString(args.operation, true), "operation", "txt");
+                    }
+                });
+
 
                 commands.On("ImportLTLFormulaAsJson", (args) => {
                     fileLoaderDriver.OpenFileDialog().done(function (fileName) {
