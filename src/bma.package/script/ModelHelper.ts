@@ -678,6 +678,42 @@
             throw "Operation was not found";//return undefined;
         }
 
+        export function ConvertTFtoOperation(formula: any, model: BMA.Model.BioModel): any {
+            if (!formula) throw "Nothing to import";
+            if (formula.var) {
+                var variableID = model.GetIdByName(formula.var);
+                if (variableID.length == 0) throw "Variable '" + formula.var + "' is not found";
+                return model.GetVariableById(parseFloat(variableID[0]));
+            } else if (formula.const) {
+                return parseFloat(formula.const);
+            } else if (formula.opr) {
+                var operation = new BMA.LTLOperations.Operation();
+                var operands = [];
+                var operator = window.OperatorsRegistry.GetOperatorByName(formula.opr.toUpperCase());
+                if (operator === undefined) throw "Operator doesn't exist";
+                for (var i = 0; i < formula.opnds.length; i++) {
+                    var operand = formula.opnds[i];
+                    operands.push(ConvertTFtoOperation(formula.opnds[i], model));
+                }
+
+                operation.Operator = operator;
+                operation.Operands = operands;
+                return operation;
+            }
+        }
+
+        export function ConvertTargetFunctionToOperation(formula: string, model: BMA.Model.BioModel): any {
+            var parsedFormula;
+            try {
+                var parsedFormula = BMA.TFParser.parse(formula);
+                return ConvertTFtoOperation(parsedFormula, model);
+                
+            } catch (ex) {
+                alert(ex);
+            }
+            return undefined;
+        }
+
         export function CompareOperationsPriority(op1: BMA.LTLOperations.Operation, op2: BMA.LTLOperations.IOperand) {
 
             var getPriority = function (op) {

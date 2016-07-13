@@ -1903,6 +1903,46 @@ var BMA;
             throw "Operation was not found"; //return undefined;
         }
         ModelHelper.ConvertToOperation = ConvertToOperation;
+        function ConvertTFtoOperation(formula, model) {
+            if (!formula)
+                throw "Nothing to import";
+            if (formula.var) {
+                var variableID = model.GetIdByName(formula.var);
+                if (variableID.length == 0)
+                    throw "Variable '" + formula.var + "' is not found";
+                return model.GetVariableById(parseFloat(variableID[0]));
+            }
+            else if (formula.const) {
+                return parseFloat(formula.const);
+            }
+            else if (formula.opr) {
+                var operation = new BMA.LTLOperations.Operation();
+                var operands = [];
+                var operator = window.OperatorsRegistry.GetOperatorByName(formula.opr.toUpperCase());
+                if (operator === undefined)
+                    throw "Operator doesn't exist";
+                for (var i = 0; i < formula.opnds.length; i++) {
+                    var operand = formula.opnds[i];
+                    operands.push(ConvertTFtoOperation(formula.opnds[i], model));
+                }
+                operation.Operator = operator;
+                operation.Operands = operands;
+                return operation;
+            }
+        }
+        ModelHelper.ConvertTFtoOperation = ConvertTFtoOperation;
+        function ConvertTargetFunctionToOperation(formula, model) {
+            var parsedFormula;
+            try {
+                var parsedFormula = BMA.TFParser.parse(formula);
+                return ConvertTFtoOperation(parsedFormula, model);
+            }
+            catch (ex) {
+                alert(ex);
+            }
+            return undefined;
+        }
+        ModelHelper.ConvertTargetFunctionToOperation = ConvertTargetFunctionToOperation;
         function CompareOperationsPriority(op1, op2) {
             var getPriority = function (op) {
                 var opPriority;
@@ -17223,6 +17263,7 @@ var BMA;
                             if (idx !== undefined) {
                                 that.ClearOperationTag(that.operations[idx], true);
                                 that.operations[idx] = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), operation.Clone(), _this.editingOperation.Position);
+                                that.operations[idx].UpdateVersion();
                                 that.editingOperation = undefined;
                                 that.InitializeOperationTag(that.operations[idx]);
                                 that.OnOperationsChanged(true, true);
@@ -18175,21 +18216,16 @@ var BMA;
                 this.operators.push(new LTLOperations.Operator('WEAKUNTIL', 2, formulacreator('Weakuntil')));
                 this.operators.push(new LTLOperations.Operator('UNTIL', 2, formulacreator('Until')));
                 this.operators.push(new LTLOperations.Operator('RELEASE', 2, formulacreator('Release')));
-                /*
                 //Target Function Editor operators
-
-                this.operators.push(new Operator('AVG', Number.POSITIVE_INFINITY, functionformulacreator('avg')));
-                this.operators.push(new Operator('MIN', Number.POSITIVE_INFINITY, functionformulacreator('min')));
-                this.operators.push(new Operator('MAX', Number.POSITIVE_INFINITY, functionformulacreator('max')));
-
-                this.operators.push(new Operator('CEIL', 1, formulacreator('ceil')));
-                this.operators.push(new Operator('FLOOR', 1, formulacreator('floor')));
-
-                this.operators.push(new Operator('/', 2, operatorformulacreator('/')));
-                this.operators.push(new Operator('*', Number.POSITIVE_INFINITY, operatorformulacreator('*')));
-                this.operators.push(new Operator('+', Number.POSITIVE_INFINITY, operatorformulacreator('+')));
-                this.operators.push(new Operator('-', Number.POSITIVE_INFINITY, operatorformulacreator('-')));
-                */
+                this.operators.push(new LTLOperations.Operator('AVG', Number.POSITIVE_INFINITY, functionformulacreator('avg')));
+                this.operators.push(new LTLOperations.Operator('MIN', Number.POSITIVE_INFINITY, functionformulacreator('min')));
+                this.operators.push(new LTLOperations.Operator('MAX', Number.POSITIVE_INFINITY, functionformulacreator('max')));
+                this.operators.push(new LTLOperations.Operator('CEIL', 1, formulacreator('ceil')));
+                this.operators.push(new LTLOperations.Operator('FLOOR', 1, formulacreator('floor')));
+                this.operators.push(new LTLOperations.Operator('/', 2, operatorformulacreator('/')));
+                this.operators.push(new LTLOperations.Operator('*', Number.POSITIVE_INFINITY, operatorformulacreator('*')));
+                this.operators.push(new LTLOperations.Operator('+', Number.POSITIVE_INFINITY, operatorformulacreator('+')));
+                this.operators.push(new LTLOperations.Operator('-', Number.POSITIVE_INFINITY, operatorformulacreator('-')));
             }
             Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
                 get: function () {

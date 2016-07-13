@@ -480,6 +480,7 @@ module BMA {
                             if (idx !== undefined) {
                                 that.ClearOperationTag(that.operations[idx], true);
                                 that.operations[idx] = new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), operation.Clone(), this.editingOperation.Position);
+                                that.operations[idx].UpdateVersion();
                                 that.editingOperation = undefined;
                                 that.InitializeOperationTag(that.operations[idx]);
                                 that.OnOperationsChanged(true, true);
