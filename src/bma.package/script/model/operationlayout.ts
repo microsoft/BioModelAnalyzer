@@ -428,7 +428,7 @@
                         var uniquename = this.GenerateUUID();
                         var path = svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)", id: uniquename });
 
-                        if (layoutPart.type === "keyframe" || layoutPart.type === "other") {
+                        if (layoutPart.type === "keyframe" || layoutPart.type === "constant" || layoutPart.type === "other") {
                             var textGroup = svg.group(stateGroup, {
                             });
 

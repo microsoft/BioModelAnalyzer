@@ -26,6 +26,26 @@
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("Variables<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
             this._refreshStates();
+
+            //Adding pre-defined states
+            var conststates = $("<div></div>").addClass("state-buttons").width(60).html("&nbsp;<br>").appendTo(toolbar);
+            var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
+            var state = $("<div></div>")
+                .addClass("state-button")
+                .attr("data-state", "ConstantValue")
+                .css("z-index", 6)
+                .css("cursor", "pointer")
+                .text("123...")
+                .css("font-size", "10px")
+                .appendTo(statesbtns);
+
+            state.draggable({
+                helper: "clone",
+                cursorAt: { left: 0, top: 0 },
+                opacity: 0.4,
+                cursor: "pointer",
+                start: function (event, ui) { }
+            });
             
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
@@ -49,7 +69,6 @@
 
                 var opDiv = $("<div></div>")
                     .addClass("operator")
-                    .addClass("ltl-tp-droppable")
                     .attr("data-operator", operator.Name)
                     .css("z-index", 6)
                     .css("cursor", "pointer")
@@ -296,7 +315,12 @@
 
                     } else if (ui.draggable.attr("data-state") !== undefined) {
                         //New variable is dropped
-                        var kf = new BMA.LTLOperations.NameOperand(ui.draggable.attr("data-state"), undefined); //new BMA.LTLOperations.Keyframe(ui.draggable.attr("data-state"), "", [  ]);
+                        var kf = undefined;
+                        if (ui.draggable.attr("data-state") === "ConstantValue") {
+                            kf = new BMA.LTLOperations.ConstOperand(0);
+                        } else {
+                            kf = new BMA.LTLOperations.NameOperand(ui.draggable.attr("data-state"), undefined);
+                        }
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                         if (opL !== undefined) {
                             var parentOffset = $(this).offset();
@@ -426,6 +450,23 @@
                 drop: function (arg, ui) {
                     opToDrag = undefined;
                     draggableDiv.attr("data-dragsource", undefined);
+                }
+            });
+
+            svgDiv.click(function (arg) {
+                var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+
+                if (opL === undefined)
+                    return;
+
+                var parentOffset = $(this).offset();
+                var relX = arg.pageX - parentOffset.left;
+                var relY = arg.pageY - parentOffset.top;
+                var svgCoords = that._getSVGCoords(relX, relY);
+                var pickedOp = opL.PickOperation(svgCoords.x, svgCoords.y);
+
+                if (pickedOp !== undefined && pickedOp.operation instanceof BMA.LTLOperations.ConstOperand) {
+                    alert("Constant!");
                 }
             });
 
@@ -590,6 +631,39 @@
 
 
         },
+
+        //_addCustomState: function (statesbtns: JQuery, name, description, content: string) {
+        //    var that = this;
+
+        //    var state = $("<div></div>")
+        //        .addClass("state-button")
+        //        .attr("data-state", name)
+        //        .css("z-index", 6)
+        //        .css("cursor", "pointer")
+        //        .text(content)
+        //        .appendTo(statesbtns);
+
+        //    /*
+        //    state.statetooltip({
+        //        state: {
+        //            description: description, formula: undefined
+        //        }
+        //    });
+        //    */
+
+        //    state.draggable({
+        //        helper: "clone",
+        //        cursorAt: { left: 0, top: 0 },
+        //        opacity: 0.4,
+        //        cursor: "pointer",
+        //        start: function (event, ui) {
+        //            //that._executeCommand("AddStateSelect", $(this).attr("data-state"));
+        //        }
+
+        //    });
+
+        //    return state;
+        //},
 
         _setOption: function (key, value) {
             var that = this;
