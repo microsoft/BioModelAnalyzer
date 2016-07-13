@@ -61,7 +61,7 @@ namespace JobsRunner
                     {
                         Trace.WriteLine("The process will be killed because it has been executing for too long");
                         p.Kill();
-                        throw new TimeoutException("Allowed process execution time was exceeded");
+                        throw new System.TimeoutException("Allowed process execution time was exceeded");
                     }
                     p.WaitForExit(); // To ensure that the async events are completed
                     Trace.WriteLine(String.Format("The process has exited with code {0}", p.ExitCode));

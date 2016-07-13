@@ -16,9 +16,9 @@ let equalOrMissing (item1 : JToken, item2 : JToken) prop =
     neitherContains (item1,item2) prop ||
     bothContains (item1,item2) prop && item1.[prop] = item2.[prop]
 
-let checkJob (doJob : string -> string) =
+let checkSomeJobs (doJob : string -> string) (jobs:string seq) =
     let outcome =
-        Directory.EnumerateFiles("LTLQueries", "*.request.json")
+        jobs
         |> PSeq.map(fun fileName ->
             let dir = Path.GetDirectoryName(fileName)
             let file = Path.GetFileNameWithoutExtension(fileName)
@@ -53,3 +53,7 @@ let checkJob (doJob : string -> string) =
     | [] -> () // ok
     | failed -> 
         raise (System.AggregateException("Some jobs have failed", failed))
+
+let checkJob (doJob : string -> string) =
+    Directory.EnumerateFiles("LTLQueries", "*.request.json")
+    |> checkSomeJobs doJob

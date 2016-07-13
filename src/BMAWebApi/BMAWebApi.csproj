@@ -36,8 +36,8 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\FSharp 4.4.0.0\FSharp.Core.dll</HintPath>
+    <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\ext\FSharp 4.3.1.0\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\ext\nuget\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
@@ -160,6 +160,10 @@
     <ProjectReference Include="..\FairShareScheduler\FairShareScheduler.fsproj">
       <Project>{a66e4ee3-5d4e-4889-90ec-36317a4de882}</Project>
       <Name>FairShareScheduler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\JobsRunner\JobsRunner.csproj">
+      <Project>{062c2f38-d571-459a-9e67-43c9b074eb9c}</Project>
+      <Name>JobsRunner</Name>
     </ProjectReference>
     <ProjectReference Include="..\UIExpr\UIExpr.fsproj">
       <Project>{c6745675-ea9f-41f3-bffc-2c3810585b36}</Project>

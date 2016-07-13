@@ -32,7 +32,7 @@ let post url (content:byte[]) =
     let readStream = new StreamReader(respStream, Encoding.UTF8)
     let respContent = readStream.ReadToEnd()
     Trace.WriteLineIf (traceHttp.TraceVerbose, sprintf "Response: %s" respContent)
-    respContent
+    int(response.StatusCode), respContent
 
 let postFile url filePath =
     let fileContent = File.ReadAllText filePath
