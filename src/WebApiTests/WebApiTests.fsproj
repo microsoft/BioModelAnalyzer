@@ -123,6 +123,11 @@
       <Project>{f27a4a37-7fde-473e-ac6a-dcb38451bbf4}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Jobs\JobsRunner\JobsRunner.csproj">
+      <Name>JobsRunner</Name>
+      <Project>{062c2f38-d571-459a-9e67-43c9b074eb9c}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '11.0'">

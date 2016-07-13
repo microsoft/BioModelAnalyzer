@@ -19,7 +19,7 @@ let equalOrMissing (item1 : JToken, item2 : JToken) prop =
 let checkJob (doJob : string -> string) =
     let outcome =
         Directory.EnumerateFiles("LTLQueries", "*.request.json")
-        |> Seq.map(fun fileName ->
+        |> PSeq.map(fun fileName ->
             let dir = Path.GetDirectoryName(fileName)
             let file = Path.GetFileNameWithoutExtension(fileName)
             let jobName = file.Substring(0, file.Length - ".request".Length)

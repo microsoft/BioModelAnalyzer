@@ -9,41 +9,21 @@ open Newtonsoft.Json.Linq
 open System
 open System.Text
 open LTLTests
+open JobsRunner
 
-let perform job = 
-    let outputFile = Path.GetTempFileName()
-    let path = Environment.CurrentDirectory
-    use p = new Process()
-    try
-        p.StartInfo.UseShellExecute <- false
-        p.StartInfo.FileName <- Path.Combine(path, "AnalyzeLTL.exe")
-        p.StartInfo.Arguments <- sprintf @"""%s"" ""%s""" job outputFile
-        p.StartInfo.CreateNoWindow <- true
-        p.StartInfo.RedirectStandardOutput <- true
-        p.StartInfo.RedirectStandardError <- true
-
-        Trace.WriteLine(sprintf "Starting process '%s %s'..." p.StartInfo.FileName p.StartInfo.Arguments)
-        p.Start() |> ignore       
-        
-        let errors = StringBuilder()
-        p.ErrorDataReceived.Add(fun e -> errors.AppendLine e.Data |> ignore)
-        p.BeginErrorReadLine()
-        let output = p.StandardOutput.ReadToEnd()
-        let errors = errors.ToString()
-
-        p.WaitForExit() 
-
-        Trace.WriteLine("Output: " + output)
-        Trace.WriteLine("Errors: " + errors)
-
-        match p.ExitCode with
-        | 0 -> 
-            let res = File.ReadAllText(outputFile)
-            res
-        | code -> failwithf "Process has exited with code %d; output: %s, errors: %s" code output errors
-    finally
-        File.Delete(outputFile)
+let perform timeout job = 
+    Job.RunToCompletion("AnalyzeLTL.exe", File.ReadAllText job, timeout)
 
 [<Test; Timeout(600000)>]
 let ``Console app checks LTL Polarity``() =
-    checkJob perform
+    checkJob (perform -1)
+
+
+[<Test; ExpectedException(typeof<TimeoutException>)>]
+let ``Timeout when running too long job``() =
+    perform 1 "LTLQueries/Epi-V9.request.json" |> ignore
+
+
+[<Test; ExpectedException(typeof<InvalidOperationException>)>]
+let ``Handles incorrect queries``() =
+    Job.RunToCompletion("AnalyzeLTL.exe", "~~query is incorrect~~", -1) |> ignore
