@@ -6,7 +6,8 @@
     $.widget("BMA.containernameeditor", {
         options: {
             name: "name",
-            oneditorclosing: undefined
+            oneditorclosing: undefined,
+            placeholder: "Container Name"
         },
         
         _create: function () {
@@ -26,7 +27,7 @@
             this.name = $('<input>')
                 .attr("type", "text")
                 .attr("size", 15)
-                .attr("placeholder", "Container Name")
+                .attr("placeholder", this.options.placeholder)
                 .appendTo(that.element);
             this.name.bind("input change", function () {
                 that.options.name = that.name.val();
@@ -40,6 +41,8 @@
             if (key === "name") {
                 this.options.name = value;
                 this.name.val(value);
+            } else if (key === "placeholder") {
+                this.name.attr("placeholder", value);
             }
 
             $.Widget.prototype._setOption.apply(this, arguments);

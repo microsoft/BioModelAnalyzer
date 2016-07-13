@@ -1130,6 +1130,7 @@ var BMA;
                             var width = context.measureText(name).width;
                             if (width > hks) {
                                 fs = fs * hks / width;
+                                width = hks;
                                 context.font = fs + "px Segoe-UI";
                             }
                             context.fillStyle = "rgb(96,96,96)";
@@ -4834,7 +4835,10 @@ var BMA;
                     if (layoutPart !== undefined) {
                         return {
                             operation: layoutPart.operation,
-                            isRoot: layoutPart.parentoperation === undefined
+                            isRoot: layoutPart.parentoperation === undefined,
+                            position: layoutPart.position,
+                            parentoperation: layoutPart.parentoperation,
+                            parentoperationindex: layoutPart.parentoperationindex
                         };
                     }
                 }
@@ -10120,7 +10124,8 @@ var BMA;
     $.widget("BMA.containernameeditor", {
         options: {
             name: "name",
-            oneditorclosing: undefined
+            oneditorclosing: undefined,
+            placeholder: "Container Name"
         },
         _create: function () {
             var that = this;
@@ -10138,7 +10143,7 @@ var BMA;
             this.name = $('<input>')
                 .attr("type", "text")
                 .attr("size", 15)
-                .attr("placeholder", "Container Name")
+                .attr("placeholder", this.options.placeholder)
                 .appendTo(that.element);
             this.name.bind("input change", function () {
                 that.options.name = that.name.val();
@@ -10151,6 +10156,9 @@ var BMA;
             if (key === "name") {
                 this.options.name = value;
                 this.name.val(value);
+            }
+            else if (key === "placeholder") {
+                this.name.attr("placeholder", value);
             }
             $.Widget.prototype._setOption.apply(this, arguments);
             this._super("_setOption", key, value);
@@ -12646,7 +12654,7 @@ jQuery.fn.extend({
             });
             */
             //Adding drawing surface
-            var svgDiv = $("<div></div>").css("background-color", "white").height(200).width("100%").appendTo(leftContainer);
+            var svgDiv = $("<div></div>").css("background-color", "white").css("position", "relative").height(200).width("100%").appendTo(leftContainer);
             that.svgDiv = svgDiv;
             var pixofs = 0;
             svgDiv.svg({
@@ -12933,6 +12941,9 @@ jQuery.fn.extend({
                     draggableDiv.attr("data-dragsource", undefined);
                 }
             });
+            var editor = $("<div></div>").css("position", "absolute").css("background-color", "white").addClass("window").addClass("container-name").appendTo(svgDiv);
+            editor.containernameeditor({ placeholder: "Enter number", name: "NaN" });
+            editor.hide();
             svgDiv.click(function (arg) {
                 var opL = that.operationLayout;
                 if (opL === undefined)
@@ -12943,7 +12954,18 @@ jQuery.fn.extend({
                 var svgCoords = that._getSVGCoords(relX, relY);
                 var pickedOp = opL.PickOperation(svgCoords.x, svgCoords.y);
                 if (pickedOp !== undefined && pickedOp.operation instanceof BMA.LTLOperations.ConstOperand) {
-                    alert("Constant!");
+                    editor.containernameeditor({
+                        name: pickedOp.operation.Value, oneditorclosing: function () {
+                            var value = parseFloat(editor.containernameeditor('option', 'name'));
+                            if (!isNaN(value)) {
+                                //Updating value of constant
+                                pickedOp.parentoperation.operands[pickedOp.parentoperationindex] = new BMA.LTLOperations.ConstOperand(value);
+                                that._refresh();
+                            }
+                        } })
+                        .css("top", relY)
+                        .css("left", relX)
+                        .show();
                 }
             });
             /*

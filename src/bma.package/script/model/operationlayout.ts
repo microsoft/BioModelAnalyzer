@@ -604,7 +604,10 @@
                     if (layoutPart !== undefined) {
                         return {
                             operation: layoutPart.operation,
-                            isRoot: layoutPart.parentoperation === undefined
+                            isRoot: layoutPart.parentoperation === undefined,
+                            position: layoutPart.position,
+                            parentoperation: layoutPart.parentoperation,
+                            parentoperationindex: layoutPart.parentoperationindex
                         };
                     }
                 }

@@ -129,7 +129,7 @@
             */
 
             //Adding drawing surface
-            var svgDiv = $("<div></div>").css("background-color", "white").height(200).width("100%").appendTo(leftContainer);
+            var svgDiv = $("<div></div>").css("background-color", "white").css("position", "relative").height(200).width("100%").appendTo(leftContainer);
             that.svgDiv = svgDiv;
 
             var pixofs = 0;
@@ -453,6 +453,11 @@
                 }
             });
 
+
+            var editor = $("<div></div>").css("position", "absolute").css("background-color", "white").addClass("window").addClass("container-name").appendTo(svgDiv);
+            editor.containernameeditor({ placeholder: "Enter number", name: "NaN" });
+            editor.hide();
+
             svgDiv.click(function (arg) {
                 var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
 
@@ -466,7 +471,18 @@
                 var pickedOp = opL.PickOperation(svgCoords.x, svgCoords.y);
 
                 if (pickedOp !== undefined && pickedOp.operation instanceof BMA.LTLOperations.ConstOperand) {
-                    alert("Constant!");
+                    editor.containernameeditor({
+                        name: pickedOp.operation.Value, oneditorclosing: function () {
+                            var value = parseFloat(editor.containernameeditor('option', 'name'));
+                            if (!isNaN(value)) {
+                                //Updating value of constant
+                                pickedOp.parentoperation.operands[pickedOp.parentoperationindex] = new BMA.LTLOperations.ConstOperand(value);
+                                that._refresh();
+                            }
+                        }})
+                        .css("top", relY)
+                        .css("left", relX)
+                        .show();
                 }
             });
 
