@@ -454,7 +454,8 @@
             });
 
 
-            var editor = $("<div></div>").css("position", "absolute").css("background-color", "white").addClass("window").addClass("container-name").appendTo(svgDiv);
+            var editor = $("<div></div>").css("position", "absolute").css("background-color", "white").css("z-index", 1).addClass("window").addClass("container-name").appendTo(svgDiv);
+            editor.click(function (arg) { arg.stopPropagation(); });
             editor.containernameeditor({ placeholder: "Enter number", name: "NaN" });
             editor.hide();
 
@@ -470,7 +471,10 @@
                 var svgCoords = that._getSVGCoords(relX, relY);
                 var pickedOp = opL.PickOperation(svgCoords.x, svgCoords.y);
 
+
                 if (pickedOp !== undefined && pickedOp.operation instanceof BMA.LTLOperations.ConstOperand) {
+                    var screenCoords = that._getScreenCoords(pickedOp.position.x, pickedOp.position.y);
+
                     editor.containernameeditor({
                         name: pickedOp.operation.Value, oneditorclosing: function () {
                             var value = parseFloat(editor.containernameeditor('option', 'name'));
@@ -480,8 +484,8 @@
                                 that._refresh();
                             }
                         }})
-                        .css("top", relY)
-                        .css("left", relX)
+                        .css("top", screenCoords.y)
+                        .css("left", screenCoords.x)
                         .show();
                 }
             });
@@ -612,6 +616,27 @@
             return {
                 x: svgX,
                 y: svgY
+            };
+        },
+
+        _getScreenCoords: function (svgX, svgY) {
+            var bbox = this.operationLayout.BoundingBox;
+            var aspect = this.svgDiv.width() / this.svgDiv.height();
+            var width = bbox.width + 20;
+            var height = width / aspect;
+            if (height < bbox.height + 20) {
+                height = bbox.height + 20;
+                width = height * aspect;
+            }
+            var bboxx = -width / 2;
+            var bboxy = -height / 2;
+            //var svgX = width * x / this.svgDiv.width() + bboxx;
+            //var svgY = height * y / this.svgDiv.height() + bboxy;
+            var x = (svgX - bboxx) * this.svgDiv.width() / width;
+            var y = (svgY - bboxy) * this.svgDiv.height() / height;
+            return {
+                x: x,
+                y: y
             };
         },
 
