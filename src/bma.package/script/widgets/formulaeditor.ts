@@ -26,6 +26,26 @@
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("Variables<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
             this._refreshStates();
+
+            //Adding pre-defined states
+            var conststates = $("<div></div>").addClass("state-buttons").width(60).html("&nbsp;<br>").appendTo(toolbar);
+            var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
+            var state = $("<div></div>")
+                .addClass("state-button")
+                .attr("data-state", "ConstantValue")
+                .css("z-index", 6)
+                .css("cursor", "pointer")
+                .text("123...")
+                .css("font-size", "10px")
+                .appendTo(statesbtns);
+
+            state.draggable({
+                helper: "clone",
+                cursorAt: { left: 0, top: 0 },
+                opacity: 0.4,
+                cursor: "pointer",
+                start: function (event, ui) { }
+            });
             
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
@@ -49,7 +69,6 @@
 
                 var opDiv = $("<div></div>")
                     .addClass("operator")
-                    .addClass("ltl-tp-droppable")
                     .attr("data-operator", operator.Name)
                     .css("z-index", 6)
                     .css("cursor", "pointer")
@@ -60,7 +79,7 @@
                     $("<div></div>").addClass("hole").appendTo(opDiv);
                     spaceStr = "";
                 }
-
+                
                 var opStr = operator.Name;
                 if (opStr === "+" || opStr === "+" || opStr === "+" || opStr === "+") {
                     opStr = "&nbsp;" + opStr + "&nbsp;";
@@ -110,7 +129,7 @@
             */
 
             //Adding drawing surface
-            var svgDiv = $("<div></div>").css("background-color", "white").height(200).width("100%").appendTo(leftContainer);
+            var svgDiv = $("<div></div>").css("background-color", "white").css("position", "relative").height(200).width("100%").appendTo(leftContainer);
             that.svgDiv = svgDiv;
 
             var pixofs = 0;
@@ -133,7 +152,7 @@
             svgDiv.mousemove(function (arg) {
                 if (that.operationLayout !== undefined && that.operationLayout.IsVisible) {
                     var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
-                    var parentOffset = $(this).offset();
+                    var parentOffset = $(this).offset(); 
                     var relX = arg.pageX - parentOffset.left;
                     var relY = arg.pageY - parentOffset.top;
                     var svgCoords = that._getSVGCoords(relX, relY);
@@ -296,7 +315,12 @@
 
                     } else if (ui.draggable.attr("data-state") !== undefined) {
                         //New variable is dropped
-                        var kf = new BMA.LTLOperations.NameOperand(ui.draggable.attr("data-state"), undefined); //new BMA.LTLOperations.Keyframe(ui.draggable.attr("data-state"), "", [  ]);
+                        var kf = undefined;
+                        if (ui.draggable.attr("data-state") === "ConstantValue") {
+                            kf = new BMA.LTLOperations.ConstOperand(0);
+                        } else {
+                            kf = new BMA.LTLOperations.NameOperand(ui.draggable.attr("data-state"), undefined);
+                        }
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                         if (opL !== undefined) {
                             var parentOffset = $(this).offset();
@@ -407,14 +431,14 @@
                             padding: padding,
                             keyFrameSize: keyFrameSize,
                             stroke: "black",
-                            fill: "white",
+                            fill: "white", 
                             isRoot: true,
                             strokeWidth: 1,
                             borderThickness: 1
                         });
 
                         that._refresh();
-                    }
+                    } 
                 },
                 drag: function (arg, ui) {
                     return opToDrag !== undefined;
@@ -429,13 +453,67 @@
                 }
             });
 
+
+            var editor = $("<div></div>").css("position", "absolute").css("background-color", "white").css("z-index", 1).addClass("window").addClass("container-name").appendTo(svgDiv);
+            editor.click(function (arg) { arg.stopPropagation(); });
+            editor.containernameeditor({ placeholder: "Enter number", name: "NaN" });
+            editor.hide();
+
+            svgDiv.click(function (arg) {
+                        var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+
+                if (opL === undefined)
+                    return;
+
+                            var parentOffset = $(this).offset();
+                            var relX = arg.pageX - parentOffset.left;
+                            var relY = arg.pageY - parentOffset.top;
+                            var svgCoords = that._getSVGCoords(relX, relY);
+                var pickedOp = opL.PickOperation(svgCoords.x, svgCoords.y);
+
+
+                if (pickedOp !== undefined && pickedOp.operation instanceof BMA.LTLOperations.ConstOperand) {
+                    var screenCoords = that._getScreenCoords(pickedOp.position.x, pickedOp.position.y);
+
+                    editor.containernameeditor({
+                        name: pickedOp.operation.Value, oneditorclosing: function () {
+                            var value = parseFloat(editor.containernameeditor('option', 'name'));
+                            if (!isNaN(value)) {
+                                //Updating value of constant
+                                pickedOp.parentoperation.operands[pickedOp.parentoperationindex] = new BMA.LTLOperations.ConstOperand(value);
+                        that._refresh();
+                        } else {
+                            opToDrag.parentoperation.Operands[opToDrag.parentoperationindex] = opToDrag.operation;
+                        }
+                    }
+                        }})
+                        .css("top", screenCoords.y)
+                        .css("left", screenCoords.x)
+                        .show();
+                }
+
+                        canvas.width = scale.x * opSize.width + 2 * padding.x;
+                        canvas.height = scale.y * opSize.height + 2 * padding.y;
+
+                        var opPosition = { x: scale.x * opSize.width / 2 + padding.x, y: padding.y + Math.floor(scale.y * opSize.height / 2) };
+
+                        BMA.LTLOperations.RenderOperation(canvas, opToDrag.operation, opPosition, scale, {
+                            padding: padding,
+                            keyFrameSize: keyFrameSize,
+                            stroke: "black",
+                            fill: "white",
+                            isRoot: true,
+                            strokeWidth: 1,
+                            borderThickness: 1
+            });
+
             /*
             //Context menu
             var holdCords = {
                 holdX: 0,
                 holdY: 0
             };
-            
+
             $(document).on('vmousedown', function (event) {
                 holdCords.holdX = event.pageX;
                 holdCords.holdY = event.pageY;
@@ -509,7 +587,7 @@
                         //that._executeCommand("AddStateSelect", $(this).attr("data-state"));
                     }
 
-                });
+            });
 
                 //stateDiv.statetooltip({ state: stateTooltip });
             }
@@ -535,8 +613,8 @@
                 default:
                     break;
             }
-
-            this._refresh();
+            
+            this._refresh();  
         },
 
         _getSVGCoords: function (x, y) {
@@ -555,6 +633,27 @@
             return {
                 x: svgX,
                 y: svgY
+            };
+        },
+
+        _getScreenCoords: function (svgX, svgY) {
+            var bbox = this.operationLayout.BoundingBox;
+            var aspect = this.svgDiv.width() / this.svgDiv.height();
+            var width = bbox.width + 20;
+            var height = width / aspect;
+            if (height < bbox.height + 20) {
+                height = bbox.height + 20;
+                width = height * aspect;
+            }
+            var bboxx = -width / 2;
+            var bboxy = -height / 2;
+            //var svgX = width * x / this.svgDiv.width() + bboxx;
+            //var svgY = height * y / this.svgDiv.height() + bboxy;
+            var x = (svgX - bboxx) * this.svgDiv.width() / width;
+            var y = (svgY - bboxy) * this.svgDiv.height() / height;
+            return {
+                x: x,
+                y: y
             };
         },
 
@@ -590,6 +689,39 @@
 
 
         },
+
+        //_addCustomState: function (statesbtns: JQuery, name, description, content: string) {
+        //    var that = this;
+
+        //    var state = $("<div></div>")
+        //        .addClass("state-button")
+        //        .attr("data-state", name)
+        //        .css("z-index", 6)
+        //        .css("cursor", "pointer")
+        //        .text(content)
+        //        .appendTo(statesbtns);
+
+        //    /*
+        //    state.statetooltip({
+        //        state: {
+        //            description: description, formula: undefined
+        //        }
+        //    });
+        //    */
+
+        //    state.draggable({
+        //        helper: "clone",
+        //        cursorAt: { left: 0, top: 0 },
+        //        opacity: 0.4,
+        //        cursor: "pointer",
+        //        start: function (event, ui) {
+        //            //that._executeCommand("AddStateSelect", $(this).attr("data-state"));
+        //        }
+
+        //    });
+
+        //    return state;
+        //},
 
         _setOption: function (key, value) {
             var that = this;

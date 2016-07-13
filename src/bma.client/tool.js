@@ -2164,7 +2164,7 @@ var BMA;
     })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=commands.js.map
+//# sourceMappingURL=Commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -18216,16 +18216,21 @@ var BMA;
                 this.operators.push(new LTLOperations.Operator('WEAKUNTIL', 2, formulacreator('Weakuntil')));
                 this.operators.push(new LTLOperations.Operator('UNTIL', 2, formulacreator('Until')));
                 this.operators.push(new LTLOperations.Operator('RELEASE', 2, formulacreator('Release')));
+                /*
                 //Target Function Editor operators
-                this.operators.push(new LTLOperations.Operator('AVG', Number.POSITIVE_INFINITY, functionformulacreator('avg')));
-                this.operators.push(new LTLOperations.Operator('MIN', Number.POSITIVE_INFINITY, functionformulacreator('min')));
-                this.operators.push(new LTLOperations.Operator('MAX', Number.POSITIVE_INFINITY, functionformulacreator('max')));
-                this.operators.push(new LTLOperations.Operator('CEIL', 1, formulacreator('ceil')));
-                this.operators.push(new LTLOperations.Operator('FLOOR', 1, formulacreator('floor')));
-                this.operators.push(new LTLOperations.Operator('/', 2, operatorformulacreator('/')));
-                this.operators.push(new LTLOperations.Operator('*', Number.POSITIVE_INFINITY, operatorformulacreator('*')));
-                this.operators.push(new LTLOperations.Operator('+', Number.POSITIVE_INFINITY, operatorformulacreator('+')));
-                this.operators.push(new LTLOperations.Operator('-', Number.POSITIVE_INFINITY, operatorformulacreator('-')));
+
+                this.operators.push(new Operator('AVG', Number.POSITIVE_INFINITY, functionformulacreator('avg')));
+                this.operators.push(new Operator('MIN', Number.POSITIVE_INFINITY, functionformulacreator('min')));
+                this.operators.push(new Operator('MAX', Number.POSITIVE_INFINITY, functionformulacreator('max')));
+
+                this.operators.push(new Operator('CEIL', 1, formulacreator('ceil')));
+                this.operators.push(new Operator('FLOOR', 1, formulacreator('floor')));
+
+                this.operators.push(new Operator('/', 2, operatorformulacreator('/')));
+                this.operators.push(new Operator('*', Number.POSITIVE_INFINITY, operatorformulacreator('*')));
+                this.operators.push(new Operator('+', Number.POSITIVE_INFINITY, operatorformulacreator('+')));
+                this.operators.push(new Operator('-', Number.POSITIVE_INFINITY, operatorformulacreator('-')));
+                */
             }
             Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
                 get: function () {

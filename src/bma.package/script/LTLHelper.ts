@@ -112,7 +112,7 @@
                         context.fill();
                         context.stroke();
 
-                        if (layoutPart.type === "keyframe" || layoutPart.type === "other") {
+                        if (layoutPart.type === "keyframe" || layoutPart.type === "constant" || layoutPart.type === "other") {
                             var name = layoutPart.name;
                             var fs = 16;
                             context.font = "16px Segoe-UI";
@@ -120,6 +120,7 @@
                             var width = context.measureText(name).width;
                             if (width > hks) {
                                 fs = fs * hks / width;
+                                width = hks;
                                 context.font = fs + "px Segoe-UI";
                             }
                             context.fillStyle = "rgb(96,96,96)";
@@ -235,7 +236,10 @@
                 } else if (operation instanceof Keyframe) {
                     layout.type = "keyframe";
                     layout.name = (<Keyframe>operation).Name;
-                } else {
+                } else if (operation instanceof ConstOperand) {
+                    layout.type = "constant";
+                    layout.name = (<ConstOperand>operation).Value + "";
+                } else{
                     layout.type = "other";
                     layout.name = (<Keyframe>operation).Name;
                 }
