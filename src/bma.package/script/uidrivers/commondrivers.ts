@@ -734,11 +734,19 @@ module BMA {
                             url: that.url,
                             data: JSON.stringify(request.data),
                             contentType: "application/json; charset=utf-8",
-                            dataType: "json"
-                        }).done(function (res) {
-                            that.currentActiveRequestCount--;
-                            that.ShiftRequest();
-                            request.deferred.resolve(res);
+                            dataType: "json",
+                            statusCode: {
+                                200: function (res) {
+                                    that.currentActiveRequestCount--;
+                                    that.ShiftRequest();
+                                    request.deferred.resolve(res);
+                                },
+                                204: function (res) {
+                                    that.currentActiveRequestCount--;
+                                    that.ShiftRequest();
+                                    request.deferred.reject({}, "Operation was not competed within time limit", "Processing Timeout");
+                                }
+                            }
                         }).fail(function (xhr, textStatus, errorThrown) {
                             that.currentActiveRequestCount--;
                             that.ShiftRequest();

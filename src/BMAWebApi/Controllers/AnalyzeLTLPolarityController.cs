@@ -86,7 +86,7 @@ namespace bma.client.Controllers
             catch (System.TimeoutException ex)
             {
                 RegisterException(log, input, ex);
-                return Request.CreateResponse(HttpStatusCode.GatewayTimeout, new HttpError("Timeout while waiting for the check to complete"));
+                return Request.CreateResponse(HttpStatusCode.NoContent, new HttpError("Timeout while waiting for the check to complete"));
             }
             catch (Exception ex)
             {

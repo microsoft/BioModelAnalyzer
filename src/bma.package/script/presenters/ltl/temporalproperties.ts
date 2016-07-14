@@ -970,12 +970,7 @@ module BMA {
 
                             if (res.Ticks == null && res.Status !== 2) {
                                 that.log.LogLTLError();
-
-                                if (res.Error.indexOf("Operation is not completed in") > -1)
-                                    driver.SetStatus("nottested", "Timed out");
-                                else
-                                    driver.SetStatus("nottested", "Server error: " + res.Error);
-
+                                driver.SetStatus("nottested", "Server error: " + res.Error);
                                 operation.AnalysisStatus = "nottested";
                                 operation.Tag.data = undefined;
                                 operation.Tag.negdata = undefined;
@@ -1024,9 +1019,14 @@ module BMA {
 
                                 (<any>proofInput).Polarity = polarity;
 
-                                
+
                                 that.polarityService.Invoke(proofInput).done(function (polarityResults) {
-                                    that.ProcessLTLResults(res, polarityResults, operation, opVersion, () => {
+                                    that.ProcessLTLResults(res, polarityResults, operation, opVersion);
+                                }).fail(function (xhr, textStatus, errorThrown) {
+                                    if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
+                                        return;
+
+                                    if (errorThrown === "Processing Timeout") {
                                         //Starting long-running job
                                         driver.SetStatus("processinglra");
                                         var tempStatus = operation.AnalysisStatus.split(",");
@@ -1036,8 +1036,8 @@ module BMA {
                                             operation.AnalysisStatus = "processinglra," + tempStatus[1];
                                         }
 
-                                       var lrapromise = that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
-                                            that.ProcessLTLResults(res, polarityResults2, operation, opVersion, undefined);
+                                        var lrapromise = that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
+                                            that.ProcessLTLResults(res, polarityResults2, operation, opVersion);
                                         }).fail(function (xhr, textStatus, errorThrown) {
                                             if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                                 return;
@@ -1058,38 +1058,37 @@ module BMA {
                                             driver.SetMessage(res);
                                             domplot.updateLayout();
                                             that.OnOperationsChanged(false);
-                                            });
-
-                                       driver.SetOnCancelRequestCallback(() => {
-                                           var status = operation.AnalysisStatus.split(', ');
-                                           var parsedstatus = status[1] ? status[1] : "nottested";
-                                           driver.SetStatus(parsedstatus);
-                                           operation.AnalysisStatus = parsedstatus;
-                                           domplot.updateLayout();
-                                           that.OnOperationsChanged(false, true);
-                                           (<any>lrapromise).abort();
                                         });
-                                    });
-                                }).fail(function (xhr, textStatus, errorThrown) {
-                                    if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
-                                        return;
-                                    that.log.LogLTLError();
-                                    if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
-                                        operation.AnalysisStatus = "partialfail";
-                                        driver.SetStatus(operation.AnalysisStatus);
 
-                                    } else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
-                                        operation.AnalysisStatus = "partialsuccess";
-                                        driver.SetStatus(operation.AnalysisStatus);
-
+                                        driver.SetOnCancelRequestCallback(() => {
+                                            var status = operation.AnalysisStatus.split(', ');
+                                            var parsedstatus = status[1] ? status[1] : "nottested";
+                                            driver.SetStatus(parsedstatus);
+                                            operation.AnalysisStatus = parsedstatus;
+                                            domplot.updateLayout();
+                                            that.OnOperationsChanged(false, true);
+                                            (<any>lrapromise).abort();
+                                        });
                                     } else {
-                                        operation.AnalysisStatus = "nottested";
-                                        driver.SetStatus("nottested", "Server Error");
 
+                                        that.log.LogLTLError();
+                                        if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
+                                            operation.AnalysisStatus = "partialfail";
+                                            driver.SetStatus(operation.AnalysisStatus);
+
+                                        } else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
+                                            operation.AnalysisStatus = "partialsuccess";
+                                            driver.SetStatus(operation.AnalysisStatus);
+
+                                        } else {
+                                            operation.AnalysisStatus = "nottested";
+                                            driver.SetStatus("nottested", "Server Error");
+
+                                        }
+                                        domplot.updateLayout();
+                                        that.OnOperationsChanged(false);
                                     }
-                                    domplot.updateLayout();
-                                    that.OnOperationsChanged(false);
-                                    });
+                                });
 
                             }
                         })
@@ -1098,7 +1097,11 @@ module BMA {
                                 return;
 
                             that.log.LogLTLError();
-                            driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
+                            if (errorThrown === "Processing Timeout") {
+                                driver.SetStatus("nottested", "Timed out");
+                            } else {
+                                driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
+                            }
                             operation.AnalysisStatus = "nottested";
                             operation.Tag.data = undefined;
                             operation.Tag.negdata = undefined;
@@ -1120,7 +1123,7 @@ module BMA {
                 }
             }
 
-            private ProcessLTLResults(simulationResult, polarityResults, operation, opVersion, timeoutcallback) {
+            private ProcessLTLResults(simulationResult, polarityResults, operation, opVersion) {
                 var that = this;
                 var driver = operation.Tag.driver;
                 var domplot: any = this.navigationDriver.GetNavigationSurface();
@@ -1135,23 +1138,19 @@ module BMA {
                     }
 
                     if (polarityResult === undefined || polarityResult.Ticks == null || polarityResult.Error) {
-                        if (timeoutcallback === undefined) {
-                            that.log.LogLTLError();
-                            if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
-                                operation.AnalysisStatus = "partialfail";
-                                driver.SetStatus(operation.AnalysisStatus);
-                            } else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
-                                operation.AnalysisStatus = "partialsuccess";
-                                driver.SetStatus(operation.AnalysisStatus);
-                            } else {
-                                operation.AnalysisStatus = "nottested";
-                                driver.SetStatus("nottested", "Server Error");
-                            }
-                            domplot.updateLayout();
-                            that.OnOperationsChanged(false);
+                        that.log.LogLTLError();
+                        if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
+                            operation.AnalysisStatus = "partialfail";
+                            driver.SetStatus(operation.AnalysisStatus);
+                        } else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
+                            operation.AnalysisStatus = "partialsuccess";
+                            driver.SetStatus(operation.AnalysisStatus);
                         } else {
-                            timeoutcallback();
+                            operation.AnalysisStatus = "nottested";
+                            driver.SetStatus("nottested", "Server Error");
                         }
+                        domplot.updateLayout();
+                        that.OnOperationsChanged(false);
                     }
                     else {
                         var polarityStatus = polarityResult.Status;
@@ -1198,23 +1197,19 @@ module BMA {
                         negativeResult = polarityResults.Item2;
                     }
                     if (positiveResult === undefined || negativeResult === undefined || positiveResult.Ticks == null || negativeResult.Ticks == null) {
-                        if (timeoutcallback === undefined) {
-                            that.log.LogLTLError();
+                        that.log.LogLTLError();
 
-                            if (positiveResult.Error.indexOf("Operation is not completed in") > -1)
-                                driver.SetStatus("nottested", "Timed out");
-                            else
-                                driver.SetStatus("nottested", "Server error: " + positiveResult.Error);
+                        if (positiveResult.Error.indexOf("Operation is not completed in") > -1)
+                            driver.SetStatus("nottested", "Timed out");
+                        else
+                            driver.SetStatus("nottested", "Server error: " + positiveResult.Error);
 
-                            operation.AnalysisStatus = "nottested";
-                            operation.Tag.data = undefined;
-                            operation.Tag.negdata = undefined;
-                            operation.Tag.steps = driver.GetSteps();
-                            domplot.updateLayout();
-                            that.OnOperationsChanged(false);
-                        } else {
-                            timeoutcallback();
-                        }
+                        operation.AnalysisStatus = "nottested";
+                        operation.Tag.data = undefined;
+                        operation.Tag.negdata = undefined;
+                        operation.Tag.steps = driver.GetSteps();
+                        domplot.updateLayout();
+                        that.OnOperationsChanged(false);
                     } else {
                         var resultStatus = "";
                         operation.Tag.negdata = undefined;
