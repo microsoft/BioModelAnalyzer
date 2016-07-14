@@ -5406,13 +5406,25 @@ var BMA;
             }
             BMAProcessingService.prototype.Invoke = function (data) {
                 var that = this;
-                return $.ajax({
+                var result = $.Deferred();
+                $.ajax({
                     type: "POST",
                     url: that.serviceURL,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
-                    dataType: "json"
+                    dataType: "json",
+                    statusCode: {
+                        200: function (res) {
+                            result.resolve(res);
+                        },
+                        204: function (res) {
+                            result.reject({}, "Operation was not competed within time limit", "Processing Timeout");
+                        }
+                    }
+                }).fail(function (xhr, textStatus, errorThrown) {
+                    result.reject(xhr, textStatus, errorThrown);
                 });
+                return result.promise();
             };
             return BMAProcessingService;
         })();
