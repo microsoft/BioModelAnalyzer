@@ -27,7 +27,7 @@ paths:
           description: |
             The check is complete and its result is in the response. 
             The check could fail and the response can contain errors.
-        504:
+        204:
           description: Timeout while waiting for the check to complete.
 
   /lra/{appId}:

@@ -86,19 +86,16 @@ namespace bma.client.Controllers
             catch (System.TimeoutException ex)
             {
                 RegisterException(log, input, ex);
-                return Request.CreateResponse(HttpStatusCode.GatewayTimeout, new HttpError("Timeout while waiting for the check to complete"));
+                return Request.CreateResponse(HttpStatusCode.NoContent, new HttpError("Timeout while waiting for the check to complete"));
             }
             catch (Exception ex)
             {
-                //  azureLogService.Debug("Analyze Exception", ex.ToString());
-                log.LogError(ex.ToString());
-                var version = typeof(AnalyzeController).Assembly.GetName().Version;
-                faultLogger.Add(DateTime.Now, version.ToString(), input, log);
+                RegisterException(log, input, ex);
                 throw ex;
             }
         }
 
-        private void RegisterException(DefaultLogService log, string input, System.TimeoutException ex)
+        private void RegisterException(DefaultLogService log, string input, System.Exception ex)
         {
             //  azureLogService.Debug("Analyze Exception", ex.ToString());
             log.LogError(ex.ToString());
