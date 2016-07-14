@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using System.IO;
 
-namespace AnalyzeLTL
+namespace SimulateLTL
 {
     class Program
     {
@@ -10,9 +10,9 @@ namespace AnalyzeLTL
         {
             if (args.Length != 2) throw new System.ArgumentException("Incorrect number of arguments");
             var inputJson = File.ReadAllText(args[0]);
-            var query = JsonConvert.DeserializeObject<LTLPolarityAnalysisInputDTO>(inputJson);
+            var query = JsonConvert.DeserializeObject<LTLSimulationAnalysisInputDTO>(inputJson);
 
-            var res = Analysis.Polarity(query);
+            var res = Analysis.Simulate(query);
 
             var jsRes = JsonConvert.SerializeObject(res);
             File.WriteAllText(args[1], jsRes);

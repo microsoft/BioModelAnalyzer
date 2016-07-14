@@ -1,8 +1,13 @@
-﻿using bma.LTL;
+﻿using bma.BioCheck;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace AnalyzeLTL
+namespace Simulate
 {
     class Program
     {
@@ -10,9 +15,9 @@ namespace AnalyzeLTL
         {
             if (args.Length != 2) throw new System.ArgumentException("Incorrect number of arguments");
             var inputJson = File.ReadAllText(args[0]);
-            var query = JsonConvert.DeserializeObject<LTLPolarityAnalysisInputDTO>(inputJson);
+            var query = JsonConvert.DeserializeObject<SimulationInput>(inputJson);
 
-            var res = Analysis.Polarity(query);
+            var res = Simulation.Simulate(query);
 
             var jsRes = JsonConvert.SerializeObject(res);
             File.WriteAllText(args[1], jsRes);

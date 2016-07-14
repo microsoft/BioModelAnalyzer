@@ -33,13 +33,7 @@ namespace bma.client.Controllers
             this.faultLogger = logger;
             this.scheduler = scheduler;
         }
-
-        private HttpResponseMessage PlainText(HttpStatusCode status, string content)
-        {
-            var response = Request.CreateResponse(status);
-            response.Content = new StringContent(content, System.Text.Encoding.UTF8, "text/plain");
-            return response;
-        }
+        
 
         // GET /api/lra/{appId} ? jobId=GUID
         // where {appId} is the application ID.
@@ -56,13 +50,13 @@ namespace bma.client.Controllers
                 switch (st)
                 {
                     case Jobs.JobStatus.Succeeded:
-                        return PlainText(HttpStatusCode.OK /* 200 */, s);
+                        return HttpResponses.PlainText(Request, s, HttpStatusCode.OK /* 200 */);
                     case Jobs.JobStatus.Queued:
-                        return PlainText(HttpStatusCode.Created /* 201 */, s);
+                        return HttpResponses.PlainText(Request, s, HttpStatusCode.Created /* 201 */);
                     case Jobs.JobStatus.Executing:
-                        return PlainText(HttpStatusCode.Accepted /* 202 */, s);
+                        return HttpResponses.PlainText(Request, s, HttpStatusCode.Accepted /* 202 */);
                     case Jobs.JobStatus.Failed:
-                        return PlainText((HttpStatusCode)203, info);
+                        return HttpResponses.PlainText(Request, info, (HttpStatusCode)203);
                 }
                 return Request.CreateResponse((HttpStatusCode)501, new HttpError("Unknown status"));
             }
@@ -115,12 +109,7 @@ namespace bma.client.Controllers
 
             this.faultLogger = logger;
             this.scheduler = scheduler;
-        }
-
-        private static HttpContent Json(string content)
-        {
-            return new StringContent(content, System.Text.Encoding.UTF8, "application/json");
-        }
+        }        
 
         [HttpGet]
         [ActionName("Result")]
@@ -136,9 +125,7 @@ namespace bma.client.Controllers
                 using (StreamReader reader = new StreamReader(result.Value))
                 {
                     var s = reader.ReadToEnd();
-                    var response = Request.CreateResponse(HttpStatusCode.OK);
-                    response.Content = Json(s);
-                    return response;
+                    return HttpResponses.Json(Request, s);
                 }
             }
             return Request.CreateResponse(HttpStatusCode.NotFound, new HttpError("Job result is not available"));

@@ -30,6 +30,26 @@ paths:
         504:
           description: Timeout while waiting for the check to complete.
 
+  /Simulate:
+    post:
+      summary: |
+        Makes simulation of a model, if it takes less than 1 minute.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+      responses:
+        200:
+          description: |
+            The simulation is complete and its result is in the response. 
+            The simulation could fail and the response can contain errors.
+        504:
+          description: Timeout while waiting for the simulation to complete.
+
   /lra/{appId}:
     post:
       summary: |

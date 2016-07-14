@@ -17,6 +17,7 @@ let post url (content:byte[]) =
     request.Accept <- "application/json, text/javascript, */*; q=0.01"
     request.UserAgent <- "Unit tests"
     request.Method <- "POST"
+    request.KeepAlive <- false
     request.ContentLength <- int64(content.Length)
     
     // Get the request stream.
