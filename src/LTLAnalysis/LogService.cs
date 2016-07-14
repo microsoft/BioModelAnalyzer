@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace bma.LTLPolarity
+namespace bma.LTLAnalysis
 {
     public class LogService : ILogService
     {

@@ -95,9 +95,9 @@
       <Project>{47e591bb-eb9e-41b0-a488-f271177d2616}</Project>
       <Name>FairShareWorker</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LTLPolarityCheck\LTLPolarityCheck.csproj">
+    <ProjectReference Include="..\LTLAnalysis\LTLAnalysis.csproj">
       <Project>{573c06c3-ab0d-4db5-a2e2-53a40e1bba57}</Project>
-      <Name>LTLPolarityCheck</Name>
+      <Name>LTLAnalysis</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

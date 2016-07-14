@@ -1,4 +1,4 @@
-﻿module ``LTL Queries`` 
+﻿module ``Deployment Tests`` 
     
 open NUnit.Framework
 open FsCheck
@@ -36,31 +36,41 @@ let perform job =
     | code -> failwithf "Unknown response code when getting status: %d" code
 
 let performShortPolarity job = 
-    try
-        let code, result = Http.postFile (sprintf "%sAnalyzeLTLPolarity" urlApi) job
-        match code with
-        | 200 -> result
-        | 504 -> raise (System.TimeoutException("Timeout while waiting for LTL polarity check"))
-        | _ -> failwithf "Unexpected http status code %d" code
-    with
-    | :? System.Net.WebException as ex ->
-        match ex.Response with
-        | :? System.Net.HttpWebResponse as resp when resp.StatusCode = System.Net.HttpStatusCode.GatewayTimeout ->
-            raise (System.TimeoutException("Timeout while waiting for LTL polarity check"))
-        | _ -> raise ex   
+    let code, result = Http.postFile (sprintf "%sAnalyzeLTLPolarity" urlApi) job
+    match code with
+    | 200 -> result
+    | 204 -> raise (System.TimeoutException("Timeout while waiting for LTL polarity check"))
+    | _ -> failwithf "Unexpected http status code %d" code
+
+
+let performSimulation job = 
+    let code, result = Http.postFile (sprintf "%sAnalyzeLTLSimulation" urlApi) job
+    match code with
+    | 200 -> result
+    | 204 -> raise (System.TimeoutException("Timeout while waiting for LTL simulation check"))
+    | _ -> failwithf "Unexpected http status code %d" code
+
+
+
 
 
 [<Test; Timeout(600000)>]
 [<Category("Deployment")>]
 let ``Long-running LTL polarity checks``() =
-    checkJob perform
+    checkJob perform comparePolarityResults ""
 
 [<Test; Timeout(600000)>]
 [<Category("Deployment")>]
 let ``Short-running LTL polarity checks``() =
-    checkSomeJobs performShortPolarity ["LTLQueries/toymodel.request.json"]
+    checkSomeJobs performShortPolarity comparePolarityResults "" ["LTLQueries/toymodel.request.json"]
 
 [<Test; ExpectedException(typeof<System.TimeoutException>)>]
 [<Category("Deployment")>]
 let ``Short LTL polarity causes timeout if the check takes too long``() =
     performShortPolarity "LTLQueries/Epi-V9.request.json" |> ignore
+
+[<Test; Timeout(600000)>]
+[<Category("Deployment")>]
+let ``Simulate LTL``() =
+    checkSomeJobs performSimulation compareSimulationResults "" ["LTLQueries/toymodel.request.json"]
+

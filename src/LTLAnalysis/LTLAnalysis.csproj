@@ -7,8 +7,8 @@
     <ProjectGuid>{573C06C3-AB0D-4DB5-A2E2-53A40E1BBA57}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LTLPolarityCheck</RootNamespace>
-    <AssemblyName>LTLPolarityCheck</AssemblyName>
+    <RootNamespace>LTLAnalysis</RootNamespace>
+    <AssemblyName>LTLAnalysis</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -42,7 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Check.cs" />
+    <Compile Include="Analysis.cs" />
     <Compile Include="LogService.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -121,6 +121,7 @@
     <Compile Include="Controllers\ActivityLogController.cs" />
     <Compile Include="Controllers\AnalyzeController.cs" />
     <Compile Include="Controllers\ClientIdController.cs" />
+    <Compile Include="HttpResponses.cs" />
     <Compile Include="Logs\DefaultLogService.cs" />
     <Compile Include="Controllers\DownloadController.cs" />
     <Compile Include="Controllers\FurtherTestingController.cs" />

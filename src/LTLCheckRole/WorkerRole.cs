@@ -1,18 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.Diagnostics;
+using bma.Cloud;
+using bma.LTLAnalysis;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
-using bma.Cloud;
-using System.IO;
 using Newtonsoft.Json;
-using bma.LTLPolarity;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Net;
+using System.Threading;
 
 namespace LTLCheckRole
 {
@@ -94,7 +89,7 @@ namespace LTLCheckRole
             var input_s = reader.ReadToEnd();
             var query = JsonConvert.DeserializeObject<LTLPolarityAnalysisInputDTO>(input_s);
 
-            var res = bma.LTLPolarity.Algorithms.Check(query);
+            var res = Analysis.Polarity(query);
 
             var jsRes = JsonConvert.SerializeObject(res);
             var output_s = jsRes.ToString();

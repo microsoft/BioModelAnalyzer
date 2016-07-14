@@ -16,10 +16,28 @@ let equalOrMissing (item1 : JToken, item2 : JToken) prop =
     neitherContains (item1,item2) prop ||
     bothContains (item1,item2) prop && item1.[prop] = item2.[prop]
 
-let checkSomeJobs (doJob : string -> string) (jobs:string seq) =
+let compareSimulationResults (exp:JToken) (act:JToken) =
+    equalOrMissing (exp, act) "Status" &&
+    equalOrMissing (exp, act) "Error"
+
+let comparePolarityResults (exp:JToken) (act:JToken) =
+    let both = bothContains (exp, act)
+    let neither = neitherContains (exp, act)
+    (neither "Item1" ||
+        both "Item1" &&
+        equalOrMissing (exp.["Item1"], act.["Item1"]) "Status" &&
+        equalOrMissing (exp.["Item1"], act.["Item1"]) "Error")
+    &&
+    (neither "Item2" ||
+        both "Item2" &&
+        equalOrMissing (exp.["Item2"], act.["Item2"]) "Status" &&
+        equalOrMissing (exp.["Item2"], act.["Item2"]) "Error")
+
+
+let checkSomeJobs (doJob : string -> string) (compare : JToken -> JToken -> bool) (responseSuffix : string) (jobs:string seq) =
     let outcome =
         jobs
-        |> PSeq.map(fun fileName ->
+        |> Seq.map(fun fileName ->
             let dir = Path.GetDirectoryName(fileName)
             let file = Path.GetFileNameWithoutExtension(fileName)
             let jobName = file.Substring(0, file.Length - ".request".Length)
@@ -29,20 +47,9 @@ let checkSomeJobs (doJob : string -> string) (jobs:string seq) =
                 Trace.WriteLine(sprintf "Job %s is done." jobName)
 
                 let resp = JObject.Parse(resp_json)
-                let expected = JObject.Parse(File.ReadAllText(Path.Combine(dir, sprintf "%s.response.json" jobName)))               
-                let both = bothContains (expected, resp)
-                let neither = neitherContains (expected, resp)
-                if 
-                    (neither "Item1" ||
-                     both "Item1" &&
-                     equalOrMissing (expected.["Item1"], resp.["Item1"]) "Status" &&
-                     equalOrMissing (expected.["Item1"], resp.["Item1"]) "Error")
-                    &&
-                    (neither "Item2" ||
-                     both "Item2" &&
-                     equalOrMissing (expected.["Item2"], resp.["Item2"]) "Status" &&
-                     equalOrMissing (expected.["Item2"], resp.["Item2"]) "Error")
-                then None
+                let expected = JObject.Parse(File.ReadAllText(Path.Combine(dir, sprintf "%s%s.response.json" jobName responseSuffix)))               
+                
+                if compare expected resp then None
                 else failwithf "Response status for the job %s differs from expected" jobName
             with 
             | exn ->
@@ -54,6 +61,7 @@ let checkSomeJobs (doJob : string -> string) (jobs:string seq) =
     | failed -> 
         raise (System.AggregateException("Some jobs have failed", failed))
 
-let checkJob (doJob : string -> string) =
+let checkJob (doJob : string -> string) (compare : JToken -> JToken -> bool) (responseSuffix : string) =
     Directory.EnumerateFiles("LTLQueries", "*.request.json")
-    |> checkSomeJobs doJob
+    |> checkSomeJobs doJob compare responseSuffix
+
