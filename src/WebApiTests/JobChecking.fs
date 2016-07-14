@@ -16,7 +16,7 @@ let equalOrMissing (item1 : JToken, item2 : JToken) prop =
     neitherContains (item1,item2) prop ||
     bothContains (item1,item2) prop && item1.[prop] = item2.[prop]
 
-let compareSimulationResults (exp:JToken) (act:JToken) =
+let compareLTLSimulationResults (exp:JToken) (act:JToken) =
     equalOrMissing (exp, act) "Status" &&
     equalOrMissing (exp, act) "Error"
 
@@ -33,11 +33,15 @@ let comparePolarityResults (exp:JToken) (act:JToken) =
         equalOrMissing (exp.["Item2"], act.["Item2"]) "Status" &&
         equalOrMissing (exp.["Item2"], act.["Item2"]) "Error")
 
+let compareSimulationResults (exp:JToken) (act:JToken) =
+    JToken.DeepEquals(exp.["Variables"], act.["Variables"]) &&
+    JToken.DeepEquals(exp.["ErrorMessages"], act.["ErrorMessages"])
+
 
 let checkSomeJobs (doJob : string -> string) (compare : JToken -> JToken -> bool) (responseSuffix : string) (jobs:string seq) =
     let outcome =
         jobs
-        |> Seq.map(fun fileName ->
+        |> PSeq.map(fun fileName ->
             let dir = Path.GetDirectoryName(fileName)
             let file = Path.GetFileNameWithoutExtension(fileName)
             let jobName = file.Substring(0, file.Length - ".request".Length)
@@ -61,7 +65,11 @@ let checkSomeJobs (doJob : string -> string) (compare : JToken -> JToken -> bool
     | failed -> 
         raise (System.AggregateException("Some jobs have failed", failed))
 
-let checkJob (doJob : string -> string) (compare : JToken -> JToken -> bool) (responseSuffix : string) =
-    Directory.EnumerateFiles("LTLQueries", "*.request.json")
+let checkJob (folder : string) (doJob : string -> string) (compare : JToken -> JToken -> bool) (responseSuffix : string) =
+    Directory.EnumerateFiles(folder, "*.request.json")
     |> checkSomeJobs doJob compare responseSuffix
 
+
+module Folders = 
+    let LTLQueries = "LTLQueries"
+    let Simulation = "Simulation"

@@ -1,5 +1,5 @@
 using bma.Cloud;
-using bma.LTLAnalysis;
+using bma.LTL;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using Newtonsoft.Json;

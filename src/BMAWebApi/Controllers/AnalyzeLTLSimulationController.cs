@@ -15,43 +15,14 @@ using System.Web.Http;
 
 namespace bma.client.Controllers
 {
-    public class AnalyzeLTLSimulationController : ApiController
+    public class AnalyzeLTLSimulationController : JobController
     {
-        private readonly IFailureLogger faultLogger;
-
-        public AnalyzeLTLSimulationController(IFailureLogger logger)
+        public AnalyzeLTLSimulationController(IFailureLogger logger) : base("SimulateLTL.exe", logger)
         {
-            this.faultLogger = logger;
         }
-
-        public async Task<HttpResponseMessage> Post()
+        public Task<HttpResponseMessage> Post()
         {
-            var log = new DefaultLogService();
-            string input = await Request.Content.ReadAsStringAsync();
-            string basePath = Path.Combine(Environment.GetEnvironmentVariable("RoleRoot"), @"approot\bin");
-            try
-            {
-                string result = JobsRunner.Job.RunToCompletion(Path.Combine(basePath, "SimulateLTL.exe"), input, 60000);
-                return HttpResponses.Json(Request, result);
-            }
-            catch (System.TimeoutException ex)
-            {
-                RegisterException(log, input, ex);
-                return Request.CreateResponse(HttpStatusCode.NoContent, new HttpError("Timeout while waiting for the check to complete"));
-            }
-            catch (Exception ex)
-            {
-                RegisterException(log, input, ex);
-                throw ex;
-            }
-        }
-
-        private void RegisterException(DefaultLogService log, string input, System.Exception ex)
-        {
-            //  azureLogService.Debug("Analyze Exception", ex.ToString());
-            log.LogError(ex.ToString());
-            var version = typeof(AnalyzeController).Assembly.GetName().Version;
-            faultLogger.Add(DateTime.Now, version.ToString(), input, log);
+            return ExecuteAsync(60000);
         }
     }
 

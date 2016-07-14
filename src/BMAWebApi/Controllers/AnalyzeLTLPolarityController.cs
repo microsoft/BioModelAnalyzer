@@ -15,47 +15,15 @@ using System.Web.Http;
 
 namespace bma.client.Controllers
 {
-    public class AnalyzeLTLPolarityController : ApiController
+    public class AnalyzeLTLPolarityController : JobController
     {
-        private readonly IFailureLogger faultLogger;
-
-        public AnalyzeLTLPolarityController(IFailureLogger logger)
+        public AnalyzeLTLPolarityController(IFailureLogger logger) : base("AnalyzeLTL.exe", logger)
         {
-            this.faultLogger = logger;
         }
 
-
-        public async Task<HttpResponseMessage> Post()
+        public Task<HttpResponseMessage> Post()
         {
-            var log = new DefaultLogService();
-            string input = await Request.Content.ReadAsStringAsync();
-            string basePath = Path.Combine(Environment.GetEnvironmentVariable("RoleRoot"), @"approot\bin");
-            try
-            {
-                string result = JobsRunner.Job.RunToCompletion(Path.Combine(basePath, "AnalyzeLTL.exe"), input, 60000);
-                return HttpResponses.Json(Request, result);
-            }
-            catch (System.TimeoutException ex)
-            {
-                RegisterException(log, input, ex);
-                return Request.CreateResponse(HttpStatusCode.NoContent, new HttpError("Timeout while waiting for the check to complete"));
-            }
-            catch (Exception ex)
-            {
-                //  azureLogService.Debug("Analyze Exception", ex.ToString());
-                log.LogError(ex.ToString());
-                var version = typeof(AnalyzeController).Assembly.GetName().Version;
-                faultLogger.Add(DateTime.Now, version.ToString(), input, log);
-                throw ex;
-            }
-        }
-
-        private void RegisterException(DefaultLogService log, string input, System.TimeoutException ex)
-        {
-            //  azureLogService.Debug("Analyze Exception", ex.ToString());
-            log.LogError(ex.ToString());
-            var version = typeof(AnalyzeController).Assembly.GetName().Version;
-            faultLogger.Add(DateTime.Now, version.ToString(), input, log);
+            return ExecuteAsync(60000);
         }
     }
 

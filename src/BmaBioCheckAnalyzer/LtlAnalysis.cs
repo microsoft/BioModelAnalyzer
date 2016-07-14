@@ -1,11 +1,12 @@
 ﻿using BioCheckAnalyzerCommon;
 using BioModelAnalyzer;
+using bma.Diagnostics;
 using Microsoft.FSharp.Core;
 using System;
 using System.Diagnostics;
 using System.Linq;
 
-namespace bma.LTLAnalysis
+namespace bma.LTL
 {
     public static class Analysis
     {

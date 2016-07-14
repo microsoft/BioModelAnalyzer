@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace bma.LTLAnalysis
+namespace bma.LTL
 {
     public enum LTLStatus
     {

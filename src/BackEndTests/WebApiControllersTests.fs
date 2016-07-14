@@ -12,6 +12,7 @@ open FSharp.Data.HttpRequestHeaders
 open FSharp.Data
 open BMAWebApi
 open Microsoft.Practices.Unity
+open bma.BioCheck
 
 type TestFailureLogger() =
     member val FailureCount = 0 with get,set
@@ -119,7 +120,7 @@ type WebApiControllersTests() =
         v3.Value <- 3
 
 
-        let request = new bma.client.Controllers.SimulationInput()
+        let request = new SimulationInput()
         request.Model <- model
         request.Variables <- [| v1; v2; v3 |]
         request.EnableLogging <- false
@@ -130,7 +131,7 @@ type WebApiControllersTests() =
                                              headers = [ ContentType HttpContentTypes.Json;
                                                          Accept HttpContentTypes.Json ],
                                              body = TextRequest (Newtonsoft.Json.JsonConvert.SerializeObject(request)))
-                request.Variables <- Newtonsoft.Json.JsonConvert.DeserializeObject<bma.client.Controllers.SimulationOutput>(responseString).Variables
+                request.Variables <- Newtonsoft.Json.JsonConvert.DeserializeObject<SimulationOutput>(responseString).Variables
                 
             let pickId id (v : SimulationVariable) = if v.Id = id then Some(v) else None
 

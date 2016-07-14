@@ -81,54 +81,60 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HttpPost.fs" />
-    <Compile Include="LTLTests.fs" />
+    <Compile Include="JobChecking.fs" />
     <Compile Include="JobsConsoleAppTests.fs" />
     <Compile Include="WebApiTests.fs" />
-    <None Include="LTLQueries\Epi-V9.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\Firing neuron.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\Germline v5.2.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\toymodel.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\PhosCas.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="App.config" />
     <None Include="LTLQueries\Epi-V9.request.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="LTLQueries\Epi-V9.simulation.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\Epi-V9.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="LTLQueries\Firing neuron.request.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="LTLQueries\Germline v5.2.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\toymodel.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\PhosCas.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\PhosCas.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\toymodel.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\Germline v5.2.response.json">
+    <None Include="LTLQueries\Firing neuron.simulation.response.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="LTLQueries\Firing neuron.response.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="LTLQueries\Epi-V9.response.json">
+    <None Include="LTLQueries\Germline v5.2.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\Germline v5.2.simulation.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\Germline v5.2.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\toymodel.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\toymodel.simulation.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\toymodel.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\PhosCas.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\PhosCas.simulation.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\PhosCas.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Simulation\toymodel.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Simulation\toymodel.response.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -146,6 +152,11 @@
     <ProjectReference Include="..\Jobs\SimulateLTL\SimulateLTL.csproj">
       <Name>SimulateLTL</Name>
       <Project>{e7535067-7b3d-4e8f-81b9-62e23550b535}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\Simulate\Simulate.csproj">
+      <Name>Simulate</Name>
+      <Project>{90ff5549-6138-4653-89c7-5a0dfb9034cf}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

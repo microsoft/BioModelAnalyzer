@@ -182,6 +182,10 @@
       <Project>{e7535067-7b3d-4e8f-81b9-62e23550b535}</Project>
       <Name>SimulateLTL</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Jobs\Simulate\Simulate.csproj">
+      <Project>{90ff5549-6138-4653-89c7-5a0dfb9034cf}</Project>
+      <Name>Simulate</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UIExpr\UIExpr.fsproj">
       <Project>{c6745675-ea9f-41f3-bffc-2c3810585b36}</Project>
       <Name>UIExpr</Name>

@@ -1,4 +1,4 @@
-﻿using bma.LTLAnalysis;
+﻿using bma.LTL;
 using Newtonsoft.Json;
 using System.IO;
 

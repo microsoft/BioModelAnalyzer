@@ -65,9 +65,9 @@
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
       <Name>BioCheckAnalyzerCommon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\LTLAnalysis\LTLAnalysis.csproj">
+    <ProjectReference Include="..\..\BmaBioCheckAnalyzer\BmaBioCheckAnalyzer.csproj">
       <Project>{573c06c3-ab0d-4db5-a2e2-53a40e1bba57}</Project>
-      <Name>LTLAnalysis</Name>
+      <Name>BmaBioCheckAnalyzer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

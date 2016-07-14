@@ -43,21 +43,26 @@ let performShortPolarity job =
     | _ -> failwithf "Unexpected http status code %d" code
 
 
-let performSimulation job = 
+let performLTLSimulation job = 
     let code, result = Http.postFile (sprintf "%sAnalyzeLTLSimulation" urlApi) job
     match code with
     | 200 -> result
     | 204 -> raise (System.TimeoutException("Timeout while waiting for LTL simulation check"))
     | _ -> failwithf "Unexpected http status code %d" code
 
-
+let performSimulation job = 
+    let code, result = Http.postFile (sprintf "%sSimulate" urlApi) job
+    match code with
+    | 200 -> result
+    | 204 -> raise (System.TimeoutException("Timeout while waiting for simulation"))
+    | _ -> failwithf "Unexpected http status code %d" code
 
 
 
 [<Test; Timeout(600000)>]
 [<Category("Deployment")>]
 let ``Long-running LTL polarity checks``() =
-    checkJob perform comparePolarityResults ""
+    checkJob Folders.LTLQueries perform comparePolarityResults ""
 
 [<Test; Timeout(600000)>]
 [<Category("Deployment")>]
@@ -72,5 +77,10 @@ let ``Short LTL polarity causes timeout if the check takes too long``() =
 [<Test; Timeout(600000)>]
 [<Category("Deployment")>]
 let ``Simulate LTL``() =
-    checkSomeJobs performSimulation compareSimulationResults "" ["LTLQueries/toymodel.request.json"]
+    checkSomeJobs performLTLSimulation compareLTLSimulationResults "" ["LTLQueries/toymodel.request.json"]
+
+[<Test; Timeout(600000)>]
+[<Category("Deployment")>]
+let ``Simulate model``() =
+    checkJob Folders.Simulation performSimulation compareSimulationResults ""
 

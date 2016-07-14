@@ -112,6 +112,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\JobController.cs" />
     <Compile Include="Controllers\LongRunningActionsController.cs" />
     <Compile Include="Controllers\AnalyzeLTLSimulationController.cs" />
     <Compile Include="Controllers\AnalyzeLTLPolarityController.cs" />
