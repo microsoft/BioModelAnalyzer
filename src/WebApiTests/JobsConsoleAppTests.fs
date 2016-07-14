@@ -35,14 +35,9 @@ let ``Console app checks LTL Polarity``() =
 let ``Timeout when running too long job for LTL polarity check``() =
     performLTLPolarity 1 "LTLQueries/Epi-V9.request.json" |> ignore
 
-
 [<Test; ExpectedException(typeof<InvalidOperationException>)>]
 let ``Console app handles incorrect queries for LTL polarity check``() =
     Job.RunToCompletion("AnalyzeLTL.exe", "~~query is incorrect~~", -1) |> ignore
-
-[<Test; Timeout(60000)>]
-let ``Console app simulates LTL, i.e. makes a proof``() =
-    checkJob Folders.LTLQueries (performLTLSimulation -1) compareLTLSimulationResults ".simulation"
 
 [<Test; Timeout(60000)>]
 let ``Console app makes a simulation for a model``() =
@@ -55,3 +50,7 @@ let ``Console app analyzes a model``() =
 [<Test; Timeout(60000)>]
 let ``Console app finds counter examples``() =
     checkJob Folders.CounterExamples (performFurtherTesting -1) compareFurtherTestingResults ""
+
+[<Test; Timeout(60000)>]
+let ``Console app simulates LTL``() =
+    checkJob Folders.LTLQueries (performLTLSimulation -1) compareLTLSimulationResults ".simulation"

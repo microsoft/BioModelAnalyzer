@@ -35,28 +35,18 @@ let perform job =
     | 404 -> failwith "There is no job with the given job id and application id"
     | code -> failwithf "Unknown response code when getting status: %d" code
 
-let performShortPolarity job = 
-    let code, result = Http.postFile (sprintf "%sAnalyzeLTLPolarity" urlApi) job
+let performSR endpoint job =
+    let code, result = Http.postFile (sprintf "%s%s" urlApi endpoint) job
     match code with
     | 200 -> result
-    | 204 -> raise (System.TimeoutException("Timeout while waiting for LTL polarity check"))
+    | 204 -> raise (System.TimeoutException("Timeout while waiting for job to complete"))
     | _ -> failwithf "Unexpected http status code %d" code
 
-
-let performLTLSimulation job = 
-    let code, result = Http.postFile (sprintf "%sAnalyzeLTLSimulation" urlApi) job
-    match code with
-    | 200 -> result
-    | 204 -> raise (System.TimeoutException("Timeout while waiting for LTL simulation check"))
-    | _ -> failwithf "Unexpected http status code %d" code
-
-let performSimulation job = 
-    let code, result = Http.postFile (sprintf "%sSimulate" urlApi) job
-    match code with
-    | 200 -> result
-    | 204 -> raise (System.TimeoutException("Timeout while waiting for simulation"))
-    | _ -> failwithf "Unexpected http status code %d" code
-
+let performShortPolarity = performSR "AnalyzeLTLPolarity"
+let performLTLSimulation = performSR "AnalyzeLTLSimulation"
+let performSimulation = performSR "Simulate"
+let performAnalysis = performSR "Analyze"
+let performFurtherTesting = performSR "FurtherTesting"
 
 
 [<Test; Timeout(600000)>]
@@ -83,4 +73,14 @@ let ``Simulate LTL``() =
 [<Category("Deployment")>]
 let ``Simulate model``() =
     checkJob Folders.Simulation performSimulation compareSimulationResults ""
+    
+[<Test; Timeout(600000)>]
+[<Category("Deployment")>]
+let ``Analyze model``() =
+    checkJob Folders.Analysis performAnalysis compareAnalysisResults ""
+    
+[<Test; Timeout(600000)>]
+[<Category("Deployment")>]
+let ``Find counter examples for a model``() =
+    checkJob Folders.CounterExamples performFurtherTesting compareFurtherTestingResults ""
 
