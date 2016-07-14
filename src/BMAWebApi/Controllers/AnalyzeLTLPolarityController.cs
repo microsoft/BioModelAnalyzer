@@ -42,12 +42,15 @@ namespace bma.client.Controllers
             }
             catch (Exception ex)
             {
-                RegisterException(log, input, ex);
+                //  azureLogService.Debug("Analyze Exception", ex.ToString());
+                log.LogError(ex.ToString());
+                var version = typeof(AnalyzeController).Assembly.GetName().Version;
+                faultLogger.Add(DateTime.Now, version.ToString(), input, log);
                 throw ex;
             }
         }
 
-        private void RegisterException(DefaultLogService log, string input, System.Exception ex)
+        private void RegisterException(DefaultLogService log, string input, System.TimeoutException ex)
         {
             //  azureLogService.Debug("Analyze Exception", ex.ToString());
             log.LogError(ex.ToString());

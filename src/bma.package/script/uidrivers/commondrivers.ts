@@ -600,13 +600,27 @@ module BMA {
 
             public Invoke(data): JQueryPromise<any> {
                 var that = this;
-                return $.ajax({
+                var result = $.Deferred();
+
+                $.ajax({
                     type: "POST",
                     url: that.serviceURL,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
-                    dataType: "json"
+                    dataType: "json",
+                    statusCode: {
+                        200: function (res) {
+                            result.resolve(res);
+                        },
+                        204: function (res) {
+                            result.reject({}, "Operation was not competed within time limit", "Processing Timeout");
+                        }
+                    }
+                }).fail(function (xhr, textStatus, errorThrown) {
+                    result.reject(xhr, textStatus, errorThrown);
                 });
+
+                return result.promise();
             }
         }
 
@@ -646,7 +660,7 @@ module BMA {
                 }).fail(function (xhr, textStatus, errorThrown) {
                     result.reject(xhr, textStatus, errorThrown);
                 });
-                
+
                 return promise;
             }
 
@@ -698,7 +712,7 @@ module BMA {
                     });
                 }
             }
-            
+
         }
 
         export class LTLAnalyzeService implements IServiceDriver {
@@ -734,11 +748,19 @@ module BMA {
                             url: that.url,
                             data: JSON.stringify(request.data),
                             contentType: "application/json; charset=utf-8",
-                            dataType: "json"
-                        }).done(function (res) {
-                            that.currentActiveRequestCount--;
-                            that.ShiftRequest();
-                            request.deferred.resolve(res);
+                            dataType: "json",
+                            statusCode: {
+                                200: function (res) {
+                                    that.currentActiveRequestCount--;
+                                    that.ShiftRequest();
+                                    request.deferred.resolve(res);
+                                },
+                                204: function (res) {
+                                    that.currentActiveRequestCount--;
+                                    that.ShiftRequest();
+                                    request.deferred.reject({}, "Operation was not competed within time limit", "Processing Timeout");
+                                }
+                            }
                         }).fail(function (xhr, textStatus, errorThrown) {
                             that.currentActiveRequestCount--;
                             that.ShiftRequest();
