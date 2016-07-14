@@ -12941,7 +12941,7 @@ jQuery.fn.extend({
                     draggableDiv.attr("data-dragsource", undefined);
                 }
             });
-            var editor = $("<div></div>").css("position", "absolute").css("background-color", "white").addClass("window").addClass("container-name").appendTo(svgDiv);
+            var editor = $("<div></div>").css("position", "absolute").css("background-color", "white").css("z-index", 1).addClass("window").addClass("container-name").appendTo(svgDiv);
             editor.click(function (arg) { arg.stopPropagation(); });
             editor.containernameeditor({ placeholder: "Enter number", name: "NaN" });
             editor.hide();
