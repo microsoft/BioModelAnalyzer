@@ -1767,7 +1767,7 @@ var BMA;
             }
         };
         return CommandRegistry;
-    })();
+    }());
     BMA.CommandRegistry = CommandRegistry;
     var ApplicationCommand = (function () {
         function ApplicationCommand(name) {
@@ -1796,7 +1796,7 @@ var BMA;
             }
         };
         return ApplicationCommand;
-    })();
+    }());
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=commands.js.map
@@ -1853,7 +1853,7 @@ var BMA;
                 configurable: true
             });
             return Element;
-        })();
+        }());
         Elements.Element = Element;
         var BboxElement = (function (_super) {
             __extends(BboxElement, _super);
@@ -1869,7 +1869,7 @@ var BMA;
                 configurable: true
             });
             return BboxElement;
-        })(Element);
+        }(Element));
         Elements.BboxElement = BboxElement;
         var BorderContainerElement = (function (_super) {
             __extends(BorderContainerElement, _super);
@@ -1893,7 +1893,7 @@ var BMA;
                 configurable: true
             });
             return BorderContainerElement;
-        })(Element);
+        }(Element));
         Elements.BorderContainerElement = BorderContainerElement;
         var ElementsRegistry = (function () {
             function ElementsRegistry() {
@@ -2445,7 +2445,7 @@ var BMA;
                 throw "the is no element for specified type";
             };
             return ElementsRegistry;
-        })();
+        }());
         Elements.ElementsRegistry = ElementsRegistry;
     })(Elements = BMA.Elements || (BMA.Elements = {}));
 })(BMA || (BMA = {}));
@@ -2498,7 +2498,7 @@ var BMA;
                 configurable: true
             });
             return BMAFunction;
-        })();
+        }());
         Functions.BMAFunction = BMAFunction;
         var FunctionsRegistry = (function () {
             function FunctionsRegistry() {
@@ -2533,7 +2533,7 @@ var BMA;
                 throw "There is no function as you want";
             };
             return FunctionsRegistry;
-        })();
+        }());
         Functions.FunctionsRegistry = FunctionsRegistry;
     })(Functions = BMA.Functions || (BMA.Functions = {}));
 })(BMA || (BMA = {}));
@@ -2570,7 +2570,7 @@ var BMA;
                 configurable: true
             });
             return BMAKeyframe;
-        })();
+        }());
         Keyframes.BMAKeyframe = BMAKeyframe;
         var KeyframesRegistry = (function () {
             function KeyframesRegistry(imagePath) {
@@ -2612,7 +2612,7 @@ var BMA;
                 throw "There is no keyframe as you want";
             };
             return KeyframesRegistry;
-        })();
+        }());
         Keyframes.KeyframesRegistry = KeyframesRegistry;
     })(Keyframes = BMA.Keyframes || (BMA.Keyframes = {}));
 })(BMA || (BMA = {}));
@@ -2702,7 +2702,7 @@ var BMA;
                 return undefined;
         };
         return LocalRepositoryTool;
-    })();
+    }());
     BMA.LocalRepositoryTool = LocalRepositoryTool;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=localRepository.js.map
@@ -2736,7 +2736,7 @@ var BMA;
             return this.currentModel.Serialize() !== model.Serialize();
         };
         return ChangesChecker;
-    })();
+    }());
     BMA.ChangesChecker = ChangesChecker;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=changeschecker.js.map
@@ -2828,7 +2828,7 @@ var BMA;
                 };
             };
             return BioModel;
-        })();
+        }());
         Model.BioModel = BioModel;
         var VariableTypes = (function () {
             function VariableTypes() {
@@ -2851,7 +2851,7 @@ var BMA;
                 configurable: true
             });
             return VariableTypes;
-        })();
+        }());
         Model.VariableTypes = VariableTypes;
         var Variable = (function () {
             function Variable(id, containerId, type, name, rangeFrom, rangeTo, formula) {
@@ -2922,7 +2922,7 @@ var BMA;
                 };
             };
             return Variable;
-        })();
+        }());
         Model.Variable = Variable;
         var RelationshipTypes = (function () {
             function RelationshipTypes() {
@@ -2938,7 +2938,7 @@ var BMA;
                 configurable: true
             });
             return RelationshipTypes;
-        })();
+        }());
         Model.RelationshipTypes = RelationshipTypes;
         var Relationship = (function () {
             function Relationship(id, fromVariableId, toVariableId, type) {
@@ -2984,7 +2984,7 @@ var BMA;
                 };
             };
             return Relationship;
-        })();
+        }());
         Model.Relationship = Relationship;
         var Layout = (function () {
             function Layout(containers, varialbes) {
@@ -3025,7 +3025,7 @@ var BMA;
                 return undefined;
             };
             return Layout;
-        })();
+        }());
         Model.Layout = Layout;
         var ContainerLayout = (function () {
             function ContainerLayout(id, name, size, positionX, positionY) {
@@ -3074,7 +3074,7 @@ var BMA;
                 configurable: true
             });
             return ContainerLayout;
-        })();
+        }());
         Model.ContainerLayout = ContainerLayout;
         var VariableLayout = (function () {
             function VariableLayout(id, positionX, positionY, cellX, cellY, angle, TFdescription) {
@@ -3137,7 +3137,7 @@ var BMA;
                 configurable: true
             });
             return VariableLayout;
-        })();
+        }());
         Model.VariableLayout = VariableLayout;
         function GenerateNewContainerName(containerLayouts) {
             var prefix = "C";
@@ -3372,7 +3372,7 @@ var BMA;
                 return JSON.stringify(exported);
             };
             return AppModel;
-        })();
+        }());
         Model.AppModel = AppModel;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
@@ -3409,7 +3409,7 @@ var BMA;
                 configurable: true
             });
             return ProofResult;
-        })();
+        }());
         Model.ProofResult = ProofResult;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
@@ -3494,7 +3494,7 @@ var BMA;
                 configurable: true
             });
             return AppVisualSettings;
-        })();
+        }());
         Model.AppVisualSettings = AppVisualSettings;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
@@ -3807,16 +3807,13 @@ var BMA;
             switch (obj._type) {
                 case "NameOperand":
                     return new BMA.LTLOperations.NameOperand(obj.name, obj.id);
-                    break;
                 case "ConstOperand":
                     return new BMA.LTLOperations.ConstOperand(obj.const);
-                    break;
                 case "KeyframeEquation":
                     var leftOperand = ImportOperand(obj.leftOperand, states);
                     var rightOperand = ImportOperand(obj.rightOperand, states);
                     var operator = obj.operator;
                     return new BMA.LTLOperations.KeyframeEquation(leftOperand, operator, rightOperand);
-                    break;
                 case "DoubleKeyframeEquation":
                     var leftOperand = ImportOperand(obj.leftOperand, states);
                     var middleOperand = ImportOperand(obj.middleOperand, states);
@@ -3824,7 +3821,6 @@ var BMA;
                     var leftOperator = obj.leftOperator;
                     var rightOperator = obj.rightOperator;
                     return new BMA.LTLOperations.DoubleKeyframeEquation(leftOperand, leftOperator, middleOperand, rightOperator, rightOperand);
-                    break;
                 case "Keyframe":
                     if (states !== undefined) {
                         for (var i = 0; i < states.length; i++) {
@@ -3844,7 +3840,6 @@ var BMA;
                         }
                         return new BMA.LTLOperations.Keyframe(obj.name, obj.description, operands);
                     }
-                    break;
                 case "Operation":
                     var operands = [];
                     if (obj.operands) {
@@ -3866,7 +3861,6 @@ var BMA;
                     else
                         throw "Operation must have name of operator";
                     return op;
-                    break;
                 case "TrueKeyframe":
                     return new BMA.LTLOperations.TrueKeyframe();
                 case "OscillationKeyframe":
@@ -3926,7 +3920,7 @@ var BMA;
                 return new NameOperand(this.name, this.id);
             };
             return NameOperand;
-        })();
+        }());
         LTLOperations.NameOperand = NameOperand;
         var ConstOperand = (function () {
             function ConstOperand(value) {
@@ -3946,7 +3940,7 @@ var BMA;
                 return new ConstOperand(this.const);
             };
             return ConstOperand;
-        })();
+        }());
         LTLOperations.ConstOperand = ConstOperand;
         var KeyframeEquation = (function () {
             function KeyframeEquation(leftOperand, operator, rightOperand) {
@@ -3982,7 +3976,7 @@ var BMA;
                 return new KeyframeEquation(this.leftOperand.Clone(), this.operator, this.rightOperand.Clone());
             };
             return KeyframeEquation;
-        })();
+        }());
         LTLOperations.KeyframeEquation = KeyframeEquation;
         var DoubleKeyframeEquation = (function () {
             function DoubleKeyframeEquation(leftOperand, leftOperator, middleOperand, rightOperator, rightOperand) {
@@ -4048,7 +4042,7 @@ var BMA;
                 }
             };
             return DoubleKeyframeEquation;
-        })();
+        }());
         LTLOperations.DoubleKeyframeEquation = DoubleKeyframeEquation;
         var TrueKeyframe = (function () {
             function TrueKeyframe() {
@@ -4060,7 +4054,7 @@ var BMA;
                 return new TrueKeyframe();
             };
             return TrueKeyframe;
-        })();
+        }());
         LTLOperations.TrueKeyframe = TrueKeyframe;
         var SelfLoopKeyframe = (function () {
             function SelfLoopKeyframe() {
@@ -4072,7 +4066,7 @@ var BMA;
                 return new SelfLoopKeyframe();
             };
             return SelfLoopKeyframe;
-        })();
+        }());
         LTLOperations.SelfLoopKeyframe = SelfLoopKeyframe;
         var OscillationKeyframe = (function () {
             function OscillationKeyframe() {
@@ -4084,7 +4078,7 @@ var BMA;
                 return new OscillationKeyframe();
             };
             return OscillationKeyframe;
-        })();
+        }());
         LTLOperations.OscillationKeyframe = OscillationKeyframe;
         var Keyframe = (function () {
             function Keyframe(name, description, operands) {
@@ -4134,7 +4128,7 @@ var BMA;
                 return new BMA.LTLOperations.Keyframe(this.name, this.description, this.operands.slice(0));
             };
             return Keyframe;
-        })();
+        }());
         LTLOperations.Keyframe = Keyframe;
         var Operator = (function () {
             function Operator(name, operandsCount, fun, isFunction) {
@@ -4179,7 +4173,7 @@ var BMA;
                 return this.fun(op);
             };
             return Operator;
-        })();
+        }());
         LTLOperations.Operator = Operator;
         var Operation = (function () {
             function Operation() {
@@ -4218,7 +4212,7 @@ var BMA;
                 return result;
             };
             return Operation;
-        })();
+        }());
         LTLOperations.Operation = Operation;
         function RefreshStatesInOperation(operation, states) {
             if (operation === undefined)
@@ -4911,7 +4905,7 @@ var BMA;
                 this.version++;
             };
             return OperationLayout;
-        })();
+        }());
         LTLOperations.OperationLayout = OperationLayout;
     })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
 })(BMA || (BMA = {}));
@@ -5000,7 +4994,7 @@ var BMA;
                 this.svgPlotDiv.drawingsurface("moveDraggableSvgOnBottom");
             };
             return SVGPlotDriver;
-        })();
+        }());
         UIDrivers.SVGPlotDriver = SVGPlotDriver;
         var TurnableButtonDriver = (function () {
             function TurnableButtonDriver(button) {
@@ -5010,7 +5004,7 @@ var BMA;
                 this.button.button("option", "disabled", !isOn);
             };
             return TurnableButtonDriver;
-        })();
+        }());
         UIDrivers.TurnableButtonDriver = TurnableButtonDriver;
         var VariableEditorDriver = (function () {
             function VariableEditorDriver(variableEditor) {
@@ -5062,7 +5056,7 @@ var BMA;
                 this.variableEditor.bmaeditor({ oneditorclosing: callback });
             };
             return VariableEditorDriver;
-        })();
+        }());
         UIDrivers.VariableEditorDriver = VariableEditorDriver;
         var ContainerEditorDriver = (function () {
             function ContainerEditorDriver(containerEditor) {
@@ -5092,7 +5086,7 @@ var BMA;
                 this.containerEditor.containernameeditor({ oneditorclosing: callback });
             };
             return ContainerEditorDriver;
-        })();
+        }());
         UIDrivers.ContainerEditorDriver = ContainerEditorDriver;
         var ProofViewer = (function () {
             function ProofViewer(proofAccordion, proofContentViewer) {
@@ -5119,7 +5113,7 @@ var BMA;
                 this.proofContentViewer.proofresultviewer("hide", params.tab);
             };
             return ProofViewer;
-        })();
+        }());
         UIDrivers.ProofViewer = ProofViewer;
         var FurtherTestingDriver = (function () {
             function FurtherTestingDriver(viewer, toggler) {
@@ -5151,7 +5145,7 @@ var BMA;
                 this.viewer.furthertesting({ buttonMode: "ActiveMode" });
             };
             return FurtherTestingDriver;
-        })();
+        }());
         UIDrivers.FurtherTestingDriver = FurtherTestingDriver;
         var PopupDriver = (function () {
             function PopupDriver(popupWindow) {
@@ -5203,7 +5197,7 @@ var BMA;
                 window.Commands.Execute("Collapse", this.popupWindow.resultswindowviewer("option", "tabid"));
             };
             return PopupDriver;
-        })();
+        }());
         UIDrivers.PopupDriver = PopupDriver;
         var SimulationExpandedDriver = (function () {
             function SimulationExpandedDriver(view) {
@@ -5293,7 +5287,7 @@ var BMA;
                 return table;
             };
             return SimulationExpandedDriver;
-        })();
+        }());
         UIDrivers.SimulationExpandedDriver = SimulationExpandedDriver;
         var SimulationViewerDriver = (function () {
             function SimulationViewerDriver(viewer) {
@@ -5312,7 +5306,7 @@ var BMA;
                 this.viewer.simulationviewer("hide", params.tab);
             };
             return SimulationViewerDriver;
-        })();
+        }());
         UIDrivers.SimulationViewerDriver = SimulationViewerDriver;
         var LocalStorageDriver = (function () {
             function LocalStorageDriver(widget) {
@@ -5334,7 +5328,7 @@ var BMA;
                 this.widget.localstoragewidget("Message", msg);
             };
             return LocalStorageDriver;
-        })();
+        }());
         UIDrivers.LocalStorageDriver = LocalStorageDriver;
         var ModelFileLoader = (function () {
             function ModelFileLoader(fileInput) {
@@ -5360,7 +5354,7 @@ var BMA;
                 return false;
             };
             return ModelFileLoader;
-        })();
+        }());
         UIDrivers.ModelFileLoader = ModelFileLoader;
         var ContextMenuDriver = (function () {
             function ContextMenuDriver(contextMenu) {
@@ -5380,7 +5374,7 @@ var BMA;
                 return [];
             };
             return ContextMenuDriver;
-        })();
+        }());
         UIDrivers.ContextMenuDriver = ContextMenuDriver;
         var AccordionHider = (function () {
             function AccordionHider(acc) {
@@ -5398,7 +5392,7 @@ var BMA;
                 tab.trigger("click");
             };
             return AccordionHider;
-        })();
+        }());
         UIDrivers.AccordionHider = AccordionHider;
         var BMAProcessingService = (function () {
             function BMAProcessingService(serviceURL) {
@@ -5427,7 +5421,7 @@ var BMA;
                 return result.promise();
             };
             return BMAProcessingService;
-        })();
+        }());
         UIDrivers.BMAProcessingService = BMAProcessingService;
         var BMALRAProcessingService = (function () {
             function BMALRAProcessingService(serviceURL, userID) {
@@ -5509,7 +5503,7 @@ var BMA;
                 }
             };
             return BMALRAProcessingService;
-        })();
+        }());
         UIDrivers.BMALRAProcessingService = BMALRAProcessingService;
         var LTLAnalyzeService = (function () {
             function LTLAnalyzeService(url, maxRequestCount) {
@@ -5563,7 +5557,7 @@ var BMA;
                 }
             };
             return LTLAnalyzeService;
-        })();
+        }());
         UIDrivers.LTLAnalyzeService = LTLAnalyzeService;
         var MessageBoxDriver = (function () {
             function MessageBoxDriver() {
@@ -5575,7 +5569,7 @@ var BMA;
                 console.log(message);
             };
             return MessageBoxDriver;
-        })();
+        }());
         UIDrivers.MessageBoxDriver = MessageBoxDriver;
         var ExportService = (function () {
             function ExportService() {
@@ -5584,7 +5578,7 @@ var BMA;
                 var ret = saveTextAs(content, name + '.' + extension);
             };
             return ExportService;
-        })();
+        }());
         UIDrivers.ExportService = ExportService;
         var LoadingWaitScreen = (function () {
             function LoadingWaitScreen(bannerDiv) {
@@ -5597,7 +5591,7 @@ var BMA;
                 this.bannerDiv.hide();
             };
             return LoadingWaitScreen;
-        })();
+        }());
         UIDrivers.LoadingWaitScreen = LoadingWaitScreen;
         var DrawingSurfaceDragnDropExtender = (function () {
             function DrawingSurfaceDragnDropExtender(drawingSurface, popup) {
@@ -5620,7 +5614,7 @@ var BMA;
                 return isInsidePopup;
             };
             return DrawingSurfaceDragnDropExtender;
-        })();
+        }());
         UIDrivers.DrawingSurfaceDragnDropExtender = DrawingSurfaceDragnDropExtender;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
@@ -5645,7 +5639,7 @@ var BMA;
                 //this.keyframe.ltlstatesviewer('removePart', items);
             };
             return KeyframesExpandedViewer;
-        })();
+        }());
         UIDrivers.KeyframesExpandedViewer = KeyframesExpandedViewer;
         var LTLViewer = (function () {
             function LTLViewer(accordion, ltlviewer) {
@@ -5720,7 +5714,7 @@ var BMA;
                 this.accordion.bmaaccordion({ contentLoaded: { ind: "#icon3", val: true } });
             };
             return LTLViewer;
-        })();
+        }());
         UIDrivers.LTLViewer = LTLViewer;
         var TemporalPropertiesEditorDriver = (function () {
             function TemporalPropertiesEditorDriver(commands, popupWindow) {
@@ -5807,7 +5801,7 @@ var BMA;
                 }
             };
             return TemporalPropertiesEditorDriver;
-        })();
+        }());
         UIDrivers.TemporalPropertiesEditorDriver = TemporalPropertiesEditorDriver;
         var StatesViewerDriver = (function () {
             function StatesViewerDriver(statesViewer) {
@@ -5879,7 +5873,7 @@ var BMA;
                 }
             };
             return StatesViewerDriver;
-        })();
+        }());
         UIDrivers.StatesViewerDriver = StatesViewerDriver;
         var StatesEditorDriver = (function () {
             function StatesEditorDriver(commands, popupWindow) {
@@ -6069,7 +6063,7 @@ var BMA;
                 }
             };
             return StatesEditorDriver;
-        })();
+        }());
         UIDrivers.StatesEditorDriver = StatesEditorDriver;
         var TemporalPropertiesViewer = (function () {
             function TemporalPropertiesViewer(tpviewer) {
@@ -6082,7 +6076,7 @@ var BMA;
                 this.tpviewer.temporalpropertiesviewer("refresh");
             };
             return TemporalPropertiesViewer;
-        })();
+        }());
         UIDrivers.TemporalPropertiesViewer = TemporalPropertiesViewer;
         var LTLResultsViewerFactory = (function () {
             function LTLResultsViewerFactory() {
@@ -6091,7 +6085,7 @@ var BMA;
                 return new LTLResultsCompactViewer(div);
             };
             return LTLResultsViewerFactory;
-        })();
+        }());
         UIDrivers.LTLResultsViewerFactory = LTLResultsViewerFactory;
         var LTLResultsCompactViewer = (function () {
             function LTLResultsCompactViewer(compactltlresult) {
@@ -6202,7 +6196,7 @@ var BMA;
                 this.compactltlresult.empty();
             };
             return LTLResultsCompactViewer;
-        })();
+        }());
         UIDrivers.LTLResultsCompactViewer = LTLResultsCompactViewer;
         var LTLResultsViewer = (function () {
             function LTLResultsViewer(commands, popupWindow) {
@@ -6503,7 +6497,7 @@ var BMA;
                 }
             };
             return LTLResultsViewer;
-        })();
+        }());
         UIDrivers.LTLResultsViewer = LTLResultsViewer;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
@@ -6599,7 +6593,7 @@ var BMA;
                 configurable: true
             });
             return UndoRedoPresenter;
-        })();
+        }());
         Presenters.UndoRedoPresenter = UndoRedoPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -7604,7 +7598,6 @@ var BMA;
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.undoRedoPresenter.Dup(newmodel, newlayout);
                         return true;
-                        break;
                     case "Default":
                         var variables = model.Variables.slice(0);
                         var variableLayouts = layout.Variables.slice(0);
@@ -7631,7 +7624,6 @@ var BMA;
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.undoRedoPresenter.Dup(newmodel, newlayout);
                         return true;
-                        break;
                     case "MembraneReceptor":
                         var variables = model.Variables.slice(0);
                         var variableLayouts = layout.Variables.slice(0);
@@ -7673,7 +7665,6 @@ var BMA;
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.undoRedoPresenter.Dup(newmodel, newlayout);
                         return true;
-                        break;
                 }
                 return false;
             };
@@ -7912,7 +7903,7 @@ var BMA;
                 return $(this.svg.toSVG()).children();
             };
             return DesignSurfacePresenter;
-        })();
+        }());
         Presenters.DesignSurfacePresenter = DesignSurfacePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -8270,7 +8261,7 @@ var BMA;
                 return container;
             };
             return ProofPresenter;
-        })();
+        }());
         Presenters.ProofPresenter = ProofPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -8630,7 +8621,7 @@ var BMA;
                 return data;
             };
             return SimulationPresenter;
-        })();
+        }());
         Presenters.SimulationPresenter = SimulationPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -8760,7 +8751,7 @@ var BMA;
                 });
             }
             return ModelStoragePresenter;
-        })();
+        }());
         Presenters.ModelStoragePresenter = ModelStoragePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -8799,7 +8790,7 @@ var BMA;
                 });
             }
             return FormulaValidationPresenter;
-        })();
+        }());
         Presenters.FormulaValidationPresenter = FormulaValidationPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -9048,7 +9039,7 @@ var BMA;
                 return parse;
             };
             return FurtherTestingPresenter;
-        })();
+        }());
         Presenters.FurtherTestingPresenter = FurtherTestingPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -9151,7 +9142,7 @@ var BMA;
                 window.Commands.Execute("LocalStorageChanged", {});
             }
             return LocalStoragePresenter;
-        })();
+        }());
         Presenters.LocalStoragePresenter = LocalStoragePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -9250,7 +9241,7 @@ var BMA;
             };
         };
         return SessionLog;
-    })();
+    }());
     BMA.SessionLog = SessionLog;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=UserLog.js.map
@@ -16437,7 +16428,7 @@ var BMA;
                 return csv;
             };
             return LTLPresenter;
-        })();
+        }());
         Presenters.LTLPresenter = LTLPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -16502,7 +16493,7 @@ var BMA;
                 }
             };
             return StatesPresenter;
-        })();
+        }());
         LTL.StatesPresenter = StatesPresenter;
     })(LTL = BMA.LTL || (BMA.LTL = {}));
 })(BMA || (BMA = {}));
@@ -17711,7 +17702,7 @@ var BMA;
                 that.OnOperationsChanged(false, false);
             };
             return TemporalPropertiesPresenter;
-        })();
+        }());
         LTL.TemporalPropertiesPresenter = TemporalPropertiesPresenter;
     })(LTL = BMA.LTL || (BMA.LTL = {}));
 })(BMA || (BMA = {}));
@@ -17809,7 +17800,7 @@ var BMA;
                 return undefined;
             };
             return OperatorsRegistry;
-        })();
+        }());
         LTLOperations.OperatorsRegistry = OperatorsRegistry;
     })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
 })(BMA || (BMA = {}));

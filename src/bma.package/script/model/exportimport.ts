@@ -327,16 +327,13 @@
             switch (obj._type) {
                 case "NameOperand":
                     return new BMA.LTLOperations.NameOperand(obj.name, obj.id);
-                    break;
                 case "ConstOperand":
                     return new BMA.LTLOperations.ConstOperand(obj.const);
-                    break;
                 case "KeyframeEquation":
                     var leftOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>ImportOperand(obj.leftOperand, states);
                     var rightOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>ImportOperand(obj.rightOperand, states);
                     var operator = <string>obj.operator;
                     return new BMA.LTLOperations.KeyframeEquation(leftOperand, operator, rightOperand);
-                    break;
                 case "DoubleKeyframeEquation":
                     var leftOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>ImportOperand(obj.leftOperand, states);
                     var middleOperand = <BMA.LTLOperations.NameOperand | BMA.LTLOperations.ConstOperand>ImportOperand(obj.middleOperand, states);
@@ -344,7 +341,6 @@
                     var leftOperator = <string>obj.leftOperator;
                     var rightOperator = <string>obj.rightOperator;
                     return new BMA.LTLOperations.DoubleKeyframeEquation(leftOperand, leftOperator, middleOperand, rightOperator, rightOperand);
-                    break;
                 case "Keyframe":
                     if (states !== undefined) {
                         for (var i = 0; i < states.length; i++) {
@@ -364,7 +360,6 @@
                         }
                         return new BMA.LTLOperations.Keyframe(obj.name, obj.description, operands);
                     }
-                    break;
                 case "Operation":
                     var operands = [];
                     if (obj.operands) {
@@ -384,7 +379,6 @@
                         op.Operator = window.OperatorsRegistry.GetOperatorByName(obj.operator.name);
                     else throw "Operation must have name of operator";
                     return op;                    
-                    break;
                 case "TrueKeyframe":
                     return new BMA.LTLOperations.TrueKeyframe();
                 case "OscillationKeyframe":
