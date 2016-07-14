@@ -41,6 +41,10 @@ let compareAnalysisResults (exp:JToken) (act:JToken) =
     JToken.DeepEquals(exp.["Status"], act.["Status"]) &&
     JToken.DeepEquals(exp.["Error"], act.["Error"])
 
+let compareFurtherTestingResults (exp:JToken) (act:JToken) =
+    JToken.DeepEquals(exp.["CounterExamples"], act.["CounterExamples"]) &&
+    JToken.DeepEquals(exp.["Error"], act.["Error"])
+
 
 let checkSomeJobs (doJob : string -> string) (compare : JToken -> JToken -> bool) (responseSuffix : string) (jobs:string seq) =
     let outcome =
@@ -78,3 +82,4 @@ module Folders =
     let LTLQueries = "LTLQueries"
     let Simulation = "Simulation"
     let Analysis = "Analysis"
+    let CounterExamples = "CounterExamples"

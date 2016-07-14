@@ -96,6 +96,12 @@
     <None Include="Analysis\toymodel-unstable.request.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="CounterExamples\toymodel-unstable.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="CounterExamples\toymodel-unstable.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="App.config" />
     <None Include="LTLQueries\Epi-V9.request.json">
@@ -159,6 +165,11 @@
     <ProjectReference Include="..\Jobs\Analyze\Analyze.csproj">
       <Name>Analyze</Name>
       <Project>{dffb825c-8482-4cc2-bf67-0b787a9f5e1e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\FurtherTesting\FurtherTesting.csproj">
+      <Name>FurtherTesting</Name>
+      <Project>{31cd1208-f215-40ce-80b9-0093e1b1494b}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\Jobs\JobsRunner\JobsRunner.csproj">
