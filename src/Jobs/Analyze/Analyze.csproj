@@ -4,16 +4,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{573C06C3-AB0D-4DB5-A2E2-53A40E1BBA57}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{DFFB825C-8482-4CC2-BF67-0B787A9F5E1E}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>bma.BioCheck</RootNamespace>
-    <AssemblyName>BmaBioCheckAnalyzer</AssemblyName>
+    <RootNamespace>Analyze</RootNamespace>
+    <AssemblyName>Analyze</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -21,17 +23,26 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\ext\nuget\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,35 +53,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Analysis.cs" />
-    <Compile Include="LtlAnalysis.cs" />
-    <Compile Include="LogService.cs" />
-    <Compile Include="LtlModel.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Simulation.cs" />
   </ItemGroup>
-  <Choose>
-    <When Condition="'$(Platform)'=='x86'">
-      <ItemGroup>
-        <ProjectReference Include="..\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj">
-          <Project>{27fcee47-ced8-4629-9989-7e9a490b090e}</Project>
-          <Name>BioCheckAnalyzer32</Name>
-        </ProjectReference>
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
-          <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
-          <Name>BioCheckAnalyzer64</Name>
-        </ProjectReference>
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
   <ItemGroup>
-    <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
       <Name>BioCheckAnalyzerCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\BmaBioCheckAnalyzer\BmaBioCheckAnalyzer.csproj">
+      <Project>{573c06c3-ab0d-4db5-a2e2-53a40e1bba57}</Project>
+      <Name>BmaBioCheckAnalyzer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

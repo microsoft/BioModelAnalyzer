@@ -52,6 +52,8 @@ namespace bma.BioCheck
                 var output = analyzer.simulate_tick(input.Model, input.Variables);
                 sw.Stop();
 
+                log.LogDebug(string.Format("The simulation took {0}", sw.Elapsed));
+
                 return new SimulationOutput
                 {
                     Variables = output,

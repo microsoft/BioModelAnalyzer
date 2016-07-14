@@ -37,6 +37,10 @@ let compareSimulationResults (exp:JToken) (act:JToken) =
     JToken.DeepEquals(exp.["Variables"], act.["Variables"]) &&
     JToken.DeepEquals(exp.["ErrorMessages"], act.["ErrorMessages"])
 
+let compareAnalysisResults (exp:JToken) (act:JToken) =
+    JToken.DeepEquals(exp.["Status"], act.["Status"]) &&
+    JToken.DeepEquals(exp.["Error"], act.["Error"])
+
 
 let checkSomeJobs (doJob : string -> string) (compare : JToken -> JToken -> bool) (responseSuffix : string) (jobs:string seq) =
     let outcome =
@@ -73,3 +77,4 @@ let checkJob (folder : string) (doJob : string -> string) (compare : JToken -> J
 module Folders = 
     let LTLQueries = "LTLQueries"
     let Simulation = "Simulation"
+    let Analysis = "Analysis"

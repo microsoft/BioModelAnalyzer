@@ -84,6 +84,18 @@
     <Compile Include="JobChecking.fs" />
     <Compile Include="JobsConsoleAppTests.fs" />
     <Compile Include="WebApiTests.fs" />
+    <None Include="Analysis\toymodel-unstable.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Analysis\toymodel.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Analysis\toymodel.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Analysis\toymodel-unstable.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="App.config" />
     <None Include="LTLQueries\Epi-V9.request.json">
@@ -142,6 +154,11 @@
     <ProjectReference Include="..\Jobs\AnalyzeLTL\AnalyzeLTL.csproj">
       <Name>AnalyzeLTL</Name>
       <Project>{f27a4a37-7fde-473e-ac6a-dcb38451bbf4}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\Analyze\Analyze.csproj">
+      <Name>Analyze</Name>
+      <Project>{dffb825c-8482-4cc2-bf67-0b787a9f5e1e}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\Jobs\JobsRunner\JobsRunner.csproj">

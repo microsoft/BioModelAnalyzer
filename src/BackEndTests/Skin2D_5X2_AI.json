@@ -1,0 +1,3028 @@
+﻿{
+  "ModelName": "Skin2D_5X2",
+  "Engine": "VMCAI",
+  "Cells": null,
+  "Variables": [
+    {
+      "Id": 44,
+      "Name": "Ligand-in",
+      "RangeFrom": 0.0,
+      "RangeTo": 0.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 101,
+      "Name": "Ligand-in",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 102,
+      "Name": "Ligand-in",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 168,
+      "Name": "Ligand-in",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 169,
+      "Name": "Ligand-in",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 170,
+      "Name": "Ligand-in",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 210,
+      "Name": "Wnt-ext",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 212,
+      "Name": "Wnt-ext",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 213,
+      "Name": "Wnt-ext",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 214,
+      "Name": "Wnt-ext",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 215,
+      "Name": "Wnt-ext",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 216,
+      "Name": "Wnt-ext",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 269,
+      "Name": "Wnt-ext",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 270,
+      "Name": "Wnt-ext",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 271,
+      "Name": "Ligand-in",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 272,
+      "Name": "Ligand-in",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 273,
+      "Name": "Ligand-in",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 274,
+      "Name": "Ligand-in",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 275,
+      "Name": "Wnt-ext",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 276,
+      "Name": "Wnt-ext",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 59,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 60,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 61,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 62,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 64,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 65,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 66,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 67,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 68,
+      "Name": "bCATexp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 69,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 70,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 71,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 0.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 63,
+      "Name": "Notch-IC",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "min(var(Notch), var(Ligand-in))",
+      "Tags": null
+    },
+    {
+      "Id": 129,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 130,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 131,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 132,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 134,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 135,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 136,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 137,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 138,
+      "Name": "bCATexp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 139,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 140,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 141,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 0.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 133,
+      "Name": "Notch-IC",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "min(var(Notch), var(Ligand-in))",
+      "Tags": null
+    },
+    {
+      "Id": 155,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 156,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 157,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 158,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 160,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 161,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 162,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 163,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 164,
+      "Name": "bCATexp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 165,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 166,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 167,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 0.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 159,
+      "Name": "Notch-IC",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "min(var(Notch), var(Ligand-in))",
+      "Tags": null
+    },
+    {
+      "Id": 171,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 172,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 173,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 174,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 176,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 177,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 178,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 179,
+      "Name": "BCat exp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 180,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 181,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 182,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 183,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 175,
+      "Name": "Notch-IC",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "min(var(Notch), var(Ligand-in))",
+      "Tags": null
+    },
+    {
+      "Id": 184,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 185,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 186,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 187,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 189,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 190,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 191,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 192,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 193,
+      "Name": "bCATexp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 194,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 195,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 196,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 188,
+      "Name": "Notch-IC",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "min(var(Notch), var(Ligand-in))",
+      "Tags": null
+    },
+    {
+      "Id": 197,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 198,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 199,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 200,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 202,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 203,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 204,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 205,
+      "Name": "BCat exp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 206,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 207,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 208,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 209,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 201,
+      "Name": "Notch-IC",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "min ( var (Notch),  var(Ligand-in) )",
+      "Tags": null
+    },
+    {
+      "Id": 217,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 218,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 219,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 220,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 222,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 223,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 224,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 225,
+      "Name": "BCat exp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 226,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 227,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 228,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 229,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 230,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 231,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 232,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 233,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 235,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 236,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 237,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 238,
+      "Name": "BCat exp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 239,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 240,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 241,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 242,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 234,
+      "Name": "Notch-IC",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "min(var(Notch), var(Ligand-in))",
+      "Tags": null
+    },
+    {
+      "Id": 243,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 244,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 245,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 246,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 248,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 249,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 250,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 251,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 252,
+      "Name": "bCATexp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 253,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 254,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 255,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 0.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 256,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 257,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 258,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 259,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 261,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 262,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 263,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 264,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 265,
+      "Name": "bCATexp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 266,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 267,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 268,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 0.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 260,
+      "Name": "Notch-IC",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "min(var(Notch), var(Ligand-in))",
+      "Tags": null
+    },
+    {
+      "Id": 277,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 278,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 279,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 280,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 282,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 283,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 284,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 285,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 286,
+      "Name": "bCATexp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 287,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 288,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 289,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 0.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 290,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 291,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 292,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 293,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 295,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 296,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 297,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 298,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 299,
+      "Name": "bCATexp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 300,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 301,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 302,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 0.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 294,
+      "Name": "Notch-IC",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "min(var(Notch), var(Ligand-in))",
+      "Tags": null
+    },
+    {
+      "Id": 303,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 304,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 305,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 306,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 308,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 309,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 310,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 311,
+      "Name": "BCat exp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 312,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 313,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 314,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 315,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 316,
+      "Name": "DSH",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 317,
+      "Name": "Axin",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 318,
+      "Name": "B-Cat",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 319,
+      "Name": "GT1",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 321,
+      "Name": "P21",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 322,
+      "Name": "Wnt",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 323,
+      "Name": "Cask1a",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 324,
+      "Name": "BCat exp",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 325,
+      "Name": "Frizzled",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 326,
+      "Name": "Jagged",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 327,
+      "Name": "Notch",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 328,
+      "Name": "GT2",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "",
+      "Tags": null
+    },
+    {
+      "Id": 320,
+      "Name": "Notch-IC",
+      "RangeFrom": 0.0,
+      "RangeTo": 4.0,
+      "Function": "min(var(Notch), var(Ligand-in))",
+      "Tags": null
+    }
+  ],
+  "Relationships": [
+    {
+      "Id": 173,
+      "FromVariableId": 190,
+      "ToVariableId": 213,
+      "Type": 0
+    },
+    {
+      "Id": 174,
+      "FromVariableId": 161,
+      "ToVariableId": 213,
+      "Type": 0
+    },
+    {
+      "Id": 175,
+      "FromVariableId": 177,
+      "ToVariableId": 214,
+      "Type": 0
+    },
+    {
+      "Id": 176,
+      "FromVariableId": 203,
+      "ToVariableId": 214,
+      "Type": 0
+    },
+    {
+      "Id": 177,
+      "FromVariableId": 65,
+      "ToVariableId": 214,
+      "Type": 0
+    },
+    {
+      "Id": 178,
+      "FromVariableId": 190,
+      "ToVariableId": 215,
+      "Type": 0
+    },
+    {
+      "Id": 179,
+      "FromVariableId": 135,
+      "ToVariableId": 215,
+      "Type": 0
+    },
+    {
+      "Id": 183,
+      "FromVariableId": 177,
+      "ToVariableId": 210,
+      "Type": 0
+    },
+    {
+      "Id": 184,
+      "FromVariableId": 65,
+      "ToVariableId": 210,
+      "Type": 0
+    },
+    {
+      "Id": 186,
+      "FromVariableId": 161,
+      "ToVariableId": 216,
+      "Type": 0
+    },
+    {
+      "Id": 187,
+      "FromVariableId": 190,
+      "ToVariableId": 216,
+      "Type": 0
+    },
+    {
+      "Id": 188,
+      "FromVariableId": 135,
+      "ToVariableId": 216,
+      "Type": 0
+    },
+    {
+      "Id": 189,
+      "FromVariableId": 203,
+      "ToVariableId": 212,
+      "Type": 0
+    },
+    {
+      "Id": 190,
+      "FromVariableId": 65,
+      "ToVariableId": 212,
+      "Type": 0
+    },
+    {
+      "Id": 225,
+      "FromVariableId": 203,
+      "ToVariableId": 269,
+      "Type": 0
+    },
+    {
+      "Id": 226,
+      "FromVariableId": 249,
+      "ToVariableId": 269,
+      "Type": 0
+    },
+    {
+      "Id": 227,
+      "FromVariableId": 223,
+      "ToVariableId": 215,
+      "Type": 0
+    },
+    {
+      "Id": 238,
+      "FromVariableId": 249,
+      "ToVariableId": 212,
+      "Type": 0
+    },
+    {
+      "Id": 239,
+      "FromVariableId": 135,
+      "ToVariableId": 275,
+      "Type": 0
+    },
+    {
+      "Id": 241,
+      "FromVariableId": 223,
+      "ToVariableId": 275,
+      "Type": 0
+    },
+    {
+      "Id": 294,
+      "FromVariableId": 322,
+      "ToVariableId": 269,
+      "Type": 0
+    },
+    {
+      "Id": 299,
+      "FromVariableId": 236,
+      "ToVariableId": 270,
+      "Type": 0
+    },
+    {
+      "Id": 301,
+      "FromVariableId": 296,
+      "ToVariableId": 270,
+      "Type": 0
+    },
+    {
+      "Id": 303,
+      "FromVariableId": 296,
+      "ToVariableId": 275,
+      "Type": 0
+    },
+    {
+      "Id": 304,
+      "FromVariableId": 322,
+      "ToVariableId": 276,
+      "Type": 0
+    },
+    {
+      "Id": 306,
+      "FromVariableId": 262,
+      "ToVariableId": 276,
+      "Type": 0
+    },
+    {
+      "Id": 59,
+      "FromVariableId": 59,
+      "ToVariableId": 60,
+      "Type": 1
+    },
+    {
+      "Id": 60,
+      "FromVariableId": 60,
+      "ToVariableId": 61,
+      "Type": 1
+    },
+    {
+      "Id": 61,
+      "FromVariableId": 61,
+      "ToVariableId": 62,
+      "Type": 0
+    },
+    {
+      "Id": 63,
+      "FromVariableId": 64,
+      "ToVariableId": 65,
+      "Type": 1
+    },
+    {
+      "Id": 65,
+      "FromVariableId": 67,
+      "ToVariableId": 60,
+      "Type": 0
+    },
+    {
+      "Id": 66,
+      "FromVariableId": 68,
+      "ToVariableId": 61,
+      "Type": 0
+    },
+    {
+      "Id": 95,
+      "FromVariableId": 129,
+      "ToVariableId": 130,
+      "Type": 1
+    },
+    {
+      "Id": 96,
+      "FromVariableId": 130,
+      "ToVariableId": 131,
+      "Type": 1
+    },
+    {
+      "Id": 97,
+      "FromVariableId": 131,
+      "ToVariableId": 132,
+      "Type": 0
+    },
+    {
+      "Id": 99,
+      "FromVariableId": 134,
+      "ToVariableId": 135,
+      "Type": 1
+    },
+    {
+      "Id": 101,
+      "FromVariableId": 137,
+      "ToVariableId": 130,
+      "Type": 0
+    },
+    {
+      "Id": 102,
+      "FromVariableId": 138,
+      "ToVariableId": 131,
+      "Type": 0
+    },
+    {
+      "Id": 106,
+      "FromVariableId": 155,
+      "ToVariableId": 156,
+      "Type": 1
+    },
+    {
+      "Id": 107,
+      "FromVariableId": 156,
+      "ToVariableId": 157,
+      "Type": 1
+    },
+    {
+      "Id": 108,
+      "FromVariableId": 157,
+      "ToVariableId": 158,
+      "Type": 0
+    },
+    {
+      "Id": 110,
+      "FromVariableId": 160,
+      "ToVariableId": 161,
+      "Type": 1
+    },
+    {
+      "Id": 112,
+      "FromVariableId": 163,
+      "ToVariableId": 156,
+      "Type": 0
+    },
+    {
+      "Id": 113,
+      "FromVariableId": 164,
+      "ToVariableId": 157,
+      "Type": 0
+    },
+    {
+      "Id": 120,
+      "FromVariableId": 171,
+      "ToVariableId": 172,
+      "Type": 1
+    },
+    {
+      "Id": 121,
+      "FromVariableId": 172,
+      "ToVariableId": 173,
+      "Type": 1
+    },
+    {
+      "Id": 122,
+      "FromVariableId": 173,
+      "ToVariableId": 174,
+      "Type": 0
+    },
+    {
+      "Id": 124,
+      "FromVariableId": 176,
+      "ToVariableId": 177,
+      "Type": 1
+    },
+    {
+      "Id": 125,
+      "FromVariableId": 178,
+      "ToVariableId": 172,
+      "Type": 0
+    },
+    {
+      "Id": 126,
+      "FromVariableId": 179,
+      "ToVariableId": 173,
+      "Type": 0
+    },
+    {
+      "Id": 131,
+      "FromVariableId": 184,
+      "ToVariableId": 185,
+      "Type": 1
+    },
+    {
+      "Id": 132,
+      "FromVariableId": 185,
+      "ToVariableId": 186,
+      "Type": 1
+    },
+    {
+      "Id": 133,
+      "FromVariableId": 186,
+      "ToVariableId": 187,
+      "Type": 0
+    },
+    {
+      "Id": 135,
+      "FromVariableId": 189,
+      "ToVariableId": 190,
+      "Type": 1
+    },
+    {
+      "Id": 137,
+      "FromVariableId": 192,
+      "ToVariableId": 185,
+      "Type": 0
+    },
+    {
+      "Id": 138,
+      "FromVariableId": 193,
+      "ToVariableId": 186,
+      "Type": 0
+    },
+    {
+      "Id": 142,
+      "FromVariableId": 197,
+      "ToVariableId": 198,
+      "Type": 1
+    },
+    {
+      "Id": 143,
+      "FromVariableId": 198,
+      "ToVariableId": 199,
+      "Type": 1
+    },
+    {
+      "Id": 144,
+      "FromVariableId": 199,
+      "ToVariableId": 200,
+      "Type": 0
+    },
+    {
+      "Id": 146,
+      "FromVariableId": 202,
+      "ToVariableId": 203,
+      "Type": 1
+    },
+    {
+      "Id": 147,
+      "FromVariableId": 204,
+      "ToVariableId": 198,
+      "Type": 0
+    },
+    {
+      "Id": 148,
+      "FromVariableId": 205,
+      "ToVariableId": 199,
+      "Type": 0
+    },
+    {
+      "Id": 197,
+      "FromVariableId": 217,
+      "ToVariableId": 218,
+      "Type": 1
+    },
+    {
+      "Id": 198,
+      "FromVariableId": 218,
+      "ToVariableId": 219,
+      "Type": 1
+    },
+    {
+      "Id": 199,
+      "FromVariableId": 219,
+      "ToVariableId": 220,
+      "Type": 0
+    },
+    {
+      "Id": 201,
+      "FromVariableId": 222,
+      "ToVariableId": 223,
+      "Type": 1
+    },
+    {
+      "Id": 202,
+      "FromVariableId": 224,
+      "ToVariableId": 218,
+      "Type": 0
+    },
+    {
+      "Id": 203,
+      "FromVariableId": 225,
+      "ToVariableId": 219,
+      "Type": 0
+    },
+    {
+      "Id": 197,
+      "FromVariableId": 230,
+      "ToVariableId": 231,
+      "Type": 1
+    },
+    {
+      "Id": 198,
+      "FromVariableId": 231,
+      "ToVariableId": 232,
+      "Type": 1
+    },
+    {
+      "Id": 199,
+      "FromVariableId": 232,
+      "ToVariableId": 233,
+      "Type": 0
+    },
+    {
+      "Id": 201,
+      "FromVariableId": 235,
+      "ToVariableId": 236,
+      "Type": 1
+    },
+    {
+      "Id": 202,
+      "FromVariableId": 237,
+      "ToVariableId": 231,
+      "Type": 0
+    },
+    {
+      "Id": 203,
+      "FromVariableId": 238,
+      "ToVariableId": 232,
+      "Type": 0
+    },
+    {
+      "Id": 209,
+      "FromVariableId": 243,
+      "ToVariableId": 244,
+      "Type": 1
+    },
+    {
+      "Id": 210,
+      "FromVariableId": 244,
+      "ToVariableId": 245,
+      "Type": 1
+    },
+    {
+      "Id": 211,
+      "FromVariableId": 245,
+      "ToVariableId": 246,
+      "Type": 0
+    },
+    {
+      "Id": 213,
+      "FromVariableId": 248,
+      "ToVariableId": 249,
+      "Type": 1
+    },
+    {
+      "Id": 215,
+      "FromVariableId": 251,
+      "ToVariableId": 244,
+      "Type": 0
+    },
+    {
+      "Id": 216,
+      "FromVariableId": 252,
+      "ToVariableId": 245,
+      "Type": 0
+    },
+    {
+      "Id": 209,
+      "FromVariableId": 256,
+      "ToVariableId": 257,
+      "Type": 1
+    },
+    {
+      "Id": 210,
+      "FromVariableId": 257,
+      "ToVariableId": 258,
+      "Type": 1
+    },
+    {
+      "Id": 211,
+      "FromVariableId": 258,
+      "ToVariableId": 259,
+      "Type": 0
+    },
+    {
+      "Id": 213,
+      "FromVariableId": 261,
+      "ToVariableId": 262,
+      "Type": 1
+    },
+    {
+      "Id": 215,
+      "FromVariableId": 264,
+      "ToVariableId": 257,
+      "Type": 0
+    },
+    {
+      "Id": 216,
+      "FromVariableId": 265,
+      "ToVariableId": 258,
+      "Type": 0
+    },
+    {
+      "Id": 243,
+      "FromVariableId": 277,
+      "ToVariableId": 278,
+      "Type": 1
+    },
+    {
+      "Id": 244,
+      "FromVariableId": 278,
+      "ToVariableId": 279,
+      "Type": 1
+    },
+    {
+      "Id": 245,
+      "FromVariableId": 279,
+      "ToVariableId": 280,
+      "Type": 0
+    },
+    {
+      "Id": 247,
+      "FromVariableId": 282,
+      "ToVariableId": 283,
+      "Type": 1
+    },
+    {
+      "Id": 249,
+      "FromVariableId": 285,
+      "ToVariableId": 278,
+      "Type": 0
+    },
+    {
+      "Id": 250,
+      "FromVariableId": 286,
+      "ToVariableId": 279,
+      "Type": 0
+    },
+    {
+      "Id": 255,
+      "FromVariableId": 290,
+      "ToVariableId": 291,
+      "Type": 1
+    },
+    {
+      "Id": 256,
+      "FromVariableId": 291,
+      "ToVariableId": 292,
+      "Type": 1
+    },
+    {
+      "Id": 257,
+      "FromVariableId": 292,
+      "ToVariableId": 293,
+      "Type": 0
+    },
+    {
+      "Id": 259,
+      "FromVariableId": 295,
+      "ToVariableId": 296,
+      "Type": 1
+    },
+    {
+      "Id": 261,
+      "FromVariableId": 298,
+      "ToVariableId": 291,
+      "Type": 0
+    },
+    {
+      "Id": 262,
+      "FromVariableId": 299,
+      "ToVariableId": 292,
+      "Type": 0
+    },
+    {
+      "Id": 267,
+      "FromVariableId": 303,
+      "ToVariableId": 304,
+      "Type": 1
+    },
+    {
+      "Id": 268,
+      "FromVariableId": 304,
+      "ToVariableId": 305,
+      "Type": 1
+    },
+    {
+      "Id": 269,
+      "FromVariableId": 305,
+      "ToVariableId": 306,
+      "Type": 0
+    },
+    {
+      "Id": 271,
+      "FromVariableId": 308,
+      "ToVariableId": 309,
+      "Type": 1
+    },
+    {
+      "Id": 272,
+      "FromVariableId": 310,
+      "ToVariableId": 304,
+      "Type": 0
+    },
+    {
+      "Id": 273,
+      "FromVariableId": 311,
+      "ToVariableId": 305,
+      "Type": 0
+    },
+    {
+      "Id": 279,
+      "FromVariableId": 316,
+      "ToVariableId": 317,
+      "Type": 1
+    },
+    {
+      "Id": 280,
+      "FromVariableId": 317,
+      "ToVariableId": 318,
+      "Type": 1
+    },
+    {
+      "Id": 281,
+      "FromVariableId": 318,
+      "ToVariableId": 319,
+      "Type": 0
+    },
+    {
+      "Id": 283,
+      "FromVariableId": 321,
+      "ToVariableId": 322,
+      "Type": 1
+    },
+    {
+      "Id": 284,
+      "FromVariableId": 323,
+      "ToVariableId": 317,
+      "Type": 0
+    },
+    {
+      "Id": 285,
+      "FromVariableId": 324,
+      "ToVariableId": 318,
+      "Type": 0
+    },
+    {
+      "Id": 312,
+      "FromVariableId": 102,
+      "ToVariableId": 201,
+      "Type": 0
+    },
+    {
+      "Id": 145,
+      "FromVariableId": 201,
+      "ToVariableId": 202,
+      "Type": 0
+    },
+    {
+      "Id": 151,
+      "FromVariableId": 201,
+      "ToVariableId": 209,
+      "Type": 0
+    },
+    {
+      "Id": 310,
+      "FromVariableId": 44,
+      "ToVariableId": 188,
+      "Type": 0
+    },
+    {
+      "Id": 134,
+      "FromVariableId": 188,
+      "ToVariableId": 189,
+      "Type": 0
+    },
+    {
+      "Id": 136,
+      "FromVariableId": 188,
+      "ToVariableId": 191,
+      "Type": 0
+    },
+    {
+      "Id": 308,
+      "FromVariableId": 101,
+      "ToVariableId": 175,
+      "Type": 0
+    },
+    {
+      "Id": 123,
+      "FromVariableId": 175,
+      "ToVariableId": 176,
+      "Type": 0
+    },
+    {
+      "Id": 129,
+      "FromVariableId": 175,
+      "ToVariableId": 183,
+      "Type": 0
+    },
+    {
+      "Id": 314,
+      "FromVariableId": 272,
+      "ToVariableId": 234,
+      "Type": 0
+    },
+    {
+      "Id": 200,
+      "FromVariableId": 234,
+      "ToVariableId": 235,
+      "Type": 0
+    },
+    {
+      "Id": 206,
+      "FromVariableId": 234,
+      "ToVariableId": 242,
+      "Type": 0
+    },
+    {
+      "Id": 282,
+      "FromVariableId": 320,
+      "ToVariableId": 321,
+      "Type": 0
+    },
+    {
+      "Id": 288,
+      "FromVariableId": 320,
+      "ToVariableId": 328,
+      "Type": 0
+    },
+    {
+      "Id": 316,
+      "FromVariableId": 273,
+      "ToVariableId": 320,
+      "Type": 0
+    },
+    {
+      "Id": 315,
+      "FromVariableId": 274,
+      "ToVariableId": 294,
+      "Type": 0
+    },
+    {
+      "Id": 258,
+      "FromVariableId": 294,
+      "ToVariableId": 295,
+      "Type": 0
+    },
+    {
+      "Id": 260,
+      "FromVariableId": 294,
+      "ToVariableId": 297,
+      "Type": 0
+    },
+    {
+      "Id": 313,
+      "FromVariableId": 271,
+      "ToVariableId": 260,
+      "Type": 0
+    },
+    {
+      "Id": 212,
+      "FromVariableId": 260,
+      "ToVariableId": 261,
+      "Type": 0
+    },
+    {
+      "Id": 214,
+      "FromVariableId": 260,
+      "ToVariableId": 263,
+      "Type": 0
+    },
+    {
+      "Id": 311,
+      "FromVariableId": 170,
+      "ToVariableId": 133,
+      "Type": 0
+    },
+    {
+      "Id": 98,
+      "FromVariableId": 133,
+      "ToVariableId": 134,
+      "Type": 0
+    },
+    {
+      "Id": 100,
+      "FromVariableId": 133,
+      "ToVariableId": 136,
+      "Type": 0
+    },
+    {
+      "Id": 309,
+      "FromVariableId": 169,
+      "ToVariableId": 63,
+      "Type": 0
+    },
+    {
+      "Id": 62,
+      "FromVariableId": 63,
+      "ToVariableId": 64,
+      "Type": 0
+    },
+    {
+      "Id": 64,
+      "FromVariableId": 63,
+      "ToVariableId": 66,
+      "Type": 0
+    },
+    {
+      "Id": 307,
+      "FromVariableId": 168,
+      "ToVariableId": 159,
+      "Type": 0
+    },
+    {
+      "Id": 109,
+      "FromVariableId": 159,
+      "ToVariableId": 160,
+      "Type": 0
+    },
+    {
+      "Id": 111,
+      "FromVariableId": 159,
+      "ToVariableId": 162,
+      "Type": 0
+    },
+    {
+      "Id": 159,
+      "FromVariableId": 69,
+      "ToVariableId": 168,
+      "Type": 0
+    },
+    {
+      "Id": 160,
+      "FromVariableId": 69,
+      "ToVariableId": 44,
+      "Type": 0
+    },
+    {
+      "Id": 167,
+      "FromVariableId": 69,
+      "ToVariableId": 170,
+      "Type": 0
+    },
+    {
+      "Id": 68,
+      "FromVariableId": 66,
+      "ToVariableId": 69,
+      "Type": 0
+    },
+    {
+      "Id": 195,
+      "FromVariableId": 62,
+      "ToVariableId": 69,
+      "Type": 0
+    },
+    {
+      "Id": 118,
+      "FromVariableId": 169,
+      "ToVariableId": 70,
+      "Type": 0
+    },
+    {
+      "Id": 69,
+      "FromVariableId": 70,
+      "ToVariableId": 63,
+      "Type": 0
+    },
+    {
+      "Id": 185,
+      "FromVariableId": 216,
+      "ToVariableId": 71,
+      "Type": 0
+    },
+    {
+      "Id": 67,
+      "FromVariableId": 71,
+      "ToVariableId": 59,
+      "Type": 0
+    },
+    {
+      "Id": 165,
+      "FromVariableId": 139,
+      "ToVariableId": 169,
+      "Type": 0
+    },
+    {
+      "Id": 169,
+      "FromVariableId": 139,
+      "ToVariableId": 102,
+      "Type": 0
+    },
+    {
+      "Id": 231,
+      "FromVariableId": 139,
+      "ToVariableId": 271,
+      "Type": 0
+    },
+    {
+      "Id": 104,
+      "FromVariableId": 136,
+      "ToVariableId": 139,
+      "Type": 0
+    },
+    {
+      "Id": 196,
+      "FromVariableId": 132,
+      "ToVariableId": 139,
+      "Type": 0
+    },
+    {
+      "Id": 119,
+      "FromVariableId": 170,
+      "ToVariableId": 140,
+      "Type": 0
+    },
+    {
+      "Id": 105,
+      "FromVariableId": 140,
+      "ToVariableId": 133,
+      "Type": 0
+    },
+    {
+      "Id": 182,
+      "FromVariableId": 212,
+      "ToVariableId": 141,
+      "Type": 0
+    },
+    {
+      "Id": 103,
+      "FromVariableId": 141,
+      "ToVariableId": 129,
+      "Type": 0
+    },
+    {
+      "Id": 157,
+      "FromVariableId": 165,
+      "ToVariableId": 101,
+      "Type": 0
+    },
+    {
+      "Id": 164,
+      "FromVariableId": 165,
+      "ToVariableId": 169,
+      "Type": 0
+    },
+    {
+      "Id": 115,
+      "FromVariableId": 162,
+      "ToVariableId": 165,
+      "Type": 0
+    },
+    {
+      "Id": 194,
+      "FromVariableId": 158,
+      "ToVariableId": 165,
+      "Type": 0
+    },
+    {
+      "Id": 117,
+      "FromVariableId": 168,
+      "ToVariableId": 166,
+      "Type": 0
+    },
+    {
+      "Id": 116,
+      "FromVariableId": 166,
+      "ToVariableId": 159,
+      "Type": 0
+    },
+    {
+      "Id": 180,
+      "FromVariableId": 210,
+      "ToVariableId": 167,
+      "Type": 0
+    },
+    {
+      "Id": 114,
+      "FromVariableId": 167,
+      "ToVariableId": 155,
+      "Type": 0
+    },
+    {
+      "Id": 170,
+      "FromVariableId": 213,
+      "ToVariableId": 180,
+      "Type": 0
+    },
+    {
+      "Id": 127,
+      "FromVariableId": 180,
+      "ToVariableId": 171,
+      "Type": 0
+    },
+    {
+      "Id": 158,
+      "FromVariableId": 181,
+      "ToVariableId": 168,
+      "Type": 0
+    },
+    {
+      "Id": 161,
+      "FromVariableId": 181,
+      "ToVariableId": 44,
+      "Type": 0
+    },
+    {
+      "Id": 128,
+      "FromVariableId": 183,
+      "ToVariableId": 181,
+      "Type": 0
+    },
+    {
+      "Id": 191,
+      "FromVariableId": 174,
+      "ToVariableId": 181,
+      "Type": 0
+    },
+    {
+      "Id": 153,
+      "FromVariableId": 101,
+      "ToVariableId": 182,
+      "Type": 0
+    },
+    {
+      "Id": 130,
+      "FromVariableId": 182,
+      "ToVariableId": 175,
+      "Type": 0
+    },
+    {
+      "Id": 171,
+      "FromVariableId": 214,
+      "ToVariableId": 194,
+      "Type": 0
+    },
+    {
+      "Id": 139,
+      "FromVariableId": 194,
+      "ToVariableId": 184,
+      "Type": 0
+    },
+    {
+      "Id": 156,
+      "FromVariableId": 195,
+      "ToVariableId": 101,
+      "Type": 0
+    },
+    {
+      "Id": 163,
+      "FromVariableId": 195,
+      "ToVariableId": 169,
+      "Type": 0
+    },
+    {
+      "Id": 168,
+      "FromVariableId": 195,
+      "ToVariableId": 102,
+      "Type": 0
+    },
+    {
+      "Id": 140,
+      "FromVariableId": 191,
+      "ToVariableId": 195,
+      "Type": 0
+    },
+    {
+      "Id": 192,
+      "FromVariableId": 187,
+      "ToVariableId": 195,
+      "Type": 0
+    },
+    {
+      "Id": 154,
+      "FromVariableId": 44,
+      "ToVariableId": 196,
+      "Type": 0
+    },
+    {
+      "Id": 141,
+      "FromVariableId": 196,
+      "ToVariableId": 188,
+      "Type": 0
+    },
+    {
+      "Id": 172,
+      "FromVariableId": 215,
+      "ToVariableId": 206,
+      "Type": 0
+    },
+    {
+      "Id": 149,
+      "FromVariableId": 206,
+      "ToVariableId": 197,
+      "Type": 0
+    },
+    {
+      "Id": 162,
+      "FromVariableId": 207,
+      "ToVariableId": 44,
+      "Type": 0
+    },
+    {
+      "Id": 166,
+      "FromVariableId": 207,
+      "ToVariableId": 170,
+      "Type": 0
+    },
+    {
+      "Id": 234,
+      "FromVariableId": 207,
+      "ToVariableId": 272,
+      "Type": 0
+    },
+    {
+      "Id": 150,
+      "FromVariableId": 209,
+      "ToVariableId": 207,
+      "Type": 0
+    },
+    {
+      "Id": 193,
+      "FromVariableId": 200,
+      "ToVariableId": 207,
+      "Type": 0
+    },
+    {
+      "Id": 155,
+      "FromVariableId": 102,
+      "ToVariableId": 208,
+      "Type": 0
+    },
+    {
+      "Id": 152,
+      "FromVariableId": 208,
+      "ToVariableId": 201,
+      "Type": 0
+    },
+    {
+      "Id": 224,
+      "FromVariableId": 269,
+      "ToVariableId": 226,
+      "Type": 0
+    },
+    {
+      "Id": 204,
+      "FromVariableId": 226,
+      "ToVariableId": 217,
+      "Type": 0
+    },
+    {
+      "Id": 230,
+      "FromVariableId": 227,
+      "ToVariableId": 271,
+      "Type": 0
+    },
+    {
+      "Id": 205,
+      "FromVariableId": 229,
+      "ToVariableId": 227,
+      "Type": 0
+    },
+    {
+      "Id": 208,
+      "FromVariableId": 220,
+      "ToVariableId": 227,
+      "Type": 0
+    },
+    {
+      "Id": 222,
+      "FromVariableId": 272,
+      "ToVariableId": 228,
+      "Type": 0
+    },
+    {
+      "Id": 204,
+      "FromVariableId": 239,
+      "ToVariableId": 230,
+      "Type": 0
+    },
+    {
+      "Id": 297,
+      "FromVariableId": 240,
+      "ToVariableId": 273,
+      "Type": 0
+    },
+    {
+      "Id": 298,
+      "FromVariableId": 240,
+      "ToVariableId": 102,
+      "Type": 0
+    },
+    {
+      "Id": 205,
+      "FromVariableId": 242,
+      "ToVariableId": 240,
+      "Type": 0
+    },
+    {
+      "Id": 208,
+      "FromVariableId": 233,
+      "ToVariableId": 240,
+      "Type": 0
+    },
+    {
+      "Id": 207,
+      "FromVariableId": 241,
+      "ToVariableId": 234,
+      "Type": 0
+    },
+    {
+      "Id": 229,
+      "FromVariableId": 253,
+      "ToVariableId": 170,
+      "Type": 0
+    },
+    {
+      "Id": 233,
+      "FromVariableId": 253,
+      "ToVariableId": 272,
+      "Type": 0
+    },
+    {
+      "Id": 236,
+      "FromVariableId": 253,
+      "ToVariableId": 274,
+      "Type": 0
+    },
+    {
+      "Id": 218,
+      "FromVariableId": 250,
+      "ToVariableId": 253,
+      "Type": 0
+    },
+    {
+      "Id": 220,
+      "FromVariableId": 246,
+      "ToVariableId": 253,
+      "Type": 0
+    },
+    {
+      "Id": 221,
+      "FromVariableId": 271,
+      "ToVariableId": 254,
+      "Type": 0
+    },
+    {
+      "Id": 240,
+      "FromVariableId": 275,
+      "ToVariableId": 255,
+      "Type": 0
+    },
+    {
+      "Id": 217,
+      "FromVariableId": 255,
+      "ToVariableId": 243,
+      "Type": 0
+    },
+    {
+      "Id": 232,
+      "FromVariableId": 266,
+      "ToVariableId": 271,
+      "Type": 0
+    },
+    {
+      "Id": 218,
+      "FromVariableId": 263,
+      "ToVariableId": 266,
+      "Type": 0
+    },
+    {
+      "Id": 220,
+      "FromVariableId": 259,
+      "ToVariableId": 266,
+      "Type": 0
+    },
+    {
+      "Id": 219,
+      "FromVariableId": 267,
+      "ToVariableId": 260,
+      "Type": 0
+    },
+    {
+      "Id": 217,
+      "FromVariableId": 268,
+      "ToVariableId": 256,
+      "Type": 0
+    },
+    {
+      "Id": 252,
+      "FromVariableId": 284,
+      "ToVariableId": 287,
+      "Type": 0
+    },
+    {
+      "Id": 254,
+      "FromVariableId": 280,
+      "ToVariableId": 287,
+      "Type": 0
+    },
+    {
+      "Id": 251,
+      "FromVariableId": 289,
+      "ToVariableId": 277,
+      "Type": 0
+    },
+    {
+      "Id": 296,
+      "FromVariableId": 300,
+      "ToVariableId": 273,
+      "Type": 0
+    },
+    {
+      "Id": 300,
+      "FromVariableId": 300,
+      "ToVariableId": 271,
+      "Type": 0
+    },
+    {
+      "Id": 264,
+      "FromVariableId": 297,
+      "ToVariableId": 300,
+      "Type": 0
+    },
+    {
+      "Id": 266,
+      "FromVariableId": 293,
+      "ToVariableId": 300,
+      "Type": 0
+    },
+    {
+      "Id": 291,
+      "FromVariableId": 274,
+      "ToVariableId": 301,
+      "Type": 0
+    },
+    {
+      "Id": 265,
+      "FromVariableId": 301,
+      "ToVariableId": 294,
+      "Type": 0
+    },
+    {
+      "Id": 305,
+      "FromVariableId": 276,
+      "ToVariableId": 302,
+      "Type": 0
+    },
+    {
+      "Id": 263,
+      "FromVariableId": 302,
+      "ToVariableId": 290,
+      "Type": 0
+    },
+    {
+      "Id": 274,
+      "FromVariableId": 312,
+      "ToVariableId": 303,
+      "Type": 0
+    },
+    {
+      "Id": 275,
+      "FromVariableId": 315,
+      "ToVariableId": 313,
+      "Type": 0
+    },
+    {
+      "Id": 278,
+      "FromVariableId": 306,
+      "ToVariableId": 313,
+      "Type": 0
+    },
+    {
+      "Id": 293,
+      "FromVariableId": 270,
+      "ToVariableId": 325,
+      "Type": 0
+    },
+    {
+      "Id": 286,
+      "FromVariableId": 325,
+      "ToVariableId": 316,
+      "Type": 0
+    },
+    {
+      "Id": 295,
+      "FromVariableId": 326,
+      "ToVariableId": 272,
+      "Type": 0
+    },
+    {
+      "Id": 302,
+      "FromVariableId": 326,
+      "ToVariableId": 274,
+      "Type": 0
+    },
+    {
+      "Id": 287,
+      "FromVariableId": 328,
+      "ToVariableId": 326,
+      "Type": 0
+    },
+    {
+      "Id": 290,
+      "FromVariableId": 319,
+      "ToVariableId": 326,
+      "Type": 0
+    },
+    {
+      "Id": 292,
+      "FromVariableId": 273,
+      "ToVariableId": 327,
+      "Type": 0
+    },
+    {
+      "Id": 289,
+      "FromVariableId": 327,
+      "ToVariableId": 320,
+      "Type": 0
+    }
+  ]
+}
+

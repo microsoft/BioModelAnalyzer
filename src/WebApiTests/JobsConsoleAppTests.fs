@@ -20,6 +20,9 @@ let performLTLSimulation timeout job =
 let performSimulation timeout job = 
     Job.RunToCompletion("Simulate.exe", File.ReadAllText job, timeout)
 
+let performAnalysis timeout job = 
+    Job.RunToCompletion("Analyze.exe", File.ReadAllText job, timeout)
+
 [<Test; Timeout(600000)>]
 let ``Console app checks LTL Polarity``() =
     checkJob Folders.LTLQueries (performLTLPolarity -1) comparePolarityResults ""
@@ -41,3 +44,7 @@ let ``Console app simulates LTL, i.e. makes a proof``() =
 [<Test; Timeout(60000)>]
 let ``Console app makes a simulation for a model``() =
     checkJob Folders.Simulation (performSimulation -1) compareSimulationResults ""
+
+[<Test; Timeout(60000)>]
+let ``Console app analyzes a model``() =
+    checkJob Folders.Analysis (performAnalysis -1) compareAnalysisResults ""
