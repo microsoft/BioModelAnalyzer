@@ -166,7 +166,8 @@ function versionCheck(version) {
         }
         else {
             console.log("server version was succesfully checked: client is up to date");
-            userDialog.detach();
+            if (userDialog !== undefined)
+                userDialog.detach();
         }
     }).fail(function (err) {
         console.log("there was an error while trying to check server version: " + err);

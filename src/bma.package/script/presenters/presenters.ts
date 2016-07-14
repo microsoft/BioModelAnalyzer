@@ -1296,7 +1296,6 @@ module BMA {
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.undoRedoPresenter.Dup(newmodel, newlayout);
                         return true;
-                        break;
                     case "Default":
                         var variables = model.Variables.slice(0);
                         var variableLayouts = layout.Variables.slice(0);
@@ -1326,7 +1325,6 @@ module BMA {
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.undoRedoPresenter.Dup(newmodel, newlayout);
                         return true;
-                        break;
                     case "MembraneReceptor":
                         var variables = model.Variables.slice(0);
                         var variableLayouts = layout.Variables.slice(0);
@@ -1377,7 +1375,6 @@ module BMA {
                         var newlayout = new BMA.Model.Layout(layout.Containers, variableLayouts);
                         that.undoRedoPresenter.Dup(newmodel, newlayout);
                         return true;
-                        break;
                 }
 
                 return false;
