@@ -60,7 +60,7 @@ type WebApiControllersTests() =
                                          headers = [ ContentType HttpContentTypes.Json;
                                                      Accept HttpContentTypes.Json ],
                                          body = TextRequest (model.ToString()))
-            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<bma.client.Controllers.AnalysisOutput>(responseString); 
+            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<AnalysisOutput>(responseString); 
             Assert.AreEqual(StatusType.Error, result.Status)
             Assert.IsTrue(logger.FailureCount > 0)
         } |> Async.RunSynchronously
@@ -79,7 +79,7 @@ type WebApiControllersTests() =
                                          headers = [ ContentType HttpContentTypes.Json;
                                                      Accept HttpContentTypes.Json ],
                                          body = TextRequest (model.ToString()))
-            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<bma.client.Controllers.AnalysisOutput>(responseString); 
+            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<AnalysisOutput>(responseString); 
             Assert.AreEqual(result.Status, StatusType.Stabilizing)
         } |> Async.RunSynchronously
 
@@ -159,10 +159,10 @@ type WebApiControllersTests() =
                                          headers = [ ContentType HttpContentTypes.Json;
                                                      Accept HttpContentTypes.Json ],
                                          body = TextRequest (analysisInput.ToString()))
-            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<bma.client.Controllers.AnalysisOutput>(analysisResponseString); 
+            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<AnalysisOutput>(analysisResponseString); 
             Assert.AreEqual(result.Status, StatusType.NotStabilizing)
 
-            let ftInput = new bma.client.Controllers.FurtherTestingInput()
+            let ftInput = new FurtherTestingInput()
             ftInput.Model <- model
             ftInput.Analysis <- result
             ftInput.EnableLogging <- false
@@ -200,10 +200,10 @@ type WebApiControllersTests() =
                                          headers = [ ContentType HttpContentTypes.Json;
                                                      Accept HttpContentTypes.Json ],
                                          body = TextRequest (analysisInput.ToString()))
-            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<bma.client.Controllers.AnalysisOutput>(analysisResponseString); 
+            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<AnalysisOutput>(analysisResponseString); 
             Assert.AreEqual(result.Status, StatusType.NotStabilizing)
 
-            let ftInput = new bma.client.Controllers.FurtherTestingInput()
+            let ftInput = new FurtherTestingInput()
             ftInput.Model <- model
             ftInput.Analysis <- result
             ftInput.EnableLogging <- false
@@ -241,10 +241,10 @@ type WebApiControllersTests() =
                                          headers = [ ContentType HttpContentTypes.Json;
                                                      Accept HttpContentTypes.Json ],
                                          body = TextRequest (analysisInput.ToString()))
-            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<bma.client.Controllers.AnalysisOutput>(analysisResponseString); 
+            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<AnalysisOutput>(analysisResponseString); 
             Assert.AreEqual(result.Status, StatusType.NotStabilizing)
 
-            let ftInput = new bma.client.Controllers.FurtherTestingInput()
+            let ftInput = new FurtherTestingInput()
             ftInput.Model <- model
             ftInput.Analysis <- result
             ftInput.EnableLogging <- false
