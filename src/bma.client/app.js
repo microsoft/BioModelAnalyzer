@@ -196,7 +196,7 @@ function loadScript(version) {
     var ltlCommands = new BMA.CommandRegistry();
     //Defining processing service URL
     // To test locally, change to "" (empty string)
-    window.BMAServiceURL = "http://bmamathnew.cloudapp.net";
+    window.BMAServiceURL = ""; //"http://bmamathnew.cloudapp.net";
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
     //Creating FunctionsRegistry
