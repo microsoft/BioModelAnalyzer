@@ -1181,13 +1181,14 @@ var BMA;
                         context.closePath();
                         context.fill();
                         context.stroke();
-                        if (layoutPart.type === "keyframe" || layoutPart.type === "other") {
+                        if (layoutPart.type === "keyframe" || layoutPart.type === "constant" || layoutPart.type === "other") {
                             var name = layoutPart.name;
                             var fs = 16;
                             context.font = "16px Segoe-UI";
                             var width = context.measureText(name).width;
                             if (width > hks) {
                                 fs = fs * hks / width;
+                                width = hks;
                                 context.font = fs + "px Segoe-UI";
                             }
                             context.fillStyle = "rgb(96,96,96)";
@@ -1292,6 +1293,10 @@ var BMA;
                 else if (operation instanceof LTLOperations.Keyframe) {
                     layout.type = "keyframe";
                     layout.name = operation.Name;
+                }
+                else if (operation instanceof LTLOperations.ConstOperand) {
+                    layout.type = "constant";
+                    layout.name = operation.Value + "";
                 }
                 else {
                     layout.type = "other";
@@ -2132,7 +2137,7 @@ var BMA;
             }
         };
         return CommandRegistry;
-    }());
+    })();
     BMA.CommandRegistry = CommandRegistry;
     var ApplicationCommand = (function () {
         function ApplicationCommand(name) {
@@ -2161,10 +2166,10 @@ var BMA;
             }
         };
         return ApplicationCommand;
-    }());
+    })();
     BMA.ApplicationCommand = ApplicationCommand;
 })(BMA || (BMA = {}));
-//# sourceMappingURL=Commands.js.map
+//# sourceMappingURL=commands.js.map
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -2218,7 +2223,7 @@ var BMA;
                 configurable: true
             });
             return Element;
-        }());
+        })();
         Elements.Element = Element;
         var BboxElement = (function (_super) {
             __extends(BboxElement, _super);
@@ -2234,7 +2239,7 @@ var BMA;
                 configurable: true
             });
             return BboxElement;
-        }(Element));
+        })(Element);
         Elements.BboxElement = BboxElement;
         var BorderContainerElement = (function (_super) {
             __extends(BorderContainerElement, _super);
@@ -2258,7 +2263,7 @@ var BMA;
                 configurable: true
             });
             return BorderContainerElement;
-        }(Element));
+        })(Element);
         Elements.BorderContainerElement = BorderContainerElement;
         var ElementsRegistry = (function () {
             function ElementsRegistry() {
@@ -2810,7 +2815,7 @@ var BMA;
                 throw "the is no element for specified type";
             };
             return ElementsRegistry;
-        }());
+        })();
         Elements.ElementsRegistry = ElementsRegistry;
     })(Elements = BMA.Elements || (BMA.Elements = {}));
 })(BMA || (BMA = {}));
@@ -2863,7 +2868,7 @@ var BMA;
                 configurable: true
             });
             return BMAFunction;
-        }());
+        })();
         Functions.BMAFunction = BMAFunction;
         var FunctionsRegistry = (function () {
             function FunctionsRegistry() {
@@ -2898,7 +2903,7 @@ var BMA;
                 throw "There is no function as you want";
             };
             return FunctionsRegistry;
-        }());
+        })();
         Functions.FunctionsRegistry = FunctionsRegistry;
     })(Functions = BMA.Functions || (BMA.Functions = {}));
 })(BMA || (BMA = {}));
@@ -2935,7 +2940,7 @@ var BMA;
                 configurable: true
             });
             return BMAKeyframe;
-        }());
+        })();
         Keyframes.BMAKeyframe = BMAKeyframe;
         var KeyframesRegistry = (function () {
             function KeyframesRegistry(imagePath) {
@@ -2977,7 +2982,7 @@ var BMA;
                 throw "There is no keyframe as you want";
             };
             return KeyframesRegistry;
-        }());
+        })();
         Keyframes.KeyframesRegistry = KeyframesRegistry;
     })(Keyframes = BMA.Keyframes || (BMA.Keyframes = {}));
 })(BMA || (BMA = {}));
@@ -3067,7 +3072,7 @@ var BMA;
                 return undefined;
         };
         return LocalRepositoryTool;
-    }());
+    })();
     BMA.LocalRepositoryTool = LocalRepositoryTool;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=localRepository.js.map
@@ -3101,7 +3106,7 @@ var BMA;
             return this.currentModel.Serialize() !== model.Serialize();
         };
         return ChangesChecker;
-    }());
+    })();
     BMA.ChangesChecker = ChangesChecker;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=changeschecker.js.map
@@ -3193,7 +3198,7 @@ var BMA;
                 };
             };
             return BioModel;
-        }());
+        })();
         Model.BioModel = BioModel;
         var VariableTypes = (function () {
             function VariableTypes() {
@@ -3216,7 +3221,7 @@ var BMA;
                 configurable: true
             });
             return VariableTypes;
-        }());
+        })();
         Model.VariableTypes = VariableTypes;
         var Variable = (function () {
             function Variable(id, containerId, type, name, rangeFrom, rangeTo, formula) {
@@ -3287,7 +3292,7 @@ var BMA;
                 };
             };
             return Variable;
-        }());
+        })();
         Model.Variable = Variable;
         var RelationshipTypes = (function () {
             function RelationshipTypes() {
@@ -3303,7 +3308,7 @@ var BMA;
                 configurable: true
             });
             return RelationshipTypes;
-        }());
+        })();
         Model.RelationshipTypes = RelationshipTypes;
         var Relationship = (function () {
             function Relationship(id, fromVariableId, toVariableId, type) {
@@ -3349,7 +3354,7 @@ var BMA;
                 };
             };
             return Relationship;
-        }());
+        })();
         Model.Relationship = Relationship;
         var Layout = (function () {
             function Layout(containers, varialbes) {
@@ -3390,7 +3395,7 @@ var BMA;
                 return undefined;
             };
             return Layout;
-        }());
+        })();
         Model.Layout = Layout;
         var ContainerLayout = (function () {
             function ContainerLayout(id, name, size, positionX, positionY) {
@@ -3439,7 +3444,7 @@ var BMA;
                 configurable: true
             });
             return ContainerLayout;
-        }());
+        })();
         Model.ContainerLayout = ContainerLayout;
         var VariableLayout = (function () {
             function VariableLayout(id, positionX, positionY, cellX, cellY, angle, TFdescription) {
@@ -3502,7 +3507,7 @@ var BMA;
                 configurable: true
             });
             return VariableLayout;
-        }());
+        })();
         Model.VariableLayout = VariableLayout;
         function GenerateNewContainerName(containerLayouts) {
             var prefix = "C";
@@ -3737,7 +3742,7 @@ var BMA;
                 return JSON.stringify(exported);
             };
             return AppModel;
-        }());
+        })();
         Model.AppModel = AppModel;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
@@ -3774,7 +3779,7 @@ var BMA;
                 configurable: true
             });
             return ProofResult;
-        }());
+        })();
         Model.ProofResult = ProofResult;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
@@ -3859,7 +3864,7 @@ var BMA;
                 configurable: true
             });
             return AppVisualSettings;
-        }());
+        })();
         Model.AppVisualSettings = AppVisualSettings;
     })(Model = BMA.Model || (BMA.Model = {}));
 })(BMA || (BMA = {}));
@@ -4292,7 +4297,7 @@ var BMA;
                     return false;
             };
             return NameOperand;
-        }());
+        })();
         LTLOperations.NameOperand = NameOperand;
         var ConstOperand = (function () {
             function ConstOperand(value) {
@@ -4319,7 +4324,7 @@ var BMA;
                     return false;
             };
             return ConstOperand;
-        }());
+        })();
         LTLOperations.ConstOperand = ConstOperand;
         var KeyframeEquation = (function () {
             function KeyframeEquation(leftOperand, operator, rightOperand) {
@@ -4362,7 +4367,7 @@ var BMA;
                     return false;
             };
             return KeyframeEquation;
-        }());
+        })();
         LTLOperations.KeyframeEquation = KeyframeEquation;
         var DoubleKeyframeEquation = (function () {
             function DoubleKeyframeEquation(leftOperand, leftOperator, middleOperand, rightOperator, rightOperand) {
@@ -4436,7 +4441,7 @@ var BMA;
                 }
             };
             return DoubleKeyframeEquation;
-        }());
+        })();
         LTLOperations.DoubleKeyframeEquation = DoubleKeyframeEquation;
         var TrueKeyframe = (function () {
             function TrueKeyframe() {
@@ -4455,7 +4460,7 @@ var BMA;
                     return false;
             };
             return TrueKeyframe;
-        }());
+        })();
         LTLOperations.TrueKeyframe = TrueKeyframe;
         var SelfLoopKeyframe = (function () {
             function SelfLoopKeyframe() {
@@ -4474,7 +4479,7 @@ var BMA;
                     return false;
             };
             return SelfLoopKeyframe;
-        }());
+        })();
         LTLOperations.SelfLoopKeyframe = SelfLoopKeyframe;
         var OscillationKeyframe = (function () {
             function OscillationKeyframe() {
@@ -4493,7 +4498,7 @@ var BMA;
                     return false;
             };
             return OscillationKeyframe;
-        }());
+        })();
         LTLOperations.OscillationKeyframe = OscillationKeyframe;
         var Keyframe = (function () {
             function Keyframe(name, description, operands) {
@@ -4604,7 +4609,7 @@ var BMA;
                     return false;
             };
             return Keyframe;
-        }());
+        })();
         LTLOperations.Keyframe = Keyframe;
         var Operator = (function () {
             function Operator(name, operandsCount, fun, isFunction) {
@@ -4649,7 +4654,7 @@ var BMA;
                 return this.fun(op);
             };
             return Operator;
-        }());
+        })();
         LTLOperations.Operator = Operator;
         var Operation = (function () {
             function Operation() {
@@ -4701,7 +4706,7 @@ var BMA;
                     return false;
             };
             return Operation;
-        }());
+        })();
         LTLOperations.Operation = Operation;
         function RefreshStatesInOperation(operation, states) {
             if (operation === undefined)
@@ -5177,7 +5182,7 @@ var BMA;
                         });
                         var uniquename = this.GenerateUUID();
                         var path = svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)", id: uniquename });
-                        if (layoutPart.type === "keyframe" || layoutPart.type === "other") {
+                        if (layoutPart.type === "keyframe" || layoutPart.type === "constant" || layoutPart.type === "other") {
                             var textGroup = svg.group(stateGroup, {});
                             var label = svg.text(textGroup, 0, 0, layoutPart.name, {
                                 "font-size": 16,
@@ -5318,7 +5323,10 @@ var BMA;
                     if (layoutPart !== undefined) {
                         return {
                             operation: layoutPart.operation,
-                            isRoot: layoutPart.parentoperation === undefined
+                            isRoot: layoutPart.parentoperation === undefined,
+                            position: layoutPart.position,
+                            parentoperation: layoutPart.parentoperation,
+                            parentoperationindex: layoutPart.parentoperationindex
                         };
                     }
                 }
@@ -5391,7 +5399,7 @@ var BMA;
                 this.version++;
             };
             return OperationLayout;
-        }());
+        })();
         LTLOperations.OperationLayout = OperationLayout;
     })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
 })(BMA || (BMA = {}));
@@ -5480,7 +5488,7 @@ var BMA;
                 this.svgPlotDiv.drawingsurface("moveDraggableSvgOnBottom");
             };
             return SVGPlotDriver;
-        }());
+        })();
         UIDrivers.SVGPlotDriver = SVGPlotDriver;
         var TurnableButtonDriver = (function () {
             function TurnableButtonDriver(button) {
@@ -5490,7 +5498,7 @@ var BMA;
                 this.button.button("option", "disabled", !isOn);
             };
             return TurnableButtonDriver;
-        }());
+        })();
         UIDrivers.TurnableButtonDriver = TurnableButtonDriver;
         var VariableEditorDriver = (function () {
             function VariableEditorDriver(variableEditor) {
@@ -5542,7 +5550,7 @@ var BMA;
                 this.variableEditor.bmaeditor({ oneditorclosing: callback });
             };
             return VariableEditorDriver;
-        }());
+        })();
         UIDrivers.VariableEditorDriver = VariableEditorDriver;
         var ContainerEditorDriver = (function () {
             function ContainerEditorDriver(containerEditor) {
@@ -5572,7 +5580,7 @@ var BMA;
                 this.containerEditor.containernameeditor({ oneditorclosing: callback });
             };
             return ContainerEditorDriver;
-        }());
+        })();
         UIDrivers.ContainerEditorDriver = ContainerEditorDriver;
         var ProofViewer = (function () {
             function ProofViewer(proofAccordion, proofContentViewer) {
@@ -5599,7 +5607,7 @@ var BMA;
                 this.proofContentViewer.proofresultviewer("hide", params.tab);
             };
             return ProofViewer;
-        }());
+        })();
         UIDrivers.ProofViewer = ProofViewer;
         var FurtherTestingDriver = (function () {
             function FurtherTestingDriver(viewer, toggler) {
@@ -5631,7 +5639,7 @@ var BMA;
                 this.viewer.furthertesting({ buttonMode: "ActiveMode" });
             };
             return FurtherTestingDriver;
-        }());
+        })();
         UIDrivers.FurtherTestingDriver = FurtherTestingDriver;
         var PopupDriver = (function () {
             function PopupDriver(popupWindow) {
@@ -5683,7 +5691,7 @@ var BMA;
                 window.Commands.Execute("Collapse", this.popupWindow.resultswindowviewer("option", "tabid"));
             };
             return PopupDriver;
-        }());
+        })();
         UIDrivers.PopupDriver = PopupDriver;
         var SimulationExpandedDriver = (function () {
             function SimulationExpandedDriver(view) {
@@ -5773,7 +5781,7 @@ var BMA;
                 return table;
             };
             return SimulationExpandedDriver;
-        }());
+        })();
         UIDrivers.SimulationExpandedDriver = SimulationExpandedDriver;
         var SimulationViewerDriver = (function () {
             function SimulationViewerDriver(viewer) {
@@ -5792,7 +5800,7 @@ var BMA;
                 this.viewer.simulationviewer("hide", params.tab);
             };
             return SimulationViewerDriver;
-        }());
+        })();
         UIDrivers.SimulationViewerDriver = SimulationViewerDriver;
         var LocalStorageDriver = (function () {
             function LocalStorageDriver(widget) {
@@ -5814,7 +5822,7 @@ var BMA;
                 this.widget.localstoragewidget("Message", msg);
             };
             return LocalStorageDriver;
-        }());
+        })();
         UIDrivers.LocalStorageDriver = LocalStorageDriver;
         var ModelFileLoader = (function () {
             function ModelFileLoader(fileInput) {
@@ -5840,7 +5848,7 @@ var BMA;
                 return false;
             };
             return ModelFileLoader;
-        }());
+        })();
         UIDrivers.ModelFileLoader = ModelFileLoader;
         var ContextMenuDriver = (function () {
             function ContextMenuDriver(contextMenu) {
@@ -5860,7 +5868,7 @@ var BMA;
                 return [];
             };
             return ContextMenuDriver;
-        }());
+        })();
         UIDrivers.ContextMenuDriver = ContextMenuDriver;
         var AccordionHider = (function () {
             function AccordionHider(acc) {
@@ -5878,7 +5886,7 @@ var BMA;
                 tab.trigger("click");
             };
             return AccordionHider;
-        }());
+        })();
         UIDrivers.AccordionHider = AccordionHider;
         var BMAProcessingService = (function () {
             function BMAProcessingService(serviceURL) {
@@ -5907,7 +5915,7 @@ var BMA;
                 return result.promise();
             };
             return BMAProcessingService;
-        }());
+        })();
         UIDrivers.BMAProcessingService = BMAProcessingService;
         var BMALRAProcessingService = (function () {
             function BMALRAProcessingService(serviceURL, userID) {
@@ -5989,7 +5997,7 @@ var BMA;
                 }
             };
             return BMALRAProcessingService;
-        }());
+        })();
         UIDrivers.BMALRAProcessingService = BMALRAProcessingService;
         var LTLAnalyzeService = (function () {
             function LTLAnalyzeService(url, maxRequestCount) {
@@ -6043,7 +6051,7 @@ var BMA;
                 }
             };
             return LTLAnalyzeService;
-        }());
+        })();
         UIDrivers.LTLAnalyzeService = LTLAnalyzeService;
         var MessageBoxDriver = (function () {
             function MessageBoxDriver() {
@@ -6055,7 +6063,7 @@ var BMA;
                 console.log(message);
             };
             return MessageBoxDriver;
-        }());
+        })();
         UIDrivers.MessageBoxDriver = MessageBoxDriver;
         var ExportService = (function () {
             function ExportService() {
@@ -6064,7 +6072,7 @@ var BMA;
                 var ret = saveTextAs(content, name + '.' + extension);
             };
             return ExportService;
-        }());
+        })();
         UIDrivers.ExportService = ExportService;
         var LoadingWaitScreen = (function () {
             function LoadingWaitScreen(bannerDiv) {
@@ -6077,7 +6085,7 @@ var BMA;
                 this.bannerDiv.hide();
             };
             return LoadingWaitScreen;
-        }());
+        })();
         UIDrivers.LoadingWaitScreen = LoadingWaitScreen;
         var DrawingSurfaceDragnDropExtender = (function () {
             function DrawingSurfaceDragnDropExtender(drawingSurface, popup) {
@@ -6100,7 +6108,7 @@ var BMA;
                 return isInsidePopup;
             };
             return DrawingSurfaceDragnDropExtender;
-        }());
+        })();
         UIDrivers.DrawingSurfaceDragnDropExtender = DrawingSurfaceDragnDropExtender;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
@@ -6125,7 +6133,7 @@ var BMA;
                 //this.keyframe.ltlstatesviewer('removePart', items);
             };
             return KeyframesExpandedViewer;
-        }());
+        })();
         UIDrivers.KeyframesExpandedViewer = KeyframesExpandedViewer;
         var LTLViewer = (function () {
             function LTLViewer(accordion, ltlviewer) {
@@ -6200,7 +6208,7 @@ var BMA;
                 this.accordion.bmaaccordion({ contentLoaded: { ind: "#icon3", val: true } });
             };
             return LTLViewer;
-        }());
+        })();
         UIDrivers.LTLViewer = LTLViewer;
         var TemporalPropertiesEditorDriver = (function () {
             function TemporalPropertiesEditorDriver(commands, popupWindow) {
@@ -6304,7 +6312,7 @@ var BMA;
                 }
             };
             return TemporalPropertiesEditorDriver;
-        }());
+        })();
         UIDrivers.TemporalPropertiesEditorDriver = TemporalPropertiesEditorDriver;
         var StatesViewerDriver = (function () {
             function StatesViewerDriver(statesViewer) {
@@ -6376,7 +6384,7 @@ var BMA;
                 }
             };
             return StatesViewerDriver;
-        }());
+        })();
         UIDrivers.StatesViewerDriver = StatesViewerDriver;
         var StatesEditorDriver = (function () {
             function StatesEditorDriver(commands, popupWindow) {
@@ -6566,7 +6574,7 @@ var BMA;
                 }
             };
             return StatesEditorDriver;
-        }());
+        })();
         UIDrivers.StatesEditorDriver = StatesEditorDriver;
         var TemporalPropertiesViewer = (function () {
             function TemporalPropertiesViewer(tpviewer) {
@@ -6579,7 +6587,7 @@ var BMA;
                 this.tpviewer.temporalpropertiesviewer("refresh");
             };
             return TemporalPropertiesViewer;
-        }());
+        })();
         UIDrivers.TemporalPropertiesViewer = TemporalPropertiesViewer;
         var LTLResultsViewerFactory = (function () {
             function LTLResultsViewerFactory() {
@@ -6588,7 +6596,7 @@ var BMA;
                 return new LTLResultsCompactViewer(div);
             };
             return LTLResultsViewerFactory;
-        }());
+        })();
         UIDrivers.LTLResultsViewerFactory = LTLResultsViewerFactory;
         var LTLResultsCompactViewer = (function () {
             function LTLResultsCompactViewer(compactltlresult) {
@@ -6699,7 +6707,7 @@ var BMA;
                 this.compactltlresult.empty();
             };
             return LTLResultsCompactViewer;
-        }());
+        })();
         UIDrivers.LTLResultsCompactViewer = LTLResultsCompactViewer;
         var LTLResultsViewer = (function () {
             function LTLResultsViewer(commands, popupWindow) {
@@ -7000,7 +7008,7 @@ var BMA;
                 }
             };
             return LTLResultsViewer;
-        }());
+        })();
         UIDrivers.LTLResultsViewer = LTLResultsViewer;
     })(UIDrivers = BMA.UIDrivers || (BMA.UIDrivers = {}));
 })(BMA || (BMA = {}));
@@ -7096,7 +7104,7 @@ var BMA;
                 configurable: true
             });
             return UndoRedoPresenter;
-        }());
+        })();
         Presenters.UndoRedoPresenter = UndoRedoPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -8406,7 +8414,7 @@ var BMA;
                 return $(this.svg.toSVG()).children();
             };
             return DesignSurfacePresenter;
-        }());
+        })();
         Presenters.DesignSurfacePresenter = DesignSurfacePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -8764,7 +8772,7 @@ var BMA;
                 return container;
             };
             return ProofPresenter;
-        }());
+        })();
         Presenters.ProofPresenter = ProofPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -9124,7 +9132,7 @@ var BMA;
                 return data;
             };
             return SimulationPresenter;
-        }());
+        })();
         Presenters.SimulationPresenter = SimulationPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -9254,7 +9262,7 @@ var BMA;
                 });
             }
             return ModelStoragePresenter;
-        }());
+        })();
         Presenters.ModelStoragePresenter = ModelStoragePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -9293,7 +9301,7 @@ var BMA;
                 });
             }
             return FormulaValidationPresenter;
-        }());
+        })();
         Presenters.FormulaValidationPresenter = FormulaValidationPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -9542,7 +9550,7 @@ var BMA;
                 return parse;
             };
             return FurtherTestingPresenter;
-        }());
+        })();
         Presenters.FurtherTestingPresenter = FurtherTestingPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -9645,7 +9653,7 @@ var BMA;
                 window.Commands.Execute("LocalStorageChanged", {});
             }
             return LocalStoragePresenter;
-        }());
+        })();
         Presenters.LocalStoragePresenter = LocalStoragePresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -9744,7 +9752,7 @@ var BMA;
             };
         };
         return SessionLog;
-    }());
+    })();
     BMA.SessionLog = SessionLog;
 })(BMA || (BMA = {}));
 //# sourceMappingURL=UserLog.js.map
@@ -10638,7 +10646,8 @@ var BMA;
     $.widget("BMA.containernameeditor", {
         options: {
             name: "name",
-            oneditorclosing: undefined
+            oneditorclosing: undefined,
+            placeholder: "Container Name"
         },
         _create: function () {
             var that = this;
@@ -10656,7 +10665,7 @@ var BMA;
             this.name = $('<input>')
                 .attr("type", "text")
                 .attr("size", 15)
-                .attr("placeholder", "Container Name")
+                .attr("placeholder", this.options.placeholder)
                 .appendTo(that.element);
             this.name.bind("input change", function () {
                 that.options.name = that.name.val();
@@ -10669,6 +10678,9 @@ var BMA;
             if (key === "name") {
                 this.options.name = value;
                 this.name.val(value);
+            }
+            else if (key === "placeholder") {
+                this.name.attr("placeholder", value);
             }
             $.Widget.prototype._setOption.apply(this, arguments);
             this._super("_setOption", key, value);
@@ -13073,6 +13085,24 @@ jQuery.fn.extend({
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("Variables<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
             this._refreshStates();
+            //Adding pre-defined states
+            var conststates = $("<div></div>").addClass("state-buttons").width(60).html("&nbsp;<br>").appendTo(toolbar);
+            var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
+            var state = $("<div></div>")
+                .addClass("state-button")
+                .attr("data-state", "ConstantValue")
+                .css("z-index", 6)
+                .css("cursor", "pointer")
+                .text("123...")
+                .css("font-size", "10px")
+                .appendTo(statesbtns);
+            state.draggable({
+                helper: "clone",
+                cursorAt: { left: 0, top: 0 },
+                opacity: 0.4,
+                cursor: "pointer",
+                start: function (event, ui) { }
+            });
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             operators.width(350);
@@ -13092,7 +13122,6 @@ jQuery.fn.extend({
                 var operator = operatorsArr[i];
                 var opDiv = $("<div></div>")
                     .addClass("operator")
-                    .addClass("ltl-tp-droppable")
                     .attr("data-operator", operator.Name)
                     .css("z-index", 6)
                     .css("cursor", "pointer")
@@ -13147,7 +13176,7 @@ jQuery.fn.extend({
             });
             */
             //Adding drawing surface
-            var svgDiv = $("<div></div>").css("background-color", "white").height(200).width("100%").appendTo(leftContainer);
+            var svgDiv = $("<div></div>").css("background-color", "white").css("position", "relative").height(200).width("100%").appendTo(leftContainer);
             that.svgDiv = svgDiv;
             var pixofs = 0;
             svgDiv.svg({
@@ -13311,7 +13340,13 @@ jQuery.fn.extend({
                     }
                     else if (ui.draggable.attr("data-state") !== undefined) {
                         //New variable is dropped
-                        var kf = new BMA.LTLOperations.NameOperand(ui.draggable.attr("data-state"), undefined); //new BMA.LTLOperations.Keyframe(ui.draggable.attr("data-state"), "", [  ]);
+                        var kf = undefined;
+                        if (ui.draggable.attr("data-state") === "ConstantValue") {
+                            kf = new BMA.LTLOperations.ConstOperand(0);
+                        }
+                        else {
+                            kf = new BMA.LTLOperations.NameOperand(ui.draggable.attr("data-state"), undefined);
+                        }
                         var opL = that.operationLayout;
                         if (opL !== undefined) {
                             var parentOffset = $(this).offset();
@@ -13426,6 +13461,36 @@ jQuery.fn.extend({
                 drop: function (arg, ui) {
                     opToDrag = undefined;
                     draggableDiv.attr("data-dragsource", undefined);
+                }
+            });
+            var editor = $("<div></div>").css("position", "absolute").css("background-color", "white").css("z-index", 1).addClass("window").addClass("container-name").appendTo(svgDiv);
+            editor.click(function (arg) { arg.stopPropagation(); });
+            editor.containernameeditor({ placeholder: "Enter number", name: "NaN" });
+            editor.hide();
+            svgDiv.click(function (arg) {
+                var opL = that.operationLayout;
+                if (opL === undefined)
+                    return;
+                var parentOffset = $(this).offset();
+                var relX = arg.pageX - parentOffset.left;
+                var relY = arg.pageY - parentOffset.top;
+                var svgCoords = that._getSVGCoords(relX, relY);
+                var pickedOp = opL.PickOperation(svgCoords.x, svgCoords.y);
+                if (pickedOp !== undefined && pickedOp.operation instanceof BMA.LTLOperations.ConstOperand) {
+                    var screenCoords = that._getScreenCoords(pickedOp.position.x, pickedOp.position.y);
+                    editor.containernameeditor({
+                        name: pickedOp.operation.Value, oneditorclosing: function () {
+                            var value = parseFloat(editor.containernameeditor('option', 'name'));
+                            if (!isNaN(value)) {
+                                //Updating value of constant
+                                pickedOp.parentoperation.operands[pickedOp.parentoperationindex] = new BMA.LTLOperations.ConstOperand(value);
+                                that._refresh();
+                            }
+                        }
+                    })
+                        .css("top", screenCoords.y)
+                        .css("left", screenCoords.x)
+                        .show();
                 }
             });
             /*
@@ -13548,6 +13613,26 @@ jQuery.fn.extend({
                 y: svgY
             };
         },
+        _getScreenCoords: function (svgX, svgY) {
+            var bbox = this.operationLayout.BoundingBox;
+            var aspect = this.svgDiv.width() / this.svgDiv.height();
+            var width = bbox.width + 20;
+            var height = width / aspect;
+            if (height < bbox.height + 20) {
+                height = bbox.height + 20;
+                width = height * aspect;
+            }
+            var bboxx = -width / 2;
+            var bboxy = -height / 2;
+            //var svgX = width * x / this.svgDiv.width() + bboxx;
+            //var svgY = height * y / this.svgDiv.height() + bboxy;
+            var x = (svgX - bboxx) * this.svgDiv.width() / width;
+            var y = (svgY - bboxy) * this.svgDiv.height() / height;
+            return {
+                x: x,
+                y: y
+            };
+        },
         _refresh: function () {
             var that = this;
             if (that._svg === undefined)
@@ -13576,6 +13661,33 @@ jQuery.fn.extend({
                 }
             }
         },
+        //_addCustomState: function (statesbtns: JQuery, name, description, content: string) {
+        //    var that = this;
+        //    var state = $("<div></div>")
+        //        .addClass("state-button")
+        //        .attr("data-state", name)
+        //        .css("z-index", 6)
+        //        .css("cursor", "pointer")
+        //        .text(content)
+        //        .appendTo(statesbtns);
+        //    /*
+        //    state.statetooltip({
+        //        state: {
+        //            description: description, formula: undefined
+        //        }
+        //    });
+        //    */
+        //    state.draggable({
+        //        helper: "clone",
+        //        cursorAt: { left: 0, top: 0 },
+        //        opacity: 0.4,
+        //        cursor: "pointer",
+        //        start: function (event, ui) {
+        //            //that._executeCommand("AddStateSelect", $(this).attr("data-state"));
+        //        }
+        //    });
+        //    return state;
+        //},
         _setOption: function (key, value) {
             var that = this;
             var needRefreshStates = false;
@@ -16829,7 +16941,7 @@ var BMA;
                 return csv;
             };
             return LTLPresenter;
-        }());
+        })();
         Presenters.LTLPresenter = LTLPresenter;
     })(Presenters = BMA.Presenters || (BMA.Presenters = {}));
 })(BMA || (BMA = {}));
@@ -16894,7 +17006,7 @@ var BMA;
                 }
             };
             return StatesPresenter;
-        }());
+        })();
         LTL.StatesPresenter = StatesPresenter;
     })(LTL = BMA.LTL || (BMA.LTL = {}));
 })(BMA || (BMA = {}));
@@ -18155,7 +18267,7 @@ var BMA;
                 that.OnOperationsChanged(false, false);
             };
             return TemporalPropertiesPresenter;
-        }());
+        })();
         LTL.TemporalPropertiesPresenter = TemporalPropertiesPresenter;
     })(LTL = BMA.LTL || (BMA.LTL = {}));
 })(BMA || (BMA = {}));
@@ -18253,7 +18365,7 @@ var BMA;
                 return undefined;
             };
             return OperatorsRegistry;
-        }());
+        })();
         LTLOperations.OperatorsRegistry = OperatorsRegistry;
     })(LTLOperations = BMA.LTLOperations || (BMA.LTLOperations = {}));
 })(BMA || (BMA = {}));

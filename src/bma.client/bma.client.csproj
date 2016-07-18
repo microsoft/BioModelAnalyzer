@@ -126,7 +126,6 @@
     <Content Include="html\FormulaEditorSample.html" />
     <Content Include="html\LRATestingPage.html" />
     <Content Include="html\LayoutSample.html" />
-    <Content Include="html\TargetFunctionParserSample.html" />
     <Content Include="html\LTLFormulaViewSample.html" />
     <Content Include="html\LTLResultsCompactViewerSample.html" />
     <Content Include="html\LTLFormulaParserSample.html" />

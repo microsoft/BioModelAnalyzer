@@ -79,7 +79,7 @@
                     $("<div></div>").addClass("hole").appendTo(opDiv);
                     spaceStr = "";
                 }
-                
+
                 var opStr = operator.Name;
                 if (opStr === "+" || opStr === "+" || opStr === "+" || opStr === "+") {
                     opStr = "&nbsp;" + opStr + "&nbsp;";
@@ -152,7 +152,7 @@
             svgDiv.mousemove(function (arg) {
                 if (that.operationLayout !== undefined && that.operationLayout.IsVisible) {
                     var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
-                    var parentOffset = $(this).offset(); 
+                    var parentOffset = $(this).offset();
                     var relX = arg.pageX - parentOffset.left;
                     var relY = arg.pageY - parentOffset.top;
                     var svgCoords = that._getSVGCoords(relX, relY);
@@ -431,14 +431,14 @@
                             padding: padding,
                             keyFrameSize: keyFrameSize,
                             stroke: "black",
-                            fill: "white", 
+                            fill: "white",
                             isRoot: true,
                             strokeWidth: 1,
                             borderThickness: 1
                         });
 
                         that._refresh();
-                    } 
+                    }
                 },
                 drag: function (arg, ui) {
                     return opToDrag !== undefined;
@@ -460,15 +460,15 @@
             editor.hide();
 
             svgDiv.click(function (arg) {
-                        var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+                var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
 
                 if (opL === undefined)
                     return;
 
-                            var parentOffset = $(this).offset();
-                            var relX = arg.pageX - parentOffset.left;
-                            var relY = arg.pageY - parentOffset.top;
-                            var svgCoords = that._getSVGCoords(relX, relY);
+                var parentOffset = $(this).offset();
+                var relX = arg.pageX - parentOffset.left;
+                var relY = arg.pageY - parentOffset.top;
+                var svgCoords = that._getSVGCoords(relX, relY);
                 var pickedOp = opL.PickOperation(svgCoords.x, svgCoords.y);
 
 
@@ -481,30 +481,14 @@
                             if (!isNaN(value)) {
                                 //Updating value of constant
                                 pickedOp.parentoperation.operands[pickedOp.parentoperationindex] = new BMA.LTLOperations.ConstOperand(value);
-                        that._refresh();
-                        } else {
-                            opToDrag.parentoperation.Operands[opToDrag.parentoperationindex] = opToDrag.operation;
+                                that._refresh();
+                            }
                         }
-                    }
-                        }})
+                    })
                         .css("top", screenCoords.y)
                         .css("left", screenCoords.x)
                         .show();
                 }
-
-                        canvas.width = scale.x * opSize.width + 2 * padding.x;
-                        canvas.height = scale.y * opSize.height + 2 * padding.y;
-
-                        var opPosition = { x: scale.x * opSize.width / 2 + padding.x, y: padding.y + Math.floor(scale.y * opSize.height / 2) };
-
-                        BMA.LTLOperations.RenderOperation(canvas, opToDrag.operation, opPosition, scale, {
-                            padding: padding,
-                            keyFrameSize: keyFrameSize,
-                            stroke: "black",
-                            fill: "white",
-                            isRoot: true,
-                            strokeWidth: 1,
-                            borderThickness: 1
             });
 
             /*
@@ -513,7 +497,7 @@
                 holdX: 0,
                 holdY: 0
             };
-
+            
             $(document).on('vmousedown', function (event) {
                 holdCords.holdX = event.pageX;
                 holdCords.holdY = event.pageY;
@@ -587,7 +571,7 @@
                         //that._executeCommand("AddStateSelect", $(this).attr("data-state"));
                     }
 
-            });
+                });
 
                 //stateDiv.statetooltip({ state: stateTooltip });
             }
@@ -613,8 +597,8 @@
                 default:
                     break;
             }
-            
-            this._refresh();  
+
+            this._refresh();
         },
 
         _getSVGCoords: function (x, y) {
