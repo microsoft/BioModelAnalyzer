@@ -14,7 +14,8 @@
             states: [],
             drawingSurfaceHeight: "calc(100% - 113px - 30px)",
             onfittoview: undefined,
-            onaddstaterequested: undefined
+            onaddstaterequested: undefined,
+            oneditformula: undefined,
         },
 
         _refreshStates: function () {
@@ -259,6 +260,20 @@
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dropzonescnt);
             dropzones.width("100%");
 
+            this.editFormulaCnt = $("<div></div>").css("position", "absolute").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).css("top", 10).prependTo(dom.host).hide();
+            this.editFormulaCnt.width("80%");
+
+            this.editFormula = $("<input value='Edit Formula' >").appendTo(this.editFormulaCnt);
+            this.editFormula.width("80%");
+
+            var editFormulaBtn = $("<div></div>").css("background", "url('../images/check.png') no-repeat center").appendTo(this.editFormulaCnt)
+                .css("height", "20px").css("width", "20px").css("margin-left", 10).css("display", "inline-block")
+                .click(function () {
+                    if (that.options.oneditformula !== undefined) {
+                        that.options.oneditformula(that.editFormula.val());
+                    }
+            });
+
             /*
             this.copyzone = $("<div></div>").addClass("dropzone copy").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dropzones);
             this.copyzone.width("calc(50% - 15px - 3px)");
@@ -317,7 +332,8 @@
                     { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
                     { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
-                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" } ] },
+                    { title: "Edit as text", cmd: "EditAsText", },
+                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }, { title: "extended text", cmd: "ExportAsTextExtended" } ] },
                     { title: "Import from", cmd: "Import", uiIcon: "ui-icon-import", children: [{ title: "json", cmd: "ImportAsJson" }, { title: "text", cmd: "ImportAsText" }] },
                 ],
                 beforeOpen: function (event, ui) {
@@ -498,7 +514,16 @@
 
         updateLayout: function () {
             this._drawingSurface.drawingsurface("updateLayout");
-        }
+        },
+
+        showFormulaEditor: function (formula) {
+            this.editFormula.val(formula);
+            this.editFormulaCnt.show();//.removeClass("hidden");
+        },
+
+        hideFormulaEditor: function () {
+            this.editFormulaCnt.hide();//.addClass("hidden");
+        },
 
     });
 } (jQuery));
