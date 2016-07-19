@@ -166,6 +166,7 @@ src/bma.client/test/**/*.map
 src/bma.client/test/**/*.html
 src/bma.client/*.js
 src/bma.client/*.js.map
+src/bma.client/css/bma.css
 !src/bma.client/Silverlight.js
 !src/bma.client/css/js/*.js
 src/bma.package/script/**/*.js
@@ -175,4 +176,5 @@ src/bma.package/test/**/*.map
 src/bma.package/test/**/*.html
 src/bma.package/*.js
 src/bma.package/*.js.map
+src/bma.package/css/bma.css
 !src/bma.package/Gruntfile.js
