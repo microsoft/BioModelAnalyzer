@@ -13107,17 +13107,22 @@ jQuery.fn.extend({
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             operators.width(350);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
-            var operatorsArr = [
-                { Name: "+", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
-                { Name: "-", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
-                { Name: "*", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
-                { Name: "/", OperandsCount: 2, isFunction: false },
-                { Name: "AVG", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
-                { Name: "MIN", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
-                { Name: "MAX", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
-                { Name: "CEIL", OperandsCount: 1, isFunction: false },
-                { Name: "FLOOR", OperandsCount: 1, isFunction: false },
+            var operatorsToUse = [
+                "+",
+                "-",
+                "*",
+                "/",
+                "AVG",
+                "MIN",
+                "MAX",
+                "CEIL",
+                "FLOOR",
             ];
+            var registry = new BMA.LTLOperations.OperatorsRegistry();
+            var operatorsArr = [];
+            for (var i = 0; i < operatorsToUse.length; i++) {
+                operatorsArr.push(registry.GetOperatorByName(operatorsToUse[i]));
+            }
             for (var i = 0; i < operatorsArr.length; i++) {
                 var operator = operatorsArr[i];
                 var opDiv = $("<div></div>")
@@ -16029,6 +16034,35 @@ jQuery.fn.extend({
             });
             return state;
         },
+        _createOperatorsPanel: function (panel, operators) {
+            var that = this;
+            for (var i = 0; i < operators.length; i++) {
+                var operator = operators[i];
+                var opDiv = $("<div></div>")
+                    .addClass("operator")
+                    .addClass("ltl-tp-droppable")
+                    .attr("data-operator", operator.Name)
+                    .css("z-index", 6)
+                    .css("cursor", "pointer")
+                    .appendTo(panel);
+                var spaceStr = "&nbsp;&nbsp;";
+                if (operator.OperandsCount > 1) {
+                    $("<div></div>").addClass("hole").appendTo(opDiv);
+                    spaceStr = "";
+                }
+                var label = $("<div></div>").addClass("label").html(spaceStr + operator.Name).appendTo(opDiv);
+                $("<div></div>").addClass("hole").appendTo(opDiv);
+                opDiv.draggable({
+                    helper: "clone",
+                    cursorAt: { left: 0, top: 0 },
+                    opacity: 0.4,
+                    cursor: "pointer",
+                    start: function (event, ui) {
+                        that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
+                    }
+                });
+            }
+        },
         _create: function () {
             var _this = this;
             var that = this;
@@ -16051,37 +16085,33 @@ jQuery.fn.extend({
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
+            var basicOperatorsToUse = [
+                'AND',
+                'OR',
+                'IMPLIES',
+                'NOT',
+                'NEXT',
+                'ALWAYS',
+                'EVENTUALLY',
+                'UPTO'
+            ];
+            var advancedOperatorsToUse = [
+                'WEAKUNTIL',
+                'UNTIL',
+                'RELEASE'
+            ];
             var registry = new BMA.LTLOperations.OperatorsRegistry();
-            for (var i = 0; i < registry.Operators.length; i++) {
-                var operator = registry.Operators[i];
-                var opDiv = $("<div></div>")
-                    .addClass("operator")
-                    .addClass("ltl-tp-droppable")
-                    .attr("data-operator", operator.Name)
-                    .css("z-index", 6)
-                    .css("cursor", "pointer")
-                    .appendTo(operatorsDiv);
-                var spaceStr = "&nbsp;&nbsp;";
-                if (operator.OperandsCount > 1) {
-                    $("<div></div>").addClass("hole").appendTo(opDiv);
-                    spaceStr = "";
-                }
-                var label = $("<div></div>").addClass("label").html(spaceStr + operator.Name).appendTo(opDiv);
-                $("<div></div>").addClass("hole").appendTo(opDiv);
-                opDiv.draggable({
-                    helper: "clone",
-                    cursorAt: { left: 0, top: 0 },
-                    opacity: 0.4,
-                    cursor: "pointer",
-                    start: function (event, ui) {
-                        that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
-                    }
-                });
-                //Separating advanced operators
-                if (i === registry.Operators.length - 4) {
-                    $("<br\>").appendTo(operatorsDiv);
-                }
+            var basicOperators = [];
+            for (var i = 0; i < basicOperatorsToUse.length; i++) {
+                basicOperators.push(registry.GetOperatorByName(basicOperatorsToUse[i]));
             }
+            var advancedOperators = [];
+            for (var i = 0; i < advancedOperatorsToUse.length; i++) {
+                advancedOperators.push(registry.GetOperatorByName(advancedOperatorsToUse[i]));
+            }
+            that._createOperatorsPanel(operatorsDiv, basicOperators);
+            $("<br\>").appendTo(operatorsDiv);
+            that._createOperatorsPanel(operatorsDiv, advancedOperators);
             //Adding operators toggle basic/advanced
             var toggle = $("<div></div>").addClass("toggle").width(60).attr("align", "right").text("Advanced").appendTo(toolbar);
             toggle.click(function (args) {
@@ -18323,6 +18353,7 @@ var BMA;
                         return f;
                     };
                 };
+                //Temporal Properties editor operators
                 this.operators.push(new LTLOperations.Operator('AND', 2, formulacreator('And')));
                 this.operators.push(new LTLOperations.Operator('OR', 2, formulacreator('Or')));
                 this.operators.push(new LTLOperations.Operator('IMPLIES', 2, formulacreator('Implies')));
@@ -18334,21 +18365,16 @@ var BMA;
                 this.operators.push(new LTLOperations.Operator('WEAKUNTIL', 2, formulacreator('Weakuntil')));
                 this.operators.push(new LTLOperations.Operator('UNTIL', 2, formulacreator('Until')));
                 this.operators.push(new LTLOperations.Operator('RELEASE', 2, formulacreator('Release')));
-                /*
-                //Target Function Editor operators
-
-                this.operators.push(new Operator('AVG', Number.POSITIVE_INFINITY, functionformulacreator('avg')));
-                this.operators.push(new Operator('MIN', Number.POSITIVE_INFINITY, functionformulacreator('min')));
-                this.operators.push(new Operator('MAX', Number.POSITIVE_INFINITY, functionformulacreator('max')));
-
-                this.operators.push(new Operator('CEIL', 1, formulacreator('ceil')));
-                this.operators.push(new Operator('FLOOR', 1, formulacreator('floor')));
-
-                this.operators.push(new Operator('/', 2, operatorformulacreator('/')));
-                this.operators.push(new Operator('*', Number.POSITIVE_INFINITY, operatorformulacreator('*')));
-                this.operators.push(new Operator('+', Number.POSITIVE_INFINITY, operatorformulacreator('+')));
-                this.operators.push(new Operator('-', Number.POSITIVE_INFINITY, operatorformulacreator('-')));
-                */
+                //Target Function editor operators
+                this.operators.push(new LTLOperations.Operator('AVG', Number.POSITIVE_INFINITY, functionformulacreator('avg'), true));
+                this.operators.push(new LTLOperations.Operator('MIN', Number.POSITIVE_INFINITY, functionformulacreator('min'), true));
+                this.operators.push(new LTLOperations.Operator('MAX', Number.POSITIVE_INFINITY, functionformulacreator('max'), true));
+                this.operators.push(new LTLOperations.Operator('CEIL', 1, formulacreator('ceil'), true));
+                this.operators.push(new LTLOperations.Operator('FLOOR', 1, formulacreator('floor'), true));
+                this.operators.push(new LTLOperations.Operator('/', 2, operatorformulacreator('/'), false));
+                this.operators.push(new LTLOperations.Operator('*', Number.POSITIVE_INFINITY, operatorformulacreator('*'), false));
+                this.operators.push(new LTLOperations.Operator('+', Number.POSITIVE_INFINITY, operatorformulacreator('+'), false));
+                this.operators.push(new LTLOperations.Operator('-', Number.POSITIVE_INFINITY, operatorformulacreator('-'), false));
             }
             Object.defineProperty(OperatorsRegistry.prototype, "Operators", {
                 get: function () {
