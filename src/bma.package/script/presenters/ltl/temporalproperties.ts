@@ -166,7 +166,7 @@ module BMA {
 
                             var op = new BMA.LTLOperations.Operation();
                             op.Operator = registry.GetOperatorByName(that.elementToAdd.name);
-                            op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
+                            op.Operands = op.Operator.MinOperandsCount > 1 ? [undefined, undefined] : [undefined];
 
 
                             if (operation !== undefined) {

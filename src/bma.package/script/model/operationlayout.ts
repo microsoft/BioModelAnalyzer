@@ -482,6 +482,9 @@
                     svg.remove(this.renderGroup);
                 }
 
+                //Optimizing operation, removing unnecessary empty slots, etc.
+                this.OptimizeOperation();
+
                 this.layout = CreateLayout(this.operation, (name, fontSize) => { return that.GetOperatorWidth(that.svg, name, fontSize).width; }, this.padding, this.keyFrameSize); //this.CreateLayout(svg, this.operation);
                 this.position = position;
                 this.SetPositionOffsets(this.layout, position);
@@ -509,6 +512,37 @@
                     strokeWidth: 1,
                     isRoot: true,
                 });
+            }
+
+            private OptimizeOperation() {
+                this.OptimizeOperand(this.operation);
+            }
+
+            private OptimizeOperand(operand: IOperand) {
+                if (operand instanceof Operation) {
+                    var operation = <Operation>operand;
+                    var optimizedOperands = [];
+                    var foundNonUndefined = false;
+                    for (var i = operation.Operands.length - 1; i >= 0; i--) {
+                        var op = operation.Operands[i];
+                        this.OptimizeOperand(op);
+                        if (foundNonUndefined) {
+                            optimizedOperands.push(op);
+                        } else {
+                            if (op !== undefined) {
+                                optimizedOperands.push(op);
+                                foundNonUndefined = true;
+                            } else if (i < operation.Operator.MinOperandsCount) {
+                                optimizedOperands.push(op);
+                            }
+                        }
+                    }
+
+                    operation.Operands = [];
+                    for (var i = optimizedOperands.length - 1; i >= 0; i--) {
+                        operation.Operands.push(optimizedOperands[i]);
+                    }
+                }
             }
 
             private Clear() {

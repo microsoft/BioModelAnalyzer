@@ -142,7 +142,7 @@
                     .appendTo(panel);
 
                 var spaceStr = "&nbsp;&nbsp;";
-                if (operator.OperandsCount > 1) {
+                if (operator.MinOperandsCount > 1) {
                     $("<div></div>").addClass("hole").appendTo(opDiv);
                     spaceStr = "";
                 }
