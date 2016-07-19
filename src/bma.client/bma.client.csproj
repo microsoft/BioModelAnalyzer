@@ -134,6 +134,7 @@
     <Content Include="html\StatesEditorSample.html" />
     <Content Include="html\LTLResultsViewerSample.html" />
     <Content Include="html\StateTooltipSample.html" />
+    <Content Include="html\TargetFunctionParserSample.html" />
     <Content Include="html\WidgetsSample.html" />
     <Content Include="html\SVGPlotSample.html" />
     <Content Include="images\1x1.svg" />
