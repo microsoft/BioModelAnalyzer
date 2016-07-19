@@ -78,8 +78,8 @@
 
         _create: function () {
             var that = this;
-            this.element.addClass("variable-editor");
-            this.element.draggable({ containment: "parent", scroll: false });
+            this.operatorsregistry = new BMA.LTLOperations.OperatorsRegistry();
+            //this.element.draggable({ containment: "parent", scroll: false });
             this._appendInputs();
             this._processExpandingContent();
             this._bindExpanding();
@@ -139,8 +139,7 @@
                     );
                     if (ind !== 0) {
                         item.click(function () {
-                            var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
-                            that._InsertToFormula(about);
+                            that._InsertToFormula($(this).text().toLowerCase() + "(" + ")", $(this).text().length + 1);
                         })
                     }
                 });
@@ -155,8 +154,8 @@
                         function () { that._OffHoverFunction($(this).children("button"), that.infoTextArea) }
                     );
                     item.click(function () {
-                        var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
-                        that._InsertToFormula(about);
+                        var about = that.operatorsregistry.GetOperatorByName($(this).text().toUpperCase());
+                        that._InsertToFormula(" " + about.Name.toLowerCase() + " ", about.Name.length + 2);
                     })
                 });
 
@@ -170,8 +169,8 @@
                         function () { that._OffHoverFunction($(this).children("button"), that.infoTextArea) }
                     );
                     item.click(function () {
-                        var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
-                        that._InsertToFormula(about);
+                        var about = that.operatorsregistry.GetOperatorByName($(this).text().toUpperCase());
+                        that._InsertToFormula(about.Name.toLowerCase() + "(" + (about.OperandsCount > 1 ? ",": "") + ")", about.Name.length + 1);
                     })
                 });
 
@@ -213,18 +212,18 @@
             textarea.text("");
         },
 
-        _InsertToFormula: function (item: BMA.Functions.BMAFunction) {
-            var caret = this.getCaretPos(this.formulaTextArea) + item.Offset;
-            this.formulaTextArea.insertAtCaret(item.InsertText).change();
+        _InsertToFormula: function (name, offset) {
+            var caret = this.getCaretPos(this.formulaTextArea) + offset;// + item.Offset;
+            this.formulaTextArea.insertAtCaret(name).change();
             this.formulaTextArea[0].setSelectionRange(caret, caret);
         },
 
         _refreshText: function (selected: JQuery, div: JQuery) {
             var that = this;
             div.empty();
-            var fun = window.FunctionsRegistry.GetFunctionByName(selected.text());
-            $('<h3></h3>').text(fun.Head).appendTo(div);
-            $('<p></p>').text(fun.About).appendTo(div);
+            //var fun = that.operatorsregistry.GetOperatorByName(selected.text());
+            //$('<h3></h3>').text(fun.Head).appendTo(div);
+            //$('<p></p>').text(fun.About).appendTo(div);
         },
 
         _bindExpanding: function () {

@@ -662,6 +662,91 @@ module BMA {
                     }
                 });
 
+                variableEditorDriver.SetOnVariableEditedCallback(() = {
+                        if (that.editingId !== undefined) {
+                            var model = this.undoRedoPresenter.Current.model;//add editingmodel
+                            var layout = this.undoRedoPresenter.Current.layout;
+                            var variables = model.Variables;
+                            var editingVariableIndex = -1;
+                            for (var i = 0; i < variables.length; i++) {
+                                if (variables[i].Id === that.editingId) {
+                                    editingVariableIndex = i;
+                                    break;
+                                }
+                            }
+                            if (editingVariableIndex !== -1) {
+                                var params = that.variableEditor.GetVariableProperties();
+                                //model.SetVariableProperties(variables[i].Id, params.name, params.rangeFrom, params.rangeTo, params.formula);//to editingmodel
+                                var newVariables = [];
+                                var newVariablesLayout = [];
+                                var newRelations = [];
+                                for (var j = 0; j < model.Variables.length; j++) {
+                                    if (model.Variables[j].Id === variables[i].Id) {
+                                        newVariables.push(new BMA.Model.Variable(
+                                            model.Variables[j].Id,
+                                            model.Variables[j].ContainerId,
+                                            model.Variables[j].Type,
+                                            params.name === undefined ? model.Variables[j].Name : params.name,
+                                            isNaN(params.rangeFrom) ? model.Variables[j].RangeFrom : params.rangeFrom,
+                                            isNaN(params.rangeTo) ? model.Variables[j].RangeTo : params.rangeTo,
+                                            params.formula === undefined ? model.Variables[j].Formula : params.formula)
+                                        );
+
+                                    } else {
+                                        newVariables.push(new BMA.Model.Variable(
+                                            model.Variables[j].Id,
+                                            model.Variables[j].ContainerId,
+                                            model.Variables[j].Type,
+                                            model.Variables[j].Name,
+                                            model.Variables[j].RangeFrom,
+                                            model.Variables[j].RangeTo,
+                                            model.Variables[j].Formula)
+                                        );
+                                    }
+                                }
+
+                                for (var j = 0; j < model.Relationships.length; j++) {
+                                    newRelations.push(new BMA.Model.Relationship(
+                                        model.Relationships[j].Id,
+                                        model.Relationships[j].FromVariableId,
+                                        model.Relationships[j].ToVariableId,
+                                        model.Relationships[j].Type)
+                                    );
+                                }
+
+                                for (var j = 0; j < layout.Variables.length; j++) {
+                                    newVariablesLayout.push(new BMA.Model.VariableLayout(
+                                        layout.Variables[j].Id,
+                                        layout.Variables[j].PositionX,
+                                        layout.Variables[j].PositionY,
+                                        layout.Variables[j].CellX,
+                                        layout.Variables[j].CellY,
+                                        layout.Variables[j].Angle,
+                                        (j == editingVariableIndex && params.TFdescription !== undefined) ?
+                                            params.TFdescription : layout.Variables[j].TFDescription)
+                                    );
+                                }
+
+                                if (!(model.Variables[editingVariableIndex].Name === newVariables[editingVariableIndex].Name
+                                    && model.Variables[editingVariableIndex].RangeFrom === newVariables[editingVariableIndex].RangeFrom
+                                    && model.Variables[editingVariableIndex].RangeTo === newVariables[editingVariableIndex].RangeTo
+                                    && model.Variables[editingVariableIndex].Formula === newVariables[editingVariableIndex].Formula)) {
+                                    that.editingModel = new BMA.Model.BioModel(model.Name, newVariables, newRelations);
+                                    that.variableEditedId = that.editingId;
+                                    that.isVariableEdited = true;
+                                }
+                                if (!(layout.Variables[editingVariableIndex].TFDescription == newVariablesLayout[editingVariableIndex].TFDescription)) {
+                                    that.editingLayout = new BMA.Model.Layout(layout.Containers, newVariablesLayout);
+                                    that.variableEditedId = that.editingId;
+                                    that.isVariableEdited = true;
+                                }
+
+                                that.RefreshOutput(that.editingModel, that.editingLayout);
+                            }
+                        }
+                    });
+                });
+
                 if (containerEditorDriver !== undefined) {
                     containerEditorDriver.SetOnClosingCallback(() => {
                         if (that.isContainerEdited) {

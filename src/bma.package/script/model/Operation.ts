@@ -337,13 +337,15 @@
             private name: string;
             private fun: IGetFormula;
             private operandsNumber: number;
-            private isFunction: boolean
+            private isFunction: boolean;
+            private description: string;
 
-            constructor(name: string, operandsCount: number, fun: IGetFormula, isFunction: boolean = false) {
+            constructor(name: string, operandsCount: number, fun: IGetFormula, isFunction: boolean = false, description: string = undefined) {
                 this.name = name;
                 this.fun = fun;
                 this.operandsNumber = operandsCount;
                 this.isFunction = isFunction;
+                this.description = description;
             }
 
             get IsFunction() {
@@ -360,6 +362,10 @@
 
             get Function() {
                 return this.fun;
+            }
+
+            get Description() {
+                return this.description;
             }
 
             public GetFormula(op: IOperand[]) {
