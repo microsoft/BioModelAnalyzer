@@ -792,12 +792,12 @@
             } else if (operation instanceof BMA.LTLOperations.TrueKeyframe) {
                 op += "True ";
             } else if (operation instanceof BMA.LTLOperations.Operation) {
-                if (operation.Operator.OperandsCount == 2) {
+                if (operation.Operator.MinOperandsCount == 2) {
                     op += (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[0]) == 1 ? "(" + (BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates)).trim() + ") " :
                         BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates)) + operation.Operator.Name.toLowerCase() + " " +
                     (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[1]) ? "(" + BMA.ModelHelper.ConvertOperationToString(operation.Operands[1], extendedStates).trim() + ") " :
                         BMA.ModelHelper.ConvertOperationToString(operation.Operands[1], extendedStates));
-                } else if (operation.Operator.OperandsCount == 1) {
+                } else if (operation.Operator.MinOperandsCount == 1) {
                     op += operation.Operator.Name.toLowerCase() + " " + (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[0]) == 1 ?
                         "(" + BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates).trim() + ") " :
                         BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates));

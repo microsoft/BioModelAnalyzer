@@ -211,7 +211,7 @@
                 }
 
                 //Adding empty slot for operators with flexible operands count
-                if (!isFinite(operator.OperandsCount) && operands[operands.length - 1] !== undefined) {
+                if (!isFinite(operator.MaxOperandsCount) && operands[operands.length - 1] !== undefined) {
                     layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: operands.length });
                     width += (keyFrameSize + paddingX);
                     if (!operator.isFunction) {

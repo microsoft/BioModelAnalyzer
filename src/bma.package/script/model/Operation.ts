@@ -336,14 +336,20 @@
         export class Operator {
             private name: string;
             private fun: IGetFormula;
-            private operandsNumber: number;
+            private minOperandsCount: number;
+            private maxOperandsCount: number;
             private isFunction: boolean;
             private description: string;
 
-            constructor(name: string, operandsCount: number, fun: IGetFormula, isFunction: boolean = false, description: string = undefined) {
+            constructor(name: string, minOperandsCount: number, maxOperandsCount: number = -1, fun: IGetFormula, isFunction: boolean = false, description: string = undefined) {
                 this.name = name;
                 this.fun = fun;
-                this.operandsNumber = operandsCount;
+                this.minOperandsCount = minOperandsCount;
+                if (maxOperandsCount === -1) {
+                    this.maxOperandsCount = minOperandsCount;
+                } else {
+                    this.maxOperandsCount = maxOperandsCount;
+                }
                 this.isFunction = isFunction;
                 this.description = description;
             }
@@ -356,9 +362,14 @@
                 return this.name;
             }
 
-            get OperandsCount() {
-                return this.operandsNumber;
+            get MinOperandsCount() {
+                return this.minOperandsCount;
             }
+
+            get MaxOperandsCount() {
+                return this.maxOperandsCount;
+            }
+
 
             get Function() {
                 return this.fun;
@@ -369,7 +380,7 @@
             }
 
             public GetFormula(op: IOperand[]) {
-                if (op !== undefined && op.length !== this.operandsNumber) {
+                if (op !== undefined && (op.length < this.minOperandsCount || op.length > this.maxOperandsCount)) {
                     throw "Operator " + name + ": invalid operands count";
                 }
                 return this.fun(op);
@@ -408,7 +419,7 @@
                     operands.push(this.operands[i] === undefined ? undefined : this.operands[i].Clone());
                 }
                 var result = new Operation();
-                result.Operator = new Operator(this.operator.Name, this.operator.OperandsCount, this.operator.Function, this.Operator.IsFunction);
+                result.Operator = new Operator(this.operator.Name, this.operator.MinOperandsCount, this.operator.MaxOperandsCount, this.operator.Function, this.Operator.IsFunction);
                 result.Operands = operands;
 
                 return result;

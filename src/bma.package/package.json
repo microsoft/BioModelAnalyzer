@@ -7,6 +7,7 @@
     "bower": "^1.4.1",
     "grunt": "^0.4.5",
     "less": "^2.1.2",
+    "grunt-cli": "^1.2.0",
     "grunt-base64": "^0.1.0",
     "grunt-bower-task": "^0.4.0",
     "grunt-contrib-concat": "^0.5.1",

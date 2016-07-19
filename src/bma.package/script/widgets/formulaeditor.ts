@@ -80,7 +80,7 @@
                     .appendTo(operatorsDiv);
 
                 var spaceStr = "&nbsp;&nbsp;";
-                if (operator.OperandsCount > 1 && !operator.isFunction) {
+                if (operator.MinOperandsCount > 1 && !operator.isFunction) {
                     $("<div></div>").addClass("hole").appendTo(opDiv);
                     spaceStr = "";
                 }
@@ -91,7 +91,7 @@
                 }
                 var label = $("<div></div>").addClass("label").html(spaceStr + opStr).appendTo(opDiv);
                 $("<div></div>").addClass("hole").appendTo(opDiv);
-                if (operator.OperandsCount > 1 && operator.isFunction) {
+                if (operator.MinOperandsCount > 1 && operator.isFunction) {
                     //$("<div>&nbsp;&nbsp;</div>").appendTo(opDiv);
                     $("<div></div>").addClass("hole").appendTo(opDiv);
                 }
@@ -291,12 +291,12 @@
                         var operator = undefined;
                         for (var i = 0; i < operatorsArr.length; i++) {
                             if (operatorsArr[i].Name === ui.draggable.attr("data-operator")) {
-                                op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].OperandsCount, undefined, operatorsArr[i].isFunction);
+                                op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].MinOperandsCount, operatorsArr[i].MaxOperandsCount, undefined, operatorsArr[i].isFunction);
                                 break;
                             }
                         }
                         op.Operands = [];
-                        if (op.Operator.OperandsCount > 1) {
+                        if (op.Operator.MinOperandsCount > 1) {
                             op.Operands.push(undefined);
                             op.Operands.push(undefined);
                         } else {
