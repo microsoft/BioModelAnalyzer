@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Target Function Parser Sample</title>
+    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
+    <link rel="stylesheet" href="../Content/themes/base/jquery.ui.all.css" type="text/css" />
+    <link rel="stylesheet" href="../Content/themes/base/jquery-ui.css" type="text/css" />
+    <link rel="stylesheet" href="../css/jquery.svg.css" type="text/css" />
+    <link rel="stylesheet" href="../css/bma.css" />
+    <script src="../Scripts/jquery-2.1.4.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.11.4.min.js"></script>
+    <script src="../js/jquery.svg.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../Scripts/rx.aggregates.min.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../tool.js"></script>
+    <script src="../js/jquery.ui-contextmenu.js"></script>
+    <script src="../Scripts/targetFuncParser.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
+
+            $("#inp").change(function () {
+                try {
+                    $("#textoutput").text("");
+                    var variables = [
+                        new BMA.Model.Variable(1, 0, "Default", "a", 0, 1, ""),
+                        new BMA.Model.Variable(2, 0, "Default", "b", 0, 1, ""),
+                        new BMA.Model.Variable(3, 0, "Default", "c", 0, 1, ""),
+                        new BMA.Model.Variable(4, 0, "Default", "d", 0, 1, "")
+                    ];
+                    var model = new BMA.Model.BioModel("model1", variables, []);
+                    var parsed = BMA.ModelHelper.ConvertTargetFunctionToOperation($("#inp").val(), model);
+
+                    $("#textoutput").text(JSON.stringify(parsed));
+                } catch (ex) {
+                    $("#textoutput").text(ex);
+                }
+            });
+        });
+
+    </script>
+</head>
+<body style="background-color: white;">
+    <div style="width:450px; height: 250px;">
+        <div id="textbox" style="width:200px;height: 200px;float:left;background-color: aliceblue;">
+            <textarea type="text" id="inp" style="margin:0px;width:190px;height: 190px;border:none; background-color:transparent;">Enter formula</textarea>
+        </div>
+        <div id="textoutput" style="width:200px;height: 200px;float:left;background-color: cornsilk;">
+        </div>
+
+        <div id="svgDiv" style="width:400px;height:250px;"></div>
+    </div>
+</body>
+</html>
