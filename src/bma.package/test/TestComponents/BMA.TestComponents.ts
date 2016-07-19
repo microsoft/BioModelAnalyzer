@@ -188,6 +188,10 @@ module BMA {
             Hide() { }
 
             SetOnClosingCallback(callback: Function) { };
+
+            SetOnVariableEditedCallback(callback: Function) { };
+
+            SetOnFormulaEditedCallback(callback: Function) { };
         }
 
     }

@@ -10,6 +10,7 @@
             operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
             inputs: [],
             isValid: undefined,
+            onvariablechangedcallback: undefined,
             onformulachangedcallback: undefined,
         },
 
@@ -26,7 +27,9 @@
             });
 
             this.formulaTextArea.val(that.options.formula);
-            window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: that._inputsArray() });
+            if (that.options.onformulachangedcallback !== undefined) {
+                this.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
+            }
         },
 
         SetValidation: function (result: boolean, message: string) {
@@ -230,9 +233,11 @@
             var that = this;
 
             this.formulaTextArea.bind("input change propertychange", function () {
-                if (that.options.onformulachangedcallback !== undefined) {
-                    that.options.onformulachangedcallback(that.formulaTextArea.val());
-                    window.Commands.Execute("VariableEdited", {});
+                if (that.options.onvariablechangedcallback !== undefined) {
+                    that.options.formula = that.formulaTextArea.val();
+
+                    that.options.onvariablechangedcallback();
+                    //window.Commands.Execute("VariableEdited", {});
                 }
             });
             
@@ -256,7 +261,8 @@
                     var inparr = that._inputsArray();
                     if (this.formulaTextArea.val() !== that.options.formula) {
                         this.formulaTextArea.val(that.options.formula);
-                        window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
+                        this.options.onformulachangedcallback({ formula: that.options.formula, inputs: inparr });
+                        //window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
                     }
                     break;
                 case "inputs":

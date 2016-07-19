@@ -125,6 +125,7 @@ module BMA {
         export class VariableEditorDriver implements IVariableEditor {
             private variableEditor: JQuery;
             private onclosingCallback: Function;
+            private onvariablechangedcallback: Function;
             private onformulachangedcallback: Function;
 
             constructor(variableEditor: JQuery) {
@@ -185,6 +186,13 @@ module BMA {
             }
 
             public SetOnVariableEditedCallback(callback: Function) {
+                this.onvariablechangedcallback = callback;
+                this.variableEditor.bmaeditor({
+                    onvariablechangedcallback: callback
+                });
+            }
+
+            public SetOnFormulaEditedCallback(callback: Function) {
                 this.onformulachangedcallback = callback;
                 this.variableEditor.bmaeditor({
                     onformulachangedcallback: callback
