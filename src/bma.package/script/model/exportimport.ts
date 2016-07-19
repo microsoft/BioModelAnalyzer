@@ -212,10 +212,9 @@
         export function ExportOperation(operation: BMA.LTLOperations.Operation, withStates: boolean) {
             var result: any = {};
             result["_type"] = "Operation";
-            if (operation.Operator && operation.Operator.Name && operation.Operator.OperandsCount) {
+            if (operation.Operator && operation.Operator.Name) {
                 result.operator = {
                     name: operation.Operator.Name,
-                    operandsCount: operation.Operator.OperandsCount
                 };
             } else
                 throw "Operation must have operator";
