@@ -64,6 +64,7 @@ module.exports = function (grunt) {
                     "script/widgets/variablesOptionsEditor.js",
                     "script/widgets/visibilitysettings.js",
                     "script/widgets/formulaeditor.js",
+                    "script/widgets/tftexteditor.js",
                     "script/widgets/ltl/keyframetable.js",
                     "script/widgets/ltl/keyframecompact.js",
                     "script/widgets/ltl/ltlstatesviewer.js",

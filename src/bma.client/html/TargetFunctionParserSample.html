@@ -22,6 +22,7 @@
         $(document).ready(function () {
 
             window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
+            $("#tfwidget").tftexteditor();
 
             $("#inp").change(function () {
                 try {
@@ -45,6 +46,7 @@
     </script>
 </head>
 <body style="background-color: white;">
+    <div id="tfwidget" style="width:450px; height: 250px;"></div>
     <div style="width:450px; height: 250px;">
         <div id="textbox" style="width:200px;height: 200px;float:left;background-color: aliceblue;">
             <textarea type="text" id="inp" style="margin:0px;width:190px;height: 190px;border:none; background-color:transparent;">Enter formula</textarea>

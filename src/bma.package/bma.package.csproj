@@ -198,6 +198,7 @@
     <TypeScriptCompile Include="script\widgets\simulationexpanded.ts" />
     <TypeScriptCompile Include="script\widgets\simulationplot.ts" />
     <TypeScriptCompile Include="script\widgets\simulationviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\tftexteditor.ts" />
     <TypeScriptCompile Include="script\widgets\userdialog.ts" />
     <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
     <TypeScriptCompile Include="script\widgets\visibilitysettings.ts" />
