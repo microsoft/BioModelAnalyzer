@@ -128,6 +128,39 @@
             return state;
         },
 
+        _createOperatorsPanel: function (panel, operators) {
+            var that = this;
+            for (var i = 0; i < operators.length; i++) {
+                var operator = operators[i];
+
+                var opDiv = $("<div></div>")
+                    .addClass("operator")
+                    .addClass("ltl-tp-droppable")
+                    .attr("data-operator", operator.Name)
+                    .css("z-index", 6)
+                    .css("cursor", "pointer")
+                    .appendTo(panel);
+
+                var spaceStr = "&nbsp;&nbsp;";
+                if (operator.OperandsCount > 1) {
+                    $("<div></div>").addClass("hole").appendTo(opDiv);
+                    spaceStr = "";
+                }
+                var label = $("<div></div>").addClass("label").html(spaceStr + operator.Name).appendTo(opDiv);
+                $("<div></div>").addClass("hole").appendTo(opDiv);
+
+                opDiv.draggable({
+                    helper: "clone",
+                    cursorAt: { left: 0, top: 0 },
+                    opacity: 0.4,
+                    cursor: "pointer",
+                    start: function (event, ui) {
+                        that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
+                    }
+                });
+            }
+        },
+
         _create: function () {
             var that = this;
 
@@ -158,41 +191,34 @@
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
 
+            var basicOperatorsToUse = [
+                'AND',
+                'OR',
+                'IMPLIES',
+                'NOT',
+                'NEXT',
+                'ALWAYS',
+                'EVENTUALLY',
+                'UPTO'
+            ];
+            var advancedOperatorsToUse = [
+                'WEAKUNTIL',
+                'UNTIL',
+                'RELEASE'
+            ];
             var registry = new BMA.LTLOperations.OperatorsRegistry();
-            for (var i = 0; i < registry.Operators.length; i++) {
-                var operator = registry.Operators[i];
-
-                var opDiv = $("<div></div>")
-                    .addClass("operator")
-                    .addClass("ltl-tp-droppable")
-                    .attr("data-operator", operator.Name)
-                    .css("z-index", 6)
-                    .css("cursor", "pointer")
-                    .appendTo(operatorsDiv);
-
-                var spaceStr = "&nbsp;&nbsp;";
-                if (operator.OperandsCount > 1) {
-                    $("<div></div>").addClass("hole").appendTo(opDiv);
-                    spaceStr = "";
-                }
-                var label = $("<div></div>").addClass("label").html(spaceStr + operator.Name).appendTo(opDiv);
-                $("<div></div>").addClass("hole").appendTo(opDiv);
-
-                opDiv.draggable({
-                    helper: "clone",
-                    cursorAt: { left: 0, top: 0 },
-                    opacity: 0.4,
-                    cursor: "pointer",
-                    start: function (event, ui) {
-                        that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
-                    }
-                });
-
-                //Separating advanced operators
-                if (i === registry.Operators.length - 4) {
-                    $("<br\>").appendTo(operatorsDiv);
-                }
+            var basicOperators = [];
+            for (var i = 0; i < basicOperatorsToUse.length; i++) {
+                basicOperators.push(registry.GetOperatorByName(basicOperatorsToUse[i]));
             }
+            var advancedOperators = [];
+            for (var i = 0; i < advancedOperatorsToUse.length; i++) {
+                advancedOperators.push(registry.GetOperatorByName(advancedOperatorsToUse[i]));
+            }
+
+            that._createOperatorsPanel(operatorsDiv, basicOperators);
+            $("<br\>").appendTo(operatorsDiv);
+            that._createOperatorsPanel(operatorsDiv, advancedOperators);
 
             //Adding operators toggle basic/advanced
             var toggle = $("<div></div>").addClass("toggle").width(60).attr("align", "right").text("Advanced").appendTo(toolbar);

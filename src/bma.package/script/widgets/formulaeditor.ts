@@ -52,17 +52,22 @@
             operators.width(350);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
 
-            var operatorsArr = [
-                { Name: "+", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
-                { Name: "-", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
-                { Name: "*", OperandsCount: Number.POSITIVE_INFINITY, isFunction: false },
-                { Name: "/", OperandsCount: 2, isFunction: false },
-                { Name: "AVG", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
-                { Name: "MIN", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
-                { Name: "MAX", OperandsCount: Number.POSITIVE_INFINITY, isFunction: true },
-                { Name: "CEIL", OperandsCount: 1, isFunction: false },
-                { Name: "FLOOR", OperandsCount: 1, isFunction: false },
+            var operatorsToUse = [
+                "+",
+                "-",
+                "*",
+                "/",
+                "AVG",
+                "MIN",
+                "MAX",
+                "CEIL",
+                "FLOOR",
             ];
+            var registry = new BMA.LTLOperations.OperatorsRegistry();
+            var operatorsArr = [];
+            for (var i = 0; i < operatorsToUse.length; i++) {
+                operatorsArr.push(registry.GetOperatorByName(operatorsToUse[i]));
+            }
 
             for (var i = 0; i < operatorsArr.length; i++) {
                 var operator = operatorsArr[i];
