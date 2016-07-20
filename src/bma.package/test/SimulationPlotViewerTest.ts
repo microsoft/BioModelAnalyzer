@@ -37,12 +37,12 @@ describe("SimulationPlotViewer", () => {
         expect(figure.attr("data-idd-plot")).toEqual("figure");
         //expect(widget.children().eq(0).children().eq(1).attr("data-idd-plot")).toEqual("scalableGridLines");
         expect(figure.find('[data-idd-plot="scalableGridLines"]').length).toEqual(1);
-        expect(widget.children().eq(0).children().length).toEqual(2);
+        expect(widget.children().eq(0).children().length).toEqual(6);
     })
 
     it("don't creates polylines without data", () => {
         widget.simulationplot();
-        expect(widget.children().eq(0).children().length).toEqual(2);
+        expect(widget.children().eq(0).children().length).toEqual(6);
     })
 
     it("should add polylines", () => {
@@ -87,7 +87,7 @@ describe("SimulationPlotViewer", () => {
             Plot: [3, 5, 9]
         };
         widget.simulationplot({ colors: data2 });
-        expect(widget.children().eq(0).children().length).toEqual(5 + data2.length);
+        expect(widget.children().eq(0).children().length).toEqual(6 + data2.length);
     })
 
     it("should set proper options for polylines", () => {
