@@ -30,7 +30,6 @@
     { "Path": "js/jquery.cookie.js" },
 
     { "Path": "js/idd.js" },
-    { "Path": "js/idd.heatmapworker.js" },
 
     { "Path": "js/svgplot.js" },
     { "Path": "js/scalablegridlinesplot.js" },
@@ -59,7 +58,6 @@
     },
 
 
-    { "Path": "app.ts" },
     { "Path": "Silverlight.js" },
     {
       "Path": "test/TestComponents/",

@@ -8211,6 +8211,7 @@ function IDD($, Rx) {;/**
 
     InteractiveDataDisplay.Area.prototype = new InteractiveDataDisplay.CanvasPlot;
     ;// See http://jsperf.com/rendering-a-frame-in-image-data
+    /*
     InteractiveDataDisplay.heatmapBackgroundRenderer = new InteractiveDataDisplay.SharedRenderWorker(
         function () {
             var workerCodeUri;
@@ -8769,6 +8770,7 @@ function IDD($, Rx) {;/**
     InteractiveDataDisplay.register("heatmap", function (jqDiv, master) {
         return new InteractiveDataDisplay.Heatmap(jqDiv, master);
     });
+    */
     ; InteractiveDataDisplay.BingMaps = InteractiveDataDisplay.BingMaps || {};
 
     InteractiveDataDisplay.BingMaps.ESRI = InteractiveDataDisplay.BingMaps.ESRI || {};
