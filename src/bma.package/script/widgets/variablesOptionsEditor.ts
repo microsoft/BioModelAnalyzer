@@ -402,7 +402,10 @@
                 case "onvariablechangedcallback":
                     that.options.onvariablechangedcallback = value;
                     this.element.tftexteditor({
-                        onvariablechangedcallback: value
+                        onvariablechangedcallback: () => {
+                            that.options.formula = that.element.tftexteditor("option", "formula");
+                            that.options.onvariablechangedcallback();
+                        }
                     });
                     break;
             }

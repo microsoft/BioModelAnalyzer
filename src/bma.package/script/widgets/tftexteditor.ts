@@ -142,7 +142,8 @@
                     );
                     if (ind !== 0) {
                         item.click(function () {
-                            that._InsertToFormula($(this).text().toLowerCase() + "(" + ")", $(this).text().length + 1);
+                            var about = that.operatorsregistry.GetOperatorByName($(this).text().toUpperCase());
+                            that._InsertToFormula(about.Name.toLowerCase() + "(" + ")", about.Name.length + 1);
                         })
                     }
                 });
@@ -173,7 +174,7 @@
                     );
                     item.click(function () {
                         var about = that.operatorsregistry.GetOperatorByName($(this).text().toUpperCase());
-                        that._InsertToFormula(about.Name.toLowerCase() + "(" + (about.OperandsCount > 1 ? ",": "") + ")", about.Name.length + 1);
+                        that._InsertToFormula(about.Name.toLowerCase() + "(" + (about.MaxOperandsCount > 1 ? ",": "") + ")", about.Name.length + 1);
                     })
                 });
 
@@ -224,18 +225,21 @@
         _refreshText: function (selected: JQuery, div: JQuery) {
             var that = this;
             div.empty();
-            //var fun = that.operatorsregistry.GetOperatorByName(selected.text());
-            //$('<h3></h3>').text(fun.Head).appendTo(div);
-            //$('<p></p>').text(fun.About).appendTo(div);
+            var fun = that.operatorsregistry.GetOperatorByName(selected.text());
+            var description = fun.Description.split(":");
+            $('<h3></h3>').text(description[0]).appendTo(div);
+            $('<p></p>').text(description[1]).appendTo(div);
         },
 
         _bindExpanding: function () {
             var that = this;
 
             this.formulaTextArea.bind("input change propertychange", function () {
+                that.options.formula = that.formulaTextArea.val();
+                if (that.options.onformulachangedcallback !== undefined) {
+                    that.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
+                }
                 if (that.options.onvariablechangedcallback !== undefined) {
-                    that.options.formula = that.formulaTextArea.val();
-
                     that.options.onvariablechangedcallback();
                     //window.Commands.Execute("VariableEdited", {});
                 }

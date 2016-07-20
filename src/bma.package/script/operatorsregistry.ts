@@ -88,17 +88,31 @@ module BMA {
 
                 
                 //Target Function editor operators
-                this.operators.push(new Operator('AVG', 2, Number.POSITIVE_INFINITY, functionformulacreator('avg'), true));
-                this.operators.push(new Operator('MIN', 2, Number.POSITIVE_INFINITY, functionformulacreator('min'), true));
-                this.operators.push(new Operator('MAX', 2, Number.POSITIVE_INFINITY, functionformulacreator('max'), true));
+                this.operators.push(new Operator('AVG', 2, Number.POSITIVE_INFINITY, functionformulacreator('avg'), true,
+                    "avg(x, y, z): The average of a list of expressions. E.g., avg( var(X); var(Y); 22; var(Z)*2 )"));
+                this.operators.push(new Operator('MIN', 2, Number.POSITIVE_INFINITY, functionformulacreator('min'), true,
+                    "min(x,y): The minimum of a two expressions. E.g., min( var(X), var(Y)), or min(var(X), 0)"));
+                this.operators.push(new Operator('MAX', 2, Number.POSITIVE_INFINITY, functionformulacreator('max'), true,
+                    "max(x,y): The maximum of a two expressions. E.g., max( var(X), var(Y))"));
 
-                this.operators.push(new Operator('CEIL', 1, 1, formulacreator('ceil'), true));
-                this.operators.push(new Operator('FLOOR', 1, 1, formulacreator('floor'), true));
+                this.operators.push(new Operator('CEIL', 1, 1, formulacreator('ceil'), true,
+                    "ceil(x): The ceiling of an expression. E.g., ceil (var(X))"));
+                this.operators.push(new Operator('FLOOR', 1, 1, formulacreator('floor'), true,
+                    "floor(x): The floor of an expression. E.g., floor(var(X))"));
 
-                this.operators.push(new Operator('/', 2, 2, operatorformulacreator('/'), false));
-                this.operators.push(new Operator('*', 1, Number.POSITIVE_INFINITY, operatorformulacreator('*'), false));
-                this.operators.push(new Operator('+', 1, Number.POSITIVE_INFINITY, operatorformulacreator('+'), false));
-                this.operators.push(new Operator('-', 1, Number.POSITIVE_INFINITY, operatorformulacreator('-'), false));
+                this.operators.push(new Operator('/', 2, 2, operatorformulacreator('/'), false,
+                    "x / y: Usual addition operator. E.g., 2/3, 44 / var(X)"));
+                this.operators.push(new Operator('*', 1, Number.POSITIVE_INFINITY, operatorformulacreator('*'), false,
+                    "x * y: Usual addition operator. E.g., 2*3, 44 * var(X)"));
+                this.operators.push(new Operator('+', 1, Number.POSITIVE_INFINITY, operatorformulacreator('+'), false,
+                    "x + y: Usual addition operator. E.g., 2+3, 44 + var(X)"));
+                this.operators.push(new Operator('-', 1, Number.POSITIVE_INFINITY, operatorformulacreator('-'), false,
+                    "x - y: Usual addition operator. E.g., 2-3, 44 - var(X)"));
+
+                this.operators.push(new Operator("VAR", 1, 1, functionformulacreator("var"), true,
+                    "var(name): A variable, where name is the name of the variable"));
+                this.operators.push(new Operator("CONST", 1, 1, functionformulacreator("const"), true,
+                    "22 or const(22): An integer number. E.g., 1234, 42, -9"));
             }
         }
     }
