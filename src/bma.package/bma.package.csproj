@@ -108,6 +108,7 @@
     <Content Include="Scripts\rx.lite.min.js" />
     <Content Include="Scripts\rx.min.js" />
     <Content Include="Scripts\targetFuncParser.js" />
+    <Content Include="Silverlight.js" />
     <Content Include="test\data\2var_unstable.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
