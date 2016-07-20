@@ -123,19 +123,19 @@ describe("ColoredTableViewer", () => {
     })
 
 
-    it("creates graph-min table", () => {
-        var header = ["color", 1, 2, 3];
-        var numericData = [];
-        numericData[0] = ["red", 1, 1, 1];
-        numericData[1] = ["green", 2, 2, 2];
-        numericData[2] = ["blue", 3, 3, 3];
-        widget.coloredtableviewer({ header: header, numericData: numericData, type: "graph-min" });
+    //xit("creates graph-min table", () => {
+    //    var header = ["color", 1, 2, 3];
+    //    var numericData = [];
+    //    numericData[0] = ["red", 1, 1, 1];
+    //    numericData[1] = ["green", 2, 2, 2];
+    //    numericData[2] = ["blue", 3, 3, 3];
+    //    widget.coloredtableviewer({ header: header, numericData: numericData, type: "graph-min" });
 
-        var td1 = widget.find("tr").children().eq(0);
-        for (var i = 1; i < td1.length; i++) {
-            expect(td1.eq(i).css("background-color")).toEqual(numericData[i - 1][0]);
-        }
-    })
+    //    var td1 = widget.find("tr").children().eq(0);
+    //    for (var i = 1; i < td1.length; i++) {
+    //        expect(td1.eq(i).css("background-color")).toEqual(numericData[i - 1][0]);
+    //    }
+    //})
 
     it("creates graph-max table", () => {
         var header = ["Graph", "Name", "Range"];

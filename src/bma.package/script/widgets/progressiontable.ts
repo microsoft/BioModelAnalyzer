@@ -313,7 +313,7 @@ interface JQuery {
     progressiontable(): JQuery;
     progressiontable(settings: Object): JQuery;
     progressiontable(settings: string): any;
-    progressiontable(func: string, param1: any, param2: any ): any;
+    progressiontable(func: string, param1: any, param2?: any ): any;
     progressiontable(optionLiteral: string, optionName: string): any;
     progressiontable(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }   

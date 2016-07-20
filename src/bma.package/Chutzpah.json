@@ -42,7 +42,6 @@
          { "Path": "script/uidrivers", "Include": "*.ts" },
 
 
-         {"Path": "app.ts"},
          {"Path": "Silverlight.js"},
          {"Path": "test/TestComponents/", "Include": "*.ts"}
      ],

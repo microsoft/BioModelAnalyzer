@@ -16,11 +16,6 @@ describe("ProgressionTable", () => {
         expect(widget.find("tr").eq(0).children("td").eq(0).text()).toEqual("Initial Value");
     })
 
-    it("should addClass 'bma-table'"), () => {
-        widget.progressiontable();
-        expect(widget.find("table").hasClass('bma-table')).toBeTruthy();
-    }
-
     it("should create column with initial values from interval", () => {
         var interval = [];
         interval[0] = [2, 3];
@@ -70,46 +65,44 @@ describe("ProgressionTable", () => {
         }
     })
 
-    xit("should randomize value on clicking random-icon", () => {
-        var interval = [];
-        interval[0] = [2, 3];
-        interval[1] = [0, 5];
-        interval[2] = [7, 18];
+    //it("should randomize value on clicking random-icon", () => {
+    //    var interval = [];
+    //    interval[0] = [2, 3];
+    //    interval[1] = [0, 5];
+    //    interval[2] = [7, 18];
 
-        widget.progressiontable({ interval: interval });
+    //    widget.progressiontable({ interval: interval });
 
-        var trs = widget.find("tr").not(":first-child");
-        var td = trs.eq(2).children("td").eq(0).children("input");
-        expect(td.val()).toEqual('7');
-        var rand = td.children("div").eq(0);
-        rand.click();
-        console.log(td.children("input").val());
-        //expect(td.text()).not.toEqual('7');
-    })
+    //    var trs = widget.find("tr").not(":first-child");
+    //    var td = trs.eq(2).children("td").eq(0).children("input");
+    //    expect(td.val()).toEqual('7');
+    //    var rand = trs.eq(2).children("td").eq(1);
+    //    rand.click();
+        
+    //    expect(td.val()).not.toEqual('7');
+    //})
 
-    xit("should randomize all", () => {
-        var interval = [];
-        interval[0] = [1, 3];
-        interval[1] = [3, 7];
-        interval[2] = [2, 35];
-        var td = [];
+    //it("should randomize all", () => {
+    //    var interval = [];
+    //    interval[0] = [1, 3];
+    //    interval[1] = [3, 7];
+    //    interval[2] = [2, 35];
+    //    var td = [];
 
-        widget.progressiontable({ interval: interval });
+    //    widget.progressiontable({ interval: interval });
 
-        var tds = widget.find("tr").not(":first-child").children("td:first-child");
-        tds.children("input").each(function (ind) {
-            td[ind] = $(this).val();
-        });
-        console.log(td);
-        var rand = widget.children("div").eq(0);
-        rand.click();
+    //    var tds = widget.find("tr").not(":first-child").children("td:first-child");
+    //    tds.children("input").each(function (ind) {
+    //        td[ind] = $(this).val();
+    //    });
+    //    var rand = widget.children("div").eq(0);
+    //    rand.click();
 
-        tds.children("input").each(function (ind) {
-            td[ind] = $(this).val();
-        });
-        console.log(td);
+    //    tds.children("input").each(function (ind) {
+    //        td[ind] = $(this).val();
+    //    });
 
-    })
+    //})
 
     it("should create widget with data", () => {
         var interval = [];
@@ -117,12 +110,12 @@ describe("ProgressionTable", () => {
         interval[1] = [0, 5];
         interval[2] = [7, 18];
 
-        var data = [2, 3, 5];
+        var data = [[2, 3, 5]];
 
         widget.progressiontable({ interval: interval, data: data });
         var trs = widget.find("table").eq(1).find("tr");
         for (var i = 0; i < trs.length; i++) {
-            expect(trs.eq(i).children("td").eq(0).text()).toEqual(data[i].toString());
+            expect(trs.eq(i).children("td").eq(0).text()).toEqual(data[0][i].toString());
         }
     })
 
@@ -132,16 +125,17 @@ describe("ProgressionTable", () => {
         interval[1] = [0, 5];
         interval[2] = [7, 18];
 
-        var data = [2, 3, 5];
+        var data = [[2, 3, 5]];
 
         widget.progressiontable({ interval: interval, data: data });
 
         var data2 = [4, 6, 1];
-        widget.progressiontable({ data: data2 });
-
-        var trs = widget.find("table").eq(1).find("tr");
+        widget.progressiontable("AddData", data2);
+        
+        var table = widget.find(".progression-table");
+        var trs = widget.find(".progression-table").find("tr");
         for (var i = 0; i < trs.length; i++) {
-            expect(trs.eq(i).children("td").eq(0).text()).toEqual(data[i].toString());
+            expect(trs.eq(i).children("td").eq(0).text()).toEqual(data[0][i].toString());
             expect(trs.eq(i).children("td").eq(1).text()).toEqual(data2[i].toString());
         }
     })

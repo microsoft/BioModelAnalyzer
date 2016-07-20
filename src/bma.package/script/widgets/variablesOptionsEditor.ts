@@ -78,8 +78,8 @@
         _appendInputs: function () {
             var that = this;
             var div = $('<div></div>').addClass("close-icon").appendTo(that.element);
-            var closing = $('<img src="../../images/close.png">').appendTo(div);
-            closing.bind("click", function () {
+            //var closing = $('<img src="../../images/close.png">').appendTo(div);
+            div.bind("click", function () {
                 that.element.hide();
                 if (that.options.oneditorclosing !== undefined) {
                     that.options.oneditorclosing();
@@ -160,8 +160,23 @@
 
             this.element.tftexteditor({
                 onformulachangedcallback: that.options.onformulachangedcallback,
-                onvariablechangedcallback: that.options.onvariablechangedcallback
+                onvariablechangedcallback: () => {
+                    that.options.formula = that.element.tftexteditor("option", "formula");
+                    if (that.options.onvariablechangedcallback !== undefined) {
+                        that.options.onvariablechangedcallback();
+                    }
+                }
             });
+
+            if (that.options.formula)
+                this.element.tftexteditor({
+                   formula: that.options.formula
+                });
+
+            if (that.options.inputs.length)
+                this.element.tftexteditor({
+                    inputs: that.options.inputs
+                });
 
             //var formulaDiv = $('<div></div>')
             //    .addClass('target-function')
@@ -404,13 +419,14 @@
                     this.element.tftexteditor({
                         onvariablechangedcallback: () => {
                             that.options.formula = that.element.tftexteditor("option", "formula");
-                            that.options.onvariablechangedcallback();
+                            if (that.options.onvariablechangedcallback !== undefined) {
+                                that.options.onvariablechangedcallback();
+                            }
                         }
                     });
                     break;
             }
-            $.Widget.prototype._setOption.apply(this, arguments);
-            this._super("_setOption", key, value);
+            this._super(key, value);
             //window.Commands.Execute("VariableEdited", {})
             //this.resetElement();
         },

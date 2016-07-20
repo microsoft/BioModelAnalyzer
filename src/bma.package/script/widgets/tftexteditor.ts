@@ -265,7 +265,9 @@
                     var inparr = that._inputsArray();
                     if (this.formulaTextArea.val() !== that.options.formula) {
                         this.formulaTextArea.val(that.options.formula);
-                        this.options.onformulachangedcallback({ formula: that.options.formula, inputs: inparr });
+                        if (this.options.onformulachangedcallback !== undefined) {
+                            this.options.onformulachangedcallback({ formula: that.options.formula, inputs: inparr });
+                        }
                         //window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
                     }
                     break;
@@ -282,8 +284,7 @@
                     });
                     break;
             }
-            $.Widget.prototype._setOption.apply(this, arguments);
-            this._super("_setOption", key, value);
+            this._super(key, value);
             //window.Commands.Execute("VariableEdited", {})
             //this.resetElement();
         },
