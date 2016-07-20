@@ -14,6 +14,10 @@ describe("DesignSurfacePresenter", () => {
         window.Commands = new BMA.CommandRegistry();
         window.ElementRegistry = new BMA.Elements.ElementsRegistry();
         window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
+        window.PlotSettings = {
+            MaxWidth: 3200,
+            MinWidth: 800
+        };
     });
 
     it("should be created from BioModel, Layout and ISVGPlot driver instance", () => {
@@ -21,14 +25,15 @@ describe("DesignSurfacePresenter", () => {
         drawingSurface.drawingsurface();
         var appModel = new BMA.Model.AppModel();
         var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
-        var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($());
+        var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("<div></div>"));
+        var containerEditorDriver = new BMA.UIDrivers.ContainerEditorDriver($("<div></div>"));
         var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
         var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
         var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
         var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
         var exportservice = new BMA.UIDrivers.ExportService();
 
-        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, undefined, contextMenuDriver, exportservice, undefined);
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, contextMenuDriver, exportservice, undefined);
         var testbutton = new BMA.Test.TestUndoRedoButton();
         //var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undefined, svgPlotDriver, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, undefined);
         expect(drawingSurfacePresenter).toBeDefined();
@@ -42,14 +47,15 @@ describe("DesignSurfacePresenter", () => {
         var svgPlotDriver = new BMA.Test.TestSVGPlotDriver(drawingSurface);
         var elementPanel = new BMA.Test.TestElementsPanel();
         var navigationDriver = new BMA.Test.NavigationTestDriver();
-        var variableEditorDriver = new BMA.Test.TestVariableEditor();//UIDrivers.VariableEditorDriver($());
+        var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("<div></div>"));
+        var containerEditorDriver = new BMA.UIDrivers.ContainerEditorDriver($("<div></div>"));
         var exportservice = new BMA.UIDrivers.ExportService();
         var testbutton = new BMA.Test.TestUndoRedoButton();
         var undoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-undo"));
         var redoDriver = new BMA.UIDrivers.TurnableButtonDriver($("#button-redo"));
         var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
         var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, undoDriver, redoDriver);
-        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, navigationDriver, elementPanel, variableEditorDriver, undefined, contextMenuDriver, exportservice, undefined);
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, navigationDriver, elementPanel, variableEditorDriver, containerEditorDriver, contextMenuDriver, exportservice, undefined);
         expect(drawingSurfacePresenter).toBeDefined();
     });
 
@@ -59,11 +65,13 @@ describe("DesignSurfacePresenter", () => {
         drawingSurface.drawingsurface();
         var svgPlotDriver = new BMA.Test.TestSVGPlotDriver(drawingSurface);
         var elementPanel = new BMA.Test.TestElementsPanel();
-        var variableEditorDriver = new BMA.Test.TestVariableEditor();
+        var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("<div></div>"));
+        var containerEditorDriver = new BMA.UIDrivers.ContainerEditorDriver($("<div></div>"));
         var navigationDriver = new BMA.Test.NavigationTestDriver();
         var exportservice = new BMA.UIDrivers.ExportService();
         var testbutton = new BMA.Test.TestUndoRedoButton();
-        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undefined, svgPlotDriver, navigationDriver, elementPanel, variableEditorDriver, undefined, undefined, exportservice, undefined);
+        var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, testbutton, testbutton);
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, navigationDriver, elementPanel, variableEditorDriver, containerEditorDriver, undefined, exportservice, undefined);
 
         spyOn(navigationDriver, "TurnNavigation");
         window.Commands.Execute("AddElementSelect", undefined);
@@ -75,34 +83,26 @@ describe("DesignSurfacePresenter", () => {
     });
 
 
-    xit("should initialize the variableEditorDriver", () => {
+    it("should initialize the variableEditorDriver", () => {
         var drawingSurface = $("<div></div>");
         drawingSurface.drawingsurface();
         var appModel = new BMA.Model.AppModel();
         var svgPlotDriver = new BMA.UIDrivers.SVGPlotDriver(drawingSurface);
         var variableEditorDriver = new BMA.UIDrivers.VariableEditorDriver($("<div></div>"));
+        var containerEditorDriver = new BMA.UIDrivers.ContainerEditorDriver($("<div></div>"));
         var testbutton = new BMA.Test.TestUndoRedoButton();
         var undoRedoPresenter = new BMA.Presenters.UndoRedoPresenter(appModel, testbutton, testbutton);
         var exportservice = new BMA.UIDrivers.ExportService();
-        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, undefined, undefined, exportservice, undefined);
-
-        //expect(drawingSurfacePresenter.CanAddVariable(150, 250, "Constant", undefined)).toBeTruthy();
+        var drawingSurfacePresenter = new BMA.Presenters.DesignSurfacePresenter(appModel, undoRedoPresenter, svgPlotDriver, svgPlotDriver, svgPlotDriver, variableEditorDriver, containerEditorDriver, undefined, exportservice, undefined);
 
         expect(appModel.BioModel.Variables.length).toEqual(0);
-        spyOn(drawingSurfacePresenter, "TryAddVariable");
-        spyOn(undoRedoPresenter, "Dup");
-
         window.Commands.Execute("AddElementSelect", "Constant");
         
-        console.log("first click");
         window.Commands.Execute("DrawingSurfaceClick", { x: 150, y: 250, screenX: 1, screenY: 2 });
-        //expect(drawingSurfacePresenter.TryAddVariable).toHaveBeenCalledWith(150, 250, "Constant", undefined);
-        expect(undoRedoPresenter.Dup).toHaveBeenCalled();
         expect(appModel.BioModel.Variables.length).toEqual(1);
 
         window.Commands.Execute("AddElementSelect", undefined);
         spyOn(variableEditorDriver, "Initialize");
-        console.log("second click");
         window.Commands.Execute("DrawingSurfaceClick", { x: 150, y: 250, screenX: 1, screenY: 2 });
         expect(variableEditorDriver.Initialize).toHaveBeenCalled();
     });

@@ -7,10 +7,6 @@ describe("ProgressionTable", () => {
         widget.progressiontable("destroy");
     })
 
-    it("should create a widget", () => {
-        widget.progressiontable();
-    })
-
     it("should create a header", () => {
         widget.progressiontable();
         expect(widget.find("tr").eq(0).children("td").eq(0).text()).toEqual("Initial Value");

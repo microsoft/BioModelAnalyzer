@@ -72,12 +72,6 @@
     });
     
 
-    it("creates simulationplot widget inside the 2nd resultswindowviewer", () => {
-        div.simulationviewer({ data: data, plot: plot });
-        var r1: JQuery = div.children().eq(1).resultswindowviewer("option", "content");
-    });
-
-    
     it("creates only plot when data.variables is undefined", () => {
         data.variables = undefined;
         div.simulationviewer({ data: data, plot: plot });

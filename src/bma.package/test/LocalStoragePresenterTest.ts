@@ -32,7 +32,8 @@
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
     var checker = new BMA.ChangesChecker();
     var logService = new BMA.SessionLog();
-    
+
+    modelRepositoryTest.SaveModel("user." + name, JSON.parse(appModel.Serialize()));
 
     it("should be defined", () => {
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
@@ -71,18 +72,18 @@
         expect(modelRepositoryTest.SaveModel).toHaveBeenCalledWith(name, JSON.parse(appModel.Serialize()));
     });
 
-    xit("should Reset appModel on 'LocalStorageLoadModel' command when id is correct", () => {
+    it("should Reset appModel on 'LocalStorageLoadModel' command when id is correct", () => {
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
-        spyOn(appModel, "Reset");
+        spyOn(appModel, "Deserialize");
         //var key = '4';
         window.Commands.Execute("LocalStorageSaveModel", {});
         window.Commands.Execute("LocalStorageLoadModel", "user." + name);
-        expect(appModel.Deserialize).toHaveBeenCalledWith(JSON.stringify(modelRepositoryTest.LoadModel(name)));
+        expect(appModel.Deserialize).toHaveBeenCalled();
     });
 
-    xit("shouldn't Reset appModel on 'LocalStorageLoadModel' command when id is not correct", () => {
+    it("shouldn't Reset appModel on 'LocalStorageLoadModel' command when id is not correct", () => {
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
-        spyOn(appModel, "Reset");
+        spyOn(appModel, "Deserialize");
         var key = 'testkey';
         window.Commands.Execute("LocalStorageLoadModel", key);
         expect(appModel.Deserialize).not.toHaveBeenCalled();

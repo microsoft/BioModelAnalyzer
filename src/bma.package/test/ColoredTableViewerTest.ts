@@ -9,10 +9,6 @@ describe("ColoredTableViewer", () => {
         widget.coloredtableviewer("destroy");
     })
 
-    it("creates widget", () => {
-        widget.coloredtableviewer();
-    })
-
     it("creates widget with options", () => {
         var header = [1, 2, 3];
         var numericData = [];
@@ -257,8 +253,7 @@ describe("ColoredTableViewer", () => {
 
     })
 
-
-
+    /*
     it("creates widget with not compatible data sizes", () => {
         var header = [1, 2, 3];
         var numericData = [];
@@ -285,6 +280,5 @@ describe("ColoredTableViewer", () => {
         colorData[2] = [true, true, true];
         widget.coloredtableviewer({ header: header, numericData: numericData, colorData: colorData });
     })
-
-
+    */
 })
