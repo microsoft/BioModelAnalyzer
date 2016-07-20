@@ -8,10 +8,6 @@ describe("SimulationPlotViewer", () => {
         widget.simulationplot("destroy");
     })
 
-    it("creates a widget", () => {
-        widget.simulationplot();
-    })
-
     it("creates widget with data", () => {
         var data = [];
         data[0] = {
@@ -105,13 +101,13 @@ describe("SimulationPlotViewer", () => {
             Plot: [4, 8, 2]
         };
         widget.simulationplot({ colors: data });
-        var plot = widget.simulationplot("getPlot");
-        //for (var i = 0; i < data.length; i++) {
-        //    //var y = data[i].Plot;
-        //    var polyline = plot.get(widget.children().eq(0).children().eq(i + 1));
-        //    expect(polyline.stroke).toEqual(data[i].Color);
-        //    expect(polyline.isVisible).toEqual(data[i].Seen);
-        //}
+        var plot: any = widget.simulationplot("getPlot");
+        for (var i = 0; i < data.length; i++) {
+            //var y = data[i].Plot;
+            var polyline = plot.get("plot" + i);
+            expect(polyline.stroke).toEqual(data[i].Color);
+            expect(polyline.isVisible).toEqual(data[i].Seen);
+        }
     })
 
 }) 

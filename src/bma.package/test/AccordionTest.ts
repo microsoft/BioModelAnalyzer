@@ -68,8 +68,8 @@
     it("sets a contentLoaded option ", () => {
         acc.bmaaccordion({contentLoaded: { ind: 1, val: false }});
         h2.click();
-        //var loading = h2.children();//.filter(".loading");
-        //expect(loading.length).toEqual(1);
+        var loading = h2.children().filter(".loading");
+        expect(loading.length).toEqual(1);
     });
 
 
@@ -79,7 +79,7 @@
         h1.click();
         expect(window.Commands.Execute).toHaveBeenCalledWith("testCommand", {});
         
-        h1.click();
+        //h1.click();
         //expect("click").toHaveBeenTriggered();
     });
 
