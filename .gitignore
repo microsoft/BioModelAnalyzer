@@ -178,3 +178,4 @@ src/bma.package/*.js
 src/bma.package/*.js.map
 src/bma.package/css/bma.css
 !src/bma.package/Gruntfile.js
+!src/bma.package/Silverlight.js
