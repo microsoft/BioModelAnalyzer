@@ -102,11 +102,11 @@ module BMA {
 
                 this.operators.push(new Operator('/', 2, 2, operatorformulacreator('/'), false,
                     "x / y: Usual addition operator. E.g., 2/3, 44 / var(X)"));
-                this.operators.push(new Operator('*', 1, Number.POSITIVE_INFINITY, operatorformulacreator('*'), false,
+                this.operators.push(new Operator('*', 2, Number.POSITIVE_INFINITY, operatorformulacreator('*'), false,
                     "x * y: Usual addition operator. E.g., 2*3, 44 * var(X)"));
-                this.operators.push(new Operator('+', 1, Number.POSITIVE_INFINITY, operatorformulacreator('+'), false,
+                this.operators.push(new Operator('+', 2, Number.POSITIVE_INFINITY, operatorformulacreator('+'), false,
                     "x + y: Usual addition operator. E.g., 2+3, 44 + var(X)"));
-                this.operators.push(new Operator('-', 1, Number.POSITIVE_INFINITY, operatorformulacreator('-'), false,
+                this.operators.push(new Operator('-', 2, Number.POSITIVE_INFINITY, operatorformulacreator('-'), false,
                     "x - y: Usual addition operator. E.g., 2-3, 44 - var(X)"));
 
                 this.operators.push(new Operator("VAR", 1, 1, functionformulacreator("var"), true,
