@@ -27,7 +27,7 @@
             this.rangeFrom.val(that.options.rangeFrom);
             this.rangeTo.val(that.options.rangeTo); 
             //this.listOfInputs.empty();
-            this.element.tftexteditor("resetElement");
+            //this.element.tftexteditor("resetElement");
             //var inputs = this.options.inputs;
             //inputs.forEach(function (val, ind) {
             //    var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
@@ -42,7 +42,7 @@
         },
 
         SetValidation: function (result: boolean, message: string) {
-            this.element.tftexteditor("SetValidation", result, message);
+            this.element.tftexteditor("SetValidation", result, message).hide();
         },
 
 
@@ -158,25 +158,41 @@
                 .addClass("description-input")
                 .appendTo(descriptionDiv);
 
-            this.element.tftexteditor({
-                onformulachangedcallback: that.options.onformulachangedcallback,
-                onvariablechangedcallback: () => {
-                    that.options.formula = that.element.tftexteditor("option", "formula");
-                    if (that.options.onvariablechangedcallback !== undefined) {
-                        that.options.onvariablechangedcallback();
-                    }
-                }
-            });
+            //this.element.tftexteditor({
+            //    onformulachangedcallback: that.options.onformulachangedcallback,
+            //    onvariablechangedcallback: () => {
+            //        that.options.formula = that.element.tftexteditor("option", "formula");
+            //        if (that.options.onvariablechangedcallback !== undefined) {
+            //            that.options.onvariablechangedcallback();
+            //        }
+            //    }
+            //}).hide();
 
-            if (that.options.formula)
-                this.element.tftexteditor({
-                   formula: that.options.formula
-                });
+            this.formulaeditor = $("<div></div>").appendTo(that.element);
 
-            if (that.options.inputs.length)
-                this.element.tftexteditor({
-                    inputs: that.options.inputs
+            this.formulaeditor.formulaeditor();
+
+            if (that.options.formula) {
+                //this.element.tftexteditor({
+                //    formula: that.options.formula
+                //}).hide();
+                this.formulaeditor.formulaeditor({
+                    operation: that.options.formula
                 });
+            }
+
+            if (that.options.inputs.length) {
+                //this.element.tftexteditor({
+                //    inputs: that.options.inputs
+                //}).hide();
+                var variables = [];
+                for (var i = 0; i < that.options.inputs.length; i++)
+                    variables.push({ Name: that.options.inputs[i] });
+
+                this.formulaeditor.formulaeditor({
+                    variables: variables
+                });
+            }
 
             //var formulaDiv = $('<div></div>')
             //    .addClass('target-function')
@@ -383,7 +399,10 @@
                     break;
                 case "formula":
                     that.options.formula = value;
-                    this.element.tftexteditor({ formula: value });
+                    //this.element.tftexteditor({ formula: value }).hide();
+                    this.formulaeditor.formulaeditor({
+                        operation: that.options.formula
+                    });
                     //var inparr = that._inputsArray();
                     //if (this.formulaTextArea.val() !== that.options.formula)
                     //    this.formulaTextArea.val(that.options.formula);
@@ -399,7 +418,14 @@
                     this.options.inputs = value;
                     //this.listOfInputs.empty();
                     var inputs = this.options.inputs;
-                    this.element.tftexteditor({ inputs: value });
+                    //this.element.tftexteditor({ inputs: value }).hide();
+                    var variables = [];
+                    for (var i = 0; i < that.options.inputs.length; i++)
+                        variables.push({ Name: that.options.inputs[i] });
+
+                    this.formulaeditor.formulaeditor({
+                        variables: variables
+                    });
                     //inputs.forEach(function (val, ind) {
                     //    var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
                     //    item.bind("click", function () {
@@ -410,20 +436,20 @@
                     break;
                 case "onformulachangedcallback":
                     that.options.onformulachangedcallback = value;
-                    this.element.tftexteditor({
-                        onformulachangedcallback: value
-                    });
+                    //this.element.tftexteditor({
+                    //    onformulachangedcallback: value
+                    //}).hide();
                     break;
                 case "onvariablechangedcallback":
                     that.options.onvariablechangedcallback = value;
-                    this.element.tftexteditor({
-                        onvariablechangedcallback: () => {
-                            that.options.formula = that.element.tftexteditor("option", "formula");
-                            if (that.options.onvariablechangedcallback !== undefined) {
-                                that.options.onvariablechangedcallback();
-                            }
-                        }
-                    });
+                    //this.element.tftexteditor({
+                    //    onvariablechangedcallback: () => {
+                    //        that.options.formula = that.element.tftexteditor("option", "formula");
+                    //        if (that.options.onvariablechangedcallback !== undefined) {
+                    //            that.options.onvariablechangedcallback();
+                    //        }
+                    //    }
+                    //}).hide();
                     break;
             }
             this._super(key, value);

@@ -683,9 +683,9 @@
             if (formula.var) {
                 var variableID = model.GetIdByName(formula.var);
                 if (variableID.length == 0) throw "Variable '" + formula.var + "' is not found";
-                return model.GetVariableById(parseFloat(variableID[0]));
+                return new BMA.LTLOperations.NameOperand(formula.var, parseFloat(variableID[0]));
             } else if (formula.const) {
-                return parseFloat(formula.const);
+                return new BMA.LTLOperations.ConstOperand(parseFloat(formula.const));
             } else if (formula.opr) {
                 var operation = new BMA.LTLOperations.Operation();
                 var operands = [];
@@ -700,6 +700,31 @@
                 operation.Operands = operands;
                 return operation;
             }
+        }
+
+        export function ConvertTFOperationToString(operation: BMA.LTLOperations.IOperand): string {
+            var op = "";
+            if (operation instanceof BMA.LTLOperations.ConstOperand) {
+                op += operation.Value + " ";
+            } else if (operation instanceof BMA.LTLOperations.NameOperand) {
+                op += "var(" + operation.Name + ") ";
+            } else if (operation instanceof BMA.LTLOperations.Operation) {
+                if (operation.Operator.IsFunction) { //function()
+                    op += operation.Operator.Name.toLowerCase() + "(" + BMA.ModelHelper.ConvertTFOperationToString(operation.Operands[0]);
+                    for (var i = 1; i < operation.Operands.length; i++) {
+                        op += ", " + BMA.ModelHelper.ConvertTFOperationToString(operation.Operands[i]);
+                    }
+                    if (operation.Operands.length < operation.Operator.MinOperandsCount)
+                        op += ",";
+                    op += ")";
+                } else {//x + y
+                    op += BMA.ModelHelper.ConvertTFOperationToString(operation.Operands[0]) + " " + operation.Operator.Name + " " + BMA.ModelHelper.ConvertTFOperationToString(operation.Operands[1]);
+                    for (var i = 2; i < operation.Operands.length; i++) {
+                        op += " " + operation.Operator.Name + " " + BMA.ModelHelper.ConvertTFOperationToString(operation.Operands[i]);
+                    }
+                }
+            } 
+            return op;
         }
 
         export function ConvertTargetFunctionToOperation(formula: string, model: BMA.Model.BioModel): any {
