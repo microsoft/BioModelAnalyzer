@@ -61,44 +61,40 @@ describe("ProgressionTable", () => {
         }
     })
 
-    //it("should randomize value on clicking random-icon", () => {
-    //    var interval = [];
-    //    interval[0] = [2, 3];
-    //    interval[1] = [0, 5];
-    //    interval[2] = [7, 18];
+    it("should randomize value on clicking random-icon", () => {
+        var interval = [];
+        interval[0] = [2, 3];
+        interval[1] = [0, 5];
+        interval[2] = [7, 18];
 
-    //    widget.progressiontable({ interval: interval });
+        widget.progressiontable({ interval: interval });
 
-    //    var trs = widget.find("tr").not(":first-child");
-    //    var td = trs.eq(2).children("td").eq(0).children("input");
-    //    expect(td.val()).toEqual('7');
-    //    var rand = trs.eq(2).children("td").eq(1);
-    //    rand.click();
+        var trs = widget.find("tr").not(":first-child");
+        var td = trs.eq(2).children("td").eq(0).children("input");
+        expect(td.val()).toEqual('7');
+        var rand = trs.eq(2).children("td").eq(1);
+        rand.click();
+        if (td.val() !== 7)
+            expect(td.parent().parent().hasClass("red")).toBeTruthy();
+    })
+
+    it("should randomize all", () => {
+        var interval = [];
+        interval[0] = [1, 3];
+        interval[1] = [3, 7];
+        interval[2] = [2, 35];
+        var td = [];
+        var tdRand = [];
+
+        widget.progressiontable({ interval: interval });
         
-    //    expect(td.val()).not.toEqual('7');
-    //})
+        expect(widget.find("tr.red").length).toEqual(0);
 
-    //it("should randomize all", () => {
-    //    var interval = [];
-    //    interval[0] = [1, 3];
-    //    interval[1] = [3, 7];
-    //    interval[2] = [2, 35];
-    //    var td = [];
-
-    //    widget.progressiontable({ interval: interval });
-
-    //    var tds = widget.find("tr").not(":first-child").children("td:first-child");
-    //    tds.children("input").each(function (ind) {
-    //        td[ind] = $(this).val();
-    //    });
-    //    var rand = widget.children("div").eq(0);
-    //    rand.click();
-
-    //    tds.children("input").each(function (ind) {
-    //        td[ind] = $(this).val();
-    //    });
-
-    //})
+        var rand = widget.find(".random-small");
+        rand.click();
+        
+        expect(widget.find("tr.red").length).not.toEqual(0);
+    })
 
     it("should create widget with data", () => {
         var interval = [];
