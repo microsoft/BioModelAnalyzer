@@ -8,7 +8,7 @@
 
         options: {
             operation: undefined,
-            variables: [{ Name: "A" }, { Name: "B" }, { Name: "C" }]
+            variables: []
         },
 
         _create: function () {
@@ -717,6 +717,10 @@
             var needRefreshStates = false;
             switch (key) {
                 case "operation":
+                    break;
+                case "variables":
+                    that.options.variables = value;
+                    that._refreshStates();
                     break;
                 default:
                     break;
