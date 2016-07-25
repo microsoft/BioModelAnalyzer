@@ -11,6 +11,8 @@ open Microsoft.Z3
 
 let initZ3forSys network initBound (paths : Map<QN.var,int list> list) initK (z : Context) =
     
+    use s = z.MkSolver()
+
     let boolean_encoding = true
     
     //abstract the last range from the paths
@@ -45,24 +47,22 @@ let initZ3forSys network initBound (paths : Map<QN.var,int list> list) initK (z 
             let nodelist = node :: nodeinputlist
             if boolean_encoding then
                 if not previousRange.IsEmpty then 
-                    let target_function_bool_constraint = BioCheckPlusZ3.constraint_for_target_function_boolean network node nodeinputlist (Map.find node.var currentRange) previousRange stepUnrolled (stepUnrolled - 1) z
-                    z.AssertCnstr(target_function_bool_constraint)
+                    let target_function_bool_constraint = BioCheckPlusZ3.constraint_for_target_function_boolean network node nodeinputlist (Map.find node.var currentRange) previousRange stepUnrolled (stepUnrolled - 1) z s
+                    s.Assert target_function_bool_constraint
 //                    ignore(BioCheckPlusZ3.assert_target_function_boolean network node nodeinputlist (Map.find node.var currentRange) previousRange stepUnrolled (stepUnrolled - 1) z)
             else
                 let varnamenode = BioCheckZ3.build_var_name_map nodelist
-                stepZ3rangelist.assert_target_function network node varnamenode initRange stepUnrolled (stepUnrolled + 1) z
+                stepZ3rangelist.assert_target_function network node varnamenode initRange stepUnrolled (stepUnrolled + 1) z s
 
         previousRange <- currentRange
         pathsToBeHandled <- pathsToBeHandled.Tail
         stepUnrolled <- stepUnrolled + 1
 
 
-        let model = ref null
-        z.Push()
-        let sat = z.CheckAndGetModel (model)
+        s.Push()
+        let sat = s.Check()
         printf "%A" sat
-        if (!model) <> null then (!model).Dispose()
-        z.Pop()
+        s.Pop()
 
 // In order to keep the naming of states to be consistent with the one of transitions for system, we can just use the above way simply.
 // save if the way used is not correct...
@@ -91,7 +91,7 @@ let initZ3forSys network initBound (paths : Map<QN.var,int list> list) initK (z 
 //            //assert Z3 assertion now, one for one variable at one time step
 //            let mutable currentVar = z.MkConst(z.MkSymbol nameOfCurVarAtCurTime, z.MkIntSort())
 //            let mutable assertionForOneVarAtOneStep = z.MkAnd(z.MkGe(currentVar, z.MkIntNumeral minVar), z.MkLe(currentVar, z.MkIntNumeral maxVar))
-//            z.AssertCnstr assertionForOneVarAtOneStep
+//            s.Assert assertionForOneVarAtOneStep
 //            varsToBeHandled <- varsToBeHandled.Remove numOfVarHandled
 //            numOfVarHandled <- numOfVarHandled + 1
 //                
@@ -107,15 +107,15 @@ let initZ3forSys network initBound (paths : Map<QN.var,int list> list) initK (z 
 type VariableRange = Map<QN.var, int list>
 type QN = QN.node list
 
-let encode_current_range network (currentRange : VariableRange) stepUnrolled (z : Context) =
+let encode_current_range network (currentRange : VariableRange) stepUnrolled (z : Context) (s : Solver) =
     for node in network do
         let list_of_bool_vars = BioCheckPlusZ3.allocate_bool_vars node (Map.find node.var currentRange) stepUnrolled z
-        ignore(BioCheckPlusZ3.create_implication_for_bool_vars list_of_bool_vars z)
+        BioCheckPlusZ3.create_implication_for_bool_vars list_of_bool_vars z s
 
 
 // Note that the code in this function duplicates the code of function
 // encode_transition_with_time
-let encode_transition (network:QN) (previous_range : VariableRange) (current_range : VariableRange) current_step (z : Context) =
+let encode_transition (network:QN) (previous_range : VariableRange) (current_range : VariableRange) current_step (z : Context) (s : Solver) =
     if not previous_range.IsEmpty then 
         for node in network do
             let node_values = Map.find node.var current_range
@@ -129,12 +129,12 @@ let encode_transition (network:QN) (previous_range : VariableRange) (current_ran
                 // Add the node itself as head of list
                 let inputs_including_node = node :: nodeinputlist
                 let transition_constraint = 
-                    BioCheckPlusZ3.constraint_for_target_function_boolean network node inputs_including_node (Map.find node.var current_range) previous_range current_step (current_step - 1) z 
-                z.AssertCnstr transition_constraint
+                    BioCheckPlusZ3.constraint_for_target_function_boolean network node inputs_including_node (Map.find node.var current_range) previous_range current_step (current_step - 1) z s
+                s.Assert transition_constraint
 
 // Note that the code in this function duplicates the code of function
 // encode_transition
-let encode_transition_with_loop (network:QN) (last_range : VariableRange) (current_range : VariableRange) last_step current_step (z : Context) =
+let encode_transition_with_loop (network:QN) (last_range : VariableRange) (current_range : VariableRange) last_step current_step (z : Context) (s : Solver) =
     for node in network do
         let node_values = Map.find node.var current_range
         if not (List.isEmpty node_values) then
@@ -143,13 +143,13 @@ let encode_transition_with_loop (network:QN) (last_range : VariableRange) (curre
                                 yield (List.filter (fun (x:QN.node) -> ((x.var = var) && not (x.var = node.var))) network) ]
                                 
             let inputs_including_node = node :: nodeinputlist
-            let z3_constraint_for_trans = BioCheckPlusZ3.constraint_for_target_function_boolean network node inputs_including_node (Map.find node.var current_range) last_range current_step last_step z
+            let z3_constraint_for_trans = BioCheckPlusZ3.constraint_for_target_function_boolean network node inputs_including_node (Map.find node.var current_range) last_range current_step last_step z s
             let z3_constraint_for_loop_at_time = BioCheckPlusZ3.constraint_for_loop_at_time current_step last_step z
-            (z.AssertCnstr(z.MkImplies(z3_constraint_for_loop_at_time,z3_constraint_for_trans)))
+            (s.Assert(z.MkImplies(z3_constraint_for_loop_at_time,z3_constraint_for_trans)))
 
 
 /// Encode the path 
-let encode_boolean_paths network (z : Context) (ranges : VariableRange list)  =
+let encode_boolean_paths network (z : Context, s : Solver) (ranges : VariableRange list) =
 
     // Encode each range, and the transition from it's previous range
     let time = ref 0 
@@ -157,8 +157,8 @@ let encode_boolean_paths network (z : Context) (ranges : VariableRange list)  =
 
     for range in ranges do
 
-        encode_current_range network range !time z 
-        encode_transition network !previous_range range !time z 
+        encode_current_range network range !time z s
+        encode_transition network !previous_range range !time z s
 
         incr time
         previous_range := range
@@ -170,14 +170,14 @@ let encode_boolean_paths network (z : Context) (ranges : VariableRange list)  =
 // if loop_closure_loop is in the range 0 .. ranges.Length-1 then it indicates
 // the exact position of loop closure and only the constraint for that position needs to be 
 // asserted
-let encode_loop_closure network (z : Context) (ranges : VariableRange list) (loop_closure_loc : int) =
+let encode_loop_closure network (z : Context, s : Solver) (ranges : VariableRange list) (loop_closure_loc : int) =
     let last_time = ranges.Length - 1 
     let last_range = List.head (List.rev ranges)
 
     let time = ref 0
     for range in ranges do
         if !time = loop_closure_loc || loop_closure_loc < 0 || loop_closure_loc > last_time then
-            encode_transition_with_loop network last_range range last_time !time z
+            encode_transition_with_loop network last_range range last_time !time z s
 
         incr time
 
@@ -204,11 +204,11 @@ let encode_loop_closure network (z : Context) (ranges : VariableRange list) (loo
 // The loop closes at time n-1 if !vn-2
 //
 // loop_closure_loop indicates the exact position of loop closure (-1 for leave open)
-let encode_loop_closure_variables (z : Context) length loop_closure_loc =
+let encode_loop_closure_variables (z : Context, s : Solver) length loop_closure_loc =
     let list_of_variables = BioCheckPlusZ3.allocate_loop_vars z length
     if (loop_closure_loc < 0 || loop_closure_loc >= length) then
-        ignore(BioCheckPlusZ3.create_implication_for_bool_vars list_of_variables z)
+        BioCheckPlusZ3.create_implication_for_bool_vars list_of_variables z s
     else
         let list_of_values = [ for i in 0 .. length-2  -> if  i < loop_closure_loc then false else true ]
-        ignore(BioCheckPlusZ3.assert_values_for_bool_vars list_of_variables list_of_values z)
+        BioCheckPlusZ3.assert_values_for_bool_vars list_of_variables list_of_values z s
 

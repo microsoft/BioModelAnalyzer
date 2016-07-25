@@ -9,7 +9,7 @@ open VariableEncoding
 type VariableRange = Map<QN.var, int list>
 type QN = QN.node list
 type FormulaLocation = int list 
-type FormulaConstraint = Map<FormulaLocation, Term>
+type FormulaConstraint = Map<FormulaLocation, BoolExpr>
 type FormulaConstraintList = FormulaConstraint list
 
 let create_z3_bool_var (location : FormulaLocation) time (z: Context) =
@@ -20,7 +20,7 @@ let create_z3_bool_var (location : FormulaLocation) time (z: Context) =
 // Encode [phi] into [z]. As a by-product, return the map of constraints per location. 
 // Better name: encode 
 // Efficiency: need to memoize xlation. 
-let produce_constraints_for_truth_of_formula_at_time (phi : LTLFormulaType) (range : VariableRange) (step : int) (z : Context) : Map<int list,Term> =
+let produce_constraints_for_truth_of_formula_at_time (phi : LTLFormulaType) (range : VariableRange) (step : int) (z : Context) : Map<int list,BoolExpr> =
 
     let rec encode_truth_of_formula phi map =
         // SI: encode_> and encode_< must be generalizable? 
@@ -126,7 +126,7 @@ let cc_of_loc_formula f loc_to_cc (z:Context) =
 // to this step and only then encode the transition.
 
 // let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : QN) (previous_map : FormulaConstraint) (current_map : FormulaConstraint) (step_prev : int) (step_curr : int) (z : Context) additional_application_constraint = 
-let rec encode_transition (phi : LTLFormulaType) (previous_map : FormulaConstraint) (current_map : FormulaConstraint) (step_prev : int) (step_curr : int) (z : Context) assumption = 
+let rec encode_transition (phi : LTLFormulaType) (previous_map : FormulaConstraint) (current_map : FormulaConstraint) (step_prev : int) (step_curr : int) (z : Context, s : Solver) assumption = 
    
     // Get constraints associated with [loc]
     // Constraints for T,F are tt,ff. 
@@ -191,7 +191,7 @@ let rec encode_transition (phi : LTLFormulaType) (previous_map : FormulaConstrai
         | _ -> t_of_phi
 
     // assert phi
-    z.AssertCnstr t_of_phi' 
+    s.Assert t_of_phi' 
 
     // And then do it all recursively
     match phi with 
@@ -200,13 +200,13 @@ let rec encode_transition (phi : LTLFormulaType) (previous_map : FormulaConstrai
     | And(_,f,g) 
     | Or(_,f,g) 
     | Implies(_,f,g) -> 
-        encode_transition f previous_map current_map step_prev step_curr z assumption
-        encode_transition g previous_map current_map step_prev step_curr z assumption
+        encode_transition f previous_map current_map step_prev step_curr (z,s) assumption
+        encode_transition g previous_map current_map step_prev step_curr (z,s) assumption
     | Not(_, f)
     | Next(_, f)
     | Always(_, f)
     | Eventually(_, f) ->
-        encode_transition f previous_map current_map step_prev step_curr z assumption
+        encode_transition f previous_map current_map step_prev step_curr (z,s) assumption
     | _ -> ()
 
 
@@ -227,10 +227,10 @@ let create_list_of_maps_of_formula_constraints (f : LTLFormulaType) (z: Context)
 // Entry Points 
 // 
 
-let assert_top_most_formula (f : LTLFormulaType) (z : Context) (floc_to_cc : FormulaConstraint) =
-    z.AssertCnstr (cc_of_loc_formula f floc_to_cc z)
+let assert_top_most_formula (f : LTLFormulaType) (z : Context, s : Solver) (floc_to_cc : FormulaConstraint) =
+    s.Assert (cc_of_loc_formula f floc_to_cc z)
 
-let encode_formula_transitions_over_path (f : LTLFormulaType) (z : Context) (loc_to_ccs : FormulaConstraintList) =
+let encode_formula_transitions_over_path (f : LTLFormulaType) (z : Context, s : Solver) (loc_to_ccs : FormulaConstraintList) =
     let z3_tt = z.MkTrue ()
     let time = 1
     let loc_to_cc_hd, loc_to_cc_tl = 
@@ -239,13 +239,13 @@ let encode_formula_transitions_over_path (f : LTLFormulaType) (z : Context) (loc
         | hd::tl -> hd,tl
     let _ = List.fold 
                 (fun (time,previous) current ->
-                    let _  = encode_transition f previous current (time-1) time z z3_tt
+                    let _  = encode_transition f previous current (time-1) time (z,s) z3_tt
                     (time+1, current))
                 (time,loc_to_cc_hd)
                 loc_to_cc_tl
     ()        
 
-let encode_formula_transitions_in_loop_closure (f : LTLFormulaType) (z : Context) (loc_to_ccs : FormulaConstraintList) =
+let encode_formula_transitions_in_loop_closure (f : LTLFormulaType) (z : Context, s : Solver) (loc_to_ccs : FormulaConstraintList) =
     let last_time = (List.length loc_to_ccs) - 1
     let last_map = 
         match (List.rev loc_to_ccs) with     
@@ -256,7 +256,7 @@ let encode_formula_transitions_in_loop_closure (f : LTLFormulaType) (z : Context
     let _ = List.fold   
                 (fun time floc_to_cc ->
                     let cnstr = BioCheckPlusZ3.constraint_for_loop_at_time time last_time z 
-                    encode_transition f last_map floc_to_cc last_time time z cnstr
+                    encode_transition f last_map floc_to_cc last_time time (z,s) cnstr
                     time + 1)
                 time
                 loc_to_ccs
@@ -272,7 +272,7 @@ let encode_formula_transitions_in_loop_closure (f : LTLFormulaType) (z : Context
 // In symbols: \/_{time=0}^last_time (inside_loop /\ fair)
 // The inside loop predicate is: if time=last_time then it is true
 //                               if time<last_time then it is l_time
-let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (z : Context) (formula_constraints : FormulaConstraintList) =
+let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (z : Context, s : Solver) (formula_constraints : FormulaConstraintList) =
     let last_time = (List.length formula_constraints) - 1
 
     let inside_loop time =
@@ -303,7 +303,7 @@ let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (z : Context) (f
                             (0,[])
                             formula_constraints
         let fairness_cnstr = z.MkOr(List.toArray disjs)
-        z.AssertCnstr(fairness_cnstr)
+        s.Assert(fairness_cnstr)
 
     let rec loop f = 
         match ltl_formula with 

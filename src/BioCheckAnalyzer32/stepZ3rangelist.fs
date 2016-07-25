@@ -26,17 +26,17 @@ let rec expr_to_z3 (qn : QN.node list) (node:QN.node) expr (var_names : Map<int,
         // SI: do the same Expr.eval. 
         let scale,displacement = 
             if (v_min<>v_max) then 
-               let t = z.MkRealNumeral(node_max - node_min)
-               let b = z.MkRealNumeral(v_max - v_min)
-               (z.MkDiv(t,b) , z.MkRealNumeral( (node_min - v_min):int ))
-            else (z.MkRealNumeral 1, z.MkRealNumeral 0)
+               let t = z.MkReal(node_max - node_min)
+               let b = z.MkReal(v_max - v_min)
+               (z.MkDiv(t,b) , z.MkReal( (node_min - v_min):int ))
+            else (z.MkReal 1, z.MkReal 0)
 
         let input_var = 
             let v_t = BioCheckZ3.get_z3_int_var_at_time v_defn time
             z.MkToReal(z.MkConst(z.MkSymbol v_t, z.MkIntSort()))
         z.MkMul(z.MkAdd(input_var,displacement), scale)
 
-    | Const c -> z.MkRealNumeral c
+    | Const c -> z.MkReal c
     | Plus(e1, e2) -> z.MkAdd(expr_to_z3 qn node e1 var_names time z, expr_to_z3 qn node e2 var_names time z)
     | Minus(e1, e2) -> z.MkSub(expr_to_z3 qn node e1 var_names time z, expr_to_z3 qn node e2 var_names time z)
     | Times(e1, e2) -> z.MkMul(expr_to_z3 qn node e1 var_names time z, expr_to_z3 qn node e2 var_names time z)
@@ -53,13 +53,13 @@ let rec expr_to_z3 (qn : QN.node list) (node:QN.node) expr (var_names : Map<int,
         z.MkIte(is_lt, z1, z2)
     | Ceil e1 ->
         let z1 = expr_to_z3 qn node e1 var_names time z
-        let half = z.MkRealNumeral "99 / 100"
+        let half = z.MkReal "99 / 100"
         let z1_half = z.MkAdd(half, z1)
-        z.MkToReal (z.MkToInt z1_half )
+        z.MkToReal (z.MkReal2Int z1_half )
         
     | Floor e1 ->
         let z1 = expr_to_z3 qn node e1 var_names time z
-        z.MkToReal (z.MkToInt z1)
+        z.MkToReal (z.MkReal2Int z1)
     | Ave es ->
         let sum = List.fold
                     (fun ast e1 -> match ast with
@@ -68,10 +68,10 @@ let rec expr_to_z3 (qn : QN.node list) (node:QN.node) expr (var_names : Map<int,
                                                 Some(z.MkAdd(z0, z1)))
                     None
                     es
-        let cnt = z.MkRealNumeral (List.length es)
+        let cnt = z.MkReal (List.length es)
 
         match sum with
-        | None -> z.MkRealNumeral 0
+        | None -> z.MkReal 0
         | Some s -> z.MkDiv(s, cnt)
     | Sum es ->
         let sum = List.fold
@@ -81,14 +81,14 @@ let rec expr_to_z3 (qn : QN.node list) (node:QN.node) expr (var_names : Map<int,
                                                 Some(z.MkAdd(z0, z1)))
                     None
                     es
-        let cnt = z.MkRealNumeral 1
+        let cnt = z.MkReal 1
 
         match sum with
-        | None -> z.MkRealNumeral 0
+        | None -> z.MkReal 0
         | Some s -> z.MkDiv(s, cnt)
         *)
 
-let assert_target_function qn (node: QN.node) var_names (rangelist : Map<QN.var,int list>) start_time end_time (z : Context) =
+let assert_target_function qn (node: QN.node) var_names (rangelist : Map<QN.var,int list>) start_time end_time (z : Context) (s : Solver) =
     let current_state_id = enc_z3_int_var_at_time node start_time
     let current_state = make_z3_int_var current_state_id z
 
@@ -96,10 +96,10 @@ let assert_target_function qn (node: QN.node) var_names (rangelist : Map<QN.var,
     let next_state = make_z3_int_var next_state_id z
 
     let z3_target_function = BioCheckZ3.expr_to_z3 qn node node.f start_time z
-    // let T_applied = z.MkToInt(z3_target_function)
-    let half = z.MkDiv(z.MkRealNumeral(1),z.MkRealNumeral(2))
-    let tf_plus_half = z.MkAdd(half,z3_target_function)
-    let T_applied = z.MkToInt (tf_plus_half)
+    // let T_applied = z.MkReal2Int(z3_target_function)
+    let half = z.MkDiv(z.MkReal(1),z.MkReal(2))
+    let tf_plus_half = z.MkAdd(half,z3_target_function) :?> RealExpr
+    let T_applied = z.MkReal2Int (tf_plus_half)
 
     let list = Map.find node.var rangelist
     let lower = List.min list
@@ -107,9 +107,9 @@ let assert_target_function qn (node: QN.node) var_names (rangelist : Map<QN.var,
      
     // If the next value is greater than current value and current value is not
     // max the value needs to increase
-    let up = z.MkEq(next_state, z.MkAdd(current_state, z.MkIntNumeral 1))
+    let up = z.MkEq(next_state, z.MkAdd(current_state, z.MkInt 1))
     let up = z.MkAnd(up, z.MkGt(T_applied, current_state))
-    let up = z.MkAnd(up, z.MkGt(z.MkIntNumeral upper, current_state))
+    let up = z.MkAnd(up, z.MkGt(z.MkInt upper, current_state))
 
     // If the next value is the same as current value of the next value is 
     // greater than the current value but current value is max or
@@ -117,31 +117,33 @@ let assert_target_function qn (node: QN.node) var_names (rangelist : Map<QN.var,
     // the value needs to stay the same
     let same = z.MkEq(next_state, current_state)
     let tmpsame = z.MkEq(T_applied, current_state)
-    let tmpsame = z.MkOr(tmpsame, z.MkAnd(z.MkGt(T_applied, current_state), z.MkEq(z.MkIntNumeral upper, current_state)))
-    let tmpsame = z.MkOr(tmpsame, z.MkAnd(z.MkLt(T_applied, current_state), z.MkEq(z.MkIntNumeral lower, current_state)))
+    let tmpsame = z.MkOr(tmpsame, z.MkAnd(z.MkGt(T_applied, current_state), z.MkEq(z.MkInt upper, current_state)))
+    let tmpsame = z.MkOr(tmpsame, z.MkAnd(z.MkLt(T_applied, current_state), z.MkEq(z.MkInt lower, current_state)))
     let same = z.MkAnd(same, tmpsame)
 
-    let dn = z.MkEq(next_state, z.MkSub(current_state, z.MkIntNumeral 1))
+    let dn = z.MkEq(next_state, z.MkSub(current_state, z.MkInt 1))
     let dn = z.MkAnd(dn, z.MkLt(T_applied, current_state))
-    let dn = z.MkAnd(dn, z.MkLt(z.MkIntNumeral lower, current_state))
+    let dn = z.MkAnd(dn, z.MkLt(z.MkInt lower, current_state))
 
     let cnstr = z.MkOr([|up;same;dn|])
-    Log.log_debug ("Apply TF of " + node.name + " for step " + string(start_time) + " to " + string(end_time) + ":" + (z.ToString cnstr))
-    z.AssertCnstr cnstr
+    Log.log_debug ("Apply TF of " + node.name + " for step " + string(start_time) + " to " + string(end_time) + ":" + (cnstr.ToString()))
+    s.Assert cnstr
     
-let assert_query (node : QN.node) (value : int) time (z : Context) = 
+let assert_query (node : QN.node) (value : int) time (z : Context) (s : Solver) = 
     let var_name = enc_z3_int_var_at_time node time
     let v = make_z3_int_var var_name z
-    let query = z.MkEq (v, z.MkIntNumeral value)
-    z.AssertCnstr query
+    let query = z.MkEq (v, z.MkInt value)
+    s.Assert query
 
 let find_paths (network : QN.node list) step rangelist orbounds=
-    let cfg = new Config()
-    cfg.SetParamValue("MODEL", "true")
-    let ctx = new Context(cfg)
+    let cfg = System.Collections.Generic.Dictionary()
+    cfg.Add("MODEL", "true")
+
+    use ctx = new Context(cfg)
+    use s = ctx.MkSolver()
     
     Log.log_debug("ctx.Push()")
-    ctx.Push()
+    s.Push()
     
     // use to record new bounds on variables
     let mutable nubounds = Map.empty
@@ -158,15 +160,16 @@ let find_paths (network : QN.node list) step rangelist orbounds=
                     
                 let (model : ref<Model>) = ref null
 
-                ctx.Push()
-                assert_query (node : QN.node) (i : int) (step+1) ctx
-                let sat = ctx.CheckAndGetModel (model)
+                s.Push()
+                assert_query (node : QN.node) (i : int) (step+1) ctx s
 
-                // SI: cons the i in all cases but false                         
-                if sat = LBool.True then
+                // SI: cons the i in all cases but false (UNSATISFIABLE)
+                match s.Check() with
+                | Status.SATISFIABLE ->
                     newPossibleValues <- i :: newPossibleValues
-                elif sat = LBool.Undef then
-                    if (!model = null) then
+                | Status.UNKNOWN ->
+                    use model = s.Model
+                    if model = null then
                         Log.log_debug "z3 returned unknown"
                         newPossibleValues <- i :: newPossibleValues
                     else
@@ -176,10 +179,9 @@ let find_paths (network : QN.node list) step rangelist orbounds=
                         // value of the formula under the model 
                         // actually evaluates the formula to true
                         newPossibleValues <- i :: newPossibleValues
-
-
-                ctx.Pop()         
-                if (!model) <> null then (!model).Dispose()
+                | Status.UNSATISFIABLE -> 
+                    ()
+                s.Pop()         
             
         if (newPossibleValues.Length = 0) then
             // Something went wrong! Throw an exception at some point
@@ -192,8 +194,8 @@ let find_paths (network : QN.node list) step rangelist orbounds=
     // For each action step, we only handle one variable and its inputs.
     for node in network do
 
-        Log.log_debug("ctx.Push()")        
-        ctx.Push()
+        Log.log_debug("s.Push()")        
+        s.Push()
             
         // then find the correponding nodes with these node.var(s)
         // network is a list, and each member has four elements
@@ -208,22 +210,19 @@ let find_paths (network : QN.node list) step rangelist orbounds=
             let rangeOfN = Map.find n.var rangelist
             let nMin = List.min rangeOfN
             let nMax = List.max rangeOfN    
-            BioCheckZ3.assert_bound n (nMin , nMax) step ctx
+            BioCheckZ3.assert_bound n (nMin , nMax) step ctx s
         // Then, push related transition constraints
-        assert_target_function network node varnamenode orbounds step (step+1) ctx
+        assert_target_function network node varnamenode orbounds step (step+1) ctx s
         // Then, we can begin to query about this node/variable
         let currentPossibleValues = Map.find node.var rangelist
                    
         nubounds <- Map.add node.var (UpdatePossibleValues node currentPossibleValues) nubounds
         
-        Log.log_debug("ctx.Pop()")
-        ctx.Pop()
+        Log.log_debug("s.Pop()")
+        s.Pop()
             
-    Log.log_debug("ctx.Pop()")
-    ctx.Pop()
-
-    ctx.Dispose()
-    cfg.Dispose()
+    Log.log_debug("s.Pop()")
+    s.Pop()
 
     nubounds
 //End <-- For each time step, encode the system (model) in SMT format, and push into Z3 to compute possible values of each variables
@@ -237,16 +236,19 @@ let input_nodes (qn:QN.node list) (node:QN.node) =
                 [ for var in node.inputs do
                     yield (List.filter (fun (x:QN.node) -> ((x.var = var) && not (x.var = node.var))) qn) ]
 
-let model_ok (ctx:Context) model = 
-    let sat = ctx.CheckAndGetModel (model)
-    sat = LBool.True || sat = LBool.Undef
+let check_ok (s:Solver) = 
+    match s.Check() with
+    | Status.SATISFIABLE
+    | Status.UNKNOWN -> true
+    | _ -> false
        
 let reachability (qn:QN.node list) step range orig_range =
     // Z3 ctx management
-    let cfg = new Config()
-    cfg.SetParamValue("MODEL", "true")
-    let ctx = new Context(cfg)
-    ctx.Push()    
+    let cfg = System.Collections.Generic.Dictionary()
+    cfg.Add("MODEL", "true")
+    use ctx = new Context(cfg)
+    use s = ctx.MkSolver()
+    s.Push()    
     
     let next_values (node : QN.node) vv =
         match vv with
@@ -255,12 +257,10 @@ let reachability (qn:QN.node list) step range orig_range =
         | _ -> 
             let vv' = List.fold 
                         (fun vv' v ->                     
-                            let (model : ref<Model>) = ref null
-                            ctx.Push()
-                            assert_query node v (step+1) ctx 
-                            let vv' = if model_ok ctx model then v :: vv' else vv'
-                            ctx.Pop()         
-                            if (!model) <> null then (!model).Dispose()
+                            s.Push()
+                            assert_query node v (step+1) ctx s
+                            let vv' = if check_ok s then v :: vv' else vv'
+                            s.Pop()         
                             vv')
                         []
                         vv
@@ -269,27 +269,23 @@ let reachability (qn:QN.node list) step range orig_range =
     let bounds' = 
         List.fold 
             (fun bounds' (node:QN.node) -> 
-                ctx.Push()
+                s.Push()
                 let nodes = node :: (input_nodes qn node)
                 // Assert current range bounds 
                 for n in nodes do
                     let range_n = Map.find n.var range
                     let min_n, max_n = List.min range_n, List.max range_n 
-                    BioCheckZ3.assert_bound n (min_n,max_n) step ctx
+                    BioCheckZ3.assert_bound n (min_n,max_n) step ctx s
                 // Assert transition constraints
                 let var_to_name = BioCheckZ3.build_var_name_map nodes
-                assert_target_function qn node var_to_name orig_range step (step+1) ctx
+                assert_target_function qn node var_to_name orig_range step (step+1) ctx s
                 // Assert next range 
                 let current_values = Map.find node.var range
                 let bounds' = Map.add node.var (next_values node current_values) bounds'
-                ctx.Pop()
+                s.Pop()
                 bounds' )
             Map.empty
             qn
-    // Z3 ctx management            
-    ctx.Pop()
-    ctx.Dispose()
-    cfg.Dispose()
     // result
     bounds'
 

@@ -61,11 +61,11 @@ let rec expr_to_z3 (node:QN.node) rangelist expr (var_names : Map<int, string>) 
         // QSW: the input format is not correct. Instead of using "0.5", we use "99/100". 
         let half = z.MkRealNumeral "99 / 100"
         let z1_half = z.MkAdd(half, z1)
-        z.MkToReal (z.MkToInt z1_half )
+        z.MkToReal (z.MkReal2Int z1_half )
         
     | Floor e1 ->
         let z1 = expr_to_z3 node rangelist e1 var_names time z
-        z.MkToReal (z.MkToInt z1)
+        z.MkToReal (z.MkReal2Int z1)
     | Ave es ->
         let sum = List.fold
                     (fun ast e1 -> match ast with
@@ -101,7 +101,7 @@ let assert_target_function (node: QN.node) var_names rangelist start_time end_ti
     let next_state_id = sprintf "%s^%d" node.name end_time
     let next_state = z.MkConst(z.MkSymbol next_state_id, z.MkIntSort())
 
-    let T_applied = z.MkToInt(expr_to_z3 node rangelist node.f var_names start_time z)
+    let T_applied = z.MkReal2Int(expr_to_z3 node rangelist node.f var_names start_time z)
 
     // QSW: have not considered these two situations: the current value is max in the rangelist, but and the same
     // time, the value of its target function is greater than its current value; and, the current value is min
@@ -130,7 +130,7 @@ let assert_target_function (node: QN.node) var_names rangelist start_time end_ti
 
     let cnstr = z.MkOr([|up;same;dn|])
     Log.log_debug (z.ToString cnstr)
-    z.AssertCnstr cnstr
+    s.Assert cnstr
 
 
 
@@ -141,10 +141,10 @@ let assert_bound_min_max (node : QN.node) (lower : int, upper: int) time (z : Co
     let upper_bound = z.Simplify (z.MkLe(v, z.MkIntNumeral upper))
     
     Log.log_debug (z.ToString lower_bound)
-    z.AssertCnstr lower_bound
+    s.Assert lower_bound
 
     Log.log_debug (z.ToString upper_bound)
-    z.AssertCnstr upper_bound
+    s.Assert upper_bound
 
 
 let assert_bound_rangelist (node : QN.node) list time (z : Context) =
@@ -156,14 +156,14 @@ let assert_bound_rangelist (node : QN.node) list time (z : Context) =
             let mutable tmp = z.MkEq (v, z.MkIntNumeral i)
             var_boundtmp <- z.MkOr(var_boundtmp, tmp)
         var_boundtmp
-    z.AssertCnstr var_bound
+    s.Assert var_bound
     
 //(*
 let assert_query (node : QN.node) (value : int) time (z : Context) = 
     let var_name = sprintf "%s^%d" node.name time
     let v = z.MkConst(z.MkSymbol var_name, z.MkIntSort())
     let query = z.MkEq (v, z.MkIntNumeral value)
-    z.AssertCnstr query
+    s.Assert query
 //*)
 
 let assert_not_query (node : QN.node) (value : int) time (z : Context) = 
@@ -171,7 +171,7 @@ let assert_not_query (node : QN.node) (value : int) time (z : Context) =
     let v = z.MkConst(z.MkSymbol var_name, z.MkIntSort())
     let query = z.MkEq (v, z.MkIntNumeral value)
     let not_query = z.MkNot query
-    z.AssertCnstr not_query
+    s.Assert not_query
         
 let unroll_qn_range qn rangelist orbounds var_names start_time end_time z =
     // Assert the target functions...

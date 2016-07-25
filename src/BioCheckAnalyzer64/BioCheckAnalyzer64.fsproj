@@ -106,6 +106,9 @@
     <Compile Include="..\BioCheckAnalyzer32\VariableEncoding.fs">
       <Link>VariableEncoding.fs</Link>
     </Compile>
+    <Compile Include="..\BioCheckAnalyzer32\Z3Util.fs">
+      <Link>Z3Util.fs</Link>
+    </Compile>
     <Compile Include="..\BioCheckAnalyzer32\Z.fs">
       <Link>Z.fs</Link>
     </Compile>
@@ -190,9 +193,6 @@
     <None Include="..\BioCheckAnalyzer32\App.config">
       <Link>App.config</Link>
     </None>
-    <None Include="z3.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Compile Include="..\BioCheckAnalyzer32\PathFinder.fs">
       <Link>PathFinder.fs</Link>
     </Compile>
@@ -204,7 +204,7 @@
     </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="Microsoft.Z3">
-      <HintPath>..\..\ext\dotNET\64bit\Microsoft.Z3.dll</HintPath>
+      <HintPath>..\..\ext\z3\z3-4.4.1-x64-win\bin\Microsoft.Z3.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
