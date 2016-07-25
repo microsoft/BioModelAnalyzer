@@ -19,7 +19,7 @@
             this.listOfInputs.empty();
             var inputs = this.options.inputs;
             inputs.forEach(function (val, ind) {
-                var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
+                var item = $('<div></div>').text(val.Name).appendTo(that.listOfInputs);
                 item.bind("click", function () {
                     that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
                     that.listOfInputs.hide();
@@ -28,7 +28,7 @@
 
             this.formulaTextArea.val(that.options.formula);
             if (that.options.onformulachangedcallback !== undefined) {
-                this.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
+                that.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
             }
         },
 
@@ -239,10 +239,6 @@
                 if (that.options.onformulachangedcallback !== undefined) {
                     that.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
                 }
-                if (that.options.onvariablechangedcallback !== undefined) {
-                    that.options.onvariablechangedcallback();
-                    //window.Commands.Execute("VariableEdited", {});
-                }
             });
             
         },
@@ -251,8 +247,8 @@
             var inputs = this.options.inputs;
             var arr = {};
             for (var i = 0; i < inputs.length; i++) {
-                if (arr[inputs[i]] === undefined) arr[inputs[i]] = 1;
-                else arr[inputs[i]]++;
+                if (arr[inputs[i].Name] === undefined) arr[inputs[i].Name] = 1;
+                else arr[inputs[i].Name]++;
             }
             return arr;
         },
@@ -276,7 +272,7 @@
                     this.listOfInputs.empty();
                     var inputs = this.options.inputs;
                     inputs.forEach(function (val, ind) {
-                        var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
+                        var item = $('<div></div>').text(val.Name).appendTo(that.listOfInputs);
                         item.bind("click", function () {
                             that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
                             that.listOfInputs.hide();

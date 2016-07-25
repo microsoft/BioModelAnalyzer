@@ -10,7 +10,7 @@
             rangeFrom: 0,
             rangeTo: 0,
             functions: ["VAR", "CONST"],//, "POS", "NEG"],//],
-            operators1: ["+", "-", "*", "/"], 
+            operators1: ["+", "-", "*", "/"],
             operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
             inputs: [],
             TFdescription: "",
@@ -26,51 +26,17 @@
             this.name.val(that.options.name);
             this.rangeFrom.val(that.options.rangeFrom);
             this.rangeTo.val(that.options.rangeTo); 
-            //this.listOfInputs.empty();
-            //this.element.tftexteditor("resetElement");
-            //var inputs = this.options.inputs;
-            //inputs.forEach(function (val, ind) {
-            //    var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
-            //    item.bind("click", function () {
-            //        that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
-            //        that.listOfInputs.hide();
-            //    });
-            //});
-
-            //this.formulaTextArea.val(that.options.formula);
-            //window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: that._inputsArray() });
         },
 
         SetValidation: function (result: boolean, message: string) {
-            this.element.tftexteditor("SetValidation", result, message).hide();
+            this.texteditor.tftexteditor("SetValidation", result, message);
         },
-
-
-        //getCaretPos: function (jq)
-        //{
-        //    var obj = jq[0];
-        //    obj.focus();
-
-        //    if (obj.selectionStart) return obj.selectionStart; //Gecko
-        //    else if ((<any>document).selection)  //IE
-        //    {
-        //        var sel = (<any>document).selection.createRange();
-        //        var clone = sel.duplicate();
-        //        sel.collapse(true);
-        //        clone.moveToElementText(obj);
-        //        clone.setEndPoint('EndToEnd', sel);
-        //        return clone.text.length;
-        //    }
-
-        //    return 0;
-        //},
-
+        
         _create: function () {
             var that = this;
             this.element.addClass("variable-editor");
-            this.element.draggable({ containment: "parent", scroll: false  });
+            this.element.draggable({ containment: "parent", scroll: false });
             this._appendInputs();
-            //this._processExpandingContent();
             this._bindExpanding();
             this.resetElement();
         },
@@ -80,6 +46,10 @@
             var div = $('<div></div>').addClass("close-icon").appendTo(that.element);
             //var closing = $('<img src="../../images/close.png">').appendTo(div);
             div.bind("click", function () {
+                that.options.formula = that.getFormula();
+                if (that.options.onvariablechangedcallback !== undefined) {
+                    that.options.onvariablechangedcallback();
+                }
                 that.element.hide();
                 if (that.options.oneditorclosing !== undefined) {
                     that.options.oneditorclosing();
@@ -96,7 +66,7 @@
 
             var rangeDiv = $('<div></div>').appendTo(namerangeDiv);
             var rangeLabel = $('<span></span>')
-                //.addClass("labels-in-variables-editor variables-editor-headers")
+            //.addClass("labels-in-variables-editor variables-editor-headers")
                 .text("Range")
                 .appendTo(rangeDiv);
             this.rangeFrom = $('<input type="text" min="0" max="100" size="1">')
@@ -158,33 +128,82 @@
                 .addClass("description-input")
                 .appendTo(descriptionDiv);
 
-            //this.element.tftexteditor({
-            //    onformulachangedcallback: that.options.onformulachangedcallback,
-            //    onvariablechangedcallback: () => {
-            //        that.options.formula = that.element.tftexteditor("option", "formula");
-            //        if (that.options.onvariablechangedcallback !== undefined) {
-            //            that.options.onvariablechangedcallback();
-            //        }
-            //    }
-            //}).hide();
+            this.switcher = $("<div></div>").addClass("tfswitcher").appendTo(that.element);
+            var textEdButton = $("<div>T</div>").addClass("tfswitch").appendTo(that.switcher).click(function () {
+                that.element.removeClass("bmaeditor-expanded").removeClass("bmaeditor-expanded-horizontaly");
+                that.switcher.children().removeClass("selected");
+                textEdButton.addClass("selected");
+                if (that.texteditor.css("display") === "none") {
+                    that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
+                    that.texteditor.tftexteditor({ formula: that.options.formula });
+                }
+                if (that.options.onvariablechangedcallback !== undefined) {
+                    that.options.onvariablechangedcallback();
+                }
+                that.texteditor.show();
+                that.formulaeditor.hide();
+                that.updateLayout();
+            });
 
-            this.formulaeditor = $("<div></div>").appendTo(that.element);
+            var formulaEdButton = $("<div>G</div>").addClass("tfswitch").appendTo(that.switcher).click(function () {
+                that.element.addClass("bmaeditor-expanded").addClass("bmaeditor-expanded-horizontaly");
+                that.switcher.children().removeClass("selected");
+                formulaEdButton.addClass("selected");
+                if (that.formulaeditor.css("display") === "none") {
+                    that.options.formula = that.texteditor.tftexteditor("option", "formula");
+                    that.formulaeditor.formulaeditor({
+                        operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                    });
+                }
+                if (that.options.onvariablechangedcallback !== undefined) {
+                    that.options.onvariablechangedcallback();
+                }
+                that.texteditor.hide();
+                that.formulaeditor.show();
+                that.updateLayout();
+            });
 
-            this.formulaeditor.formulaeditor();
+            this.texteditor = $("<div></div>").appendTo(that.element);
+            this.formulaeditor = $("<div></div>").css("margin-top", "20px").css("width", "600px").appendTo(that.element);
+
+            this.formulaeditor.formulaeditor({
+                onvariablechangedcallback: () => {
+                    that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
+                    that.texteditor.tftexteditor({ formula: that.options.formula });
+                    if (that.options.onvariablechangedcallback !== undefined) {
+                        that.options.onvariablechangedcallback();
+                    }
+                }
+            });
+            this.formulaeditor.hide();
+            textEdButton.addClass("selected");
+            
+            this.texteditor.tftexteditor({
+                onformulachangedcallback: that.options.onformulachangedcallback,
+                onvariablechangedcallback: () => {
+                    that.options.formula = that.texteditor.tftexteditor("option", "formula");
+                    that.formulaeditor.formulaeditor({
+                        operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                    });
+                    if (that.options.onvariablechangedcallback !== undefined) {
+                        that.options.onvariablechangedcallback();
+                    }
+                }
+            });
 
             if (that.options.formula) {
-                //this.element.tftexteditor({
-                //    formula: that.options.formula
-                //}).hide();
+                this.texteditor.tftexteditor({
+                    formula: that.options.formula
+                });
                 this.formulaeditor.formulaeditor({
-                    operation: that.options.formula
+                    operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
                 });
             }
 
             if (that.options.inputs.length) {
-                //this.element.tftexteditor({
-                //    inputs: that.options.inputs
-                //}).hide();
+                this.texteditor.tftexteditor({
+                    inputs: that.options.inputs
+                });
                 var variables = [];
                 for (var i = 0; i < that.options.inputs.length; i++)
                     variables.push({ Name: that.options.inputs[i] });
@@ -193,144 +212,30 @@
                     variables: variables
                 });
             }
-
-            //var formulaDiv = $('<div></div>')
-            //    .addClass('target-function')
-            //    .appendTo(that.element);
-            //$('<div></div>')
-            //    .addClass("window-title")
-            //    .text("Target Function")
-            //    .appendTo(formulaDiv);
-            //this.formulaTextArea = $('<textarea></textarea>')
-            //    .attr("spellcheck", "false")
-            //    .addClass("formula-text-area")
-            //    .appendTo(formulaDiv);
-            //this.prooficon = $('<div></div>')
-            //    .addClass("validation-icon")
-            //    .appendTo(formulaDiv);
-            //this.errorMessage = $('<div></div>')
-            //    .addClass("formula-validation-message")
-            //    .appendTo(formulaDiv);
+            
+        },
+        
+        updateLayout: function () {
+            if (this.formulaeditor !== undefined) {
+                this.formulaeditor.formulaeditor("updateLayout");
+            }
         },
 
-        //_processExpandingContent: function () {
-        //    var that = this;
+        getFormula: function () {
+            var that = this;
+            if (that.texteditor.css("display") === "none") {
+                that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
+            } else {
+                that.options.formula = that.texteditor.tftexteditor("option", "formula");
+            }
+            return that.options.formula;
+        },
 
-        //    var inputsDiv = $('<div></div>').addClass('functions').appendTo(that.element);
-        //    $('<div></div>')
-        //        .addClass("window-title")
-        //        .text("Inputs")
-        //        .appendTo(inputsDiv);
-        //    var inpUl = $('<ul></ul>').appendTo(inputsDiv);
-        //    //var div = $('<div></div>').appendTo(that.element);
-        //    var operatorsDiv = $('<div></div>').addClass('operators').appendTo(that.element);
-        //    $('<div></div>')
-        //        .addClass("window-title")
-        //        .text("Operators")
-        //        .appendTo(operatorsDiv);
-        //    var opUl1 = $('<ul></ul>').appendTo(operatorsDiv);
-        //    var opUl2 = $('<ul></ul>').appendTo(operatorsDiv);
-
-        //    this.infoTextArea = $('<div></div>').addClass('operators-info').appendTo(operatorsDiv);
-
-        //    var functions = this.options.functions;
-        //    functions.forEach(
-        //        function (val, ind) {
-        //            var item = $('<li></li>').appendTo(inpUl);
-        //            var span = $('<button></button>').text(val).appendTo(item);
-        //            item.hover(
-        //                function () { that._OnHoverFunction($(this).children("button"), that.infoTextArea) },
-        //                function () { that._OffHoverFunction($(this).children("button"), that.infoTextArea) }
-        //                );
-        //            if (ind !== 0) {
-        //                item.click(function () {
-        //                    var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
-        //                    that._InsertToFormula(about);
-        //                })
-        //            }
-        //        });
-
-        //    var operators1 = this.options.operators1;
-        //    operators1.forEach(
-        //        function (val, ind) {
-        //            var item = $('<li></li>').appendTo(opUl1);
-        //            var span = $('<button></button>').text(val).appendTo(item);
-        //            item.hover(
-        //                function () { that._OnHoverFunction($(this).children("button"), that.infoTextArea) },
-        //                function () { that._OffHoverFunction($(this).children("button"), that.infoTextArea) }
-        //                );
-        //            item.click(function () { 
-        //                var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
-        //                that._InsertToFormula(about);
-        //            })
-        //        });
-
-        //    var operators2 = this.options.operators2;
-        //    operators2.forEach(
-        //        function (val, ind) {
-        //            var item = $('<li></li>').appendTo(opUl2);
-        //            var span = $('<button></button>').text(val).appendTo(item);
-        //            item.hover(
-        //                function () { that._OnHoverFunction($(this).children("button"), that.infoTextArea) },
-        //                function () { that._OffHoverFunction($(this).children("button"), that.infoTextArea) }
-        //                );
-        //            item.click(function () {
-        //                var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
-        //                that._InsertToFormula(about);
-        //            })
-        //        });
-
-        //    operatorsDiv.width(opUl2.width());
-
-        //    this.inputsList = inpUl.children().eq(0).addClass("var-button");
-        //    var inpbttn = this.inputsList.children("button").addClass("inputs-list-header");
-        //    var expandinputsbttn = $('<div></div>')
-        //        .addClass('inputs-expandbttn')
-        //        .appendTo(inpbttn);
-        //    this.listOfInputs = $('<div></div>')
-        //        .addClass("inputs-list-content")
-        //        //.width(this.inputsList.outerWidth())
-        //        .appendTo(that.inputsList).hide();
-
-
-        //    this.inputsList.bind("click", function () {
-        //        if (that.listOfInputs.is(":hidden")) {
-        //            that.inputsList.css("border-radius", "15px 15px 0 0");
-        //            that.listOfInputs.show();
-        //            inpbttn.addClass('inputs-list-header-expanded');
-        //        }
-        //        else {
-        //            that.inputsList.css("border-radius", "15px");
-        //            that.listOfInputs.hide();
-        //            inpbttn.removeClass('inputs-list-header-expanded');
-        //        }
-        //    });
-        //},
-
-        //_OnHoverFunction: function (item: JQuery, textarea: JQuery) {
-        //    var selected = item.addClass("ui-selected");
-        //    item.parent().children().not(selected).removeClass("ui-selected");
-        //    this._refreshText(selected, textarea);
-        //},
-
-        //_OffHoverFunction: function (item: JQuery, textarea: JQuery) {
-        //    item.parent().children().removeClass("ui-selected");
-        //    textarea.text("");
-        //},
-
-        //_InsertToFormula: function (item: BMA.Functions.BMAFunction) {
-        //    var caret = this.getCaretPos(this.formulaTextArea) + item.Offset;
-        //    this.formulaTextArea.insertAtCaret(item.InsertText).change();
-        //    this.formulaTextArea[0].setSelectionRange(caret, caret);
-        //},
-
-        //_refreshText: function (selected: JQuery,div: JQuery) {
-        //    var that = this;
-        //    div.empty();
-        //    var fun = window.FunctionsRegistry.GetFunctionByName(selected.text());
-        //    $('<h3></h3>').text(fun.Head).appendTo(div);
-        //    $('<p></p>').text(fun.About).appendTo(div);
-        //},
+        getOperation: function () {
+            var that = this;
+            var formula = that.getFormula();
+            return BMA.ModelHelper.ConvertTargetFunctionToOperation(formula, that.options.inputs);
+        },
 
         _bindExpanding: function () {
             var that = this;
@@ -368,16 +273,6 @@
             });
         },
 
-        //_inputsArray() {
-        //    var inputs = this.options.inputs;
-        //    var arr = {};
-        //    for (var i = 0; i < inputs.length; i++) {
-        //        if (arr[inputs[i]] === undefined) arr[inputs[i]] = 1;
-        //        else arr[inputs[i]]++;
-        //    }
-        //    return arr;
-        //},
-
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
@@ -399,15 +294,10 @@
                     break;
                 case "formula":
                     that.options.formula = value;
-                    //this.element.tftexteditor({ formula: value }).hide();
+                    this.texteditor.tftexteditor({ formula: value });
                     this.formulaeditor.formulaeditor({
-                        operation: that.options.formula
+                        operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
                     });
-                    //var inparr = that._inputsArray();
-                    //if (this.formulaTextArea.val() !== that.options.formula)
-                    //    this.formulaTextArea.val(that.options.formula);
-                    //window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
-                    
                     break;
                 case "TFdescription":
                     that.options.TFdescription = value;
@@ -418,38 +308,46 @@
                     this.options.inputs = value;
                     //this.listOfInputs.empty();
                     var inputs = this.options.inputs;
-                    //this.element.tftexteditor({ inputs: value }).hide();
                     var variables = [];
                     for (var i = 0; i < that.options.inputs.length; i++)
-                        variables.push({ Name: that.options.inputs[i] });
+                        variables.push({ Name: that.options.inputs[i].Name });
+
+                    this.texteditor.tftexteditor({ inputs: variables});
 
                     this.formulaeditor.formulaeditor({
                         variables: variables
                     });
-                    //inputs.forEach(function (val, ind) {
-                    //    var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
-                    //    item.bind("click", function () {
-                    //        that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
-                    //        that.listOfInputs.hide();
-                    //    });
-                    //});
                     break;
                 case "onformulachangedcallback":
                     that.options.onformulachangedcallback = value;
-                    //this.element.tftexteditor({
-                    //    onformulachangedcallback: value
-                    //}).hide();
+                    this.texteditor.tftexteditor({
+                        onformulachangedcallback: value
+                    });
                     break;
                 case "onvariablechangedcallback":
                     that.options.onvariablechangedcallback = value;
-                    //this.element.tftexteditor({
-                    //    onvariablechangedcallback: () => {
-                    //        that.options.formula = that.element.tftexteditor("option", "formula");
-                    //        if (that.options.onvariablechangedcallback !== undefined) {
-                    //            that.options.onvariablechangedcallback();
-                    //        }
-                    //    }
-                    //}).hide();
+                    this.formulaeditor.formulaeditor(
+                    {
+                        onvariablechangedcallback: () => {
+                            that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
+                            that.texteditor.tftexteditor({ formula: that.options.formula });
+                            if (that.options.onvariablechangedcallback !== undefined) {
+                                that.options.onvariablechangedcallback();
+                            }
+                        }
+                    }
+                    );
+                    this.texteditor.tftexteditor({
+                        onvariablechangedcallback: () => {
+                            that.options.formula = that.texteditor.tftexteditor("option", "formula");
+                            that.formulaeditor.formulaeditor({
+                                operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                            });
+                            if (that.options.onvariablechangedcallback !== undefined) {
+                                that.options.onvariablechangedcallback();
+                            }
+                        }
+                    });
                     break;
             }
             this._super(key, value);
@@ -467,6 +365,7 @@
 
 interface JQuery {
     bmaeditor(): JQuery;
+    bmaeditor(fun: string): string;
     bmaeditor(settings: Object): JQuery;
     bmaeditor(fun: string, param: any, param2: any): any;
     bmaeditor(optionLiteral: string, optionName: string): any;

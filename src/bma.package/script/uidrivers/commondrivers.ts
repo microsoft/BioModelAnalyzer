@@ -139,7 +139,7 @@ module BMA {
             public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; TFdescription: string } {
                 return {
                     name: this.variableEditor.bmaeditor('option', 'name'),
-                    formula: this.variableEditor.bmaeditor('option', 'formula'),
+                    formula: this.variableEditor.bmaeditor('getFormula'),//'option', 'formula'),
                     rangeFrom: this.variableEditor.bmaeditor('option', 'rangeFrom'),
                     rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo'),
                     TFdescription: this.variableEditor.bmaeditor('option', 'TFdescription'),
@@ -157,7 +157,7 @@ module BMA {
                 for (var i = 0; i < model.Relationships.length; i++) {
                     var rel = model.Relationships[i];
                     if (rel.ToVariableId === id) {
-                        options.push(model.GetVariableById(rel.FromVariableId).Name);
+                        options.push(model.GetVariableById(rel.FromVariableId));
                     }
                 }
                 this.variableEditor.bmaeditor('option', 'inputs', options);
@@ -171,6 +171,7 @@ module BMA {
             public Show(x: number, y: number) {
                 this.variableEditor.show();
                 this.variableEditor.css("left", x).css("top", y);
+                this.variableEditor.bmaeditor("updateLayout");
             }
 
             public Hide() {

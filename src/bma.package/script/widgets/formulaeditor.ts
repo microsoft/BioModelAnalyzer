@@ -204,6 +204,7 @@
                     canvas.height = canvas.height;
 
                     var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+                    if (opL === undefined) return;
                     var parentOffset = $(this).offset();
                     var relX = arg.pageX - parentOffset.left;
                     var relY = arg.pageY - parentOffset.top;
@@ -607,22 +608,24 @@
         },
 
         _getSVGCoords: function (x, y) {
-            var bbox = this.operationLayout.BoundingBox;
-            var aspect = this.svgDiv.width() / this.svgDiv.height();
-            var width = bbox.width + 20;
-            var height = width / aspect;
-            if (height < bbox.height + 20) {
-                height = bbox.height + 20;
-                width = height * aspect;
-            }
-            var bboxx = -width / 2;
-            var bboxy = -height / 2;
-            var svgX = width * x / this.svgDiv.width() + bboxx;
-            var svgY = height * y / this.svgDiv.height() + bboxy;
-            return {
-                x: svgX,
-                y: svgY
-            };
+            if (this.operationLayout !== undefined) {
+                var bbox = this.operationLayout.BoundingBox;
+                var aspect = this.svgDiv.width() / this.svgDiv.height();
+                var width = bbox.width + 20;
+                var height = width / aspect;
+                if (height < bbox.height + 20) {
+                    height = bbox.height + 20;
+                    width = height * aspect;
+                }
+                var bboxx = -width / 2;
+                var bboxy = -height / 2;
+                var svgX = width * x / this.svgDiv.width() + bboxx;
+                var svgY = height * y / this.svgDiv.height() + bboxy;
+                return {
+                    x: svgX,
+                    y: svgY
+                };
+            } else return undefined;
         },
 
         _getScreenCoords: function (svgX, svgY) {
@@ -653,6 +656,10 @@
                 return;
 
             that._svg.clear();
+            that._svg.configure({
+                width: that.svgDiv.width(),
+                height: that.svgDiv.height(),
+            }, true);
 
             if (that.options.operation !== undefined) {
                 this.operationLayout = new BMA.LTLOperations.OperationLayout(that._svg, that.options.operation, { x: 0, y: 0 });
@@ -712,11 +719,16 @@
         //    return state;
         //},
 
+        updateLayout: function () {
+            this._refresh();
+        },
+
         _setOption: function (key, value) {
             var that = this;
             var needRefreshStates = false;
             switch (key) {
                 case "operation":
+                    that.options.operation = value;
                     break;
                 case "variables":
                     that.options.variables = value;

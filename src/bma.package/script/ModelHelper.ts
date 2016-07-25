@@ -678,12 +678,18 @@
             throw "Operation was not found";//return undefined;
         }
 
-        export function ConvertTFtoOperation(formula: any, model: BMA.Model.BioModel): any {
+        export function ConvertTFtoOperation(formula: any, variables: BMA.Model.Variable[]): any {
             if (!formula) throw "Nothing to import";
             if (formula.var) {
-                var variableID = model.GetIdByName(formula.var);
-                if (variableID.length == 0) throw "Variable '" + formula.var + "' is not found";
-                return new BMA.LTLOperations.NameOperand(formula.var, parseFloat(variableID[0]));
+                var variableID;
+                for (var i = 0; i < variables.length; i++) {
+                    if (variables[i].Name == formula.var) {
+                        variableID = variables[i].Id;
+                        break;
+                    }
+                }
+                if (variableID === undefined) throw "Variable '" + formula.var + "' is not found";
+                return new BMA.LTLOperations.NameOperand(formula.var, parseFloat(variableID));
             } else if (formula.const) {
                 return new BMA.LTLOperations.ConstOperand(parseFloat(formula.const));
             } else if (formula.opr) {
@@ -693,7 +699,7 @@
                 if (operator === undefined) throw "Operator doesn't exist";
                 for (var i = 0; i < formula.opnds.length; i++) {
                     var operand = formula.opnds[i];
-                    operands.push(ConvertTFtoOperation(formula.opnds[i], model));
+                    operands.push(ConvertTFtoOperation(formula.opnds[i], variables));
                 }
 
                 operation.Operator = operator;
@@ -705,9 +711,9 @@
         export function ConvertTFOperationToString(operation: BMA.LTLOperations.IOperand): string {
             var op = "";
             if (operation instanceof BMA.LTLOperations.ConstOperand) {
-                op += operation.Value + " ";
+                op += operation.Value;
             } else if (operation instanceof BMA.LTLOperations.NameOperand) {
-                op += "var(" + operation.Name + ") ";
+                op += "var(" + operation.Name + ")";
             } else if (operation instanceof BMA.LTLOperations.Operation) {
                 if (operation.Operator.IsFunction) { //function()
                     op += operation.Operator.Name.toLowerCase() + "(" + BMA.ModelHelper.ConvertTFOperationToString(operation.Operands[0]);
@@ -727,11 +733,12 @@
             return op;
         }
 
-        export function ConvertTargetFunctionToOperation(formula: string, model: BMA.Model.BioModel): any {
+        export function ConvertTargetFunctionToOperation(formula: string, variables: BMA.Model.Variable[]): any {
             var parsedFormula;
             try {
+                if (formula == "") return undefined;
                 var parsedFormula = BMA.TFParser.parse(formula);
-                return ConvertTFtoOperation(parsedFormula, model);
+                return ConvertTFtoOperation(parsedFormula, variables);
                 
             } catch (ex) {
                 alert(ex);
