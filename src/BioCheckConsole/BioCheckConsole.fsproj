@@ -54,7 +54,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\BioCheckConsole.XML</DocumentationFile>
-    <StartArguments>-model model.json -engine CAV -formula "(Eventually (= a 0))" -path 10 -outputmodel -proof -ltloutput "output.json"</StartArguments>
+    <StartArguments>-model EGF.json -engine CAV -formula "(Implies (= EGFR 2) (Eventually (= cfos 2))" -path 10 -outputmodel -proof -ltloutput "output2.json" -mc</StartArguments>
     <StartWorkingDirectory />
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
@@ -91,6 +91,9 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json">
