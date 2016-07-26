@@ -162,8 +162,8 @@ let assert_target_function (node: QN.node) qn bounds start_time end_time (z : Co
 let assert_bound (node : QN.node) (lower : int , upper : int) (time : int) (z : Context) (s : Solver) =
     let var_name = enc_z3_int_var_at_time node time
     let v = make_z3_int_var var_name z
-    let lower_bound = (z.MkGe(v, z.MkInt lower)).Simplify() :?> BoolExpr
-    let upper_bound = (z.MkLe(v, z.MkInt upper)).Simplify() :?> BoolExpr
+    let lower_bound = z.MkGe(v, z.MkInt lower)
+    let upper_bound = z.MkLe(v, z.MkInt upper)
 
     Log.log_debug ("Asserting lower bound: " + (lower_bound.ToString()))
     s.Assert lower_bound

@@ -88,7 +88,8 @@ let rec expr_to_z3 (qn : QN.node list) (node:QN.node) expr (var_names : Map<int,
         | Some s -> z.MkDiv(s, cnt)
         *)
 
-let assert_target_function qn (node: QN.node) var_names (rangelist : Map<QN.var,int list>) start_time end_time (z : Context) (s : Solver) =
+let assert_target_function (qn:QN.node list) (node: QN.node) var_names (rangelist : Map<QN.var,int list>) start_time end_time (z : Context) (s : Solver) =
+
     let current_state_id = enc_z3_int_var_at_time node start_time
     let current_state = make_z3_int_var current_state_id z
 
@@ -96,9 +97,8 @@ let assert_target_function qn (node: QN.node) var_names (rangelist : Map<QN.var,
     let next_state = make_z3_int_var next_state_id z
 
     let z3_target_function = BioCheckZ3.expr_to_z3 qn node node.f start_time z
-    // let T_applied = z.MkReal2Int(z3_target_function)
-    let half = z.MkDiv(z.MkReal(1),z.MkReal(2))
-    let tf_plus_half = z.MkAdd(half,z3_target_function) :?> RealExpr
+    // let T_applied = z.MkReal2Int(z3_target_function)    
+    let tf_plus_half = z.MkAdd(z.MkReal(1,2),z3_target_function) :?> RealExpr
     let T_applied = z.MkReal2Int (tf_plus_half)
 
     let list = Map.find node.var rangelist
@@ -136,66 +136,44 @@ let assert_query (node : QN.node) (value : int) time (z : Context) (s : Solver) 
     s.Assert query
 
 let find_paths (network : QN.node list) step rangelist orbounds=
-    let cfg = System.Collections.Generic.Dictionary()
-    cfg.Add("MODEL", "true")
-
-    use ctx = new Context(cfg)
-    use s = ctx.MkSolver()
-    
-    Log.log_debug("ctx.Push()")
-    s.Push()
-    
-    // use to record new bounds on variables
-    let mutable nubounds = Map.empty
-
-    let UpdatePossibleValues (node : QN.node) oldPossibleValues =
-            
-        let mutable newPossibleValues : int list = List.empty
-
-        if List.length oldPossibleValues = 1 
-        then 
-            newPossibleValues <- oldPossibleValues
-        else             
-            for i in oldPossibleValues do
-                    
-                let (model : ref<Model>) = ref null
-
+    let updatePossibleValues (node : QN.node) (ctx : Context, s : Solver) = function
+        | [] -> failwith "There are no possible values"
+        | [v] -> [v]
+        | values ->
+            values 
+            |> List.choose(fun i ->
                 s.Push()
                 assert_query (node : QN.node) (i : int) (step+1) ctx s
 
                 // SI: cons the i in all cases but false (UNSATISFIABLE)
                 match s.Check() with
-                | Status.SATISFIABLE ->
-                    newPossibleValues <- i :: newPossibleValues
-                | Status.UNKNOWN ->
-                    use model = s.Model
-                    if model = null then
-                        Log.log_debug "z3 returned unknown"
-                        newPossibleValues <- i :: newPossibleValues
-                    else
-                        // (!model).Eval find_the_conjunction_of_assertions
-                        // Todo:
-                        // Implement a model checker that evaluates the 
-                        // value of the formula under the model 
-                        // actually evaluates the formula to true
-                        newPossibleValues <- i :: newPossibleValues
                 | Status.UNSATISFIABLE -> 
-                    ()
-                s.Pop()         
-            
-        if (newPossibleValues.Length = 0) then
-            // Something went wrong! Throw an exception at some point
-            // when a real software engineer looks on this.
-            newPossibleValues <- []
- 
-        List.sort newPossibleValues
-            
+                    Log.log_debug(sprintf "unsat")
+                    s.Pop()
+                    None
+                | Status.SATISFIABLE ->
+                    s.Pop()
+                    Some i
+                | Status.UNKNOWN ->
+                    Log.log_debug (sprintf "z3 returned unknown - %s" s.ReasonUnknown)
+                    s.Pop()
+                    Some i
+                    // Todo:
+                    // Implement a model checker that evaluates the 
+                    // value of the formula under the model 
+                    // actually evaluates the formula to true
+                | _ -> 
+                    failwith "Unexpected check response")
+            |> List.sort
 
-    // For each action step, we only handle one variable and its inputs.
-    for node in network do
-
-        Log.log_debug("s.Push()")        
-        s.Push()
+    let cfg = System.Collections.Generic.Dictionary()
+    cfg.Add("MODEL", "true")
+    use ctx = new Context(cfg)
+        
+    network
+    |> Seq.fold(fun nubounds node ->
+        // For each action step, we only handle one variable and its inputs.
+        use s = ctx.MkSolver()
             
         // then find the correponding nodes with these node.var(s)
         // network is a list, and each member has four elements
@@ -211,20 +189,14 @@ let find_paths (network : QN.node list) step rangelist orbounds=
             let nMin = List.min rangeOfN
             let nMax = List.max rangeOfN    
             BioCheckZ3.assert_bound n (nMin , nMax) step ctx s
+
         // Then, push related transition constraints
         assert_target_function network node varnamenode orbounds step (step+1) ctx s
-        // Then, we can begin to query about this node/variable
-        let currentPossibleValues = Map.find node.var rangelist
-                   
-        nubounds <- Map.add node.var (UpdatePossibleValues node currentPossibleValues) nubounds
-        
-        Log.log_debug("s.Pop()")
-        s.Pop()
-            
-    Log.log_debug("s.Pop()")
-    s.Pop()
 
-    nubounds
+        // Then, we can begin to query about this node/variable
+        let currentPossibleValues = Map.find node.var rangelist                   
+        let newPossibleValues = currentPossibleValues |> updatePossibleValues node (ctx, s)                   
+        nubounds |> Map.add node.var newPossibleValues) Map.empty
 //End <-- For each time step, encode the system (model) in SMT format, and push into Z3 to compute possible values of each variables
 
 

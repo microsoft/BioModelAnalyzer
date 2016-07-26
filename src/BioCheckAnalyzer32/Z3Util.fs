@@ -16,12 +16,11 @@ let internal model_to_fixpoint (model : Model) =
     for var in getConstDecls(model) do
         let lhs = var.Name.ToString() 
         let expr = model.ConstInterp(var)
-        let rhs = expr.ToString()
-        let value = int rhs
-
-        fixpoint <- Map.add lhs value fixpoint
+        let rhs = expr.ToString() 
+        fixpoint <- fixpoint |> Map.add lhs rhs 
 
     fixpoint
+
 
 let find_fixpoint (makeAssertions : Context -> Solver -> unit) =
     let cfg = System.Collections.Generic.Dictionary()

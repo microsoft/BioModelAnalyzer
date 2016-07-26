@@ -302,9 +302,13 @@ let extract_cycle_from_model (env : Map<string, int>) =
 // fixpoint
 ///////////////////////////////////////////////////////////////////////////////
 
+let convertMapToInt map =
+    map |> Map.map(fun _ -> System.Int32.Parse)
+
 let find_fixpoint (network : QN.node list) range =
     // time "0" is just an arbitrary time here.
     Z3Util.find_fixpoint (unroll_qn network range 0 0)
+    |> Option.map convertMapToInt
     |> Option.map fixpoint_to_env
 
 
@@ -314,7 +318,8 @@ let find_fixpoint (network : QN.node list) range =
 
 let find_bifurcation (network : QN.node list) range =
     Z3Util.find_bifurcation (unroll_qn network range 0 0) 
-    |> Option.map(fun (fix1, fix2) -> fixpoint_to_env fix1, fixpoint_to_env fix2)
+    |> Option.map(fun (fix1, fix2) -> 
+        (fix1 |> convertMapToInt |> fixpoint_to_env), (fix2 |> convertMapToInt |> fixpoint_to_env))
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -326,6 +331,7 @@ let find_cycle (network: QN.node list) bounds length =
         length
         (unroll_qn network bounds)
         (Z3Util.condition_states_equal network)
+    |> Option.map convertMapToInt
     |> Option.map fixpoint_to_env
 
 
@@ -398,7 +404,7 @@ let find_cycle_steps_optimized network bounds =
             | Status.SATISFIABLE -> 
                 use model = s.Model
                 // update cycle with the information from model
-                let env = fixpoint_to_env (Z3Util.model_to_fixpoint model)
+                let env = Z3Util.model_to_fixpoint model |> convertMapToInt |> fixpoint_to_env
                 let smallenv = extract_cycle_from_model env
                 Some smallenv
         | Status.UNKNOWN -> None

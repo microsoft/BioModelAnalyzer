@@ -406,6 +406,9 @@ let string_to_BoolVarType (s : string) =
     else
         BadEncode
 
+let convertMapToBool map =
+    map |> Map.map(fun _ -> System.Boolean.Parse)
+
 let z3_model_to_loop (model : Model) (paths : Map<QN.var,int list> list) = 
     // Analyze the model
     // ===================================================
@@ -414,12 +417,10 @@ let z3_model_to_loop (model : Model) (paths : Map<QN.var,int list> list) =
     // The value of loop[time] is the truth value of 'l'time
     // *vars* is a map from times to map from varid to map from value to truth values
     // The value of ((vars[time])[id])[value] is the truth value of 'v'id^time^value    
-    let fixpoint = Z3Util.model_to_fixpoint model
+    let fixpoint = Z3Util.model_to_fixpoint model |> convertMapToBool
     let loop, vars =
         fixpoint 
-        |> Map.fold(fun (loop,vars) z3_var_name value ->
-            let truth_val = value = 1
-
+        |> Map.fold(fun (loop,vars) z3_var_name truth_val ->
             match string_to_BoolVarType z3_var_name with 
             | BadEncode _
             | TransEncode _
