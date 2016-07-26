@@ -1,18 +1,20 @@
 ﻿{
-    "Framework": "jasmine",
-    "TestHarnessLocationMode": "TestFileAdjacent",     
-    "TypeScriptCodeGenTarget" : "ES5",
-    "RootReferencePathMode":"SettingsFileDirectory",
-    "Compile": {
-       "Extensions": [".ts"],
-       "ExtensionsWithNoOutput": [".d.ts"],
-       "Executable": "%msbuildexe%",
-       "Arguments": "/t:CompileTS "
-     },
-     "References": [
+  "Framework": "jasmine",
+  "TestHarnessLocationMode": "Custom",
+  "TestHarnessDirectory": "../bma.client/tests",
+  "TypeScriptCodeGenTarget": "ES5",
+  "RootReferencePathMode": "SettingsFileDirectory",
+  "Compile": {
+    "Extensions": [ ".ts" ],
+    "ExtensionsWithNoOutput": [ ".d.ts" ],
+    "Executable": "%msbuildexe%",
+    "Arguments": "/t:CompileTS "
+  },
 
-        { "Path": "Scripts/jasmine.js" },
-        { "Path": "Scripts/jasmine-html.js" },
+  "References": [
+
+    { "Path": "Scripts/jasmine.js" },
+    { "Path": "Scripts/jasmine-html.js" },
     { "Path": "Scripts/jquery-2.1.4.min.js" },
     { "Path": "Scripts/jquery-ui-1.11.4.js" },
     { "Path": "Scripts/typings/jquery/jquery.d.ts" },
@@ -24,17 +26,15 @@
     { "Path": "js/jquery.mousewheel.min.js" },
     { "Path": "Scripts/rx.lite.min.js" },
     { "Path": "Scripts/rx.aggregates.min.js" },
-
     { "Path": "js/jquery.ui-contextmenu.js" },
     { "Path": "js/jquery.svg.js" },
-         { "Path": "js/jquery.cookie.js" },
-         
+    { "Path": "js/jquery.cookie.js" },
     { "Path": "js/idd.js" },
-
     { "Path": "js/svgplot.js" },
     { "Path": "js/scalablegridlinesplot.js" },
     { "Path": "js/FileSaver.js" },
     { "Path": "Scripts/formulaParser.js" },
+    { "Path": "Silverlight.js" },
 
     {
       "Path": "script/",
@@ -56,13 +56,10 @@
       "Path": "script/uidrivers",
       "Include": "*.ts"
     },
-
-
-    { "Path": "Silverlight.js" },
     {
       "Path": "test/TestComponents/",
       "Include": "*.ts"
     }
-     ],
-     "Tests":  [{ "Include":  "*/test/*.ts" }]
+  ],
+  "Tests": [ { "Include": "*/test/*.ts" } ]
 }
