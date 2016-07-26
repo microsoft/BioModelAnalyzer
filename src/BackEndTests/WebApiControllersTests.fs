@@ -22,6 +22,10 @@ type TestFailureLogger() =
             x.FailureCount <- x.FailureCount + 1
 
 [<TestClass>]
+[<DeploymentItem("Analyze.exe")>]
+[<DeploymentItem("FurtherTesting.exe")>]
+[<DeploymentItem("libz3.dll")>]
+[<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
 type WebApiControllersTests() = 
 
     static let mutable webApp : IDisposable = null
@@ -52,7 +56,7 @@ type WebApiControllersTests() =
         async {
             let jobj = JObject.Parse(System.IO.File.ReadAllText("BrokenModel.json", System.Text.Encoding.UTF8))
             let model = jobj.["Model"] :?> JObject
-            model.Add("EnableLogging", JValue(false))
+            model.Add("EnableLogging", JValue(true))
 
             logger.FailureCount <- 0
             let! responseString = 
@@ -62,7 +66,8 @@ type WebApiControllersTests() =
                                          body = TextRequest (model.ToString()))
             let result = Newtonsoft.Json.JsonConvert.DeserializeObject<AnalysisOutput>(responseString); 
             Assert.AreEqual(StatusType.Error, result.Status)
-            Assert.IsTrue(logger.FailureCount > 0)
+            Assert.IsTrue(result.ErrorMessages.Length > 0, "errors")
+            Assert.IsTrue(logger.FailureCount > 0, "failure log")
         } |> Async.RunSynchronously
 
     [<TestMethod>]
@@ -144,7 +149,6 @@ type WebApiControllersTests() =
 
     [<TestMethod>]
     [<DeploymentItem("SimpleBifurcation.json")>]
-    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Bifurcating model bifurcates`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("SimpleBifurcation.json"))
         let jmodel = jobj.["Model"] :?> JObject
@@ -178,14 +182,14 @@ type WebApiControllersTests() =
             Assert.AreEqual(Seq.length counterExamples, 1)
             let var = ((Seq.head counterExamples).["Variables"] :?> JArray).[0]
             Assert.AreEqual(var.["Id"].ToString(), "3^0")
-            Assert.AreEqual(var.["Fix1"].ToString(), "0")
-            Assert.AreEqual(var.["Fix2"].ToString(), "1")
+            let fix1 = var.["Fix1"].ToString()
+            let fix2 = var.["Fix2"].ToString()
+            Assert.IsTrue(fix1 = "0" && fix2 = "1" || fix1 = "1" && fix2 = "0", "fixpoints")
 
         } |> Async.RunSynchronously
 
     [<TestMethod>]
     [<DeploymentItem("Race.json")>]
-    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Race model cycles`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("Race.json"))
         let jmodel = jobj.["Model"] :?> JObject

@@ -10,6 +10,7 @@ open BioModelAnalyzer
 open System.Text.RegularExpressions
 
 [<TestClass>]
+[<DeploymentItem("libz3.dll")>]
 type VMCAIFurtherTestingTests() = 
 
     [<TestMethod>]
@@ -34,8 +35,7 @@ type VMCAIFurtherTestingTests() =
 //        Assert.AreEqual(result.Variables.[0].Fix2, 1)
         let var3_0 = result.Variables |> Seq.pick (fun v -> if v.Id = "3^0" then Some(v) else None) 
         Assert.AreEqual(var3_0.Id, "3^0")
-        Assert.AreEqual(var3_0.Fix1, 0)
-        Assert.AreEqual(var3_0.Fix2, 1)
+        Assert.IsTrue(var3_0.Fix1 = 0 && var3_0.Fix2 = 1 || var3_0.Fix1 = 1 && var3_0.Fix2 = 0, "Bifuraction fixpoints")
 
 
     [<TestMethod>]
