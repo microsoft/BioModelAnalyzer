@@ -129,10 +129,10 @@
                 .appendTo(descriptionDiv);
 
             this.switcher = $("<div></div>").addClass("tfswitcher").appendTo(that.element);
-            var textEdButton = $("<div>T</div>").addClass("tfswitch").appendTo(that.switcher).click(function () {
+            this.textEdButton = $("<div>T</div>").addClass("tfswitch").appendTo(that.switcher).click(function () {
                 that.element.removeClass("bmaeditor-expanded").removeClass("bmaeditor-expanded-horizontaly");
                 that.switcher.children().removeClass("selected");
-                textEdButton.addClass("selected");
+                that.textEdButton.addClass("selected");
                 if (that.texteditor.css("display") === "none") {
                     that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
                     that.texteditor.tftexteditor({ formula: that.options.formula });
@@ -145,22 +145,24 @@
                 that.updateLayout();
             });
 
-            var formulaEdButton = $("<div>G</div>").addClass("tfswitch").appendTo(that.switcher).click(function () {
-                that.element.addClass("bmaeditor-expanded").addClass("bmaeditor-expanded-horizontaly");
-                that.switcher.children().removeClass("selected");
-                formulaEdButton.addClass("selected");
-                if (that.formulaeditor.css("display") === "none") {
-                    that.options.formula = that.texteditor.tftexteditor("option", "formula");
-                    that.formulaeditor.formulaeditor({
-                        operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
-                    });
+            this.formulaEdButton = $("<div>G</div>").addClass("tfswitch").appendTo(that.switcher).click(function () {
+                if (!$(this).hasClass("disabled")) {
+                    that.element.addClass("bmaeditor-expanded").addClass("bmaeditor-expanded-horizontaly");
+                    that.switcher.children().removeClass("selected");
+                    that.formulaEdButton.addClass("selected");
+                    if (that.formulaeditor.css("display") === "none") {
+                        that.options.formula = that.texteditor.tftexteditor("option", "formula");
+                        that.formulaeditor.formulaeditor({
+                            operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                        });
+                    }
+                    if (that.options.onvariablechangedcallback !== undefined) {
+                        that.options.onvariablechangedcallback();
+                    }
+                    that.texteditor.hide();
+                    that.formulaeditor.show();
+                    that.updateLayout();
                 }
-                if (that.options.onvariablechangedcallback !== undefined) {
-                    that.options.onvariablechangedcallback();
-                }
-                that.texteditor.hide();
-                that.formulaeditor.show();
-                that.updateLayout();
             });
 
             this.texteditor = $("<div></div>").appendTo(that.element);
@@ -176,10 +178,20 @@
                 }
             });
             this.formulaeditor.hide();
-            textEdButton.addClass("selected");
+            that.textEdButton.addClass("selected");
             
             this.texteditor.tftexteditor({
-                onformulachangedcallback: that.options.onformulachangedcallback,
+                onformulachangedcallback: //that.options.onformulachangedcallback,
+                (params) => {
+                    try {
+                        BMA.ModelHelper.ConvertTargetFunctionToOperation(params.formula, that.options.inputs);
+                        that.formulaEdButton.removeClass("disabled");
+                        that.SetValidation(true);
+                    } catch (ex) {
+                        that.formulaEdButton.addClass("disabled");
+                        that.SetValidation(false);
+                    }
+                },
                 onvariablechangedcallback: () => {
                     that.options.formula = that.texteditor.tftexteditor("option", "formula");
                     that.formulaeditor.formulaeditor({
@@ -195,9 +207,9 @@
                 this.texteditor.tftexteditor({
                     formula: that.options.formula
                 });
-                this.formulaeditor.formulaeditor({
-                    operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
-                });
+                //this.formulaeditor.formulaeditor({
+                //    operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                //});
             }
 
             if (that.options.inputs.length) {
@@ -219,6 +231,7 @@
             if (this.formulaeditor !== undefined) {
                 this.formulaeditor.formulaeditor("updateLayout");
             }
+            this.name.width("calc(100% - 210px)");
         },
 
         getFormula: function () {
@@ -295,9 +308,9 @@
                 case "formula":
                     that.options.formula = value;
                     this.texteditor.tftexteditor({ formula: value });
-                    this.formulaeditor.formulaeditor({
-                        operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
-                    });
+                    //this.formulaeditor.formulaeditor({
+                    //    operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                    //});
                     break;
                 case "TFdescription":
                     that.options.TFdescription = value;
@@ -321,7 +334,16 @@
                 case "onformulachangedcallback":
                     that.options.onformulachangedcallback = value;
                     this.texteditor.tftexteditor({
-                        onformulachangedcallback: value
+                        onformulachangedcallback: (params) => {
+                            try {
+                                BMA.ModelHelper.ConvertTargetFunctionToOperation(params.formula, that.options.inputs);
+                                that.formulaEdButton.removeClass("disabled");
+                                this.SetValidation(true);
+                            } catch (ex) {
+                                this.formulaEdButton.addClass("disabled");
+                                this.SetValidation(false);
+                            }
+                        }
                     });
                     break;
                 case "onvariablechangedcallback":

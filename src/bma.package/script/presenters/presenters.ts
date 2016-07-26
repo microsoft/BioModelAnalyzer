@@ -127,9 +127,10 @@ module BMA {
                     } else {
                         var id = that.GetVariableAtPosition(args.x, args.y);
                         if (id !== undefined) {
-                            that.editingId = id;
+
                             if (that.editingId == that.variableEditedId)
                                 that.prevVariablesOptions = that.variableEditor.GetVariableProperties();
+                            that.editingId = id;
                             that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout,
                                 that.undoRedoPresenter.Current.model, id).model, that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout);
                             that.variableEditor.Show(args.screenX, args.screenY);
@@ -143,6 +144,8 @@ module BMA {
                         } else {
                             var cid = that.GetContainerAtPosition(args.x, args.y);
                             if (cid !== undefined) {
+                                if (that.editingId == that.variableEditedId)
+                                    that.prevVariablesOptions = that.variableEditor.GetVariableProperties();
                                 that.editingId = cid;
                                 that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(cid));
                                 that.containerEditor.Show(args.screenX, args.screenY);
@@ -443,8 +446,9 @@ module BMA {
                 window.Commands.On("DrawingSurfaceEdit", () => {
                     if (that.contextElement !== undefined && that.contextElement.type === "variable") {
                         var id = that.contextElement.id;
+                        if (that.editingId == that.variableEditedId)
+                            that.prevVariablesOptions = that.variableEditor.GetVariableProperties();
                         that.editingId = id;
-                        that.prevVariablesOptions = that.variableEditor.GetVariableProperties();
                         that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, id).model,
                             that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout);
                         that.variableEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
@@ -452,6 +456,8 @@ module BMA {
                         //that.RefreshOutput();
                     } else if (that.contextElement !== undefined && that.contextElement.type === "container") {
                         var id = that.contextElement.id;
+                        if (that.editingId == that.variableEditedId)
+                            that.prevVariablesOptions = that.variableEditor.GetVariableProperties();
                         that.editingId = id;
                         that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(id));
                         that.containerEditor.Show(that.contextElement.screenX, that.contextElement.screenY);
@@ -477,6 +483,8 @@ module BMA {
 
                             if (args.status === "Undo" || args.status === "Redo" || args.status === "Set") {
                                 this.variableEditor.Hide();
+                                this.variableEditedId = undefined;
+                                this.prevVariablesOptions = undefined;
                                 this.editingId = undefined;
                             }
 
@@ -496,11 +504,13 @@ module BMA {
                         if (that.editingId !== undefined) {
                             var v = that.undoRedoPresenter.Current.model.GetVariableById(that.editingId);
                             if (v !== undefined) {
-                                if (that.editingId == that.variableEditedId)
-                                    that.prevVariablesOptions = that.variableEditor.GetVariableProperties();
+                                //if (that.editingId == that.variableEditedId)
+                                //    that.prevVariablesOptions = that.variableEditor.GetVariableProperties();
                                 that.variableEditor.Initialize(that.GetVariableById(that.undoRedoPresenter.Current.layout, that.undoRedoPresenter.Current.model, that.editingId).model,
                                     that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout);
                             } else {
+                                //if (that.editingId == that.variableEditedId)
+                                //    that.prevVariablesOptions = that.variableEditor.GetVariableProperties();
                                 that.containerEditor.Initialize(that.undoRedoPresenter.Current.layout.GetContainerById(that.editingId));
                             }
                         }
@@ -537,7 +547,8 @@ module BMA {
                         that.VariableEdited();
                         that.editingModel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(that.variableEditedId,
                             that.undoRedoPresenter.Current.model, that.editingModel);
-                        that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel,
+                        if (that.editingModel || that.editingLayout)
+                            that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel,
                             that.editingLayout ? that.editingLayout : appModel.Layout);
                         //that.variableEditedId = undefined;
                         that.editingModel = undefined;
@@ -557,7 +568,8 @@ module BMA {
                         that.VariableEdited();
                         that.editingModel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(that.variableEditedId,
                             that.undoRedoPresenter.Current.model, that.editingModel);
-                        that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel,
+                        if (that.editingModel || that.editingLayout)
+                            that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel,
                             that.editingLayout ? that.editingLayout : appModel.Layout);
                         that.variableEditedId = undefined;
                         that.prevVariablesOptions = undefined;
@@ -658,11 +670,13 @@ module BMA {
                 });
 
                 variableEditorDriver.SetOnClosingCallback(() => {
+                    that.prevVariablesOptions = that.variableEditor.GetVariableProperties();
                     if (that.variableEditedId !== undefined) {
                         that.VariableEdited();
                         that.editingModel = BMA.ModelHelper.UpdateFormulasAfterVariableChanged(that.variableEditedId,
                             that.undoRedoPresenter.Current.model, that.editingModel);
-                        that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel,
+                        if (that.editingModel || that.editingLayout)
+                            that.undoRedoPresenter.Dup(that.editingModel ? that.editingModel : appModel.BioModel,
                             that.editingLayout ? that.editingLayout : appModel.Layout);
                         that.editingModel = undefined;
                         that.variableEditedId = undefined;

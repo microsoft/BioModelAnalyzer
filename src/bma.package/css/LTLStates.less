@@ -1062,9 +1062,13 @@
 
     .editor-namerange-container {
         width:100%;
+
+        .variable-name-div{
+            width:calc(~"100%-165px");
+        }
     }
     .variable-name{
-        width:calc(100% - 170px);
+        width:100%;
     }
 
     &.bmaeditor-expanded {
@@ -1119,6 +1123,13 @@
         &:last-child{
             border-top-left-radius: 0px;
             border-bottom-left-radius: 0px;
+        }
+
+        &.disabled{
+            &:hover{
+                background-color:@lightgrey;
+                color:@darkgrey;
+            }
         }
     }
 }
