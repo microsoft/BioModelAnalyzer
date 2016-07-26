@@ -263,18 +263,18 @@
     <Content Include="Scripts\rx.min.js" />
     <Content Include="Scripts\targetFuncParser.js" />
     <Content Include="Silverlight.js" />
-    <Content Include="test\data\2var_unstable.xml">
+    <Content Include="data\2var_unstable.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="test\data\Firing_neuron_2_cells.json" />
+    <Content Include="data\Firing_neuron_2_cells.json" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
-    <Content Include="test\data\Firing_neuron_3_cells.json" />
-    <Content Include="test\data\Firing_neuron_2_cells_without_ids.json" />
+    <Content Include="data\Firing_neuron_3_cells.json" />
+    <Content Include="data\Firing_neuron_2_cells_without_ids.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

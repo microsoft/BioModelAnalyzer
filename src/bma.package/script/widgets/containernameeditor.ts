@@ -13,8 +13,7 @@
         _create: function () {
             var that = this;
             var closediv = $('<div></div>').addClass('close-icon').appendTo(that.element);
-            var closing = $('<img src="../../images/close.png">').appendTo(closediv);
-            closing.bind("click", function () {
+            closediv.bind("click", function () {
                 that.element.hide();
                 if (that.options.oneditorclosing !== undefined) {
                     that.options.oneditorclosing();
