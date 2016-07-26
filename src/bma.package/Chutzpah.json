@@ -1,7 +1,7 @@
 ﻿{
   "Framework": "jasmine",
   "TestHarnessLocationMode": "Custom",
-  "TestHarnessDirectory": "../bma.client/tests",
+  "TestHarnessDirectory": "test",
   "TypeScriptCodeGenTarget": "ES5",
   "RootReferencePathMode": "SettingsFileDirectory",
   "Compile": {
