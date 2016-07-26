@@ -168,7 +168,7 @@
 
             //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
             var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
-            
+
             //Adding states
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("States<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
@@ -177,7 +177,7 @@
             //Adding pre-defined states
             var conststates = $("<div></div>").addClass("state-buttons").width(130).html("&nbsp;<br>").appendTo(toolbar);
             var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
-            
+
             //Oscilation state
             this._addCustomState(statesbtns, "oscillationstate", "Part of an unstable loop.", "../images/oscillation-state.svg");
 
@@ -247,6 +247,22 @@
             var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").css("min-height", "200px").height(this.options.drawingSurfaceHeight).width("100%").appendTo(root);
             this.drawingSurfaceContainerRef = drawingSurfaceCnt;
 
+            //Adding LTL text editor UI
+            this.editFormulaCnt = $("<div></div>").css("position", "absolute").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 2).css("top", 10).css("left", 10).appendTo(drawingSurfaceCnt).hide();
+            this.editFormulaCnt.width("80%");
+
+            this.editFormula = $("<input value='Edit Formula' >").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 2).appendTo(this.editFormulaCnt);
+            this.editFormula.width("80%");
+
+            var editFormulaBtn = $("<div></div>").css("background", "url('../images/check.png') no-repeat center").appendTo(this.editFormulaCnt)
+                .css("height", "20px").css("width", "20px").css("margin-left", 10).css("display", "inline-block")
+                .click(function () {
+                    if (that.options.oneditformula !== undefined) {
+                        that.options.oneditformula(that.editFormula.val());
+                    }
+                });
+
+            //Adding editing surface
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface({ useContraints: false });
             var drawingSurface = this._drawingSurface;
@@ -264,7 +280,7 @@
             }
 
             drawingSurface.drawingsurface({ visibleRect: { x: 0, y: 0, width: drawingSurfaceCnt.width(), height: drawingSurfaceCnt.height() } });
-            
+
             //Adding drop zones
             /*
              <div class="temporal-dropzones">
@@ -286,19 +302,6 @@
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dropzonescnt);
             dropzones.width("100%");
 
-            this.editFormulaCnt = $("<div></div>").css("position", "absolute").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).css("top", 10).prependTo(dom.host).hide();
-            this.editFormulaCnt.width("80%");
-
-            this.editFormula = $("<input value='Edit Formula' >").appendTo(this.editFormulaCnt);
-            this.editFormula.width("80%");
-
-            var editFormulaBtn = $("<div></div>").css("background", "url('../images/check.png') no-repeat center").appendTo(this.editFormulaCnt)
-                .css("height", "20px").css("width", "20px").css("margin-left", 10).css("display", "inline-block")
-                .click(function () {
-                    if (that.options.oneditformula !== undefined) {
-                        that.options.oneditformula(that.editFormula.val());
-                    }
-            });
 
             /*
             this.copyzone = $("<div></div>").addClass("dropzone copy").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dropzones);

@@ -310,6 +310,11 @@ module BMA {
                         this.editingOperation = that.contextElement.operationlayoutref;
                         var opFormula = BMA.ModelHelper.ConvertOperationToString(this.contextElement.operationlayoutref.operation.Clone());
                         tpEditorDriver.ShowFormulaEditor(opFormula);
+                        tpEditorDriver.GetNavigationDriver().SetCenter(this.editingOperation.Position.x, -this.editingOperation.Position.y);
+                        var bbox = this.editingOperation.BoundingBox;
+                        tpEditorDriver.GetSVGDriver().SetVisibleRect({
+                            x: bbox.x, y: bbox.y, width: bbox.width, height: bbox.height
+                        });
                     }
                 });
 

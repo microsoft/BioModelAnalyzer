@@ -1,0 +1,9 @@
+{
+  "name": "codeui-tests",
+  "version": "0.0.1",
+  "private": true,
+  "main": "Gruntfile.js",
+  "devDependencies": {
+    "grunt-protractor-runner": "^3.2.0"
+  }
+}
