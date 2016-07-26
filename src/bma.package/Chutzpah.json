@@ -1,7 +1,6 @@
 ﻿{
   "Framework": "jasmine",
-  "TestHarnessLocationMode": "Custom",
-  "TestHarnessDirectory": "test",
+  "TestHarnessLocationMode": "SettingsFileAdjacent",
   "TypeScriptCodeGenTarget": "ES5",
   "RootReferencePathMode": "SettingsFileDirectory",
   "Compile": {
@@ -30,32 +29,10 @@
     { "Path": "js/jquery.svg.js" },
     { "Path": "js/jquery.cookie.js" },
     { "Path": "js/idd.js" },
-    { "Path": "js/svgplot.js" },
-    { "Path": "js/scalablegridlinesplot.js" },
     { "Path": "js/FileSaver.js" },
-    { "Path": "Scripts/formulaParser.js" },
     { "Path": "Silverlight.js" },
+    { "Path": "tool.js" },
 
-    {
-      "Path": "script/",
-      "Include": "*.ts"
-    },
-    {
-      "Path": "script/model",
-      "Include": "*.ts"
-    },
-    {
-      "Path": "script/presenters",
-      "Include": "*.ts"
-    },
-    {
-      "Path": "script/widgets",
-      "Include": "*.ts"
-    },
-    {
-      "Path": "script/uidrivers",
-      "Include": "*.ts"
-    },
     {
       "Path": "test/TestComponents/",
       "Include": "*.ts"

@@ -173,7 +173,7 @@
 
             var defaultCopyZoneIcon = $("<div></div>").css("position", "absolute").width("100%").height("95%").css("text-align", "center");
             $("<span></span>").css("display", "inline-block").css("vertical-align", "middle").height("100%").appendTo(defaultCopyZoneIcon);
-            $('<img>').attr('src', "../images/LTL-copy.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultCopyZoneIcon);
+            $('<img>').attr('src', "images/LTL-copy.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultCopyZoneIcon);
 
             that._tpViewer = tpViewer.temporalpropertiesviewer({
                 rightOffset: 15,
@@ -184,7 +184,7 @@
             var deleteZone = $("<div></div>").addClass("dropzone delete").css("left", 0).css("bottom", 0).css("right", 0).width("100%").height("calc(20% - 2px)").appendTo(clipboardPanel);
             var defaultDeleteZoneIcon = $("<div></div>").width("100%").height("95%").css("text-align", "center").appendTo(deleteZone);
             $("<span></span>").css("display", "inline-block").css("vertical-align", "middle").height("100%").appendTo(defaultDeleteZoneIcon);
-            $('<img>').attr('src', "../images/LTL-delete.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultDeleteZoneIcon);
+            $('<img>').attr('src', "images/LTL-delete.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultDeleteZoneIcon);
 
             var draggableWidth = svgDiv.width();
             var draggableHeight = svgDiv.height();
