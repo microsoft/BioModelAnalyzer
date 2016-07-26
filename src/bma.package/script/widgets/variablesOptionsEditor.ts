@@ -47,9 +47,9 @@
             //var closing = $('<img src="../../images/close.png">').appendTo(div);
             div.bind("click", function () {
                 that.options.formula = that.getFormula();
-                if (that.options.onvariablechangedcallback !== undefined) {
-                    that.options.onvariablechangedcallback();
-                }
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
                 that.element.hide();
                 if (that.options.oneditorclosing !== undefined) {
                     that.options.oneditorclosing();
@@ -78,18 +78,18 @@
             upfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
                 that._setOption("rangeFrom", valu + 1);
-                if (that.options.onvariablechangedcallback !== undefined) {
-                    that.options.onvariablechangedcallback();
-                }
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
                 //window.Commands.Execute("VariableEdited", {});
             });
             var downfrom = $('<div></div>').addClass("triangle-down").appendTo(divtriangles1);
             downfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
                 that._setOption("rangeFrom", valu - 1);
-                if (that.options.onvariablechangedcallback !== undefined) {
-                    that.options.onvariablechangedcallback();
-                }
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
                 //window.Commands.Execute("VariableEdited", {});
             });
 
@@ -102,18 +102,18 @@
             upto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
                 that._setOption("rangeTo", valu + 1);
-                if (that.options.onvariablechangedcallback !== undefined) {
-                    that.options.onvariablechangedcallback();
-                }
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
                 //window.Commands.Execute("VariableEdited", {});
             });
             var downto = $('<div></div>').addClass("triangle-down").appendTo(divtriangles2);
             downto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
                 that._setOption("rangeTo", valu - 1);
-                if (that.options.onvariablechangedcallback !== undefined) {
-                    that.options.onvariablechangedcallback();
-                }
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
                 //window.Commands.Execute("VariableEdited", {});
             });
 
@@ -137,9 +137,9 @@
                     that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
                     that.texteditor.tftexteditor({ formula: that.options.formula });
                 }
-                if (that.options.onvariablechangedcallback !== undefined) {
-                    that.options.onvariablechangedcallback();
-                }
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
                 that.texteditor.show();
                 that.formulaeditor.hide();
                 that.updateLayout();
@@ -156,9 +156,9 @@
                             operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
                         });
                     }
-                    if (that.options.onvariablechangedcallback !== undefined) {
-                        that.options.onvariablechangedcallback();
-                    }
+                    //if (that.options.onvariablechangedcallback !== undefined) {
+                    //    that.options.onvariablechangedcallback();
+                    //}
                     that.texteditor.hide();
                     that.formulaeditor.show();
                     that.updateLayout();
@@ -168,15 +168,17 @@
             this.texteditor = $("<div></div>").appendTo(that.element);
             this.formulaeditor = $("<div></div>").css("margin-top", "20px").css("width", "600px").appendTo(that.element);
 
-            this.formulaeditor.formulaeditor({
-                onvariablechangedcallback: () => {
-                    that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
-                    that.texteditor.tftexteditor({ formula: that.options.formula });
-                    if (that.options.onvariablechangedcallback !== undefined) {
-                        that.options.onvariablechangedcallback();
-                    }
-                }
-            });
+            this.formulaeditor.formulaeditor(
+                //{
+                //onvariablechangedcallback: () => {
+                //    that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
+                //    that.texteditor.tftexteditor({ formula: that.options.formula });
+                //    if (that.options.onvariablechangedcallback !== undefined) {
+                //        that.options.onvariablechangedcallback();
+                //    }
+                //}
+                //}
+            );
             this.formulaeditor.hide();
             that.textEdButton.addClass("selected");
             
@@ -192,15 +194,15 @@
                         that.SetValidation(false);
                     }
                 },
-                onvariablechangedcallback: () => {
-                    that.options.formula = that.texteditor.tftexteditor("option", "formula");
-                    that.formulaeditor.formulaeditor({
-                        operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
-                    });
-                    if (that.options.onvariablechangedcallback !== undefined) {
-                        that.options.onvariablechangedcallback();
-                    }
-                }
+                //onvariablechangedcallback: () => {
+                //    that.options.formula = that.texteditor.tftexteditor("option", "formula");
+                //    that.formulaeditor.formulaeditor({
+                //        operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                //    });
+                //    if (that.options.onvariablechangedcallback !== undefined) {
+                //        that.options.onvariablechangedcallback();
+                //    }
+                //}
             });
 
             if (that.options.formula) {
@@ -263,25 +265,25 @@
 
             this.rangeFrom.bind("input change", function () {
                 that._setOption("rangeFrom", that.rangeFrom.val());
-                if (that.options.onvariablechangedcallback !== undefined) {
-                    that.options.onvariablechangedcallback();
-                }
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
                 //window.Commands.Execute("VariableEdited", {});
             });
 
             this.rangeTo.bind("input change", function () {
                 that._setOption("rangeTo", that.rangeTo.val());
-                if (that.options.onvariablechangedcallback !== undefined) {
-                    that.options.onvariablechangedcallback();
-                }
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
                 //window.Commands.Execute("VariableEdited", {});
             });
 
             this.description.bind("input change", function () {
                 that.options.TFdescription = that.description.val();
-                if (that.options.onvariablechangedcallback !== undefined) {
-                    that.options.onvariablechangedcallback();
-                }
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
                 //window.Commands.Execute("VariableEdited", {});
             });
         },
@@ -348,28 +350,28 @@
                     break;
                 case "onvariablechangedcallback":
                     that.options.onvariablechangedcallback = value;
-                    this.formulaeditor.formulaeditor(
-                    {
-                        onvariablechangedcallback: () => {
-                            that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
-                            that.texteditor.tftexteditor({ formula: that.options.formula });
-                            if (that.options.onvariablechangedcallback !== undefined) {
-                                that.options.onvariablechangedcallback();
-                            }
-                        }
-                    }
-                    );
-                    this.texteditor.tftexteditor({
-                        onvariablechangedcallback: () => {
-                            that.options.formula = that.texteditor.tftexteditor("option", "formula");
-                            that.formulaeditor.formulaeditor({
-                                operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
-                            });
-                            if (that.options.onvariablechangedcallback !== undefined) {
-                                that.options.onvariablechangedcallback();
-                            }
-                        }
-                    });
+                    //this.formulaeditor.formulaeditor(
+                    //{
+                    //    onvariablechangedcallback: () => {
+                    //        that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
+                    //        that.texteditor.tftexteditor({ formula: that.options.formula });
+                    //        if (that.options.onvariablechangedcallback !== undefined) {
+                    //            that.options.onvariablechangedcallback();
+                    //        }
+                    //    }
+                    //}
+                    //);
+                    //this.texteditor.tftexteditor({
+                    //    onvariablechangedcallback: () => {
+                    //        that.options.formula = that.texteditor.tftexteditor("option", "formula");
+                    //        that.formulaeditor.formulaeditor({
+                    //            operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                    //        });
+                    //        if (that.options.onvariablechangedcallback !== undefined) {
+                    //            that.options.onvariablechangedcallback();
+                    //        }
+                    //    }
+                    //});
                     break;
             }
             this._super(key, value);
