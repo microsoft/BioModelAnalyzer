@@ -90,7 +90,7 @@ type VMCAIFurtherTestingTests() =
 
     [<TestMethod>]
     [<DeploymentItem("ceilFunc.json")>]
-    member x.``FinCounter Examples correctly handles ceil and floor functions`` () = 
+    member x.``Find Counter Examples correctly handles ceil and floor functions`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ceilFunc.json"))
 
         // Extract model from json
@@ -125,20 +125,20 @@ type VMCAIFurtherTestingTests() =
 
         // Check stability
         let result =  (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).checkStability(model)
-        Assert.AreEqual(result.Status, StatusType.NotStabilizing)
+        Assert.AreEqual(result.Status, StatusType.NotStabilizing, "not stabilizing")
 
         // Find fix points
         let result2o = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExFixpoint(model, result)
         let result2 = result2o.Value
         // Check that var(2^0) exists and has value 0. 
         let var2_0 = result2.Variables |> Seq.filter (fun v -> Regex.IsMatch(v.Id, "\d*\^\d*") |> not ) |> Seq.length
-        Assert.AreEqual(var2_0, 0)
+        Assert.AreEqual(var2_0, 0, "zero fixpoint")
 
         let resultBF = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExBifurcates(model, result)
-        Assert.AreEqual(resultBF, null)
+        Assert.AreEqual(resultBF, null, "bifurcation")
 
         let resultC = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExCycles(model, result)
-        Assert.AreNotEqual(resultC, null)
+        Assert.AreEqual(resultC, null, "cycle")
 
 //    [<TestMethod>]
 //    [<DeploymentItem("ToyModelUnstable.json")>]

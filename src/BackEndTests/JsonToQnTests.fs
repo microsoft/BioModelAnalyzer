@@ -28,10 +28,10 @@ type JsonToQnTests() =
         Assert.IsTrue(List.zip q1 q2 |> List.forall areQNEqual)
 
     [<TestMethod>]
-    [<DeploymentItem("Skin2D_5X2_AI.json")>]
+    [<DeploymentItem("Race.json")>]
     member x.``QNs support stuctural equality`` () = 
         // Import two QNs from one document ... 
-        let jobj = JObject.Parse(System.IO.File.ReadAllText("Skin2D_5X2_AI.json"))
+        let jobj = JObject.Parse(System.IO.File.ReadAllText("Race.json"))
         let qn1 = (jobj.["Model"] :?> JObject).ToObject<Model>() |> Marshal.QN_of_Model
         let qn2 = (jobj.["Model"] :?> JObject).ToObject<Model>() |> Marshal.QN_of_Model
 

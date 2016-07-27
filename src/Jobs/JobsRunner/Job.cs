@@ -8,6 +8,24 @@ using System.Threading.Tasks;
 
 namespace JobsRunner
 {
+    public class JobResult
+    {
+        private string content;
+        private string[] errors;
+
+        public JobResult(string content, string[] errors)
+        {
+            if (content == null) throw new ArgumentNullException("content");
+            if (errors == null) throw new ArgumentNullException("errors");
+            this.content = content;
+            this.errors = errors;
+        }
+
+        public string Content { get { return content; } }
+
+        public string[] Errors { get { return errors; } }
+    }
+
     public static class Job
     {
         /// <summary>
@@ -24,10 +42,11 @@ namespace JobsRunner
         /// <remarks>
         /// Standard error and output streams of the executable file will be redirected to the System.Diagnostics.Trace.
         /// </remarks>
-        public static string RunToCompletion(string executableName, string inputData, int timeoutMs)
+        public static JobResult RunToCompletion(string executableName, string inputData, int timeoutMs)
         {
             string outputFile = Path.GetTempFileName();
             string inputFile = Path.GetTempFileName();
+            string errorsFile = Path.GetTempFileName();
             File.WriteAllText(inputFile, inputData);
             try
             {
@@ -68,7 +87,13 @@ namespace JobsRunner
                     if(p.ExitCode == 0)
                     {
                         string outputData = File.ReadAllText(outputFile);
-                        return outputData;
+                        string[] pErrors;
+                        if (File.Exists(errorsFile))
+                            pErrors = File.ReadAllLines(errorsFile);
+                        else
+                            pErrors = new string[0];
+
+                        return new JobResult(outputData, pErrors);
                     }
                     throw new InvalidOperationException(String.Format("The process has exited with code {0}; errors: {1}", p.ExitCode, errors.ToString()));
                 }

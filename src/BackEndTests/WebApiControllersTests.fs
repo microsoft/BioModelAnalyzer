@@ -24,6 +24,7 @@ type TestFailureLogger() =
 [<TestClass>]
 [<DeploymentItem("Analyze.exe")>]
 [<DeploymentItem("FurtherTesting.exe")>]
+[<DeploymentItem("Simulate.exe")>]
 [<DeploymentItem("libz3.dll")>]
 [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
 type WebApiControllersTests() = 
@@ -51,7 +52,6 @@ type WebApiControllersTests() =
 
     [<TestMethod>]
     [<DeploymentItem("BrokenModel.json")>]
-    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Broken model generates failure log record`` () = 
         async {
             let jobj = JObject.Parse(System.IO.File.ReadAllText("BrokenModel.json", System.Text.Encoding.UTF8))
@@ -72,7 +72,26 @@ type WebApiControllersTests() =
 
     [<TestMethod>]
     [<DeploymentItem("ToyModelStable.json")>]
-    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
+    member x.``Correct model doesn't generate failure log record`` () = 
+        async {
+            let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelStable.json", System.Text.Encoding.UTF8))
+            let model = jobj.["Model"] :?> JObject
+            model.Add("EnableLogging", JValue(true))
+
+            logger.FailureCount <- 0
+            let! responseString = 
+                 Http.AsyncRequestString("http://localhost:8088/api/Analyze", 
+                                         headers = [ ContentType HttpContentTypes.Json;
+                                                     Accept HttpContentTypes.Json ],
+                                         body = TextRequest (model.ToString()))
+            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<AnalysisOutput>(responseString); 
+            Assert.AreEqual(StatusType.Stabilizing, result.Status)
+            Assert.IsTrue(result.ErrorMessages = null || result.ErrorMessages.Length = 0, "errors")
+            Assert.IsTrue(logger.FailureCount = 0, "failure log must be empty")
+        } |> Async.RunSynchronously
+
+    [<TestMethod>]
+    [<DeploymentItem("ToyModelStable.json")>]
     member x.``Stable model stabilizes`` () = 
         async {
             let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelStable.json", System.Text.Encoding.UTF8))
@@ -90,7 +109,6 @@ type WebApiControllersTests() =
 
     [<TestMethod>]
     [<DeploymentItem("ToyModelUnstable.json")>]
-    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Unstable model does not stabilize`` () = 
         async {
             let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelUnstable.json"))
@@ -109,7 +127,6 @@ type WebApiControllersTests() =
 
     [<TestMethod>]
     [<DeploymentItem("ToyModelUnstable.json")>]
-    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Unstable model simulated for 10 steps`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelUnstable.json"))
         let model = (jobj.["Model"] :?> JObject).ToObject<Model>()

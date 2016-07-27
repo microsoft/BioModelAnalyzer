@@ -49,8 +49,14 @@ namespace bma.client.Controllers
 
             try
             {
-                string result = JobsRunner.Job.RunToCompletion(Path.Combine(basePath, executableName), input, timeoutMs);
-                return HttpResponses.Json(Request, result);
+                JobsRunner.JobResult result = JobsRunner.Job.RunToCompletion(Path.Combine(basePath, executableName), input, timeoutMs);
+
+                if (result.Errors.Length > 0)
+                {
+                    var contents = new LogContents(null, result.Errors);
+                    faultLogger.Add(DateTime.Now, typeof(JobController).Assembly.GetName().Version.ToString(), input, contents);
+                }
+                return HttpResponses.Json(Request, result.Content);
             }
             catch (System.TimeoutException ex)
             {

@@ -118,6 +118,7 @@
     <None Include="CounterExamples\toymodel-unstable.request.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="LTLQueries\EDF-cfos.response.json" />
     <None Include="packages.config" />
     <None Include="App.config" />
     <None Include="LTLQueries\Epi-V9.request.json">
@@ -163,6 +164,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="LTLQueries\PhosCas.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\EDF-cfos.___.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Simulation\toymodel.request.json">

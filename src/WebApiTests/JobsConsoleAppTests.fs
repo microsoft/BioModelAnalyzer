@@ -12,19 +12,19 @@ open LTLTests
 open JobsRunner
 
 let performLTLPolarity timeout job = 
-    Job.RunToCompletion("AnalyzeLTL.exe", File.ReadAllText job, timeout)
+    Job.RunToCompletion("AnalyzeLTL.exe", File.ReadAllText job, timeout).Content
 
 let performLTLSimulation timeout job = 
-    Job.RunToCompletion("SimulateLTL.exe", File.ReadAllText job, timeout)
+    Job.RunToCompletion("SimulateLTL.exe", File.ReadAllText job, timeout).Content
 
 let performSimulation timeout job = 
-    Job.RunToCompletion("Simulate.exe", File.ReadAllText job, timeout)
+    Job.RunToCompletion("Simulate.exe", File.ReadAllText job, timeout).Content
 
 let performAnalysis timeout job = 
-    Job.RunToCompletion("Analyze.exe", File.ReadAllText job, timeout)
+    Job.RunToCompletion("Analyze.exe", File.ReadAllText job, timeout).Content
 
 let performFurtherTesting timeout job = 
-    Job.RunToCompletion("FurtherTesting.exe", File.ReadAllText job, timeout)
+    Job.RunToCompletion("FurtherTesting.exe", File.ReadAllText job, timeout).Content
 
 [<Test; Timeout(600000)>]
 [<Category("CI")>]
