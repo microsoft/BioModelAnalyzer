@@ -817,7 +817,7 @@ module BMA {
                     for (var i = 0; i < states.length; i++) {
                         var st = states[i];
                         var appst = this.states[i];
-                        if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula() || st.Description !== appst.Description)
+                        if (st.Name !== appst.Name || BMA.LTLOperations.GetLTLServiceProcessingFormula(st) !== BMA.LTLOperations.GetLTLServiceProcessingFormula(appst) || st.Description !== appst.Description)
                             return true;
                     }
 
@@ -993,7 +993,7 @@ module BMA {
                     driver.SetStatus("processing", undefined);
                     domplot.updateLayout();
 
-                    var formula = operation.Operation.GetFormula();
+                    var formula = BMA.LTLOperations.GetLTLServiceProcessingFormula(operation.Operation);
 
                     var model;
                     try {

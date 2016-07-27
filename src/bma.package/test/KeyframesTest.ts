@@ -37,15 +37,15 @@ describe('Keyframes',() => {
     //op.Operator = op1;
     //op.Operands = [kfrm1, kfrm2];
 
-    var formulacreator = function (funcname): BMA.LTLOperations.IGetFormula {
-        return function (op: BMA.LTLOperations.IOperand[]) {
-            var f = '(' + funcname;
-            for (var i = 0; i < op.length; i++) {
-                f += ' ' + op[i].GetFormula();
-            }
-            return f + ')';
-        }
-    }
+    //var formulacreator = function (funcname): BMA.LTLOperations.IGetFormula {
+    //    return function (op: BMA.LTLOperations.IOperand[]) {
+    //        var f = '(' + funcname;
+    //        for (var i = 0; i < op.length; i++) {
+    //            f += ' ' + op[i].GetFormula();
+    //        }
+    //        return f + ')';
+    //    }
+    //}
 
     /*
     it ("creates keyframe with name",() => {
