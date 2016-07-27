@@ -1,12 +1,7 @@
 ﻿module BMA {
     export module LTLOperations {
 
-        export interface IGetFormula {
-            (op: IOperand[]): string;
-        }
-
         export interface IOperand {
-            GetFormula(): string;
             Clone(): IOperand;
             Equals(operand: IOperand): boolean;
         }
@@ -42,10 +37,6 @@
                 return this.id;
             }
 
-            public GetFormula() {
-                return this.id; //this.name;
-            }
-
             public Clone() {
                 return new NameOperand(this.name, this.id);
             }
@@ -66,10 +57,6 @@
 
             public get Value(): number {
                 return this.const;
-            }
-
-            public GetFormula() {
-                return this.const.toString();
             }
 
             public Clone() {
@@ -106,10 +93,6 @@
                 return this.operator;
             }
 
-            public GetFormula() {
-                return "(" + this.operator + " " + this.leftOperand.GetFormula() + " " + this.rightOperand.GetFormula() + ")";
-            }
-
             public Clone() {
                 return new KeyframeEquation(this.leftOperand.Clone(), this.operator, this.rightOperand.Clone());
             }
@@ -120,7 +103,7 @@
                 } else return false;
             }
         }
-
+        
         export class DoubleKeyframeEquation implements IOperand {
             private leftOperand: NameOperand | ConstOperand
             private middleOperand: NameOperand | ConstOperand
@@ -157,10 +140,6 @@
                 return this.rightOperator;
             }
 
-            public GetFormula() {
-                return "(And " + "(" + this.Invert(this.leftOperator) + " " + this.middleOperand.GetFormula() + " " + this.leftOperand.GetFormula() + ") (" + this.rightOperator + " " + this.middleOperand.GetFormula() + " " + this.rightOperand.GetFormula() + "))";
-            }
-
             public Clone() {
                 return new DoubleKeyframeEquation(this.leftOperand.Clone(), this.leftOperator, this.middleOperand.Clone(), this.rightOperator, this.rightOperand.Clone());
             }
@@ -189,10 +168,6 @@
         }
 
         export class TrueKeyframe implements IOperand {
-            public GetFormula() {
-                return "True";
-            }
-
             public Clone() {
                 return new TrueKeyframe();
             }
@@ -205,10 +180,6 @@
         }
 
         export class SelfLoopKeyframe implements IOperand {
-            public GetFormula() {
-                return "SelfLoop";
-            }
-
             public Clone() {
                 return new SelfLoopKeyframe();
             }
@@ -221,10 +192,6 @@
         }
 
         export class OscillationKeyframe implements IOperand {
-            public GetFormula() {
-                return "Oscillation";
-            }
-
             public Clone() {
                 return new OscillationKeyframe();
             }
@@ -239,9 +206,9 @@
         export class Keyframe implements IOperand {
             private name: string;
             private description: string;
-            private operands: (KeyframeEquation | DoubleKeyframeEquation)[];
+            private operands: (BMA.LTLOperations.KeyframeEquation | BMA.LTLOperations.DoubleKeyframeEquation)[];
 
-            constructor(name: string, description: string, operands: (KeyframeEquation | DoubleKeyframeEquation)[]) {
+            constructor(name: string, description: string, operands: (BMA.LTLOperations.KeyframeEquation | BMA.LTLOperations.DoubleKeyframeEquation)[]) {
                 this.name = name;
                 this.description = description;
                 this.operands = operands;
@@ -259,25 +226,8 @@
                 return this.description;
             }
 
-            public get Operands(): (KeyframeEquation | DoubleKeyframeEquation)[] {
+            public get Operands(): (BMA.LTLOperations.KeyframeEquation | BMA.LTLOperations.DoubleKeyframeEquation)[] {
                 return this.operands;
-            }
-
-            public GetFormula() {
-                if (this.operands === undefined || this.operands.length < 1) {
-                    return "";
-                } else {
-                    if (this.operands.length === 1)
-                        return this.operands[0].GetFormula();
-
-                    var formula = this.operands[this.operands.length - 1].GetFormula();
-
-                    for (var i = this.operands.length - 2; i >= 0; i--) {
-                        formula = "(And " + this.operands[i].GetFormula() + " " + formula + ")";
-                    }
-
-                    return formula;
-                }
             }
 
             public Clone() {
@@ -335,15 +285,13 @@
 
         export class Operator {
             private name: string;
-            private fun: IGetFormula;
             private minOperandsCount: number;
             private maxOperandsCount: number;
             private isFunction: boolean;
             private description: string;
 
-            constructor(name: string, minOperandsCount: number, maxOperandsCount: number = -1, fun: IGetFormula, isFunction: boolean = false, description: string = undefined) {
+            constructor(name: string, minOperandsCount: number, maxOperandsCount: number = -1, isFunction: boolean = false, description: string = undefined) {
                 this.name = name;
-                this.fun = fun;
                 this.minOperandsCount = minOperandsCount;
                 if (maxOperandsCount === -1) {
                     this.maxOperandsCount = minOperandsCount;
@@ -370,20 +318,8 @@
                 return this.maxOperandsCount;
             }
 
-
-            get Function() {
-                return this.fun;
-            }
-
             get Description() {
                 return this.description;
-            }
-
-            public GetFormula(op: IOperand[]) {
-                if (op !== undefined && (op.length < this.minOperandsCount || op.length > this.maxOperandsCount)) {
-                    throw "Operator " + name + ": invalid operands count";
-                }
-                return this.fun(op);
             }
         }
 
@@ -408,10 +344,6 @@
                 this.operands = op;
             }
 
-            public GetFormula() {
-                return this.operator.GetFormula(this.operands);
-            }
-
             public Clone() {
                 var operands = [];
                 for (var i = 0; i < this.operands.length; i++) {
@@ -419,7 +351,7 @@
                     operands.push(this.operands[i] === undefined ? undefined : this.operands[i].Clone());
                 }
                 var result = new Operation();
-                result.Operator = new Operator(this.operator.Name, this.operator.MinOperandsCount, this.operator.MaxOperandsCount, this.operator.Function, this.Operator.IsFunction);
+                result.Operator = new Operator(this.operator.Name, this.operator.MinOperandsCount, this.operator.MaxOperandsCount, this.Operator.IsFunction);
                 result.Operands = operands;
 
                 return result;
@@ -461,7 +393,7 @@
                                 var updated = false;
                                 for (var j = 0; j < states.length; j++) {
                                     if (states[j].Name === name) {
-                                        wasUpdated = operands[i].GetFormula() !== states[j].GetFormula() || wasUpdated;
+                                        wasUpdated = GetLTLServiceProcessingFormula(operands[i]) !== GetLTLServiceProcessingFormula(states[j]) || wasUpdated;
                                         operands[i] = states[j];
                                         updated = true;
                                         break;

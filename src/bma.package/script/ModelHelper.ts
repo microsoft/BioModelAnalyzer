@@ -311,9 +311,9 @@
                     var variable;
                     if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
                         variable = operand.LeftOperand;
-                    } else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                    } /*else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
                         variable = operand.MiddleOperand;
-                    }
+                    }*/
                     if (variable instanceof BMA.LTLOperations.NameOperand) {
                         var variableId = variable.Id;
                         if (variableId === undefined) {
@@ -342,9 +342,9 @@
                         var newOperand;
                         if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
                             newOperand = new BMA.LTLOperations.KeyframeEquation(variable, operand.Operator, operand.RightOperand);
-                        } else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                        } /*else if (operand instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
                             newOperand = new BMA.LTLOperations.DoubleKeyframeEquation(operand.LeftOperand, operand.LeftOperator, variable, operand.RightOperator, operand.RightOperand);
-                        }
+                        }*/
                         operands.push(newOperand);
                     }
                 }
@@ -541,7 +541,7 @@
                     if (mergedStates.map[op.Name]) {
                         for (var j = 0; j < mergedStates.states.length; j++)
                             if (mergedStates.states[j].Name == mergedStates.map[op.Name]
-                                && mergedStates.states[j].GetFormula() == op.GetFormula())
+                                && BMA.LTLOperations.GetLTLServiceProcessingFormula(mergedStates.states[j]) == BMA.LTLOperations.GetLTLServiceProcessingFormula(op))
                                 op.Name = mergedStates.map[op.Name];
                     } else op = undefined;
                 } else if (op instanceof BMA.LTLOperations.Operation) {
@@ -855,7 +855,7 @@
                 var oldStates = {};
                 for (var j = 0; j < currentStates.length; j++) {
                     var curState = currentStates[j];
-                    if (curState.GetFormula() === newState.GetFormula()) {
+                    if (BMA.LTLOperations.GetLTLServiceProcessingFormula(curState) === BMA.LTLOperations.GetLTLServiceProcessingFormula(newState)) {
                         exist = true;
                         oldStates[curState.Name] = curState;
                         result.map[newState.Name] = curState.Name;

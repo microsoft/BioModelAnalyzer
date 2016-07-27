@@ -247,5 +247,49 @@
                 return layout;
             }
         }
+
+        export function GetLTLServiceProcessingFormula(operation: BMA.LTLOperations.IOperand): string {
+            if (operation instanceof NameOperand) {
+                return (<NameOperand>operation).Id;
+            } else if (operation instanceof ConstOperand) {
+                return (<ConstOperand>operation).Value.toString();
+            } else if (operation instanceof KeyframeEquation) {
+                var equation = <KeyframeEquation>operation;
+                return "(" + equation.Operator + " " + GetLTLServiceProcessingFormula(equation.LeftOperand) + " " + GetLTLServiceProcessingFormula(equation.RightOperand) + ")";
+            } else if (operation instanceof TrueKeyframe) {
+                return "True";
+            } else if (operation instanceof OscillationKeyframe) {
+                return "Oscillation";
+            } else if (operation instanceof SelfLoopKeyframe) {
+                return "SelfLoop";
+            } else if (operation instanceof Keyframe) {
+                var operands = (<Keyframe>operation).Operands;
+                if (operands === undefined || operands.length < 1) {
+                    return "";
+                } else {
+                    if (operands.length === 1)
+                        return GetLTLServiceProcessingFormula(operands[0]);
+
+                    var formula = GetLTLServiceProcessingFormula(operands[operands.length - 1]);
+
+                    for (var i = operands.length - 2; i >= 0; i--) {
+                        formula = "(And " + GetLTLServiceProcessingFormula(operands[i]) + " " + formula + ")";
+                    }
+
+                    return formula;
+                }
+            } else if (operation instanceof Operation) {
+                var op = <Operation>operation;
+                var operator = op.Operator;
+                var result = "(" + operator.Name[0] + operator.Name.substring(1).toLowerCase();
+                for (var i = 0; i < op.Operands.length; i++) {
+                    result += " " + GetLTLServiceProcessingFormula(op.Operands[i]);
+                }
+                result += ")";
+                return result;
+            }
+
+            throw "Unknown operand type!";
+        }
     }
 }
