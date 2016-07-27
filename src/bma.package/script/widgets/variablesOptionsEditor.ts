@@ -29,7 +29,26 @@
         },
 
         SetValidation: function (result: boolean, message: string) {
-            this.texteditor.tftexteditor("SetValidation", result, message);
+            var newmessage = this.ParseErrorMessage(message);
+            this.texteditor.tftexteditor("SetValidation", result, newmessage);
+        },
+
+        ParseErrorMessage: function (message) {
+            var newmessage = "";
+            if (!message) return newmessage;
+            if (message.stack) {
+                var splitedMessage = message.stack.split("Expecting");
+                var errorPlace = splitedMessage[0];
+                var missingPart = splitedMessage[1];
+                if (missingPart === undefined) {
+                    splitedMessage = message.stack.split("Unexpected");
+                } else {
+                    missingPart = missingPart.split(" got")[0].toLowerCase().replace(/'eof',/g, "");
+                    if (missingPart.endsWith(",")) missingPart = missingPart.slice(0, missingPart.length - 1);
+                    newmessage += "Expecting: " + missingPart;
+                }
+            } else newmessage = message;
+            return newmessage;
         },
         
         _create: function () {
@@ -188,10 +207,10 @@
                     try {
                         BMA.ModelHelper.ConvertTargetFunctionToOperation(params.formula, that.options.inputs);
                         that.formulaEdButton.removeClass("disabled");
-                        that.SetValidation(true);
+                        that.SetValidation(true, "");
                     } catch (ex) {
                         that.formulaEdButton.addClass("disabled");
-                        that.SetValidation(false);
+                        that.SetValidation(false, ex);
                     }
                 },
                 //onvariablechangedcallback: () => {
@@ -340,10 +359,12 @@
                             try {
                                 BMA.ModelHelper.ConvertTargetFunctionToOperation(params.formula, that.options.inputs);
                                 that.formulaEdButton.removeClass("disabled");
-                                this.SetValidation(true);
+                                that.element.removeClass('bmaeditor-expanded');
+                                this.SetValidation(true, "");
                             } catch (ex) {
                                 this.formulaEdButton.addClass("disabled");
-                                this.SetValidation(false);
+                                that.element.addClass('bmaeditor-expanded');
+                                this.SetValidation(false, ex);
                             }
                         }
                     });
