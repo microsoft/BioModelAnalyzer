@@ -133,7 +133,8 @@
                         var colorData = that.CreateProgressionMinTable();
                         that.compactViewer.SetData({
                             data: { variables: variables, colorData: colorData },
-                            plot: that.variables
+                            plot: that.variables,
+                            error: undefined
                         });
                     }
                 });
