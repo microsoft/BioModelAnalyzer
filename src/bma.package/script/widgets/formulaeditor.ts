@@ -102,7 +102,10 @@
                     opacity: 0.4,
                     cursor: "pointer",
                     start: function (event, ui) {
-                        //that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
+                        that._switchMode("extended");
+                    },
+                    stop: function () {
+                        that._switchMode("compact");
                     }
                 });
 
@@ -248,12 +251,14 @@
                         });
 
                         that._refresh();
+                        that._switchMode("extended");
                     }
                 },
                 drag: function (arg, ui) {
                     return opToDrag !== undefined;
                 },
                 stop: function (arg, ui) {
+
 
                     if (opToDrag !== undefined) {
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
@@ -277,6 +282,8 @@
                         //opToDrag = undefined;
                         that._refresh();
                     }
+
+                    that._switchMode("compact");
                     draggableDiv.attr("data-dragsource", undefined);
 
                 }
@@ -292,7 +299,7 @@
                         var operator = undefined;
                         for (var i = 0; i < operatorsArr.length; i++) {
                             if (operatorsArr[i].Name === ui.draggable.attr("data-operator")) {
-                                op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].MinOperandsCount, operatorsArr[i].MaxOperandsCount, undefined, operatorsArr[i].isFunction);
+                                op.Operator = new BMA.LTLOperations.Operator(operatorsArr[i].Name, operatorsArr[i].MinOperandsCount, operatorsArr[i].MaxOperandsCount, operatorsArr[i].isFunction);
                                 break;
                             }
                         }
@@ -359,6 +366,8 @@
                         opToDrag = undefined;
                         draggableDiv.attr("data-dragsource", undefined);
                     }
+
+                    that._switchMode("compact");
                 }
             });
 
@@ -383,6 +392,7 @@
 
                     opToDrag = undefined;
                     draggableDiv.attr("data-dragsource", undefined);
+                    that._switchMode("compact");
                 }
             });
 
@@ -413,7 +423,6 @@
                     opToDrag.IsVisible = false;
 
                     if (opToDrag !== undefined) {
-
                         var keyFrameSize = 26;
                         var padding = { x: 5, y: 10 };
                         var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, opToDrag.operation, padding, keyFrameSize);
@@ -444,10 +453,14 @@
                         });
 
                         that._refresh();
+                        that._switchMode("extended");
                     }
                 },
                 drag: function (arg, ui) {
                     return opToDrag !== undefined;
+                },
+                stop: function () {
+                    that._switchMode("compact");
                 }
             });
 
@@ -456,6 +469,7 @@
                 drop: function (arg, ui) {
                     opToDrag = undefined;
                     draggableDiv.attr("data-dragsource", undefined);
+                    that._switchMode("compact");
                 }
             });
 
@@ -552,6 +566,27 @@
             */
         },
 
+        _switchMode: function (mode) {
+            if (this.operationLayout !== undefined) {
+                this.operationLayout.ViewMode = mode;
+
+                var bbox = this.operationLayout.BoundingBox;
+                var aspect = this.svgDiv.width() / this.svgDiv.height();
+                var width = bbox.width + 20;
+                var height = width / aspect;
+                if (height < bbox.height + 20) {
+                    height = bbox.height + 20;
+                    width = height * aspect;
+                }
+                var x = -width / 2;
+                var y = -height / 2;
+                this._svg.configure({
+                    viewBox: x + " " + y + " " + width + " " + height,
+                }, true);
+
+            }
+        },
+
         _refreshStates: function () {
             var that = this;
             this.statesbtns.empty();
@@ -574,9 +609,11 @@
                     opacity: 0.4,
                     cursor: "pointer",
                     start: function (event, ui) {
-                        //that._executeCommand("AddStateSelect", $(this).attr("data-state"));
+                        that._switchMode("extended");
+                    },
+                    stop: function () {
+                        that._switchMode("compact");
                     }
-
                 });
 
                 //stateDiv.statetooltip({ state: stateTooltip });

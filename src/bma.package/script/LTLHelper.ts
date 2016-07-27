@@ -166,7 +166,7 @@
             return CalcOperationSize(operation, getOpWidth, padding, keyFrameSize);
         }
 
-        export function CreateLayout(operation: IOperand, getOperatorWidth: Function, padding: { x: number; y: number }, keyFrameSize: number): any {
+        export function CreateLayout(operation: IOperand, getOperatorWidth: Function, padding: { x: number; y: number }, keyFrameSize: number, options: any = undefined): any {
             var layout: any = {};
             layout.operation = operation;
 
@@ -194,7 +194,7 @@
                     var operand = operands[i];
 
                     if (operand !== undefined) {
-                        var calcLW = CreateLayout(operand, getOperatorWidth, padding, keyFrameSize);
+                        var calcLW = CreateLayout(operand, getOperatorWidth, padding, keyFrameSize, options);
                         calcLW.parentoperationindex = i;
                         calcLW.parentoperation = operation;
                         layer = Math.max(layer, calcLW.layer);
@@ -211,11 +211,20 @@
                 }
 
                 //Adding empty slot for operators with flexible operands count
-                if (!isFinite(operator.MaxOperandsCount) && operands[operands.length - 1] !== undefined) {
-                    layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: operands.length });
-                    width += (keyFrameSize + paddingX);
-                    if (!operator.isFunction) {
-                        width += operatorWidth + paddingX;
+                if (options !== undefined && options.viewmode === "compact") {
+                    if (!isFinite(operator.MaxOperandsCount)) {
+                        layout.operands[layout.operands.length - 1].isFlexible = true;
+                    }
+                }
+
+                
+                if (options !== undefined && options.viewmode === "extended") {
+                    if (!isFinite(operator.MaxOperandsCount) && operands[operands.length - 1] !== undefined) {
+                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: operands.length });
+                        width += (keyFrameSize + paddingX);
+                        if (!operator.isFunction) {
+                            width += operatorWidth + paddingX;
+                        }
                     }
                 }
 
