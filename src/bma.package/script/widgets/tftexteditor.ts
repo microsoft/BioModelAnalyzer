@@ -37,7 +37,6 @@
             var that = this;
 
             if (this.options.approved === undefined) {
-                that.element.removeClass('bmaeditor-expanded');
                 that.prooficon.removeClass("formula-failed-icon");
                 that.prooficon.removeClass("formula-validated-icon");
                 this.formulaTextArea.removeClass("formula-failed-textarea");
@@ -48,12 +47,10 @@
                 if (this.options.approved === true) {
                     that.prooficon.removeClass("formula-failed-icon").addClass("formula-validated-icon");
                     this.formulaTextArea.removeClass("formula-failed-textarea").addClass("formula-validated-textarea");
-                    that.element.removeClass('bmaeditor-expanded');
                 }
                 else if (this.options.approved === false) {
                     that.prooficon.removeClass("formula-validated-icon").addClass("formula-failed-icon");
                     this.formulaTextArea.removeClass("formula-validated-textarea").addClass("formula-failed-textarea");
-                    that.element.addClass('bmaeditor-expanded');
                 }
 
             }
