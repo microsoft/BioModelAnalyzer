@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
+    <title>oscillations</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Analysis-Tabs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="oscillations" sketch:type="MSArtboardGroup">
+            <circle id="Oval-3" fill="#FEB6B2" sketch:type="MSShapeGroup" cx="18" cy="18" r="16"></circle>
+            <path d="M32.497291,11 C30.0398676,11 30.0398676,25.7196587 27.5810759,25.7196587 C25.1236524,25.7196587 25.1236524,11 22.6675972,11 C20.2088055,11 20.2088055,25.7196587 17.7500138,25.7196587 C15.2939586,25.7196587 15.2939586,11 12.8379034,11 C10.3791117,11 10.3791117,25.7196587 7.92032,25.7196587 C5.46016,25.7196587 5.46016,11 3,11" id="Stroke-2" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

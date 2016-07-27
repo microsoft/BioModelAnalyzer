@@ -205,9 +205,9 @@
     <Content Include="images\ltl-icon.png" />
     <Content Include="images\ltlimgs\123.png" />
     <Content Include="images\ltlimgs\eq.png" />
-    <Content Include="images\ltlimgs\mo.png" />
     <Content Include="images\ltlimgs\le.png" />
     <Content Include="images\ltlimgs\leeq.png" />
+    <Content Include="images\ltlimgs\mo.png" />
     <Content Include="images\ltlimgs\moeq.png" />
     <Content Include="images\ltlimgs\noeq.png" />
     <Content Include="images\ltlimgs\remove.png" />
@@ -558,7 +558,9 @@
       <Name>UIExpr</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="tests\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
