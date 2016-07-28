@@ -50,7 +50,7 @@ type WebApiControllersTests() =
     static member TestClassCleanup() =
         webApp.Dispose()
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("BrokenModel.json")>]
     member x.``Broken model generates failure log record`` () = 
         async {
@@ -70,7 +70,7 @@ type WebApiControllersTests() =
             Assert.IsTrue(logger.FailureCount > 0, "failure log")
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ToyModelStable.json")>]
     member x.``Correct model doesn't generate failure log record`` () = 
         async {
@@ -90,7 +90,7 @@ type WebApiControllersTests() =
             Assert.IsTrue(logger.FailureCount = 0, "failure log must be empty")
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ToyModelStable.json")>]
     member x.``Stable model stabilizes`` () = 
         async {
@@ -107,7 +107,7 @@ type WebApiControllersTests() =
             Assert.AreEqual(result.Status, StatusType.Stabilizing)
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ToyModelUnstable.json")>]
     member x.``Unstable model does not stabilize`` () = 
         async {
@@ -125,7 +125,7 @@ type WebApiControllersTests() =
             Assert.AreEqual(result.Status, StatusType.NotStabilizing)
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ToyModelUnstable.json")>]
     member x.``Unstable model simulated for 10 steps`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelUnstable.json"))
@@ -164,7 +164,7 @@ type WebApiControllersTests() =
             Assert.AreEqual((state |> Array.pick (pickId 3)).Value, 2);
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("SimpleBifurcation.json")>]
     member x.``Bifurcating model bifurcates`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("SimpleBifurcation.json"))
@@ -205,7 +205,7 @@ type WebApiControllersTests() =
 
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("Race.json")>]
     member x.``Race model cycles`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("Race.json"))
@@ -245,7 +245,7 @@ type WebApiControllersTests() =
             Assert.AreEqual(var4_1.["Value"].ToString(), "1")
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ion channel.json")>]
     [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Ion channel has fixpoint`` () = 

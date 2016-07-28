@@ -89,7 +89,6 @@
   </Target>-->
   <ItemGroup>
     <Compile Include="WebApiControllersTests.fs" />
-    <Compile Include="JsonToQnTests.fs" />
     <None Include="MSTest.runsettings" />
     <Content Include="packages.config" />
     <Content Include="SkinModel.xml" />

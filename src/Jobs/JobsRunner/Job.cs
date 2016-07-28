@@ -56,7 +56,7 @@ namespace JobsRunner
                 using (Process p = new Process())
                 {
                     p.StartInfo.FileName = executableName;
-                    p.StartInfo.Arguments = String.Format("\"{0}\" \"{1}\"", inputFile, outputFile);
+                    p.StartInfo.Arguments = String.Format("\"{0}\" \"{1}\" \"{2}\"", inputFile, outputFile, errorsFile);
                     p.StartInfo.CreateNoWindow = true;
                     p.StartInfo.UseShellExecute = false;
                     p.StartInfo.RedirectStandardError = true;

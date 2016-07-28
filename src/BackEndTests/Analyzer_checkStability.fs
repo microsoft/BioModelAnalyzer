@@ -11,11 +11,12 @@ open Newtonsoft.Json.Linq
 
 open BioCheckAnalyzerCommon
 open BioModelAnalyzer
+open System.ComponentModel
 
 [<TestClass>]
 type VMCAIAnalyzeTests() = 
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ToyModelStable.json")>]
     member x.``Stable model stabilizes`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelStable.json"))
@@ -31,7 +32,7 @@ type VMCAIAnalyzeTests() =
         Assert.AreEqual(result.Status, StatusType.Stabilizing)
 
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ToyModelUnstable.json")>]
     member x.``Unstable model does not stabilize`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelUnstable.json"))
