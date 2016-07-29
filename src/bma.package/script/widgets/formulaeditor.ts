@@ -700,6 +700,7 @@
 
             if (that.options.operation !== undefined) {
                 this.operationLayout = new BMA.LTLOperations.OperationLayout(that._svg, that.options.operation, { x: 0, y: 0 });
+                this.operationLayout.Padding = { x: 7, y: 14 };
                 var bbox = this.operationLayout.BoundingBox;
                 var aspect = that.svgDiv.width() / that.svgDiv.height();
                 var width = bbox.width + 20;

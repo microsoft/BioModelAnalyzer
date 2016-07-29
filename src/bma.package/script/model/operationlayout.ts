@@ -393,10 +393,10 @@
 
                         var isFlex = layoutPart.isFlexible && this.viewmode === "compact";
                         if (isFlex) {
-                            svg.rect(this.renderGroup, position.x - halfWidth + 2, position.y - height / 2 + 2, halfWidth * 2, height, height / 2, height / 2, {
+                            svg.rect(this.renderGroup, position.x - halfWidth + 3, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, {
                                 stroke: "rgb(96,96,96)",
-                                strokeWidth: strokeWidth,
-                                fill: "rgb(96,96,96)"
+                                strokeWidth: 1,
+                                fill: "transparent"
                             });
                         }
 
@@ -451,7 +451,7 @@
                         var uniquename = this.GenerateUUID();
 
                         if (layoutPart.isFlexible && this.viewmode === "compact") {
-                            svg.circle(stateGroup, 2, 2, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(96,96,96)" });
+                            svg.circle(stateGroup, 3, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
                         }
 
                         var path = svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)", id: uniquename });
