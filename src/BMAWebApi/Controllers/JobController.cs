@@ -15,6 +15,22 @@ namespace bma.client.Controllers
 {
     public class JobController : ApiController
     {
+        private static string basePath;
+
+        static JobController()
+        {
+            var env = Environment.GetEnvironmentVariables();
+            foreach (var key in env.Keys)
+            {
+                if ((string)key == "RoleRoot")
+                {
+                    basePath = Path.Combine(Environment.GetEnvironmentVariable("RoleRoot"), @"approot\bin");
+                    break;
+                }
+            }
+            if (basePath == null) basePath = Environment.CurrentDirectory;
+        }
+
         private readonly string executableName;
         private readonly IFailureLogger faultLogger;
 
@@ -30,11 +46,17 @@ namespace bma.client.Controllers
         {
             var log = new DefaultLogService();
             string input = await Request.Content.ReadAsStringAsync();
-            string basePath = Path.Combine(Environment.GetEnvironmentVariable("RoleRoot"), @"approot\bin");
+
             try
             {
-                string result = JobsRunner.Job.RunToCompletion(Path.Combine(basePath, executableName), input, timeoutMs);
-                return HttpResponses.Json(Request, result);
+                JobsRunner.JobResult result = JobsRunner.Job.RunToCompletion(Path.Combine(basePath, executableName), input, timeoutMs);
+
+                if (result.Errors.Length > 0)
+                {
+                    var contents = new LogContents(null, result.Errors);
+                    faultLogger.Add(DateTime.Now, typeof(JobController).Assembly.GetName().Version.ToString(), input, contents);
+                }
+                return HttpResponses.Json(Request, result.Content);
             }
             catch (System.TimeoutException ex)
             {

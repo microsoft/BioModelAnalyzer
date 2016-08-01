@@ -22,6 +22,11 @@ type TestFailureLogger() =
             x.FailureCount <- x.FailureCount + 1
 
 [<TestClass>]
+[<DeploymentItem("Analyze.exe")>]
+[<DeploymentItem("FurtherTesting.exe")>]
+[<DeploymentItem("Simulate.exe")>]
+[<DeploymentItem("libz3.dll")>]
+[<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
 type WebApiControllersTests() = 
 
     static let mutable webApp : IDisposable = null
@@ -45,14 +50,13 @@ type WebApiControllersTests() =
     static member TestClassCleanup() =
         webApp.Dispose()
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("BrokenModel.json")>]
-    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Broken model generates failure log record`` () = 
         async {
             let jobj = JObject.Parse(System.IO.File.ReadAllText("BrokenModel.json", System.Text.Encoding.UTF8))
             let model = jobj.["Model"] :?> JObject
-            model.Add("EnableLogging", JValue(false))
+            model.Add("EnableLogging", JValue(true))
 
             logger.FailureCount <- 0
             let! responseString = 
@@ -62,12 +66,32 @@ type WebApiControllersTests() =
                                          body = TextRequest (model.ToString()))
             let result = Newtonsoft.Json.JsonConvert.DeserializeObject<AnalysisOutput>(responseString); 
             Assert.AreEqual(StatusType.Error, result.Status)
-            Assert.IsTrue(logger.FailureCount > 0)
+            Assert.IsTrue(result.ErrorMessages.Length > 0, "errors")
+            Assert.IsTrue(logger.FailureCount > 0, "failure log")
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ToyModelStable.json")>]
-    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
+    member x.``Correct model doesn't generate failure log record`` () = 
+        async {
+            let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelStable.json", System.Text.Encoding.UTF8))
+            let model = jobj.["Model"] :?> JObject
+            model.Add("EnableLogging", JValue(true))
+
+            logger.FailureCount <- 0
+            let! responseString = 
+                 Http.AsyncRequestString("http://localhost:8088/api/Analyze", 
+                                         headers = [ ContentType HttpContentTypes.Json;
+                                                     Accept HttpContentTypes.Json ],
+                                         body = TextRequest (model.ToString()))
+            let result = Newtonsoft.Json.JsonConvert.DeserializeObject<AnalysisOutput>(responseString); 
+            Assert.AreEqual(StatusType.Stabilizing, result.Status)
+            Assert.IsTrue(result.ErrorMessages = null || result.ErrorMessages.Length = 0, "errors")
+            Assert.IsTrue(logger.FailureCount = 0, "failure log must be empty")
+        } |> Async.RunSynchronously
+
+    [<TestMethod; TestCategory("CI")>]
+    [<DeploymentItem("ToyModelStable.json")>]
     member x.``Stable model stabilizes`` () = 
         async {
             let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelStable.json", System.Text.Encoding.UTF8))
@@ -83,9 +107,8 @@ type WebApiControllersTests() =
             Assert.AreEqual(result.Status, StatusType.Stabilizing)
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ToyModelUnstable.json")>]
-    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Unstable model does not stabilize`` () = 
         async {
             let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelUnstable.json"))
@@ -102,9 +125,8 @@ type WebApiControllersTests() =
             Assert.AreEqual(result.Status, StatusType.NotStabilizing)
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ToyModelUnstable.json")>]
-    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Unstable model simulated for 10 steps`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelUnstable.json"))
         let model = (jobj.["Model"] :?> JObject).ToObject<Model>()
@@ -142,9 +164,8 @@ type WebApiControllersTests() =
             Assert.AreEqual((state |> Array.pick (pickId 3)).Value, 2);
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("SimpleBifurcation.json")>]
-    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Bifurcating model bifurcates`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("SimpleBifurcation.json"))
         let jmodel = jobj.["Model"] :?> JObject
@@ -178,14 +199,14 @@ type WebApiControllersTests() =
             Assert.AreEqual(Seq.length counterExamples, 1)
             let var = ((Seq.head counterExamples).["Variables"] :?> JArray).[0]
             Assert.AreEqual(var.["Id"].ToString(), "3^0")
-            Assert.AreEqual(var.["Fix1"].ToString(), "0")
-            Assert.AreEqual(var.["Fix2"].ToString(), "1")
+            let fix1 = var.["Fix1"].ToString()
+            let fix2 = var.["Fix2"].ToString()
+            Assert.IsTrue(fix1 = "0" && fix2 = "1" || fix1 = "1" && fix2 = "0", "fixpoints")
 
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("Race.json")>]
-    [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Race model cycles`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("Race.json"))
         let jmodel = jobj.["Model"] :?> JObject
@@ -224,7 +245,7 @@ type WebApiControllersTests() =
             Assert.AreEqual(var4_1.["Value"].ToString(), "1")
         } |> Async.RunSynchronously
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ion channel.json")>]
     [<DeploymentItem("Microsoft.Owin.Host.HttpListener.dll")>]
     member x.``Ion channel has fixpoint`` () = 

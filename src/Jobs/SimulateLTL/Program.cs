@@ -8,7 +8,7 @@ namespace SimulateLTL
     {
         static void Main(string[] args)
         {
-            if (args.Length != 2) throw new System.ArgumentException("Incorrect number of arguments");
+            if (args.Length < 2 || args.Length > 3) throw new System.ArgumentException("Incorrect number of arguments");
             var inputJson = File.ReadAllText(args[0]);
             var query = JsonConvert.DeserializeObject<LTLSimulationAnalysisInputDTO>(inputJson);
 
@@ -16,6 +16,10 @@ namespace SimulateLTL
 
             var jsRes = JsonConvert.SerializeObject(res);
             File.WriteAllText(args[1], jsRes);
+            if (args.Length >= 3)
+            {
+                File.WriteAllLines(args[2], (res != null && res.ErrorMessages != null) ? res.ErrorMessages : new string[0]);
+            }
         }
     }
 }

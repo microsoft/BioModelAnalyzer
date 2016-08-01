@@ -20,8 +20,8 @@ let enc_z3_bool_var_loop_at_time time = sprintf "l^%d" time
 let enc_z3_bool_var_trans_of_var_from_time_to_time_uniqueid (node : QN.node) from_time to_time value = sprintf "tv%d^%d^%d^%s" node.var from_time to_time value
 
 
-let make_z3_int_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkIntSort())
-let make_z3_bool_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkBoolSort())
+let make_z3_int_var (name : string) (z : Context) = z.MkIntConst(z.MkSymbol(name))
+let make_z3_bool_var (name : string) (z : Context) = z.MkBoolConst(z.MkSymbol(name))
 
 let dec_qn_var_from_z3_var (name : string) =
     let parts = name.Split[|'^'|]

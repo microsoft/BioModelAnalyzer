@@ -89,7 +89,6 @@
   </Target>-->
   <ItemGroup>
     <Compile Include="WebApiControllersTests.fs" />
-    <Compile Include="JsonToQnTests.fs" />
     <None Include="MSTest.runsettings" />
     <Content Include="packages.config" />
     <Content Include="SkinModel.xml" />
@@ -124,6 +123,9 @@
     <None Include="RestingNeuron.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Skin2D_5X2_AI.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj">
@@ -149,6 +151,31 @@
     <ProjectReference Include="..\BMAWebApi\BMAWebApi.csproj">
       <Name>BMAWebApi</Name>
       <Project>{6652fdab-c878-4661-baad-664cf8327467}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\AnalyzeLTL\AnalyzeLTL.csproj">
+      <Name>AnalyzeLTL</Name>
+      <Project>{f27a4a37-7fde-473e-ac6a-dcb38451bbf4}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\Analyze\Analyze.csproj">
+      <Name>Analyze</Name>
+      <Project>{dffb825c-8482-4cc2-bf67-0b787a9f5e1e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\FurtherTesting\FurtherTesting.csproj">
+      <Name>FurtherTesting</Name>
+      <Project>{31cd1208-f215-40ce-80b9-0093e1b1494b}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\SimulateLTL\SimulateLTL.csproj">
+      <Name>SimulateLTL</Name>
+      <Project>{e7535067-7b3d-4e8f-81b9-62e23550b535}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\Simulate\Simulate.csproj">
+      <Name>Simulate</Name>
+      <Project>{90ff5549-6138-4653-89c7-5a0dfb9034cf}</Project>
       <Private>True</Private>
     </ProjectReference>
     <Reference Include="FSharp.Data">
@@ -183,6 +210,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.Z3">
+      <HintPath>..\..\ext\z3\z3-4.4.1-x64-win\bin\Microsoft.Z3.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>

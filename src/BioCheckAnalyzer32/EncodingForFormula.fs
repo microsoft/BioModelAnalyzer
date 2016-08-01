@@ -22,7 +22,7 @@ type QN = QN.node list
 //    Oscillation - time::5
 // A similar thing could be done for propositions.
 type FormulaLocation = int list 
-type FormulaConstraint = Map<FormulaLocation, Term>
+type FormulaConstraint = Map<FormulaLocation, BoolExpr>
 type FormulaConstraintList = FormulaConstraint list
 
 
@@ -345,7 +345,7 @@ let produce_constraints_for_truth_of_formula_at_time (ltl_formula : LTLFormulaTy
 // In the case of encoding a normal step this constraint should be true --> encode the transition
 // In the case of encoding a loop closure this constraint should encode that the loop is closing 
 // to this step and only then encode the transition.
-let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : QN) (previous_map : FormulaConstraint) (current_map : FormulaConstraint) (step_prev : int) (step_curr : int) (z : Context) additional_application_constraint = 
+let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : QN) (previous_map : FormulaConstraint) (current_map : FormulaConstraint) (step_prev : int) (step_curr : int) (z : Context, s : Solver) additional_application_constraint = 
     let rec assert_transition_of_formula ltl_formula =
 
         // Call recursively
@@ -582,7 +582,7 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
         | Always (location, _)
         | Eventually (location, _) ->
             let implication = z.MkImplies(additional_application_constraint,constraint_for_formula)
-            z.AssertCnstr(implication)
+            s.Assert(implication)
         // Non temporal operators
         | _ ->
             ()
@@ -590,9 +590,9 @@ let encode_formula_transition_from_to (ltl_formula : LTLFormulaType) (network : 
     assert_transition_of_formula ltl_formula
 
 
-let encode_formula_transition_in_loop (ltl_formula : LTLFormulaType) (network : QN) (last_map : FormulaConstraint) (current_map : FormulaConstraint) (last_step : int) (current_step : int) (z : Context) = 
+let encode_formula_transition_in_loop (ltl_formula : LTLFormulaType) (network : QN) (last_map : FormulaConstraint) (current_map : FormulaConstraint) (last_step : int) (current_step : int) (z : Context) (s : Solver) = 
     let z3_constraint_for_loop_at_time = BioCheckPlusZ3.constraint_for_loop_at_time current_step last_step z
-    ignore(encode_formula_transition_from_to ltl_formula network last_map current_map last_step  current_step z z3_constraint_for_loop_at_time)
+    ignore(encode_formula_transition_from_to ltl_formula network last_map current_map last_step  current_step (z,s) z3_constraint_for_loop_at_time)
 
 
 let encode_formula_fairness_in_loop (ltl_formula :LTLFormulaType) (network : QN)  (range : VariableRange) (current_time : int) (last_time : int) (z : Context) =
@@ -613,26 +613,26 @@ let create_list_of_maps_of_formula_constraints (ltl_formula : LTLFormulaType) (n
 
     !list_of_maps
 
-let encode_formula_transitions_over_path (ltl_formula : LTLFormulaType) (network :QN) (z : Context) (formula_constraints : FormulaConstraintList) =
+let encode_formula_transitions_over_path (ltl_formula : LTLFormulaType) (network :QN) (z : Context, s : Solver) (formula_constraints : FormulaConstraintList) =
     let time = ref 1
     let previous_constraint = ref formula_constraints.Head
     let remaining_formula_constraints = formula_constraints.Tail
 
     for current_constraint in remaining_formula_constraints do
-        encode_formula_transition_from_to ltl_formula network !previous_constraint current_constraint (!time-1) !time z (z.MkTrue())
+        encode_formula_transition_from_to ltl_formula network !previous_constraint current_constraint (!time-1) !time (z,s) (z.MkTrue())
 
         incr time
         previous_constraint := current_constraint
 
     ()
 
-let encode_formula_transitions_in_loop_closure (ltl_formula : LTLFormulaType) (network : QN) (z : Context) (formula_constraints : FormulaConstraintList) =
+let encode_formula_transitions_in_loop_closure (ltl_formula : LTLFormulaType) (network : QN) (z : Context, s : Solver) (formula_constraints : FormulaConstraintList) =
     let last_time = formula_constraints.Length - 1
     let last_map = List.head (List.rev formula_constraints)
 
     let time = ref 0
     for current_map in formula_constraints do
-        encode_formula_transition_in_loop ltl_formula network last_map current_map last_time !time z
+        encode_formula_transition_in_loop ltl_formula network last_map current_map last_time !time z s
 
         incr time
     ()
@@ -674,12 +674,12 @@ let constraint_of_formula (ltl_formula : LTLFormulaType) (map : FormulaConstrain
         z.MkTrue()
 
 //     EncodingForFormula.assert_top_most_formula ltl_formula ctx list_of_maps.Head
-let assert_top_most_formula (ltl_formula : LTLFormulaType) (z : Context) (map : FormulaConstraint) polarity =
+let assert_top_most_formula (ltl_formula : LTLFormulaType) (z : Context, s : Solver) (map : FormulaConstraint) polarity =
     let top_most_formula = constraint_of_formula ltl_formula map 0 z
     if polarity then
-        z.AssertCnstr(top_most_formula)
+        s.Assert(top_most_formula)
     else
-        z.AssertCnstr(z.MkNot(top_most_formula))
+        s.Assert(z.MkNot(top_most_formula))
 
 // Go recursively over the formula structure
 // For each temporal formula that requires fairness (until, release, always, eventually)
@@ -689,7 +689,7 @@ let assert_top_most_formula (ltl_formula : LTLFormulaType) (z : Context) (map : 
 // In symbols: \/_{time=0}^last_time (inside_loop /\ fair)
 // The inside loop predicate is: if time=last_time then it is true
 //                               if time<last_time then it is l_time
-let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (network : QN) (z : Context) (formula_constraints : FormulaConstraintList) =
+let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (network : QN) (z : Context, s : Solver) (formula_constraints : FormulaConstraintList) =
     let last_time = formula_constraints.Length - 1
 
     let compute_loop_possible_at_time (time : int) (last_time : int) =
@@ -748,7 +748,7 @@ let encode_formula_loop_fairness (ltl_formula : LTLFormulaType) (network : QN) (
 
         let array_of_disjuncts = List.toArray !list_of_disjuncts
         let fairness_constraint = z.MkOr(array_of_disjuncts)
-        ignore(z.AssertCnstr(fairness_constraint))
+        ignore(s.Assert(fairness_constraint))
 
     let rec recursive_encode_formula_fairness ltl_formula = 
 
