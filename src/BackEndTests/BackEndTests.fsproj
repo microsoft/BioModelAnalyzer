@@ -89,7 +89,6 @@
   </Target>-->
   <ItemGroup>
     <Compile Include="WebApiControllersTests.fs" />
-    <None Include="MSTest.runsettings" />
     <Content Include="packages.config" />
     <Content Include="SkinModel.xml" />
     <None Include="SkinModel.json">
@@ -126,6 +125,7 @@
     <None Include="Skin2D_5X2_AI.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="vstest.runsettings" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj">
