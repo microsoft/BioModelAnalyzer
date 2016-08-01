@@ -4,6 +4,6 @@
     <TargetPlatform>x64</TargetPlatform>
   </RunConfiguration>
   <MSTest>
-    <ForcedLegacyMode>true</ForcedLegacyMode>
+    <ForcedLegacyMode>false</ForcedLegacyMode>
   </MSTest>
 </RunSettings>
