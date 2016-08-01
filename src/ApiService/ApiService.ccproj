@@ -13,6 +13,7 @@
     <StartDevelopmentStorage>True</StartDevelopmentStorage>
     <Name>ApiService</Name>
     <PackageEnableRemoteDebugger>False</PackageEnableRemoteDebugger>
+    <UseWebProjectPorts>True</UseWebProjectPorts>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,13 +47,25 @@
       <RoleName>ApiServer</RoleName>
       <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
+    <ProjectReference Include="..\LTLCheckRole\LTLCheckRole.csproj">
+      <Name>LTLCheckRole</Name>
+      <Project>{ca56a7da-a2ff-45a7-9bbd-b3594ee090db}</Project>
+      <Private>True</Private>
+      <RoleType>Worker</RoleType>
+      <RoleName>LTLCheckRole</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ApiServerContent\" />
+    <Folder Include="LTLCheckRoleContent\" />
+    <Folder Include="LTLPolarityCheckRoleContent\" />
     <Folder Include="Profiles" />
   </ItemGroup>
   <ItemGroup>
     <DiagnosticsConfiguration Include="ApiServerContent\diagnostics.wadcfgx" />
+    <DiagnosticsConfiguration Include="LTLCheckRoleContent\diagnostics.wadcfgx" />
+    <DiagnosticsConfiguration Include="LTLPolarityCheckRoleContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <ItemGroup>
     <PublishProfile Include="Profiles\bmamathProduction.azurePubxml" />

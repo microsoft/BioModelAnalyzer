@@ -1,8 +1,3 @@
-/// <binding AfterBuild='default' />
-/// <vs AfterBuild='default' />
-/// <binding AfterBuild='default' />
-/// <vs AfterBuild='default' />
-/// <binding AfterBuild='default' />
 /*
 This file in the main entry point for defining grunt tasks and using grunt plugins.
 Click here to learn more. http://go.microsoft.com/fwlink/?LinkID=513275&clcid=0x409
@@ -19,6 +14,7 @@ module.exports = function (grunt) {
                     "js/svgplot.js",
                     "js/scalablegridlinesplot.js",
                     "Scripts/formulaParser.js",
+                    "Scripts/targetFuncParser.js",
                     "script/XmlModelParser.js" ,
                     "script/SVGHelper.js",
                     "script/LTLHelper.js",
@@ -64,6 +60,7 @@ module.exports = function (grunt) {
                     "script/widgets/variablesOptionsEditor.js",
                     "script/widgets/visibilitysettings.js",
                     "script/widgets/formulaeditor.js",
+                    "script/widgets/tftexteditor.js",
                     "script/widgets/ltl/keyframetable.js",
                     "script/widgets/ltl/keyframecompact.js",
                     "script/widgets/ltl/ltlstatesviewer.js",

@@ -1,13 +1,9 @@
 ﻿module BMA {
     export module LTLOperations {
 
-        export interface IGetFormula {
-            (op: IOperand[]): string;
-        }
-
         export interface IOperand {
-            GetFormula(): string;
             Clone(): IOperand;
+            Equals(operand: IOperand): boolean;
         }
 
         /*
@@ -41,12 +37,14 @@
                 return this.id;
             }
 
-            public GetFormula() {
-                return this.id; //this.name;
-            }
-
             public Clone() {
                 return new NameOperand(this.name, this.id);
+            }
+
+            public Equals(op: BMA.LTLOperations.IOperand): boolean {
+                if (op instanceof BMA.LTLOperations.NameOperand) {
+                    return this.name === op.Name && this.id === op.Id;
+                } else return false;
             }
         }
 
@@ -61,12 +59,14 @@
                 return this.const;
             }
 
-            public GetFormula() {
-                return this.const.toString();
-            }
-
             public Clone() {
                 return new ConstOperand(this.const);
+            }
+
+            public Equals(op: BMA.LTLOperations.IOperand): boolean {
+                if (op instanceof BMA.LTLOperations.ConstOperand) {
+                    return this.const === op.Value;
+                } else return false;
             }
         }
 
@@ -93,15 +93,17 @@
                 return this.operator;
             }
 
-            public GetFormula() {
-                return "(" + this.operator + " " + this.leftOperand.GetFormula() + " " + this.rightOperand.GetFormula() + ")";
-            }
-
             public Clone() {
                 return new KeyframeEquation(this.leftOperand.Clone(), this.operator, this.rightOperand.Clone());
             }
-        }
 
+            public Equals(op: BMA.LTLOperations.IOperand): boolean {
+                if (op instanceof BMA.LTLOperations.KeyframeEquation) {
+                    return this.leftOperand.Equals(op.LeftOperand) && this.operator == op.Operator && this.rightOperand.Equals(op.RightOperand);
+                } else return false;
+            }
+        }
+        
         export class DoubleKeyframeEquation implements IOperand {
             private leftOperand: NameOperand | ConstOperand
             private middleOperand: NameOperand | ConstOperand
@@ -138,12 +140,15 @@
                 return this.rightOperator;
             }
 
-            public GetFormula() {
-                return "(And " + "(" + this.Invert(this.leftOperator) + " " + this.middleOperand.GetFormula() + " " + this.leftOperand.GetFormula() + ") (" + this.rightOperator + " " + this.middleOperand.GetFormula() + " " + this.rightOperand.GetFormula() + "))";
-            }
-
             public Clone() {
                 return new DoubleKeyframeEquation(this.leftOperand.Clone(), this.leftOperator, this.middleOperand.Clone(), this.rightOperator, this.rightOperand.Clone());
+            }
+
+            public Equals(op: BMA.LTLOperations.IOperand): boolean {
+                if (op instanceof BMA.LTLOperations.DoubleKeyframeEquation) {
+                    return this.leftOperand.Equals(op.LeftOperand) && this.leftOperator == op.LeftOperator && this.middleOperand.Equals(op.MiddleOperand)
+                        && this.rightOperator == op.RightOperator && this.rightOperand.Equals(op.RightOperand);
+                } else return false;
             }
 
             private Invert(operator: string): string {
@@ -163,41 +168,47 @@
         }
 
         export class TrueKeyframe implements IOperand {
-            public GetFormula() {
-                return "True";
-            }
-
             public Clone() {
                 return new TrueKeyframe();
+            }
+
+            public Equals(op: BMA.LTLOperations.IOperand): boolean {
+                if (op instanceof BMA.LTLOperations.TrueKeyframe) {
+                    return true;
+                } else return false;
             }
         }
 
         export class SelfLoopKeyframe implements IOperand {
-            public GetFormula() {
-                return "SelfLoop";
-            }
-
             public Clone() {
                 return new SelfLoopKeyframe();
+            }
+
+            public Equals(op: BMA.LTLOperations.IOperand): boolean {
+                if (op instanceof BMA.LTLOperations.SelfLoopKeyframe) {
+                    return true;
+                } else return false;
             }
         }
 
         export class OscillationKeyframe implements IOperand {
-            public GetFormula() {
-                return "Oscillation";
-            }
-
             public Clone() {
                 return new OscillationKeyframe();
+            }
+
+            public Equals(op: BMA.LTLOperations.IOperand): boolean {
+                if (op instanceof BMA.LTLOperations.OscillationKeyframe) {
+                    return true;
+                } else return false;
             }
         }
 
         export class Keyframe implements IOperand {
             private name: string;
             private description: string;
-            private operands: (KeyframeEquation | DoubleKeyframeEquation)[];
+            private operands: (BMA.LTLOperations.KeyframeEquation | BMA.LTLOperations.DoubleKeyframeEquation)[];
 
-            constructor(name: string, description: string, operands: (KeyframeEquation | DoubleKeyframeEquation)[]) {
+            constructor(name: string, description: string, operands: (BMA.LTLOperations.KeyframeEquation | BMA.LTLOperations.DoubleKeyframeEquation)[]) {
                 this.name = name;
                 this.description = description;
                 this.operands = operands;
@@ -215,43 +226,80 @@
                 return this.description;
             }
 
-            public get Operands(): (KeyframeEquation | DoubleKeyframeEquation)[] {
+            public get Operands(): (BMA.LTLOperations.KeyframeEquation | BMA.LTLOperations.DoubleKeyframeEquation)[] {
                 return this.operands;
-            }
-
-            public GetFormula() {
-                if (this.operands === undefined || this.operands.length < 1) {
-                    return "";
-                } else {
-                    if (this.operands.length === 1)
-                        return this.operands[0].GetFormula();
-
-                    var formula = this.operands[this.operands.length - 1].GetFormula();
-
-                    for (var i = this.operands.length - 2; i >= 0; i--) {
-                        formula = "(And " + this.operands[i].GetFormula() + " " + formula + ")";
-                    }
-
-                    return formula;
-                }
             }
 
             public Clone() {
                 return new BMA.LTLOperations.Keyframe(this.name, this.description, this.operands.slice(0));
             }
+
+            private CompareOperands(operands: (BMA.LTLOperations.KeyframeEquation | BMA.LTLOperations.DoubleKeyframeEquation)[]): boolean {
+                if (this.operands.length !== operands.length) return false;
+                var isEqual = true;
+
+                var sortOps = (x, y) => {
+                    if (x instanceof KeyframeEquation && y instanceof KeyframeEquation) {
+                        if (x.Equals(y)) return 0;
+                        var xLeft = x.LeftOperand, yLeft = y.LeftOperand;
+                        if (xLeft instanceof NameOperand && yLeft instanceof NameOperand) {
+                            return xLeft.Name < yLeft.Name ? -1 : 1;
+                        } else if (xLeft instanceof ConstOperand) {
+                            if (yLeft instanceof ConstOperand)
+                                return xLeft.Value < yLeft.Value ? -1 : 1;
+                            else return 1;
+                        } else return -1;
+                    } else if (x instanceof DoubleKeyframeEquation) {
+                        if (y instanceof DoubleKeyframeEquation) {
+                            if (x.Equals(y)) return 0;
+                            var xLeft = x.LeftOperand, yLeft = y.LeftOperand;
+                            if (xLeft instanceof NameOperand && yLeft instanceof NameOperand) {
+                                return xLeft.Name < yLeft.Name ? -1 : 1;
+                            } else if (xLeft instanceof ConstOperand) {
+                                if (yLeft instanceof ConstOperand)
+                                    return xLeft.Value < yLeft.Value ? -1 : 1;
+                                else return 1;
+                            } else return -1;
+                        } else return 1;
+                    } else return -1;
+                };
+
+                var operands1 = this.operands.sort(sortOps);
+                var operands2 = operands.sort(sortOps);
+
+                for (var i = 0; i < operands1.length; i++) {
+                    if (!isEqual) return false;
+                    isEqual = isEqual && operands1[i].Equals(operands2[i]);
+                }
+
+                return isEqual;
+            }
+
+            public Equals(op: BMA.LTLOperations.IOperand): boolean {
+                if (op instanceof BMA.LTLOperations.Keyframe) {
+                    var isEqual = this.name == op.Name && this.description == op.Description;
+                    return isEqual && this.CompareOperands(op.Operands);
+                } else return false;
+            }
         }
 
         export class Operator {
             private name: string;
-            private fun: IGetFormula;
-            private operandsNumber: number;
-            private isFunction: boolean
+            private minOperandsCount: number;
+            private maxOperandsCount: number;
+            private isFunction: boolean;
+            private description: string;
 
-            constructor(name: string, operandsCount: number, fun: IGetFormula, isFunction: boolean = false) {
+            constructor(name: string, minOperandsCount: number, maxOperandsCount: number = -1, isFunction: boolean = false, description: string = undefined) {
                 this.name = name;
-                this.fun = fun;
-                this.operandsNumber = operandsCount;
+                this.minOperandsCount = minOperandsCount;
+                if (maxOperandsCount === -1) {
+                    this.maxOperandsCount = minOperandsCount;
+                } else {
+                    this.maxOperandsCount = maxOperandsCount;
+                }
                 this.isFunction = isFunction;
+                this.description = description;
             }
 
             get IsFunction() {
@@ -262,19 +310,16 @@
                 return this.name;
             }
 
-            get OperandsCount() {
-                return this.operandsNumber;
+            get MinOperandsCount() {
+                return this.minOperandsCount;
             }
 
-            get Function() {
-                return this.fun;
+            get MaxOperandsCount() {
+                return this.maxOperandsCount;
             }
 
-            public GetFormula(op: IOperand[]) {
-                if (op !== undefined && op.length !== this.operandsNumber) {
-                    throw "Operator " + name + ": invalid operands count";
-                }
-                return this.fun(op);
+            get Description() {
+                return this.description;
             }
         }
 
@@ -299,10 +344,6 @@
                 this.operands = op;
             }
 
-            public GetFormula() {
-                return this.operator.GetFormula(this.operands);
-            }
-
             public Clone() {
                 var operands = [];
                 for (var i = 0; i < this.operands.length; i++) {
@@ -310,10 +351,22 @@
                     operands.push(this.operands[i] === undefined ? undefined : this.operands[i].Clone());
                 }
                 var result = new Operation();
-                result.Operator = new Operator(this.operator.Name, this.operator.OperandsCount, this.operator.Function);
+                result.Operator = new Operator(this.operator.Name, this.operator.MinOperandsCount, this.operator.MaxOperandsCount, this.Operator.IsFunction);
                 result.Operands = operands;
 
                 return result;
+            }
+
+            public Equals(operation: BMA.LTLOperations.IOperand) {
+                if (operation instanceof Operation && this.operator == operation.operator) {
+                    var isEqual = true;
+                    for (var i = 0; i < this.operands.length; i++) {
+                        isEqual = isEqual && (this.operands[i] && operation.Operands[i] ?
+                            this.operands[i].Equals(operation.Operands[i])
+                            : (this.operands[i] === undefined && operation.Operands[i] === undefined) ? true : false);
+                    }
+                    return isEqual;
+                } else return false;
             }
         }
 
@@ -340,7 +393,7 @@
                                 var updated = false;
                                 for (var j = 0; j < states.length; j++) {
                                     if (states[j].Name === name) {
-                                        wasUpdated = operands[i].GetFormula() !== states[j].GetFormula() || wasUpdated;
+                                        wasUpdated = GetLTLServiceProcessingFormula(operands[i]) !== GetLTLServiceProcessingFormula(states[j]) || wasUpdated;
                                         operands[i] = states[j];
                                         updated = true;
                                         break;

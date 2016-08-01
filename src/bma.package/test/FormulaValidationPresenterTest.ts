@@ -21,12 +21,4 @@
         expect(presenter).toBeDefined();
     })
 
-    xit("should call Invoke method on command 'FormulaEdited'", (done) => {
-        spyOn(ajaxTestDriver, "Invoke");
-        var formula = "test";
-        window.Commands.Execute("FormulaEdited", formula);
-        expect(ajaxTestDriver.Invoke).toHaveBeenCalledWith("api/Validate", { Formula: formula });
-        done();
-
-    })
 }); 

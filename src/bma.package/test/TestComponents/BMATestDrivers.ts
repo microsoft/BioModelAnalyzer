@@ -105,7 +105,11 @@ module BMA {
 
             public SetValidation(val: boolean, message: string) { }
 
-            public SetOnClosingCallback(callback: Function) {};
+            public SetOnClosingCallback(callback: Function) { };
+
+            public SetOnVariableEditedCallback(callback: Function) { };
+
+            public SetOnFormulaEditedCallback(callback: Function) { };
         }
 
 

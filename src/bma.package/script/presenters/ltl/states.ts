@@ -64,7 +64,7 @@
                     for (var i = 0; i < states.length; i++) {
                         var st = states[i];
                         var appst = this.appModel.States[i];
-                        if (st.Name !== appst.Name || st.Description !== appst.Description || st.GetFormula() !== appst.GetFormula())
+                        if (st.Name !== appst.Name || st.Description !== appst.Description || BMA.LTLOperations.GetLTLServiceProcessingFormula(st) !== BMA.LTLOperations.GetLTLServiceProcessingFormula(appst))
                             return true;
                     }
 

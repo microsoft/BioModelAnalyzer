@@ -125,6 +125,8 @@ module BMA {
         export class VariableEditorDriver implements IVariableEditor {
             private variableEditor: JQuery;
             private onclosingCallback: Function;
+            private onvariablechangedcallback: Function;
+            private onformulachangedcallback: Function;
 
             constructor(variableEditor: JQuery) {
                 this.variableEditor = variableEditor;
@@ -137,7 +139,7 @@ module BMA {
             public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; TFdescription: string } {
                 return {
                     name: this.variableEditor.bmaeditor('option', 'name'),
-                    formula: this.variableEditor.bmaeditor('option', 'formula'),
+                    formula: this.variableEditor.bmaeditor('getFormula'),//'option', 'formula'),
                     rangeFrom: this.variableEditor.bmaeditor('option', 'rangeFrom'),
                     rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo'),
                     TFdescription: this.variableEditor.bmaeditor('option', 'TFdescription'),
@@ -155,7 +157,7 @@ module BMA {
                 for (var i = 0; i < model.Relationships.length; i++) {
                     var rel = model.Relationships[i];
                     if (rel.ToVariableId === id) {
-                        options.push(model.GetVariableById(rel.FromVariableId).Name);
+                        options.push(model.GetVariableById(rel.FromVariableId));
                     }
                 }
                 this.variableEditor.bmaeditor('option', 'inputs', options);
@@ -169,6 +171,7 @@ module BMA {
             public Show(x: number, y: number) {
                 this.variableEditor.show();
                 this.variableEditor.css("left", x).css("top", y);
+                this.variableEditor.bmaeditor("updateLayout");
             }
 
             public Hide() {
@@ -181,6 +184,20 @@ module BMA {
             public SetOnClosingCallback(callback: Function) {
                 this.onclosingCallback = callback;
                 this.variableEditor.bmaeditor({ oneditorclosing: callback });
+            }
+
+            public SetOnVariableEditedCallback(callback: Function) {
+                this.onvariablechangedcallback = callback;
+                this.variableEditor.bmaeditor({
+                    onvariablechangedcallback: callback
+                });
+            }
+
+            public SetOnFormulaEditedCallback(callback: Function) {
+                this.onformulachangedcallback = callback;
+                this.variableEditor.bmaeditor({
+                    onformulachangedcallback: callback
+                });
             }
         }
 
@@ -600,13 +617,27 @@ module BMA {
 
             public Invoke(data): JQueryPromise<any> {
                 var that = this;
-                return $.ajax({
+                var result = $.Deferred();
+
+                $.ajax({
                     type: "POST",
                     url: that.serviceURL,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
-                    dataType: "json"
+                    dataType: "json",
+                    statusCode: {
+                        200: function (res) {
+                            result.resolve(res);
+                        },
+                        204: function (res) {
+                            result.reject({}, "Operation was not competed within time limit", "Processing Timeout");
+                        }
+                    }
+                }).fail(function (xhr, textStatus, errorThrown) {
+                    result.reject(xhr, textStatus, errorThrown);
                 });
+
+                return result.promise();
             }
         }
 
@@ -646,7 +677,7 @@ module BMA {
                 }).fail(function (xhr, textStatus, errorThrown) {
                     result.reject(xhr, textStatus, errorThrown);
                 });
-                
+
                 return promise;
             }
 
@@ -698,7 +729,7 @@ module BMA {
                     });
                 }
             }
-            
+
         }
 
         export class LTLAnalyzeService implements IServiceDriver {
@@ -734,11 +765,19 @@ module BMA {
                             url: that.url,
                             data: JSON.stringify(request.data),
                             contentType: "application/json; charset=utf-8",
-                            dataType: "json"
-                        }).done(function (res) {
-                            that.currentActiveRequestCount--;
-                            that.ShiftRequest();
-                            request.deferred.resolve(res);
+                            dataType: "json",
+                            statusCode: {
+                                200: function (res) {
+                                    that.currentActiveRequestCount--;
+                                    that.ShiftRequest();
+                                    request.deferred.resolve(res);
+                                },
+                                204: function (res) {
+                                    that.currentActiveRequestCount--;
+                                    that.ShiftRequest();
+                                    request.deferred.reject({}, "Operation was not competed within time limit", "Processing Timeout");
+                                }
+                            }
                         }).fail(function (xhr, textStatus, errorThrown) {
                             that.currentActiveRequestCount--;
                             that.ShiftRequest();

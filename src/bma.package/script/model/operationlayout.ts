@@ -19,6 +19,7 @@
             private tag: any = undefined;
             private useMask = false;
             private mask = "url(#mask-stripe)";
+            private viewmode = "compact";
 
             private version = 0;
 
@@ -52,6 +53,16 @@
                 }
 
                 return true;
+            }
+
+            public get ViewMode(): string {
+                return this.viewmode;
+            }
+
+            public set ViewMode(value: string) {
+                this.viewmode = value;
+                this.Clear();
+                this.Render();
             }
 
             public get AnalysisStatus(): string {
@@ -380,12 +391,24 @@
                             }
                         }
 
+                        var isFlex = layoutPart.isFlexible && this.viewmode === "compact";
+                        if (isFlex) {
+                            svg.rect(this.renderGroup, position.x - halfWidth + 3, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, {
+                                stroke: "rgb(96,96,96)",
+                                strokeWidth: 1,
+                                fill: "transparent"
+                            });
+                        }
+
+                        var _fill = "transparent";
+                        if (isFlex) {
+                            _fill = this.fill === undefined ? "white" : this.fill;
+                        }
                         var opSVG = svg.rect(this.renderGroup, position.x - halfWidth, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, {
                             stroke: stroke,
                             strokeWidth: strokeWidth,
-                            fill: "transparent"
+                            fill: _fill
                         });
-
 
                         layoutPart.svgref = opSVG;
 
@@ -426,9 +449,14 @@
                         });
 
                         var uniquename = this.GenerateUUID();
+
+                        if (layoutPart.isFlexible && this.viewmode === "compact") {
+                            svg.circle(stateGroup, 3, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
+                        }
+
                         var path = svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)", id: uniquename });
 
-                        if (layoutPart.type === "keyframe") {
+                        if (layoutPart.type === "keyframe" || layoutPart.type === "constant" || layoutPart.type === "other") {
                             var textGroup = svg.group(stateGroup, {
                             });
 
@@ -482,7 +510,10 @@
                     svg.remove(this.renderGroup);
                 }
 
-                this.layout = CreateLayout(this.operation, (name, fontSize) => { return that.GetOperatorWidth(that.svg, name, fontSize).width; }, this.padding, this.keyFrameSize); //this.CreateLayout(svg, this.operation);
+                //Optimizing operation, removing unnecessary empty slots, etc.
+                this.OptimizeOperation();
+
+                this.layout = CreateLayout(this.operation, (name, fontSize) => { return that.GetOperatorWidth(that.svg, name, fontSize).width; }, this.padding, this.keyFrameSize, { viewmode: that.viewmode }); //this.CreateLayout(svg, this.operation);
                 this.position = position;
                 this.SetPositionOffsets(this.layout, position);
 
@@ -509,6 +540,37 @@
                     strokeWidth: 1,
                     isRoot: true,
                 });
+            }
+
+            private OptimizeOperation() {
+                this.OptimizeOperand(this.operation);
+            }
+
+            private OptimizeOperand(operand: IOperand) {
+                if (operand instanceof Operation) {
+                    var operation = <Operation>operand;
+                    var optimizedOperands = [];
+                    var foundNonUndefined = false;
+                    for (var i = operation.Operands.length - 1; i >= 0; i--) {
+                        var op = operation.Operands[i];
+                        this.OptimizeOperand(op);
+                        if (foundNonUndefined) {
+                            optimizedOperands.push(op);
+                        } else {
+                            if (op !== undefined) {
+                                optimizedOperands.push(op);
+                                foundNonUndefined = true;
+                            } else if (i < operation.Operator.MinOperandsCount) {
+                                optimizedOperands.push(op);
+                            }
+                        }
+                    }
+
+                    operation.Operands = [];
+                    for (var i = optimizedOperands.length - 1; i >= 0; i--) {
+                        operation.Operands.push(optimizedOperands[i]);
+                    }
+                }
             }
 
             private Clear() {
@@ -604,7 +666,10 @@
                     if (layoutPart !== undefined) {
                         return {
                             operation: layoutPart.operation,
-                            isRoot: layoutPart.parentoperation === undefined
+                            isRoot: layoutPart.parentoperation === undefined,
+                            position: layoutPart.position,
+                            parentoperation: layoutPart.parentoperation,
+                            parentoperationindex: layoutPart.parentoperationindex
                         };
                     }
                 }
@@ -664,7 +729,7 @@
                     this.AnalysisStatus = "nottested";
                     this.UpdateVersion();
                 }
-                
+
                 //this.Refresh();
             }
 

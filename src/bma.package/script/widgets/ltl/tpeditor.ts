@@ -14,7 +14,8 @@
             states: [],
             drawingSurfaceHeight: "calc(100% - 113px - 30px)",
             onfittoview: undefined,
-            onaddstaterequested: undefined
+            onaddstaterequested: undefined,
+            oneditformula: undefined,
         },
 
         _refreshStates: function () {
@@ -127,39 +128,10 @@
             return state;
         },
 
-        _create: function () {
+        _createOperatorsPanel: function (panel, operators) {
             var that = this;
-
-            var root = this.element;
-
-            //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
-            var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
-            
-            //Adding states
-            var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("States<br>").appendTo(toolbar);
-            this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
-            this._refreshStates();
-
-            //Adding pre-defined states
-            var conststates = $("<div></div>").addClass("state-buttons").width(130).html("&nbsp;<br>").appendTo(toolbar);
-            var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
-            
-            //Oscilation state
-            this._addCustomState(statesbtns, "oscillationstate", "Part of an unstable loop.", "../images/oscillation-state.svg");
-
-            //Selfloop state
-            this._addCustomState(statesbtns, "selfloopstate", "Fixpoint of the network.", "../images/selfloop-state.svg");
-
-            //True-state state
-            this._addCustomState(statesbtns, "truestate", "True", "../images/true-state.svg");
-
-            //Adding operators
-            var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
-            var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
-
-            var registry = new BMA.LTLOperations.OperatorsRegistry();
-            for (var i = 0; i < registry.Operators.length; i++) {
-                var operator = registry.Operators[i];
+            for (var i = 0; i < operators.length; i++) {
+                var operator = operators[i];
 
                 var opDiv = $("<div></div>")
                     .addClass("operator")
@@ -167,10 +139,10 @@
                     .attr("data-operator", operator.Name)
                     .css("z-index", 6)
                     .css("cursor", "pointer")
-                    .appendTo(operatorsDiv);
+                    .appendTo(panel);
 
                 var spaceStr = "&nbsp;&nbsp;";
-                if (operator.OperandsCount > 1) {
+                if (operator.MinOperandsCount > 1) {
                     $("<div></div>").addClass("hole").appendTo(opDiv);
                     spaceStr = "";
                 }
@@ -186,12 +158,67 @@
                         that._executeCommand("AddOperatorSelect", $(this).attr("data-operator"));
                     }
                 });
-
-                //Separating advanced operators
-                if (i === registry.Operators.length - 4) {
-                    $("<br\>").appendTo(operatorsDiv);
-                }
             }
+        },
+
+        _create: function () {
+            var that = this;
+
+            var root = this.element;
+
+            //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
+            var toolbar = $("<div></div>").addClass("temporal-toolbar").width("calc(100% - 20px)").appendTo(root);
+
+            //Adding states
+            var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("States<br>").appendTo(toolbar);
+            this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
+            this._refreshStates();
+
+            //Adding pre-defined states
+            var conststates = $("<div></div>").addClass("state-buttons").width(130).html("&nbsp;<br>").appendTo(toolbar);
+            var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
+
+            //Oscilation state
+            this._addCustomState(statesbtns, "oscillationstate", "Part of an unstable loop.", "../images/oscillation-state.svg");
+
+            //Selfloop state
+            this._addCustomState(statesbtns, "selfloopstate", "Fixpoint of the network.", "../images/selfloop-state.svg");
+
+            //True-state state
+            this._addCustomState(statesbtns, "truestate", "True", "../images/true-state.svg");
+
+            //Adding operators
+            var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
+            var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
+
+            var basicOperatorsToUse = [
+                'AND',
+                'OR',
+                'IMPLIES',
+                'NOT',
+                'NEXT',
+                'ALWAYS',
+                'EVENTUALLY',
+                'UPTO'
+            ];
+            var advancedOperatorsToUse = [
+                'WEAKUNTIL',
+                'UNTIL',
+                'RELEASE'
+            ];
+            var registry = new BMA.LTLOperations.OperatorsRegistry();
+            var basicOperators = [];
+            for (var i = 0; i < basicOperatorsToUse.length; i++) {
+                basicOperators.push(registry.GetOperatorByName(basicOperatorsToUse[i]));
+            }
+            var advancedOperators = [];
+            for (var i = 0; i < advancedOperatorsToUse.length; i++) {
+                advancedOperators.push(registry.GetOperatorByName(advancedOperatorsToUse[i]));
+            }
+
+            that._createOperatorsPanel(operatorsDiv, basicOperators);
+            $("<br\>").appendTo(operatorsDiv);
+            that._createOperatorsPanel(operatorsDiv, advancedOperators);
 
             //Adding operators toggle basic/advanced
             var toggle = $("<div></div>").addClass("toggle").width(60).attr("align", "right").text("Advanced").appendTo(toolbar);
@@ -220,6 +247,22 @@
             var drawingSurfaceCnt = $("<div></div>").addClass("bma-drawingsurfacecontainer").css("min-height", "200px").height(this.options.drawingSurfaceHeight).width("100%").appendTo(root);
             this.drawingSurfaceContainerRef = drawingSurfaceCnt;
 
+            //Adding LTL text editor UI
+            this.editFormulaCnt = $("<div></div>").css("position", "absolute").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 2).css("top", 10).css("left", 10).appendTo(drawingSurfaceCnt).hide();
+            this.editFormulaCnt.width("80%");
+
+            this.editFormula = $("<input value='Edit Formula' >").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 2).appendTo(this.editFormulaCnt);
+            this.editFormula.width("80%");
+
+            var editFormulaBtn = $("<div></div>").css("background", "url('../images/check.png') no-repeat center").appendTo(this.editFormulaCnt)
+                .css("height", "20px").css("width", "20px").css("margin-left", 10).css("display", "inline-block")
+                .click(function () {
+                    if (that.options.oneditformula !== undefined) {
+                        that.options.oneditformula(that.editFormula.val());
+                    }
+                });
+
+            //Adding editing surface
             this._drawingSurface = $("<div></div>").addClass("bma-drawingsurface").appendTo(drawingSurfaceCnt);
             this._drawingSurface.drawingsurface({ useContraints: false });
             var drawingSurface = this._drawingSurface;
@@ -237,7 +280,7 @@
             }
 
             drawingSurface.drawingsurface({ visibleRect: { x: 0, y: 0, width: drawingSurfaceCnt.width(), height: drawingSurfaceCnt.height() } });
-            
+
             //Adding drop zones
             /*
              <div class="temporal-dropzones">
@@ -258,6 +301,7 @@
 
             var dropzones = $("<div></div>").addClass("temporal-dropzones").prependTo(dropzonescnt);
             dropzones.width("100%");
+
 
             /*
             this.copyzone = $("<div></div>").addClass("dropzone copy").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 1).appendTo(dropzones);
@@ -317,7 +361,8 @@
                     { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
                     { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
-                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" } ] },
+                    { title: "Edit as text", cmd: "EditAsText", },
+                    { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }, { title: "extended text", cmd: "ExportAsTextExtended" } ] },
                     { title: "Import from", cmd: "Import", uiIcon: "ui-icon-import", children: [{ title: "json", cmd: "ImportAsJson" }, { title: "text", cmd: "ImportAsText" }] },
                 ],
                 beforeOpen: function (event, ui) {
@@ -498,7 +543,16 @@
 
         updateLayout: function () {
             this._drawingSurface.drawingsurface("updateLayout");
-        }
+        },
+
+        showFormulaEditor: function (formula) {
+            this.editFormula.val(formula);
+            this.editFormulaCnt.show();//.removeClass("hidden");
+        },
+
+        hideFormulaEditor: function () {
+            this.editFormulaCnt.hide();//.addClass("hidden");
+        },
 
     });
 } (jQuery));

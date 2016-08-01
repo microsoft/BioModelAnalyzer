@@ -66,7 +66,7 @@
         var value = "min(4,77)-199";
         var formula = editor.find("textarea")
         formula.val(value).change();
-        expect(editor.bmaeditor("option", "formula")).toEqual(value);
+        expect(editor.bmaeditor("getFormula")).toEqual(value);
     });
 
     it("should set options", () => {
@@ -96,10 +96,7 @@
 
     it("should throw error when functions are not registered", () => {
         var edd = $('<div></div>');
-        try {
-            expect(edd.bmaeditor({ functions: ["myownfunction"] })).toThrow();
-        }
-        catch (e) { };
+        expect(edd.bmaeditor.bind(this, { functions: ["myownfunction"] })).toThrow();
     });
 
     it("should increase rangeFrom value when clicked triangle-up and triangle-down", () => {
@@ -144,12 +141,15 @@
         var inputslist = editor.find(".inputs-list-content");
         expect(inputslist.length).toEqual(1);
         expect(inputslist.children().length).toEqual(0);
-        var arr = ["one", "two", "three"]
+        var v1 = new BMA.Model.Variable(34, 15, BMA.Model.VariableTypes.Default, "one", 3, 7, "formula1");
+        var v2 = new BMA.Model.Variable(38, 10, BMA.Model.VariableTypes.Constant, "two", 1, 14, "formula2");
+        var v3 = new BMA.Model.Variable(39, 10, BMA.Model.VariableTypes.Constant, "three", 1, 14, "formula2");
+        var arr = [v1, v2, v3];
         editor.bmaeditor("option", "inputs", arr);
         expect(inputslist.children().length).toEqual(3);
 
         for (var i = 0; i < arr.length; i++) {
-            expect(inputslist.children().eq(i).text()).toEqual(arr[i]);
+            expect(inputslist.children().eq(i).text()).toEqual(arr[i].Name);
         }
     });
 
@@ -175,12 +175,15 @@
             expect(editor.find(".inputs-list-content").css("display")).toEqual("none");
         });
 
-        it("should show inputs list on click on 'var()' function after add of inputs",() => {
-            var functions = editor.find(".functions").children("ul").children("li");
+        it("should show inputs list on click on 'var()' function after add of inputs", () => {
             var inputs = ["htr", "asdas"];
             editor.bmaeditor({ inputs: inputs });
+
+            var functions = editor.find(".functions").children("ul").children("li");
             expect(editor.find(".inputs-list-content").css("display")).toEqual("none");
+      
             functions.eq(0).click();
+
             expect(editor.find(".inputs-list-content").css("display")).not.toEqual("none");
             expect(editor.find(".inputs-list-content").children().length).toEqual(inputs.length);
         })
@@ -266,41 +269,48 @@
         expect(textarea.val()).toEqual(inputs.eq(1).text());
     });
 
-    xit("should input choosed variables and functions in formula", function () {
-        var functions = editor.find(".label-for-functions");
+    it("should input choosed variables and functions in formula", function () {
+        var v1 = new BMA.Model.Variable(34, 15, BMA.Model.VariableTypes.Default, "one", 3, 7, "formula1");
+        var v2 = new BMA.Model.Variable(38, 10, BMA.Model.VariableTypes.Constant, "two", 1, 14, "formula2");
+        var v3 = new BMA.Model.Variable(39, 10, BMA.Model.VariableTypes.Constant, "three", 1, 14, "formula2");
+        var arr = [v1, v2, v3];
+        editor.bmaeditor({ inputs: arr});
         var inputs = editor.find(".inputs-list-content").children();
         var textarea = editor.find("textarea");
-        textarea.bind("input change", function () {
-            //console.log("!!!!!!");
-        });
-        var insert = editor.find(".bma-insert-function-button");
-        functions.eq(0).click();
-        insert.click();
 
-        expect(editor.bmaeditor("option", "formula")).toEqual("var()");
-        expect(textarea.val()).toEqual("var()");
-
-        inputs.eq(2).click();
-        expect(editor.bmaeditor("option", "formula")).toEqual("var(" + inputs.eq(2).text() +")");
-        expect(textarea.val()).toEqual("var(" + inputs.eq(2).text()+")");
+        inputs.eq(1).click();
+        expect(editor.bmaeditor("getFormula")).toEqual("var(" + inputs.eq(1).text() +")");
+        expect(textarea.val()).toEqual("var(" + inputs.eq(1).text()+")");
     });
 
     it("should create a variableeditorchanged command", () => {
-        spyOn(window.Commands, "Execute");
+        var flag = false;
+        var varchangedcallback = function () { flag = true; };
+        editor.bmaeditor({
+            onvariablechangedcallback: varchangedcallback
+        });
         var nameinput = editor.find("input").eq(0);
         editor.bmaeditor("option", "name", "test");
-        expect(window.Commands.Execute).not.toHaveBeenCalled();
+        expect(flag).toBeFalsy();
         expect(nameinput.val()).toEqual("test");
+
+        nameinput.val("test2").change();
+        expect(flag).toBeTruthy();
+        expect(nameinput.val()).toEqual("test2");
+        //expect(editor.bmaeditor("option", "name")).toEqual("test2");
     });
 
     it("should not create a variableeditorchanged command", () => {
-        spyOn(window.Commands, "Execute");
-
+        var flag = false;
+        var varchangedcallback = function () { flag = true; };
+        editor.bmaeditor({
+            onvariablechangedcallback: varchangedcallback
+        });
         var textarea = editor.find("textarea");
-        textarea.val("testformula").change()
+        textarea.val("testformula").change();
 
-        expect(window.Commands.Execute).toHaveBeenCalledWith("VariableEdited", {});
-        expect(editor.bmaeditor("option", "formula")).toEqual("testformula");
+        expect(flag).toBeFalsy();
+        expect(editor.bmaeditor("option", "formula")).toEqual("");
         expect(textarea.val()).toEqual("testformula");
     });
 

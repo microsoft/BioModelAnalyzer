@@ -80,9 +80,9 @@ namespace BMAWebApi
                 using (var stream = outputBlob.OpenWrite())
                 {
                     var writer = new StreamWriter(stream);
-                    if (log.ErrorMessages.Length > 0)
+                    if (log.ErrorMessages != null && log.ErrorMessages.Length > 0)
                         writer.WriteLine("Error messages:\n{0}\n\n", String.Join("\n", log.ErrorMessages));
-                    if (log.DebugMessages.Length > 0)
+                    if (log.DebugMessages != null && log.DebugMessages.Length > 0)
                         writer.WriteLine("Debug messages:\n{0}\n", String.Join("\n", log.DebugMessages));
                     writer.Flush();
                 }

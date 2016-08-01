@@ -44,6 +44,7 @@
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
+/// <reference path="script\widgets\tftexteditor.ts"/>
 /// <reference path="script\jisonparser.ts"/>
 
 declare var saveTextAs: any;
@@ -209,7 +210,8 @@ function versionCheck(version) {
             }
         } else {
             console.log("server version was succesfully checked: client is up to date");
-            userDialog.detach();
+            if (userDialog !== undefined)
+                userDialog.detach();
         }
     }).fail(function (err) {
         console.log("there was an error while trying to check server version: " + err);
@@ -249,7 +251,7 @@ function loadScript(version) {
 
     //Creating FunctionsRegistry
     window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
-      
+
     //Creating KeyframesRegistry
     window.KeyframesRegistry = new BMA.Keyframes.KeyframesRegistry();
     window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
@@ -479,7 +481,7 @@ function loadScript(version) {
     popup.draggable({ handle: ".analysis-title", scroll: false });
 
     var expandedSimulation = $('<div></div>').simulationexpanded();
-    
+
     //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
     (<any>window).VisualSettings = visualSettings;
@@ -516,7 +518,7 @@ function loadScript(version) {
         svgPlotDriver.SetGridVisibility(param);
     });
 
-    window.Commands.On("ZoomSliderBind",(value) => {
+    window.Commands.On("ZoomSliderBind", (value) => {
         $("#zoomslider").bmazoomslider({ value: value });
     });
 
@@ -524,7 +526,7 @@ function loadScript(version) {
     //    $("#zoomslider").bmazoomslider({ min: value.min, max: value.max });
     //});
 
-    window.Commands.On('SetPlotSettings',(value) => {
+    window.Commands.On('SetPlotSettings', (value) => {
 
         if (value.MaxWidth !== undefined) {
             window.PlotSettings.MaxWidth = value.MaxWidth;
@@ -535,7 +537,7 @@ function loadScript(version) {
         }
     });
 
-    window.Commands.On("AppModelChanged",() => {
+    window.Commands.On("AppModelChanged", () => {
         if (changesCheckerTool.IsChanged) {
             popupDriver.Hide();
             accordionHider.Hide();
@@ -582,10 +584,10 @@ function loadScript(version) {
 
     //Loaing ServiсeDrivers 
     var exportService = new BMA.UIDrivers.ExportService();
-    var formulaValidationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Validate"); 
-    var furtherTestingServiсe = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/FurtherTesting"); 
-    var proofAnalyzeService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Analyze"); 
-    var simulationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Simulate"); 
+    var formulaValidationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Validate");
+    var furtherTestingServiсe = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/FurtherTesting");
+    var proofAnalyzeService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Analyze");
+    var simulationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Simulate");
     var ltlSimulationService = new BMA.UIDrivers.LTLAnalyzeService(window.BMAServiceURL + "/api/AnalyzeLTLSimulation", 1);
     var ltlPolarityService = new BMA.UIDrivers.LTLAnalyzeService(window.BMAServiceURL + "/api/AnalyzeLTLPolarity", 1);
     var lratestservice = new BMA.UIDrivers.BMALRAProcessingService(window.BMAServiceURL + "/api/lra/", logService.UserID);
@@ -605,7 +607,7 @@ function loadScript(version) {
 
     //LTL Presenters
     var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlSimulationService, ltlPolarityService, lratestservice, popupDriver, exportService, fileLoaderDriver, logService);
-    
+
     //Loading model from URL
     var reserved_key = "InitialModel";
 

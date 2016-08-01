@@ -6,6 +6,34 @@ using BMAWebApi;
 
 namespace bma.client
 {
+    public class LogContents : ILogContents
+    {
+        private string[] debugMessages;
+        private string[] errorMessages;
+
+        public LogContents(string[] debugMessages, string[] errorMessages)
+        {
+            this.debugMessages = debugMessages;
+            this.errorMessages = errorMessages;
+        }
+
+        public string[] DebugMessages
+        {
+            get
+            {
+                return debugMessages;
+            }
+        }
+
+        public string[] ErrorMessages
+        {
+            get
+            {
+                return errorMessages;
+            }
+        }
+    }
+
     public class DefaultLogService : ILogService, ILogContents
     {
         private readonly List<string> debugMessages;

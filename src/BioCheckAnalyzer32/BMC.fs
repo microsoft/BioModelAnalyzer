@@ -66,54 +66,50 @@ open Simulate
 // polarity - check the formula (true) or its negation (false)
 let SingleSideBoundedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int list> list) (loop_closure_loc : int) (polarity : bool) =
     
-    let cfg = new Config()
-    cfg.SetParamValue("MODEL", "true")
-    let ctx = new Context(cfg)
-   
-    let model = ref null
-    ctx.Push()
+    let cfg = System.Collections.Generic.Dictionary()
+    cfg.Add("MODEL", "true")
+    use ctx = new Context(cfg)
+    use s = ctx.MkSolver()
+    s.Push()
 
     /// The system encoding part
     
     // 1. encode_the_time_variables_for_z3 for the mutual agreement on where the loop closes
-    InitEncodingForSys.encode_loop_closure_variables ctx paths.Length loop_closure_loc ;
+    InitEncodingForSys.encode_loop_closure_variables (ctx,s) paths.Length loop_closure_loc ;
 
     // 2. Encode the path as a Boolean constraint
-    InitEncodingForSys.encode_boolean_paths network ctx paths ;
-    InitEncodingForSys.encode_loop_closure network ctx paths loop_closure_loc ; 
+    InitEncodingForSys.encode_boolean_paths network (ctx,s) paths;
+    InitEncodingForSys.encode_loop_closure network (ctx,s) paths loop_closure_loc ; 
 
     // 3. Encode the automaton as a boolean constraint
     let list_of_maps = EncodingForFormula.create_list_of_maps_of_formula_constraints ltl_formula network ctx paths
-    EncodingForFormula.encode_formula_transitions_over_path ltl_formula network ctx list_of_maps 
-    EncodingForFormula.encode_formula_transitions_in_loop_closure ltl_formula network ctx list_of_maps
-    EncodingForFormula.encode_formula_loop_fairness ltl_formula network ctx list_of_maps
+    EncodingForFormula.encode_formula_transitions_over_path ltl_formula network (ctx,s) list_of_maps 
+    EncodingForFormula.encode_formula_transitions_in_loop_closure ltl_formula network (ctx,s) list_of_maps
+    EncodingForFormula.encode_formula_loop_fairness ltl_formula network (ctx,s) list_of_maps
 
 
     // 4. Model check 
     if polarity then
-        EncodingForFormula.assert_top_most_formula ltl_formula ctx list_of_maps.Head true
+        EncodingForFormula.assert_top_most_formula ltl_formula (ctx,s) list_of_maps.Head true
     else
-        EncodingForFormula.assert_top_most_formula ltl_formula ctx list_of_maps.Head false
+        EncodingForFormula.assert_top_most_formula ltl_formula (ctx,s) list_of_maps.Head false
 
     let start_time = System.DateTime.Now
-    let sat = ctx.CheckAndGetModel (model)
+    let sat = s.Check()
     let end_time = System.DateTime.Now
     let duration = end_time.Subtract start_time
     Log.log_debug ("Satisfiability check time (pos)" + duration.ToString())
 
-    let (the_result,the_model) = 
-        if sat = LBool.True then
-            (true, BioCheckPlusZ3.z3_model_to_loop (!model) paths)
-        else
-            (false,(0,Map.empty))
+    let the_result, the_model =
+        match sat with
+        | Status.SATISFIABLE ->
+            use model = s.Model
+            true, BioCheckPlusZ3.z3_model_to_loop model paths
+        | _ ->
+            false, (0,Map.empty)
 
-    if (!model) <> null then (!model).Dispose()
-
-    ctx.Pop()
-    ctx.Dispose()
-    cfg.Dispose()
-
-    (the_result, the_model)
+    s.Pop()
+    the_result, the_model
 
 let simulation_to_loop (loop : int) (simulation : Map<QN.var, int> list) =
     let indices = [ 0 .. (simulation.Length - 1) ]
@@ -223,76 +219,73 @@ let DoubleBoundedMCWithSim (ltl_formula : LTLFormulaType) network (paths : Map<Q
 
 let BoundedMC (ltl_formula : LTLFormulaType) network (paths : Map<QN.var,int list> list) check_both =
     
-    let cfg = new Config()
-    cfg.SetParamValue("MODEL", "true")
-    let ctx = new Context(cfg)
+    let cfg = System.Collections.Generic.Dictionary()
+    cfg.Add("MODEL", "true")
+    use ctx = new Context(cfg)
+    use s = ctx.MkSolver()
+    s.Push()
    
-    let model1 = ref null
-    let model2 = ref null
-    ctx.Push()
-
     /// The system encoding part
     
     // 1. encode_the_time_variables_for_z3 for the mutual agreement on where the loop closes
-    InitEncodingForSys.encode_loop_closure_variables ctx paths.Length -1 ;
+    InitEncodingForSys.encode_loop_closure_variables (ctx,s) paths.Length -1 ;
 
     // 2. Encode the path as a Boolean constraint
-    InitEncodingForSys.encode_boolean_paths network ctx paths ;
-    InitEncodingForSys.encode_loop_closure network ctx paths -1 ; 
+    InitEncodingForSys.encode_boolean_paths network (ctx,s) paths;
+    InitEncodingForSys.encode_loop_closure network (ctx,s) paths -1; 
 
     // 3. Encode the automaton as a boolean constraint
     let list_of_maps = EncodingForFormula.create_list_of_maps_of_formula_constraints ltl_formula network ctx paths
-    EncodingForFormula.encode_formula_transitions_over_path ltl_formula network ctx list_of_maps 
-    EncodingForFormula.encode_formula_transitions_in_loop_closure ltl_formula network ctx list_of_maps
-    EncodingForFormula.encode_formula_loop_fairness ltl_formula network ctx list_of_maps
+    EncodingForFormula.encode_formula_transitions_over_path ltl_formula network (ctx,s) list_of_maps 
+    EncodingForFormula.encode_formula_transitions_in_loop_closure ltl_formula network (ctx,s) list_of_maps
+    EncodingForFormula.encode_formula_loop_fairness ltl_formula network (ctx,s) list_of_maps
 
     // 4. Model check positive
-    ctx.Push()
-    EncodingForFormula.assert_top_most_formula ltl_formula ctx list_of_maps.Head true
+    s.Push()
+    EncodingForFormula.assert_top_most_formula ltl_formula (ctx,s) list_of_maps.Head true
 
     let start_time1 = System.DateTime.Now
-    let sat1 = ctx.CheckAndGetModel (model1)
+    let sat1 = s.Check ()
     let end_time1 = System.DateTime.Now
     let duration1 = end_time1.Subtract start_time1
     Log.log_debug ("Satisfiability check time (pos)" + duration1.ToString())
 
     // 5. Translate the model back
     let (the_result1,the_model1) = 
-        if sat1 = LBool.True then
-            (true, BioCheckPlusZ3.z3_model_to_loop (!model1) paths)
-        else
-            (false,(0,Map.empty))
+        match sat1 with
+        | Status.SATISFIABLE ->
+            use model1 = s.Model
+            true, BioCheckPlusZ3.z3_model_to_loop model1 paths
+        | _ ->
+            false,(0,Map.empty)
 
-    if (!model1) <> null then (!model1).Dispose()
-    ctx.Pop()
+    s.Pop()
 
-    ctx.Push()
+    s.Push()
     // 6. Model check negative
     
 
     let negative = //(the_model2,the_result2) = 
         if (check_both) then 
-            EncodingForFormula.assert_top_most_formula ltl_formula ctx list_of_maps.Head false
+            EncodingForFormula.assert_top_most_formula ltl_formula (ctx,s) list_of_maps.Head false
             let start_time2 = System.DateTime.Now
-            let sat2 = ctx.CheckAndGetModel(model2)
+            let sat2 = s.Check()
             let end_time2 = System.DateTime.Now
             let duration2 = end_time2.Subtract start_time2
             Log.log_debug("Satisfiability check time (neg)" + duration2.ToString())
 
             let (in_result2,in_model2) =
-                if sat2 = LBool.True then
-                    (true, BioCheckPlusZ3.z3_model_to_loop (!model2) paths)
-                else
-                    (false, (0,Map.empty))
+                match sat2 with
+                | Status.SATISFIABLE ->
+                    use model2 = s.Model
+                    true, BioCheckPlusZ3.z3_model_to_loop model2 paths
+                | _ ->
+                    false, (0,Map.empty)
 
-            if (!model2) <> null then (!model2).Dispose()
             Some(in_result2, in_model2)
         else 
             None//(false,(0,Map.empty))
-    ctx.Pop()
+    s.Pop()
+    s.Pop()
 
-    ctx.Pop()
-    ctx.Dispose()
-    cfg.Dispose()
-
-    (the_result1,the_model1,negative)
+    the_result1,the_model1,negative

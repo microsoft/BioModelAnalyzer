@@ -8,10 +8,6 @@ describe("SimulationPlotViewer", () => {
         widget.simulationplot("destroy");
     })
 
-    it("creates a widget", () => {
-        widget.simulationplot();
-    })
-
     it("creates widget with data", () => {
         var data = [];
         data[0] = {
@@ -37,12 +33,12 @@ describe("SimulationPlotViewer", () => {
         expect(figure.attr("data-idd-plot")).toEqual("figure");
         //expect(widget.children().eq(0).children().eq(1).attr("data-idd-plot")).toEqual("scalableGridLines");
         expect(figure.find('[data-idd-plot="scalableGridLines"]').length).toEqual(1);
-        expect(widget.children().eq(0).children().length).toEqual(2);
+        expect(widget.children().eq(0).children().length).toEqual(6);
     })
 
     it("don't creates polylines without data", () => {
         widget.simulationplot();
-        expect(widget.children().eq(0).children().length).toEqual(2);
+        expect(widget.children().eq(0).children().length).toEqual(6);
     })
 
     it("should add polylines", () => {
@@ -87,7 +83,7 @@ describe("SimulationPlotViewer", () => {
             Plot: [3, 5, 9]
         };
         widget.simulationplot({ colors: data2 });
-        expect(widget.children().eq(0).children().length).toEqual(5 + data2.length);
+        expect(widget.children().eq(0).children().length).toEqual(6 + data2.length);
     })
 
     it("should set proper options for polylines", () => {
@@ -105,13 +101,13 @@ describe("SimulationPlotViewer", () => {
             Plot: [4, 8, 2]
         };
         widget.simulationplot({ colors: data });
-        var plot = widget.simulationplot("getPlot");
-        //for (var i = 0; i < data.length; i++) {
-        //    //var y = data[i].Plot;
-        //    var polyline = plot.get(widget.children().eq(0).children().eq(i + 1));
-        //    expect(polyline.stroke).toEqual(data[i].Color);
-        //    expect(polyline.isVisible).toEqual(data[i].Seen);
-        //}
+        var plot: any = widget.simulationplot("getPlot");
+        for (var i = 0; i < data.length; i++) {
+            //var y = data[i].Plot;
+            var polyline = plot.get("plot" + i);
+            expect(polyline.stroke).toEqual(data[i].Color);
+            expect(polyline.isVisible).toEqual(data[i].Seen);
+        }
     })
 
 }) 

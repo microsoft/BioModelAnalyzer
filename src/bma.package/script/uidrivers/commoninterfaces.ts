@@ -58,6 +58,8 @@ module BMA {
             Hide();
             SetValidation(val: boolean, message: string);
             SetOnClosingCallback(callback: Function);
+            SetOnVariableEditedCallback(callback: Function);
+            SetOnFormulaEditedCallback(callback: Function);
         }
 
         export interface IContainerEditor {

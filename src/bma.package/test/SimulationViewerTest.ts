@@ -72,12 +72,6 @@
     });
     
 
-    it("creates simulationplot widget inside the 2nd resultswindowviewer", () => {
-        div.simulationviewer({ data: data, plot: plot });
-        var r1: JQuery = div.children().eq(1).resultswindowviewer("option", "content");
-    });
-
-    
     it("creates only plot when data.variables is undefined", () => {
         data.variables = undefined;
         div.simulationviewer({ data: data, plot: plot });
@@ -122,7 +116,7 @@
         }
         div.simulationviewer({ error: error, data: undefined, plot: undefined });
         var er: JQuery = div.children(':first-child').children(':first-child');
-        console.log('proof-state ' + er.hasClass('proof-state'));
+        //console.log('proof-state ' + er.hasClass('proof-state'));
         expect(er.children(':nth-child(2)').text()).toEqual(error.title);
         expect(er.next().text()).toEqual(error.message);
 

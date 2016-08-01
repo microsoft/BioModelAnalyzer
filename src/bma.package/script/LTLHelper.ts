@@ -112,7 +112,7 @@
                         context.fill();
                         context.stroke();
 
-                        if (layoutPart.type === "keyframe") {
+                        if (layoutPart.type === "keyframe" || layoutPart.type === "constant" || layoutPart.type === "other") {
                             var name = layoutPart.name;
                             var fs = 16;
                             context.font = "16px Segoe-UI";
@@ -120,6 +120,7 @@
                             var width = context.measureText(name).width;
                             if (width > hks) {
                                 fs = fs * hks / width;
+                                width = hks;
                                 context.font = fs + "px Segoe-UI";
                             }
                             context.fillStyle = "rgb(96,96,96)";
@@ -165,7 +166,7 @@
             return CalcOperationSize(operation, getOpWidth, padding, keyFrameSize);
         }
 
-        export function CreateLayout(operation: IOperand, getOperatorWidth: Function, padding: { x: number; y: number }, keyFrameSize: number): any {
+        export function CreateLayout(operation: IOperand, getOperatorWidth: Function, padding: { x: number; y: number }, keyFrameSize: number, options: any = undefined): any {
             var layout: any = {};
             layout.operation = operation;
 
@@ -193,7 +194,7 @@
                     var operand = operands[i];
 
                     if (operand !== undefined) {
-                        var calcLW = CreateLayout(operand, getOperatorWidth, padding, keyFrameSize);
+                        var calcLW = CreateLayout(operand, getOperatorWidth, padding, keyFrameSize, options);
                         calcLW.parentoperationindex = i;
                         calcLW.parentoperation = operation;
                         layer = Math.max(layer, calcLW.layer);
@@ -210,11 +211,20 @@
                 }
 
                 //Adding empty slot for operators with flexible operands count
-                if (!isFinite(operator.OperandsCount) && operands[operands.length - 1] !== undefined) {
-                    layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: operands.length });
-                    width += (keyFrameSize + paddingX);
-                    if (!operator.isFunction) {
-                        width += operatorWidth + paddingX;
+                if (options !== undefined && options.viewmode === "compact") {
+                    if (!isFinite(operator.MaxOperandsCount)) {
+                        layout.operands[layout.operands.length - 1].isFlexible = true;
+                    }
+                }
+
+                
+                if (options !== undefined && options.viewmode === "extended") {
+                    if (!isFinite(operator.MaxOperandsCount) && operands[operands.length - 1] !== undefined) {
+                        layout.operands.push({ isEmpty: true, width: keyFrameSize, operationRef: op, indexRef: operands.length });
+                        width += (keyFrameSize + paddingX);
+                        if (!operator.isFunction) {
+                            width += operatorWidth + paddingX;
+                        }
                     }
                 }
 
@@ -235,11 +245,60 @@
                 } else if (operation instanceof Keyframe) {
                     layout.type = "keyframe";
                     layout.name = (<Keyframe>operation).Name;
-                } else
-                    throw "Unknown Keyframe type";
+                } else if (operation instanceof ConstOperand) {
+                    layout.type = "constant";
+                    layout.name = (<ConstOperand>operation).Value + "";
+                } else{
+                    layout.type = "other";
+                    layout.name = (<Keyframe>operation).Name;
+                }
 
                 return layout;
             }
+        }
+
+        export function GetLTLServiceProcessingFormula(operation: BMA.LTLOperations.IOperand): string {
+            if (operation instanceof NameOperand) {
+                return (<NameOperand>operation).Id;
+            } else if (operation instanceof ConstOperand) {
+                return (<ConstOperand>operation).Value.toString();
+            } else if (operation instanceof KeyframeEquation) {
+                var equation = <KeyframeEquation>operation;
+                return "(" + equation.Operator + " " + GetLTLServiceProcessingFormula(equation.LeftOperand) + " " + GetLTLServiceProcessingFormula(equation.RightOperand) + ")";
+            } else if (operation instanceof TrueKeyframe) {
+                return "True";
+            } else if (operation instanceof OscillationKeyframe) {
+                return "Oscillation";
+            } else if (operation instanceof SelfLoopKeyframe) {
+                return "SelfLoop";
+            } else if (operation instanceof Keyframe) {
+                var operands = (<Keyframe>operation).Operands;
+                if (operands === undefined || operands.length < 1) {
+                    return "";
+                } else {
+                    if (operands.length === 1)
+                        return GetLTLServiceProcessingFormula(operands[0]);
+
+                    var formula = GetLTLServiceProcessingFormula(operands[operands.length - 1]);
+
+                    for (var i = operands.length - 2; i >= 0; i--) {
+                        formula = "(And " + GetLTLServiceProcessingFormula(operands[i]) + " " + formula + ")";
+                    }
+
+                    return formula;
+                }
+            } else if (operation instanceof Operation) {
+                var op = <Operation>operation;
+                var operator = op.Operator;
+                var result = "(" + operator.Name[0] + operator.Name.substring(1).toLowerCase();
+                for (var i = 0; i < op.Operands.length; i++) {
+                    result += " " + GetLTLServiceProcessingFormula(op.Operands[i]);
+                }
+                result += ")";
+                return result;
+            }
+
+            throw "Unknown operand type!";
         }
     }
 }

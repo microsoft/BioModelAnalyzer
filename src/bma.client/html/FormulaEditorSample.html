@@ -18,11 +18,13 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $("#formulaeditor").formulaeditor();
+            $("#formulaeditor").formulaeditor({ variables: [{ Name: "A" }, { Name: "B" }, { Name: "C" }] });
+
         });
     </script>
 
 </head>
 <body>
-    <div id="formulaeditor" style="width: 600px;"></div>
+    <div id="formulaeditor" style="width: 800px;"></div>
 </body>
 </html>

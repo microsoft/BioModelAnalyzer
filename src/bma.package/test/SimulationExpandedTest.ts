@@ -83,8 +83,8 @@ describe("Simulation Expanded", () => {
     it("should change num option", () => {
         widget.simulationexpanded();
         var span = widget.find(".steps");
-        var inc = span.prev().children(':first-child');
-        var dec = span.next().children(':first-child');
+        var dec = span.prev().children(':first-child');
+        var inc = span.next().children(':first-child');
         var initValue = parseInt(span.text().split(' ')[1]);
 
         inc.click();
