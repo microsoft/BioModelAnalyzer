@@ -284,6 +284,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="test\ConvertTargetFunctionToOperationTests.ts" />
     <TypeScriptCompile Include="Scripts\rx.aggregates.d.ts" />
     <TypeScriptCompile Include="Scripts\rx.lite.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
