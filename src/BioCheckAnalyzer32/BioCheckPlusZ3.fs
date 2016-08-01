@@ -302,8 +302,14 @@ let constraint_for_target_function_boolean (qn:QN.node list) (node : QN.node) in
     let list_of_new_transition_option_vars = 
         List.map2 create_transition_option_var list_of_possible_combinations list_of_actual_next_vals
 
+    // Reduce the list of constraints to thos that are required:
+    // If the list of possible next values does not match the range of possible values
+    // then reduce the list of constraints to those that match possible values and take the disjunction of those
+    // Otherwise -- the list of possible next values matches the range of possible values --
+    // If there is just one possible value then add no constraints
+    // If there are multiple possible values then add their disjunction 
     let vals_in_list = List.sort (list_of_actual_next_vals |> Seq.distinct |> List.ofSeq)
-    if not ((List.length vals_in_list) = (List.length listOfValues)) || List.exists (fun (i, j) -> not (i=j)) (List.zip vals_in_list listOfValues) then
+    if not ((List.length vals_in_list) = (List.length listOfValues)) || (List.exists2 (fun i j -> not (i=j)) vals_in_list listOfValues) then
         let comb_list = List.zip list_of_new_transition_option_vars list_of_actual_next_vals
         let short_comb_list = List.filter (fun (c, v) -> List.exists (fun lv -> lv=v) listOfValues) comb_list
         let short_constraint_list = List.map (fun (c, v) -> c) short_comb_list
