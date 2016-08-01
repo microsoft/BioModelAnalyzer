@@ -44,7 +44,7 @@
                         if (that.options.message) {
                             var errorMessage = $("<div>" + that.options.message + "</div>").addClass("red").appendTo(ltltestdiv);
                         }
-                        var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(ltltestdiv);
+                        var d = $("<div></div>").addClass("number-of-steps").appendTo(ltltestdiv);
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
                         input.after("steps");
 
@@ -154,39 +154,46 @@
                 case "processing":
                     //if (this.options.isexpanded) {
 
-                    //    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
-                    //    var d = $("<div>" + that.options.steps + " steps</div>")
-                    //        .css("display", "inline-block").css("width", 55)
-                    //        .appendTo(ltltestdiv);
-                    //    var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
-                    //    var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
-                    //    var minusb = $("<button>-</button>").appendTo(minusd);
-                    //    minusd.addClass("testing");
-                    //    minusb.addClass("testing");
-                    //    var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
-                    //    var plusb = $("<button>+</button>").appendTo(plusd);
-                    //    plusd.addClass("testing");
-                    //    plusb.addClass("testing");
-                    //    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
-                    //    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                    //    var btn = $("<button></button>").appendTo(li);
-                    //    li.addClass("spin");
-                    //    that.createWaitAnim().appendTo(btn);
-                    //} else {
-                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                        var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
+                        var d = $("<div>" + that.options.steps + " steps</div>").addClass("number-of-steps")
+                            .appendTo(ltltestdiv);
+                        var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
+                        var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                        var minusb = $("<button>-</button>").appendTo(minusd);
+                        minusd.addClass("testing");
+                        minusb.addClass("testing");
+                        var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                        var plusb = $("<button>+</button>").appendTo(plusd);
+                        plusd.addClass("testing");
+                        plusb.addClass("testing");
+                        var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
                         var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                         var btn = $("<button></button>").appendTo(li);
                         li.addClass("spin");
                         that.createWaitAnim().appendTo(btn);
+                    //} else {
+                        ////var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                        ////var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                        ////var btn = $("<button></button>").appendTo(li);
+                        ////li.addClass("spin");
+                        ////that.createWaitAnim().appendTo(btn);
                     //}
                         break;
                 case "processinglra":
                     var ltltestdiv = $("<div></div>").addClass("LTL-test-results").css("width", 150).addClass("default").appendTo(opDiv);
-                    var message = $("<div>processing as long job:</div>").addClass("grey").appendTo(ltltestdiv);
-                    var time = $("<div></div>").text(that.options.message).addClass("grey").appendTo(ltltestdiv);
+                    var d = $("<div>" + that.options.steps + " steps</div>").addClass("number-of-steps")
+                        .appendTo(ltltestdiv);
+                    var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
+                    var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                    var minusb = $("<button>-</button>").appendTo(minusd);
+                    minusd.addClass("testing");
+                    minusb.addClass("testing");
+                    var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                    var plusb = $("<button>+</button>").appendTo(plusd);
+                    plusd.addClass("testing");
+                    plusb.addClass("testing");
+                    var message = $("<div></div>").text(that.options.message).addClass("grey").appendTo(ltltestdiv);
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(ltltestdiv);
-                    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
-                    var btn = $("<button></button>").appendTo(li);
                     var li2 = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var cancelBtn = $("<button>Cancel</button>").addClass("cancel-button").appendTo(li2).click(function () {
                         if (that.options.oncancelrequest !== undefined) {
@@ -196,6 +203,8 @@
                             that._createView();
                         }
                     });
+                    var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
+                    var btn = $("<button></button>").appendTo(li);
                     li.addClass("spin");
                     that.createWaitAnim().appendTo(btn);
                     break;
@@ -207,7 +216,7 @@
                         ltlresdiv.html("True for ALL traces<br>");
 
                         var sr = $("<div></div>").appendTo(ltlresdiv);
-                        var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(sr);
+                        var d = $("<div></div>").addClass("number-of-steps").appendTo(sr);
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
                         input.after("steps");
 
@@ -320,7 +329,7 @@
                         ltlresdiv.html("True for SOME traces<br>");
 
                         var sr = $("<div></div>").appendTo(ltlresdiv);
-                        var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(sr);
+                        var d = $("<div></div>").addClass("number-of-steps").appendTo(sr);
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
                         input.after("steps");
 
@@ -432,7 +441,7 @@
                         ltlresdiv.html("True/False for SOME traces<br>");
 
                         var sr = $("<div></div>").appendTo(ltlresdiv);
-                        var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(sr);
+                        var d = $("<div></div>").addClass("number-of-steps").appendTo(sr);
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
                         input.after("steps");
 
@@ -553,7 +562,7 @@
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("false").appendTo(opDiv);
                         var fr = $("<div>False for SOME traces</div>").appendTo(ltlresdiv);
                         var sr = $("<div></div>").appendTo(ltlresdiv);
-                        var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(sr);
+                        var d = $("<div></div>").addClass("number-of-steps").appendTo(sr);
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
                         input.after("steps");
 
@@ -665,7 +674,7 @@
                         var ltlresdiv = $("<div></div>").addClass("LTL-test-results").addClass("false").appendTo(opDiv);
                         var fr = $("<div>False for ALL traces</div>").appendTo(ltlresdiv);
                         var sr = $("<div></div>").appendTo(ltlresdiv);
-                        var d = $("<div></div>").css("display", "inline-block").css("width", 55).appendTo(sr);
+                        var d = $("<div></div>").addClass("number-of-steps").appendTo(sr);
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);
                         input.after("steps");
 
@@ -770,7 +779,19 @@
                     break;
 
                 default:
-                    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(opDiv);
+                    var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
+                    var d = $("<div>" + that.options.steps + " steps</div>").addClass("number-of-steps")
+                        .appendTo(ltltestdiv);
+                    var box = $("<div></div>").addClass("pill-button-box").appendTo(ltltestdiv);
+                    var minusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                    var minusb = $("<button>-</button>").appendTo(minusd);
+                    minusd.addClass("testing");
+                    minusb.addClass("testing");
+                    var plusd = $("<div></div>").addClass("pill-button").appendTo(box);
+                    var plusb = $("<button>+</button>").appendTo(plusd);
+                    plusd.addClass("testing");
+                    plusb.addClass("testing");
+                    var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 5).appendTo(ltltestdiv);
                     var li = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var btn = $("<button></button>").appendTo(li);
                     li.addClass("spin");
