@@ -392,13 +392,13 @@
                         }
 
                         var isFlex = layoutPart.isFlexible && this.viewmode === "compact";
-                        if (isFlex) {
-                            svg.rect(this.renderGroup, position.x - halfWidth + 3, position.y - height / 2, halfWidth * 2, height, height / 2, height / 2, {
-                                stroke: "rgb(96,96,96)",
-                                strokeWidth: 1,
-                                fill: "transparent"
-                            });
-                        }
+                        //if (isFlex) {
+                        //    svg.rect(this.renderGroup, position.x - halfWidth + 3, position.y - height / 2 + 3, halfWidth * 2, height, height / 2, height / 2, {
+                        //        stroke: "rgb(96,96,96)",
+                        //        strokeWidth: 1,
+                        //        fill: "transparent"
+                        //    });
+                        //}
 
                         var _fill = "transparent";
                         if (isFlex) {
@@ -450,9 +450,9 @@
 
                         var uniquename = this.GenerateUUID();
 
-                        if (layoutPart.isFlexible && this.viewmode === "compact") {
-                            svg.circle(stateGroup, 3, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
-                        }
+                        //if (layoutPart.isFlexible && this.viewmode === "compact") {
+                        //    svg.circle(stateGroup, 3, 3, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
+                        //}
 
                         var path = svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)", id: uniquename });
 
