@@ -8,36 +8,36 @@ open System.Diagnostics
 open Newtonsoft.Json.Linq
 open LTLTests
 
-//let urlApi = "http://localhost:8223/api/"
-//let url = "http://localhost:8223/api/lra"
-let url = "http://bmamathnew.cloudapp.net/api/lra"
-let urlApi = "http://bmamathnew.cloudapp.net/api/"
+let urlApi = "http://localhost:8223/api/"
+let url = "http://localhost:8223/api/lra"
+//let url = "http://bmamathnew.cloudapp.net/api/lra"
+//let urlApi = "http://bmamathnew.cloudapp.net/api/"
 
 let appId = "CF1B2F01-E2B7-4D34-88B6-9C9078C0D637"
 
 let isSucceeded jobId =
-    let respCode, resp = Http.get (sprintf "%s/%s?jobId=%s" url appId jobId)
+    let respCode, resp = Http.get (sprintf "%s/%s?jobId=%s" url appId jobId) "text/plain"
     match respCode with
     | 200 -> true
     | 201 | 202 -> false
-    | 203 -> failwithf "Job failed: %s" resp
+    | 203 -> failwithf "Job failed: %A" resp
     | 404 -> failwith "There is no job with the given job id and application id"
     | code -> failwithf "Unknown response code when getting status: %d" code
     
 
 let perform job = 
-    let jobId = (Http.postFile (sprintf "%s/%s" url appId) job |> snd).Trim('"')
+    let jobId = (Http.postJsonFile (sprintf "%s/%s" url appId) job |> snd).Trim('"')
     while isSucceeded jobId |> not do
         System.Threading.Thread.Sleep(1000)
     
-    let respCode, resp = Http.get (sprintf "%s/%s/result?jobId=%s" url appId jobId)
+    let respCode, resp = Http.get (sprintf "%s/%s/result?jobId=%s" url appId jobId) "application/json; charset=utf-8"
     match respCode with
     | 200 -> resp
     | 404 -> failwith "There is no job with the given job id and application id"
     | code -> failwithf "Unknown response code when getting status: %d" code
 
 let performSR endpoint job =
-    let code, result = Http.postFile (sprintf "%s%s" urlApi endpoint) job
+    let code, result = Http.postJsonFile (sprintf "%s%s" urlApi endpoint) job
     match code with
     | 200 -> result
     | 204 -> raise (System.TimeoutException("Timeout while waiting for job to complete"))
