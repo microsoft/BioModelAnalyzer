@@ -2,7 +2,7 @@
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
 
 (function ($) {
-    $.widget("BMA.localstoragewidget", {
+    $.widget("BMA.onedrivestoragewidget", {
 
 
         options: {
@@ -30,26 +30,62 @@
             this.refresh();
         },
 
+        _createContextMenu: function () {
+            var that = this;
+            this.repo.contextmenu({
+                delegate: "li",
+                autoFocus: true,
+                preventContextMenuForPopup: true,
+                preventSelect: true,
+                menu: [
+                    { title: "Move to local", cmd: "MoveToLocal" },
+                    { title: "Copy to local", cmd: "CopyToLocal" },
+                    {
+                        title: "Share", cmd: "Share", children: [
+                            { title: "BMA link", cmd: "BMALink" },
+                            { title: "Web link", cmd: "WebLink" },
+                            { title: "Email", cmd: "Email" },
+                        ]
+                    },
+                    { title: "Open BMA link", cmd: "OpenBMALink" },
+                    { title: "Active Shares", cmd: "ActiveShares", children:[] },
+                ],
+                beforeOpen: function (event, ui) {
+                    ui.menu.zIndex(50);
+                    if ($(ui.target.context.parentElement).hasClass("table-tags"))
+                        return false;
+                },
+                select: function (event, ui) {
+                    var args: any = {};
+                    args.command = ui.cmd;
+                    args.column = $(ui.target.context).index();
+
+                    if (that.options.onContextMenuItemSelected !== undefined)
+                        that.options.onContextMenuItemSelected(args);
+                }
+            });
+        },
+
         _createHTML: function (items) {
             var items = this.options.items;
             this.repo.empty();
             var that = this;
-            this.ol = $('<ol></ol>').appendTo(this.repo); 
-            
+            this.ol = $('<ol></ol>').appendTo(this.repo);
+
             for (var i = 0; i < items.length; i++) {
                 var li = $('<li></li>').text(items[i]).appendTo(this.ol);
                 //var a = $('<a></a>').addClass('delete').appendTo(li);
                 var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);// $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//
                 removeBtn.bind("click", function (event) {
                     event.stopPropagation();
-                    window.Commands.Execute("LocalStorageRemoveModel", "user."+items[$(this).parent().index()]);
+                    window.Commands.Execute("LocalStorageRemoveModel", "user." + items[$(this).parent().index()]);
                 })
             }
 
             this.ol.selectable({
                 stop: function () {
                     var ind = that.repo.find(".ui-selected").index();
-                    window.Commands.Execute("LocalStorageLoadModel", "user."+items[ind]);
+                    window.Commands.Execute("LocalStorageLoadModel", "user." + items[ind]);
                 }
             });
         },
@@ -79,9 +115,9 @@
 } (jQuery));
 
 interface JQuery {
-    localstoragewidget(): JQuery;
-    localstoragewidget(settings: Object): JQuery;
-    localstoragewidget(optionLiteral: string, optionName: string): any;
-    localstoragewidget(optionLiteral: string, optionName: string, optionValue: any): JQuery;
+    onedrivestoragewidget(): JQuery;
+    onedrivestoragewidget(settings: Object): JQuery;
+    onedrivestoragewidget(optionLiteral: string, optionName: string): any;
+    onedrivestoragewidget(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }
  

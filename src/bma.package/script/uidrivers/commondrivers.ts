@@ -511,7 +511,7 @@ module BMA {
             }
 
             public AddItem(key, item) {
-                this.widget.localstoragewidget("AddItem", key);
+                this.widget.modelstoragewidget("AddItem", key);
             }
 
             public Show() {
@@ -523,11 +523,11 @@ module BMA {
             }
 
             public SetItems(keys) {
-                this.widget.localstoragewidget({ items: keys });
+                this.widget.modelstoragewidget({ items: keys });
             }
 
             public Message(msg: string) {
-                this.widget.localstoragewidget("Message", msg);
+                this.widget.modelstoragewidget("Message", msg);
             }
         }
 

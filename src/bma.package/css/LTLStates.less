@@ -1145,3 +1145,43 @@
         }
     }
 }
+
+.model-repository{
+    .repository-switcher{
+        background-color:@midgrey;
+        color:white;
+        border-radius:15px;
+        width: 200px;
+        height: 20px;
+        margin-left: auto;
+        margin-right: auto;
+
+        .repository-bttn{
+            display:inline-block;
+            text-align: center;
+            line-height: 20px;
+            width: 100px;
+            height: 20px;
+            border-radius: 15px;
+
+            &:hover{
+                cursor:pointer;
+            }
+
+            &:first-child{
+                border-top-right-radius: 0px;
+                border-bottom-right-radius: 0px;
+            }
+
+            &:last-child{
+                border-top-left-radius: 0px;
+                border-bottom-left-radius: 0px;
+            }
+
+            &.active{
+                background-color:@green;
+            }
+        }
+
+    }
+}

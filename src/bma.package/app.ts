@@ -35,6 +35,8 @@
 /// <reference path="script\widgets\proofresultviewer.ts"/>
 /// <reference path="script\widgets\furthertestingviewer.ts"/>
 /// <reference path="script\widgets\localstoragewidget.ts"/>
+/// <reference path="script\widgets\modelstoragewidget.ts"/>
+/// <reference path="script\widgets\onedrivestoragewidget.ts"/>
 /// <reference path="script\widgets\ltl\keyframecompact.ts"/>
 /// <reference path="script\widgets\ltl\keyframetable.ts"/>
 /// <reference path="script\widgets\ltl\ltlstatesviewer.ts"/>
@@ -465,7 +467,7 @@ function loadScript(version) {
     var localStorageWidget = $('<div></div>')
         .addClass('window')
         .appendTo('#drawingSurceContainer')
-        .localstoragewidget();
+        .modelstoragewidget();
 
     $("#editor").bmaeditor();
 
