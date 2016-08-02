@@ -1,5 +1,6 @@
 {
   "globalDependencies": {
+    "config": "registry:dt/config#0.0.0+20160317120654",
     "node": "registry:env/node#6.0.0+20160723033700",
     "restify": "registry:dt/restify#2.0.0+20160726153409"
   }

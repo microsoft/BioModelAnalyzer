@@ -1,5 +1,5 @@
 import * as builder from 'botbuilder'
-import CONFIG from './config'
+import * as config from 'config'
 
 export function setup (bot: builder.UniversalBot) {
     registerLUISDialog(bot)
@@ -7,7 +7,7 @@ export function setup (bot: builder.UniversalBot) {
 
 function registerLUISDialog (bot: builder.UniversalBot) {
     // Create LUIS recognizer that points at our model and add it as the root '/' dialog for our bot.
-    var model = 'https://api.projectoxford.ai/luis/v1/application?id=' + CONFIG.LUIS_MODEL_ID + '&subscription-key=' + CONFIG.LUIS_KEY
+    var model = 'https://api.projectoxford.ai/luis/v1/application?id=' + config.get('LUIS_MODEL_ID') + '&subscription-key=' + config.get('LUIS_KEY')
     var recognizer = new builder.LuisRecognizer(model)
     var dialog = new builder.IntentDialog({ recognizers: [recognizer] })
     bot.dialog('/', dialog)

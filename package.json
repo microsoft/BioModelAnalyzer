@@ -1,6 +1,6 @@
 {
+  "name": "bmachatbot",
   "version": "0.1.0",
-  "main": "lib/app.js",
   "private": true,
   "scripts": {
     "compile": "tsc",
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "botbuilder": "^3.1.1",
+    "config": "^1.21.0",
     "restify": "^4.1.1"
   },
   "devDependencies": {
