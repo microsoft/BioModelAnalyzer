@@ -114,13 +114,78 @@
     <None Include="Analysis\toymodel-unstable.request.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Analysis\LTLNoPositive.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Analysis\LTLNoPositive.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="CounterExamples\LTLNoPositive.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="CounterExamples\LTLNoPositive.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="CounterExamples\toymodel-unstable.response.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="CounterExamples\toymodel-unstable.request.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="LTLQueries\EDF-cfos.response.json" />
+    <None Include="LTLQueries\EcoliNir.2.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\EcoliNir.2.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\EcoliNir.2.simulation.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\EcoliNir.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\EcoliNir.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\EcoliNir.simulation.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\EGF-cfos.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\EGF-cfos.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\EGF-cfos.simulation.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\LTLNoPositive.19.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\LTLNoPositive.19.simulation.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\LTLNoPositive.19.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\LTLNoPositive.20.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\LTLNoPositive.20.simulation.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\LTLNoPositive.20.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\EDF-cfos.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\EDF-cfos.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\EDF-cfos.simulation.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="LTLQueries\Epi-V9.request.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -166,7 +231,10 @@
     <None Include="LTLQueries\PhosCas.response.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="LTLQueries\EDF-cfos.___.json">
+    <None Include="Simulation\LTLNoPositive.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Simulation\LTLNoPositive.response.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Simulation\toymodel.request.json">
