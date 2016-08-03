@@ -888,14 +888,24 @@
 		    }
 	    }
     }
-}
-
-.LTL-test-results {
 
     img {
         display:inline-block;
         vertical-align:middle;
     }
+
+    
+    .number-of-steps{
+        display: inline-block;
+        width: 55px;
+
+        input {
+            &:hover{
+                cursor:pointer;
+            }
+        }
+    }
+
     &.default{
         background-color: transparent;
 		border: none;
@@ -1038,17 +1048,19 @@
 
 .action-button-small{
     &.grey {
+        margin-right:5px;
         &.spin{
             margin-right:5px;
+            background-color:white;
             &:hover{
-                background-color: @midgrey;
+                //background-color: @midgrey;
             }
-            .cancel-button{
-                display:inline-block;
-                margin-left:5px;
-                &:hover {
-                    color:white;
-                }
+            
+        }
+        .cancel-button{
+            display:inline-block;
+            &:hover {
+                color:white;
             }
         }
     }
