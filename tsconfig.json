@@ -6,7 +6,6 @@
         "preserveConstEnums": true,
         "rootDir": "src/",
         "outDir": "lib/",
-        "sourceMap": true,
         "inlineSourceMap": true,
         "inlineSources": true
     },
