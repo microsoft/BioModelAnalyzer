@@ -38,8 +38,12 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
     let container = blobClient.GetContainerReference (getBlobContainerName settings.Name)
 
        
+    /// Returns None, if the job isn't being executed at the moment
+    /// otherwise, returns Some of execution start time.
     let isExecuting (appId: AppId, jobId: JobId) = 
-        tableExec |> tryGetJobExecutionEntry (appId, jobId) |> Option.isSome
+        tableExec 
+        |> tryGetJobExecutionEntry (appId, jobId) 
+        |> Option.map(fun e -> e.Timestamp)
 
     do 
         table.CreateIfNotExists() |> ignore  
@@ -84,8 +88,10 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
                 match parseStatus job.Status with
                 | JobStatus.Succeeded -> JobStatus.Succeeded, job.StatusInformation
                 | JobStatus.Failed -> JobStatus.Failed, job.StatusInformation
-                | _ when isExecuting (appId, jobId) -> JobStatus.Executing, ""
-                | _ -> JobStatus.Queued, job.StatusInformation
+                | _ ->
+                    match isExecuting (appId, jobId) with
+                    | Some time -> JobStatus.Executing, time.ToString("o")
+                    | None -> JobStatus.Queued, job.StatusInformation
                 |> Some
 
         member x.TryGetResult (appId: AppId, jobId: JobId) : IO.Stream option =

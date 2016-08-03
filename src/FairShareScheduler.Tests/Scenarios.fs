@@ -146,6 +146,32 @@ let ``Cancel the job after it is executing``() =
     Assert.IsTrue(scheduler.DeleteJob (appId, jobId), "Job wasn't deleted")
     Assert.AreEqual(None, scheduler.TryGetStatus (appId, jobId), "Job must not be found")
 
+[<Test; Timeout(180000)>]
+let ``Status 'executing' includes execution start time``() =
+    let scheduler = getScheduler()
+    let appId = Guid.NewGuid()
+    use body = JObject(JProperty("sleep", Timeout.Infinite), JProperty("result", appId)) |> asStream
+    let job = { AppId = appId; Body = body }
+    let t0 = DateTime.Now
+    let jobId = scheduler.AddJob(job)
+
+    waitExecuting (appId, jobId) scheduler
+    let t1 = DateTime.Now
+
+    match scheduler.TryGetStatus (appId, jobId) with
+    | Some (JobStatus.Executing, info) -> 
+        Trace.WriteLine(sprintf "Status info is %s" info)
+        match DateTime.TryParse info with
+        | true, time -> 
+            Trace.WriteLine(sprintf "Execution start time is %A" time)
+            Assert.IsTrue(t0 < time, "start time is earlier than expected")
+            Assert.IsTrue(t1 > time, "start time is later than expected")
+        | false, _ -> Assert.Fail(sprintf "The status info is not a date time string: %s" info)
+    | Some (s, _) -> Assert.Fail("Status is not 'executing'")
+    | None -> Assert.Fail("Failed to get the job status")
+
+    Assert.IsTrue(scheduler.DeleteJob (appId, jobId), "Job wasn't deleted")
+
 
 [<Test; Timeout(1800000)>]
 let ``Massive jobs handling``() =
