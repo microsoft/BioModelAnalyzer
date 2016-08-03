@@ -17,7 +17,6 @@ function registerMiddleware (bot: builder.UniversalBot) {
             let debugPrefix = 'start:'
             if (text.match(new RegExp(`^${debugPrefix}.+`))) {
                 let dialogId = text.substr(debugPrefix.length)
-                console.log('starting dialog ' + dialogId)
                 session.beginDialog(dialogId)
             } else {
                 next()
@@ -64,11 +63,27 @@ function registerTutorialDialogs (bot: builder.UniversalBot) {
     let tutorials = tutorialPaths.map(path => fs.readFileSync(path, 'utf8')).map(yaml.safeLoad)
 
     for (let tutorial of tutorials) {
-        let waterfall: builder.IDialogWaterfallStep[] = 
+        let waterfall: builder.IDialogWaterfallStep[] = [
+            (session: builder.Session, results, next) => {
+                session.send(`Tutorial: ${tutorial.title}`)
+                session.send(tutorial.description)
+                builder.Prompts.confirm(session, 'Do you like to start the tutorial?')
+            },
+            (session: builder.Session, results, next) => {
+                if (results.response) {
+                    next()
+                } else {
+                    session.endDialog()
+                }
+            }
+        ]
+
+        waterfall.push(...
             tutorial.steps.map(step => (session: builder.Session, results, next) => {
                 session.send(step.text)
                 next()
             })
+        )
 
         let dialogId = `/tutorials/${tutorial.id}`
         bot.dialog(dialogId, waterfall)
