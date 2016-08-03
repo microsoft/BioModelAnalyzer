@@ -4,8 +4,28 @@ import * as yaml from 'js-yaml'
 import * as fs from 'fs'
 
 export function setup (bot: builder.UniversalBot) {
+    registerMiddleware(bot)
     registerLUISDialog(bot)
     registerTutorialDialogs(bot)
+}
+
+function registerMiddleware (bot: builder.UniversalBot) {
+    let debugDialogMiddleware: builder.IMiddlewareMap = {
+        botbuilder: (session, next) => {
+            let text = session.message.text
+
+            let debugPrefix = 'start:'
+            if (text.match(new RegExp(`^${debugPrefix}.+`))) {
+                let dialogId = text.substr(debugPrefix.length)
+                console.log('starting dialog ' + dialogId)
+                session.beginDialog(dialogId)
+            } else {
+                next()
+            }
+        }
+    }
+
+    bot.use(debugDialogMiddleware)
 }
 
 function registerLUISDialog (bot: builder.UniversalBot) {
@@ -30,18 +50,7 @@ function registerLUISDialog (bot: builder.UniversalBot) {
         }
     ])
     dialog.onDefault(function (session, args) {
-        let text = session.message.text
-
-        // TODO this doesn't work, LUIS picks up the debug command as another intent
-        //      Is there a way to setup a global message router in front of LUIS but still inside the LUIS dialog?
-        let debugPrefix = 'start:'
-        if (text.match(new RegExp(`^${debugPrefix}.+`))) {
-            let dialogId = text.substr(debugPrefix.length)
-            console.log('starting dialog ' + dialogId)
-            session.beginDialog(dialogId)
-        } else {
-            session.send('I did not understand you')
-        }
+        session.send('I did not understand you')
     })
 }
 
@@ -55,12 +64,14 @@ function registerTutorialDialogs (bot: builder.UniversalBot) {
     let tutorials = tutorialPaths.map(path => fs.readFileSync(path, 'utf8')).map(yaml.safeLoad)
 
     for (let tutorial of tutorials) {
-        let waterfall: builder.IDialogWaterfallStep[] = tutorial.steps.map(step => (session: builder.Session, results, next) => {
-            session.send(step.text)
-        })
+        let waterfall: builder.IDialogWaterfallStep[] = 
+            tutorial.steps.map(step => (session: builder.Session, results, next) => {
+                session.send(step.text)
+                next()
+            })
 
         let dialogId = `/tutorials/${tutorial.id}`
         bot.dialog(dialogId, waterfall)
-        console.log(dialogId)
+        console.log(`[Tutorial '${tutorial.id}' registered, launch with "start:${dialogId}"]`)
     }
 }
