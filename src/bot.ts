@@ -1,5 +1,7 @@
 import * as builder from 'botbuilder'
 import * as config from 'config'
+import * as yaml from 'js-yaml'
+import * as fs from 'fs'
 
 export function setup (bot: builder.UniversalBot) {
     registerLUISDialog(bot)
@@ -27,9 +29,38 @@ function registerLUISDialog (bot: builder.UniversalBot) {
             session.send(message)
         }
     ])
-    dialog.onDefault(builder.DialogAction.send('sorry, no idea what you are saying'))
+    dialog.onDefault(function (session, args) {
+        let text = session.message.text
+
+        // TODO this doesn't work, LUIS picks up the debug command as another intent
+        //      Is there a way to setup a global message router in front of LUIS but still inside the LUIS dialog?
+        let debugPrefix = 'start:'
+        if (text.match(new RegExp(`^${debugPrefix}.+`))) {
+            let dialogId = text.substr(debugPrefix.length)
+            console.log('starting dialog ' + dialogId)
+            session.beginDialog(dialogId)
+        } else {
+            session.send('I did not understand you')
+        }
+    })
 }
 
 function registerTutorialDialogs (bot: builder.UniversalBot) {
-    // TODO implement
+    // TODO make LUIS dialog available within tutorial dialogs
+
+    let tutorialPaths = [
+        '1_ltl_for_dummies'
+        ].map(name => `data/tutorials/${name}.yaml`)
+    
+    let tutorials = tutorialPaths.map(path => fs.readFileSync(path, 'utf8')).map(yaml.safeLoad)
+
+    for (let tutorial of tutorials) {
+        let waterfall: builder.IDialogWaterfallStep[] = tutorial.steps.map(step => (session: builder.Session, results, next) => {
+            session.send(step.text)
+        })
+
+        let dialogId = `/tutorials/${tutorial.id}`
+        bot.dialog(dialogId, waterfall)
+        console.log(dialogId)
+    }
 }
