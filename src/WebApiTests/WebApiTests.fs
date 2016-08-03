@@ -8,10 +8,10 @@ open System.Diagnostics
 open Newtonsoft.Json.Linq
 open LTLTests
 
-let urlApi = "http://localhost:8223/api/"
-let url = "http://localhost:8223/api/lra"
-//let url = "http://bmamathnew.cloudapp.net/api/lra"
-//let urlApi = "http://bmamathnew.cloudapp.net/api/"
+//let urlApi = "http://localhost:8223/api/"
+//let url = "http://localhost:8223/api/lra"
+let url = "http://bmamathnew.cloudapp.net/api/lra"
+let urlApi = "http://bmamathnew.cloudapp.net/api/"
 
 let appId = "CF1B2F01-E2B7-4D34-88B6-9C9078C0D637"
 
