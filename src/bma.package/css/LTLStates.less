@@ -1184,4 +1184,51 @@
         }
 
     }
+
+    .signin{
+        text-align:right;
+        cursor:pointer;
+    }
+}
+
+.repository-popup-menu{
+    width:150px;
+
+    .repository-menu-item{
+        display:inline-block;
+        margin: 0px 5px 5px 0px;
+        vertical-align: middle;
+        cursor:pointer;
+
+        &.repository-menu-item-icon{
+            background-color:@midgrey;
+            width: 20px;
+            height:20px;
+            border:1px solid @midgrey;
+            border-radius:100%;
+
+            &.active{
+                background-color:white;
+            }
+        }
+    }
+
+    .repository-readonly-bttn{
+        background-color: @midgrey;
+        color: white;
+        border: 1px solid @midgrey;
+        border-radius: 15px;
+        width: 80px;
+        height: 20px;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+        cursor:pointer;
+
+        &.selected{
+            background-color: @green;
+            border-color:@green;
+        }
+    }
 }

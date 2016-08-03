@@ -7,6 +7,9 @@
 
         options: {
             items: [],
+            oneDriveItems: [],
+            onsigninonedrive: undefined,
+            onsignoutonedrive: undefined,
         },
 
         _create: function () {
@@ -50,7 +53,10 @@
             this.oneDriveStorage.onedrivestoragewidget();
             if (this.options.items) {
                 this.localStorage.localstoragewidget({ items: that.options.items });
-                this.oneDriveStorage.onedrivestoragewidget({ items: that.options.items });
+            }
+
+            if (this.options.oneDriveItems) {
+                this.oneDriveStorage.onedrivestoragewidget({ items: that.options.oneDriveItems });
             }
             
             this.oneDriveStorage.hide();
@@ -60,44 +66,51 @@
             ////.addClass('localstorage-widget')
             //    .appendTo(this.element);
 
-            if (Silverlight.isInstalled()) {
-                var slWidget = $('<div></div>').appendTo(this.element);
+            //if (Silverlight && Silverlight.isInstalled()) {
+            //    var slWidget = $('<div></div>').appendTo(this.element);
 
-                var getSilverlightMethodCall =
-                    "javascript:Silverlight.getSilverlight(\"5.0.61118.0\");"
-                var installImageUrl =
-                    "http://go.microsoft.com/fwlink/?LinkId=161376";
-                var imageAltText = "Get Microsoft Silverlight";
-                var altHtml =
-                    "<a href='{1}' style='text-decoration: none;'>" +
-                    "<img src='{2}' alt='{3}' " +
-                    "style='border-style: none'/></a>";
-                altHtml = altHtml.replace('{1}', getSilverlightMethodCall);
-                altHtml = altHtml.replace('{2}', installImageUrl);
-                altHtml = altHtml.replace('{3}', imageAltText);
+            //    var getSilverlightMethodCall =
+            //        "javascript:Silverlight.getSilverlight(\"5.0.61118.0\");"
+            //    var installImageUrl =
+            //        "http://go.microsoft.com/fwlink/?LinkId=161376";
+            //    var imageAltText = "Get Microsoft Silverlight";
+            //    var altHtml =
+            //        "<a href='{1}' style='text-decoration: none;'>" +
+            //        "<img src='{2}' alt='{3}' " +
+            //        "style='border-style: none'/></a>";
+            //    altHtml = altHtml.replace('{1}', getSilverlightMethodCall);
+            //    altHtml = altHtml.replace('{2}', installImageUrl);
+            //    altHtml = altHtml.replace('{3}', imageAltText);
 
-                Silverlight.createObject(
-                    "ClientBin/BioCheck.xap",
-                    slWidget[0], "slPlugin",
-                    {
-                        width: "250", height: "50",
-                        background: "white", alt: altHtml,
-                        version: "5.0.61118.0"
-                    },
-                    // See the event handlers in the full example.
-                    { onError: onSilverlightError },
-                    "param1=value1,param2=value2", "row3");
-            }
+            //    Silverlight.createObject(
+            //        "ClientBin/BioCheck.xap",
+            //        slWidget[0], "slPlugin",
+            //        {
+            //            width: "250", height: "50",
+            //            background: "white", alt: altHtml,
+            //            version: "5.0.61118.0"
+            //        },
+            //        // See the event handlers in the full example.
+            //        { onError: onSilverlightError },
+            //        "param1=value1,param2=value2", "row3");
+            //}
 
-            this.singinOneDriveBtn = $("<div>Sign in with OneDrive</div>").appendTo(this.element).click(function () {
+            this.singinOneDriveBtn = $("<div>Sign in with OneDrive</div>").addClass("signin").appendTo(this.element).click(function () {
                 if ($(this).text() == "Sign in with OneDrive") {
                     $(this).text("Sign out OneDrive");
                     that.switcher.show();
+                    if (that.options.onsigninonedrive !== undefined) {
+                        that.options.onsigninonedrive();
+                    }
                 } else {
                     that.localStorageBtn.addClass("active");
                     that.oneDriveStorageBtn.removeClass("active");
                     that.localStorage.show();
                     that.oneDriveStorage.hide();
+
+                    if (that.options.onsignoutonedrive !== undefined) {
+                        that.options.onsignoutonedrive();
+                    }
 
                     $(this).text("Sign in with OneDrive");
                     that.switcher.hide();
@@ -129,8 +142,18 @@
                 case "items":
                     this.options.items = value;
                     this.localStorage.localstoragewidget({ items: that.options.items });
-                    this.oneDriveStorage.onedrivestoragewidget({ items: that.options.items });
                     this.refresh();
+                    break;
+                case "oneDriveItems":
+                    this.options.oneDriveItems = value;
+                    this.oneDriveStorage.onedrivestoragewidget({ items: that.options.oneDriveItems});
+                    this.refresh();
+                    break;
+                case "onsigninonedrive":
+                    that.options.onsigninonedrive = value;
+                    break;
+                case "onsignoutonedrive":
+                    that.options.onsignoutonedrive = value;
                     break;
             }
             this._super(key, value);

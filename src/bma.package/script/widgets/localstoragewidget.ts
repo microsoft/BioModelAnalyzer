@@ -52,10 +52,39 @@
                     window.Commands.Execute("LocalStorageLoadModel", "user."+items[ind]);
                 }
             });
+
+            this.createContextMenu();
         },
 
         Message: function (msg) {
             this.message.text(msg);
+        },
+
+        createContextMenu: function () {
+            var that = this;
+            this.repo.contextmenu({
+                delegate: "li",
+                autoFocus: true,
+                preventContextMenuForPopup: true,
+                preventSelect: true,
+                menu: [
+                    { title: "Move to OneDrive", cmd: "MoveToOneDrive" },
+                    { title: "Copy to OneDrive", cmd: "CopyToOneDrive" },
+                ],
+                beforeOpen: function (event, ui) {
+                    ui.menu.zIndex(50);
+                    if ($(ui.target.context.parentElement).hasClass("table-tags"))
+                        return false;
+                },
+                select: function (event, ui) {
+                    var args: any = {};
+                    args.command = ui.cmd;
+                    args.column = $(ui.target.context).index();
+
+                    if (that.options.onContextMenuItemSelected !== undefined)
+                        that.options.onContextMenuItemSelected(args);
+                }
+            });
         },
 
         _setOption: function (key, value) {
