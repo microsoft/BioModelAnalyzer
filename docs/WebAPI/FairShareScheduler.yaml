@@ -58,6 +58,12 @@ paths:
           description: Succeeded - the job is succeeded
         201:
           description: Queued - the job is queued and awaits to be chosen by a worker
+          schema:
+            description: |
+              Approximate position of the job in the queue. 
+              Negative value indicates that the position couldn't be determined.
+            type: integer
+            format: int32
         202:
           description: Executing - the job is being executed
           schema:

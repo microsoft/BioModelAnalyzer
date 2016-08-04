@@ -57,6 +57,42 @@
             }
         }
     }
+
+    .variable-button {
+        display: inline-block;
+        margin: 5px 0px 10px 5px;
+        font-family: 'Segoe-UI-Light';
+        font-size: 20px;
+        line-height: 25px;
+        width: 40px;
+        height: 30px;
+        text-align: center;
+        border-radius: 100px;
+        background-color: white;
+        color: @darkgrey;
+        border: 1px solid @darkgrey;
+
+        white-space: nowrap; 
+        overflow: hidden; 
+        padding-left: 5px;
+        padding-right: 5px;
+        text-overflow: ellipsis; 
+
+
+        &.new {
+            color: white;
+            border: 1px solid white;
+            background-color: @midgrey;
+            margin-left: 5px;
+
+            &:hover {
+                color: @lightgrey;
+                border: 1px solid @lightgrey;
+                cursor: pointer;
+            }
+        }
+    }
+
 }
 
 .state-toolbar {
