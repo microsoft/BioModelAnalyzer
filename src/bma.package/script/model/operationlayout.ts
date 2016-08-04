@@ -454,7 +454,13 @@
                         //    svg.circle(stateGroup, 3, 3, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)" });
                         //}
 
-                        var path = svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)", id: uniquename });
+                        //var path = svg.circle(stateGroup, 0, 0, this.keyFrameSize / 2, { stroke: "rgb(96,96,96)", fill: "rgb(238,238,238)", id: uniquename });
+                        var path = svg.rect(stateGroup, -layoutPart.width / 2, - this.keyFrameSize / 2, layoutPart.width, this.keyFrameSize, this.keyFrameSize / 2, this.keyFrameSize / 2, {
+                            stroke: "rgb(96,96,96)",
+                            //strokeWidth: strokeWidth,
+                            fill: "rgb(238,238,238)"
+                        });
+
 
                         if (layoutPart.type === "keyframe" || layoutPart.type === "constant" || layoutPart.type === "other") {
                             var textGroup = svg.group(stateGroup, {
@@ -479,9 +485,9 @@
 
 
                             var scale = 1;
-                            if (bbox.width > this.keyFrameSize / 2) {
-                                scale = this.keyFrameSize / (2 * bbox.width);
-                            }
+                            //if (bbox.width > this.keyFrameSize / 2) {
+                            //    scale = this.keyFrameSize / (2 * bbox.width);
+                            //}
 
                             this.svg.change(textGroup, {
                                 transform: "scale(" + scale + ", " + scale + ") translate(" + -bbox.width / 2 + ", " + bbox.height / 4 + ")"
@@ -513,7 +519,7 @@
                 //Optimizing operation, removing unnecessary empty slots, etc.
                 this.OptimizeOperation();
 
-                this.layout = CreateLayout(this.operation, (name, fontSize) => { return that.GetOperatorWidth(that.svg, name, fontSize).width; }, this.padding, this.keyFrameSize, { viewmode: that.viewmode }); //this.CreateLayout(svg, this.operation);
+                this.layout = CreateLayout(this.operation, (name, fontSize) => { return that.GetOperatorWidth(that.svg, name, fontSize).width; }, this.padding, this.keyFrameSize, { viewmode: that.viewmode, fontSize: 16 }); //this.CreateLayout(svg, this.operation);
                 this.position = position;
                 this.SetPositionOffsets(this.layout, position);
 
