@@ -21,22 +21,21 @@
             //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
             var widthStr = "calc(100% - 20px)";
             var toolbar = $("<div></div>").addClass("temporal-toolbar").css("margin-top", 0).width(widthStr).appendTo(leftContainer);
-            
+
             //Adding states
-            var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 570px)").html("Variables<br>").appendTo(toolbar);
+            var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 580px)").html("Variables<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
             this._refreshStates();
 
             //Adding pre-defined states
-            var conststates = $("<div></div>").addClass("state-buttons").width(60).html("&nbsp;<br>").appendTo(toolbar);
+            var conststates = $("<div></div>").addClass("state-buttons").width(70).html("&nbsp;<br>").appendTo(toolbar);
             var statesbtns = $("<div></div>").addClass("btns").appendTo(conststates);
             var state = $("<div></div>")
-                .addClass("state-button")
+                .addClass("variable-button")
                 .attr("data-state", "ConstantValue")
                 .css("z-index", 6)
                 .css("cursor", "pointer")
                 .text("123...")
-                .css("font-size", "10px")
                 .appendTo(statesbtns);
 
             state.draggable({
@@ -44,9 +43,20 @@
                 cursorAt: { left: 0, top: 0 },
                 opacity: 0.4,
                 cursor: "pointer",
-                start: function (event, ui) { }
+                start: function (event, ui) {
+                    that._switchMode("extended");
+                },
+                stop: function () {
+                    that._switchMode("compact");
+                }
             });
-            
+
+            state.statetooltip({
+                state: {
+                    description: "Editable numeric constant", formula: undefined
+                }
+            });
+
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
             operators.width(350);
@@ -110,31 +120,6 @@
                 });
 
             }
-
-            //Adding operators toggle basic/advanced
-            /*
-            var toggle = $("<div></div>").addClass("toggle").width(60).attr("align", "right").text("Advanced").appendTo(toolbar);
-            toggle.click((args) => {
-                if (toggle.text() === "Advanced") {
-                    toggle.text("Basic");
-                    operatorsDiv.height(98);
-                    this.statesbtns.height(98);
-                    if (this.drawingSurfaceContainerRef !== undefined) {
-                        this.drawingSurfaceContainerRef.height("calc(100% - 113px - 30px - 34px)");
-                    }
-                } else {
-                    toggle.text("Advanced");
-                    operatorsDiv.height(64);
-                    this.statesbtns.height(64);
-                    if (this.drawingSurfaceContainerRef !== undefined) {
-                        this.drawingSurfaceContainerRef.height("calc(100% - 113px - 30px)");
-                    }
-                }
-                //$('body,html').css("zoom", 1.0000001);
-                //root.height(root.height() + 1);
-                this.updateLayout();
-            });
-            */
 
             //Adding drawing surface
             var svgDiv = $("<div></div>").css("background-color", "white").css("position", "relative").height(200).width("100%").appendTo(leftContainer);
@@ -592,10 +577,9 @@
             this.statesbtns.empty();
             for (var i = 0; i < this.options.variables.length; i++) {
                 var stateName = this.options.variables[i].Name;
-                //var stateTooltip = that._convertForTooltip(that.options.states[i]);
 
                 var stateDiv = $("<div></div>")
-                    .addClass("state-button")
+                    .addClass("variable-button")
                     .addClass("ltl-tp-droppable")
                     .attr("data-state", stateName)
                     .css("z-index", 6)
@@ -616,7 +600,11 @@
                     }
                 });
 
-                //stateDiv.statetooltip({ state: stateTooltip });
+                stateDiv.statetooltip({
+                    state: {
+                        description: stateName, formula: undefined
+                    }
+                });
             }
         },
 
@@ -676,8 +664,6 @@
             }
             var bboxx = -width / 2;
             var bboxy = -height / 2;
-            //var svgX = width * x / this.svgDiv.width() + bboxx;
-            //var svgY = height * y / this.svgDiv.height() + bboxy;
             var x = (svgX - bboxx) * this.svgDiv.width() / width;
             var y = (svgY - bboxy) * this.svgDiv.height() / height;
             return {
@@ -723,39 +709,6 @@
 
 
         },
-
-        //_addCustomState: function (statesbtns: JQuery, name, description, content: string) {
-        //    var that = this;
-
-        //    var state = $("<div></div>")
-        //        .addClass("state-button")
-        //        .attr("data-state", name)
-        //        .css("z-index", 6)
-        //        .css("cursor", "pointer")
-        //        .text(content)
-        //        .appendTo(statesbtns);
-
-        //    /*
-        //    state.statetooltip({
-        //        state: {
-        //            description: description, formula: undefined
-        //        }
-        //    });
-        //    */
-
-        //    state.draggable({
-        //        helper: "clone",
-        //        cursorAt: { left: 0, top: 0 },
-        //        opacity: 0.4,
-        //        cursor: "pointer",
-        //        start: function (event, ui) {
-        //            //that._executeCommand("AddStateSelect", $(this).attr("data-state"));
-        //        }
-
-        //    });
-
-        //    return state;
-        //},
 
         updateLayout: function () {
             this._refresh();
