@@ -101,12 +101,12 @@ function registerTutorialDialogs (bot: builder.UniversalBot) {
 
     for (let tutorial of tutorials) {
         let waterfall: builder.IDialogWaterfallStep[] = [
-            (session: builder.Session, results, next) => {
+            (session: builder.Session) => {
                 session.send(`Tutorial: ${tutorial.title}`)
                 session.send(tutorial.description)
                 builder.Prompts.confirm(session, 'Do you like to start the tutorial?')
             },
-            (session: builder.Session, results, next) => {
+            (session: builder.Session, results: builder.IPromptConfirmResult, next) => {
                 if (results.response) {
                     next()
                 } else {

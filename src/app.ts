@@ -17,8 +17,8 @@ if (config.get('USE_CONSOLE')) {
     
     // Create chat bot
     let connector = new builder.ChatConnector({
-        appId: config.get('APP_ID'), 
-        appPassword: config.get('APP_PASSWORD')
+        appId: config.get<string>('APP_ID'), 
+        appPassword: config.get<string>('APP_PASSWORD')
     })
     bot = new builder.UniversalBot(connector)
     server.post('/api/messages', connector.listen())
