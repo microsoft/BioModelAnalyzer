@@ -54,7 +54,7 @@ namespace bma.client.Controllers
                     case Jobs.JobStatus.Queued:
                         return HttpResponses.PlainText(Request, s, HttpStatusCode.Created /* 201 */);
                     case Jobs.JobStatus.Executing:
-                        return HttpResponses.PlainText(Request, s, HttpStatusCode.Accepted /* 202 */);
+                        return HttpResponses.PlainText(Request, info, HttpStatusCode.Accepted /* 202 */);
                     case Jobs.JobStatus.Failed:
                         return HttpResponses.PlainText(Request, info, (HttpStatusCode)203);
                 }

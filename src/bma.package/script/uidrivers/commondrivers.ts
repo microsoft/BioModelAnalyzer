@@ -712,11 +712,31 @@ module BMA {
                                 });
                             },
                             201: function (res) {
-                                result.notify(res);
+                                var notification = "Number ";
+                                var number = parseFloat(res);
+                                if (number !== NaN)
+                                    notification += number + " in queue";
+                                else notification = "Queued";
+                                result.notify(notification);
                                 setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
                             },
-                            202: function (res) {
-                                result.notify(res);
+                            202: function (res, schema) {
+                                var notification = "Executing ";
+                                var timemls = Date.parse(res);
+                                if (timemls) {
+                                    var executingTime = new Date().getTime() - timemls;
+                                    if (executingTime < 60)
+                                        notification += "since " + executingTime + " second" + (executingTime > 1 ? "s" : "");
+                                    else {
+                                        executingTime /= 60;
+                                        if (executingTime > 60) {
+                                            executingTime /= 60;
+                                            notification += "since " + executingTime + "hour" + (executingTime > 1 ? "s": "");
+                                        } else
+                                            notification += "since " + executingTime + "min" + (executingTime > 1 ? "s" : "");
+                                    }
+                                }
+                                result.notify(notification);
                                 setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
                             },
                             203: function (xhr, textStatus, errorThrown) {
@@ -725,6 +745,9 @@ module BMA {
                             404: function (xhr, textStatus, errorThrown) {
                                 result.reject(xhr, textStatus, errorThrown);
                             },
+                            501: function (res) {
+                                result.notify(res);
+                            }
                         }
                     });
                 }
