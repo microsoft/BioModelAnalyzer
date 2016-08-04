@@ -29,7 +29,7 @@ The final step is to create a local configuration file `config/local.json` with 
 
 By default, in development mode the bot is run inside the console.
 To run it as an actual server, add `"USE_CONSOLE": false` to `config/local.json`.
-The default bot's app id and password are `foo` and `bar`, respectively. Those are not needed in console mode.
+In development mode, the server runs without authentication.
 
 ### Development
 

@@ -1,6 +1,6 @@
 {
     "USE_CONSOLE": true,
     "PORT": 3978,
-    "APP_ID": "foo",
-    "APP_PASSWORD": "bar"
+    "APP_ID": null,
+    "APP_PASSWORD": null
 }
