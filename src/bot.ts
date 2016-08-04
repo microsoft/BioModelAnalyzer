@@ -37,7 +37,16 @@ function registerLUISDialog (bot: builder.UniversalBot) {
     // Add intent handlers
     dialog.matches('ExplainLTL', builder.DialogAction.send('LTL means linear temporal logic'))
     dialog.matches('LTLQuery', [
-        function (session, args, next) {
+        (session, args, next) => {
+            // check if JSON model has been uploaded already, otherwise prompt user
+            if (!session.userData.bmaModel) {
+                builder.Prompts.attachment(session, 'Please send me your model as a JSON file')
+            } else {
+                // invoke LTL parser
+                session.send('Try this: ...')
+            }
+
+            /*
             // send file
             let message = new builder.Message(session)
             message.addAttachment({
@@ -46,6 +55,25 @@ function registerLUISDialog (bot: builder.UniversalBot) {
             })
             message.text('attachment coming')
             session.send(message)
+            */
+        },
+        (session, results, next) => {
+            // check and store attachment
+            let attachments: builder.IAttachment[] = results.response
+            if (attachments.length > 1) {
+                session.send('Please upload exactly one JSON file')
+                return
+            }
+            // TODO not sure if this works, bot emulator is crashing
+            let json = attachments[0].content
+            let model: any
+            try {
+                model = JSON.parse(json)
+            } catch (e) {
+                session.send('Your uploaded file is not valid JSON')
+                return
+            }
+            session.userData.bmaModel = model
         }
     ])
     dialog.onDefault(function (session, args) {
@@ -60,7 +88,16 @@ function registerTutorialDialogs (bot: builder.UniversalBot) {
         '1_ltl_for_dummies'
         ].map(name => `data/tutorials/${name}.yaml`)
     
-    let tutorials = tutorialPaths.map(path => fs.readFileSync(path, 'utf8')).map(yaml.safeLoad)
+    // an array of tutorial objects
+    let tutorials: Tutorial[] = tutorialPaths.map(path => fs.readFileSync(path, 'utf8')).map(yaml.safeLoad)
+
+    // TODO add tutorial selection dialog via builder.Prompts.choice
+    // see https://docs.botframework.com/en-us/node/builder/chat/prompts/#promptschoice
+    // see https://docs.botframework.com/en-us/node/builder/chat-reference/classes/_botbuilder_d_.prompts.html#choice
+    // the dialogId could be /tutorials
+
+    // bot.dialog('/tutorials', [...])
+
 
     for (let tutorial of tutorials) {
         let waterfall: builder.IDialogWaterfallStep[] = [
@@ -89,4 +126,23 @@ function registerTutorialDialogs (bot: builder.UniversalBot) {
         bot.dialog(dialogId, waterfall)
         console.log(`[Tutorial '${tutorial.id}' registered, launch with "start:${dialogId}"]`)
     }
+}
+
+interface Tutorial {
+    /** The internal tutorial ID, unique amongst all tutorials. */
+    id: string
+
+    /** A short one-line tutorial title. */
+    title: string
+
+    /** A longer description of the tutorial. */
+    description: string
+
+    /** Tutorial steps. */
+    steps: TutorialStep[]
+}
+
+interface TutorialStep {
+    /** The text that will be sent to the user. */
+    text: string
 }
