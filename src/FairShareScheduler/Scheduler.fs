@@ -45,6 +45,29 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
         |> tryGetJobExecutionEntry (appId, jobId) 
         |> Option.map(fun e -> e.Timestamp)
 
+    let getQueuePosition (job : JobEntity) =
+        try
+            let q_queued = 
+                TableQuery<JobEntity>()
+                    .Where(
+                        TableQuery.CombineFilters(
+                            TableQuery.CombineFilters(
+                                TableQuery.GenerateFilterCondition("Status", QueryComparisons.Equal, status JobStatus.Queued),
+                                TableOperators.And,
+                                TableQuery.GenerateFilterConditionForDate("Timestamp", QueryComparisons.LessThanOrEqual, job.Timestamp)),
+                                TableOperators.And,
+                                TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.NotEqual, job.RowKey)))
+                    .Select([| JobProperties.JobId |])
+            let queued = table.ExecuteQuery(q_queued) |> Seq.map(fun j -> j.JobId) |> Seq.toArray
+            if queued.Length = 0 then 0
+            else
+                let exec = tableExec.ExecuteQuery<JobExecutionEntity>(TableQuery<JobExecutionEntity>()) |> Seq.map(fun j -> Guid.Parse j.RowKey) |> Seq.toArray
+                Set.difference (Set.ofArray queued) (Set.ofArray exec) |> Set.count                        
+        with ex -> 
+            logInfo (sprintf "Failed to count message queue position: %A" ex)
+            -1
+
+
     do 
         table.CreateIfNotExists() |> ignore  
         tableExec.CreateIfNotExists() |> ignore  
@@ -91,7 +114,9 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
                 | _ ->
                     match isExecuting (appId, jobId) with
                     | Some time -> JobStatus.Executing, time.ToString("o")
-                    | None -> JobStatus.Queued, job.StatusInformation
+                    | None -> 
+                        let queuePos = getQueuePosition job
+                        JobStatus.Queued, queuePos.ToString()
                 |> Some
 
         member x.TryGetResult (appId: AppId, jobId: JobId) : IO.Stream option =

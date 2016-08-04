@@ -172,6 +172,33 @@ let ``Status 'executing' includes execution start time``() =
 
     Assert.IsTrue(scheduler.DeleteJob (appId, jobId), "Job wasn't deleted")
 
+[<Test; Timeout(180000)>]
+let ``Status 'queued' includes queue position``() =
+    let scheduler = getScheduler()
+    let appId = Guid.NewGuid()
+
+    let jobs = 
+        Array.init 10 (fun _ ->
+            use body = JObject(JProperty("sleep", Timeout.Infinite), JProperty("result", appId)) |> asStream
+            let job = { AppId = appId; Body = body }
+            scheduler.AddJob(job))
+
+    waitExecuting (appId, jobs.[0]) scheduler
+
+    match scheduler.TryGetStatus (appId, jobs.[jobs.Length-1]) with
+    | Some (JobStatus.Queued, info) -> 
+        Trace.WriteLine(sprintf "Status info is %s" info)
+        match Int32.TryParse info with
+        | true, pos -> 
+            Trace.WriteLine(sprintf "Position is %d" pos)
+            Assert.IsTrue(pos <= jobs.Length - 2, "position is greater: at least 1 is executing, and 1 is the target job")
+            Assert.IsTrue(pos > 0, "position is 0")
+        | false, _ -> Assert.Fail(sprintf "The status info is not a integer string: %s" info)
+    | Some (_, _) -> Assert.Fail("Status is not 'queued'")
+    | None -> Assert.Fail("Failed to get the job status")
+
+    jobs |> Array.iter(fun jobId -> Assert.IsTrue(scheduler.DeleteJob (appId, jobId), "Job wasn't deleted"))
+
 
 [<Test; Timeout(1800000)>]
 let ``Massive jobs handling``() =
