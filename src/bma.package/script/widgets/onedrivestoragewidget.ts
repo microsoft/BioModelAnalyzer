@@ -109,7 +109,7 @@
             var content = $("<div></div>").addClass("repository-popup-menu");
             var list = $("<div></div>").appendTo(content);
             for (var i = 0; i < listOfItems.length; i++) {
-                var elem = $("<div></div>").appendTo(list);
+                var elem = $("<div></div>").attr("data-menu-item-name", listOfItems[i].name).appendTo(list);
                 var elemIcon = $("<div></div>").addClass("repository-menu-item").addClass("repository-menu-item-icon").appendTo(elem);
                 if (!i) elemIcon.addClass("active");
                 var elemName = $("<div>" + listOfItems[i].name + "</div>").addClass("repository-menu-item").appendTo(elem);
@@ -119,7 +119,7 @@
 
                     var idx;
                     for (var j = 0; j < listOfItems.length; j++)
-                        if (elemName.text() == listOfItems[j].name) {
+                        if ($(this).attr("data-menu-item-name") == listOfItems[j].name) {
                             idx = j;
                             break;
                         }

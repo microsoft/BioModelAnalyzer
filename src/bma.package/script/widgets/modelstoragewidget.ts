@@ -8,6 +8,7 @@
         options: {
             items: [],
             oneDriveItems: [],
+            isAuthorized: false,
             onsigninonedrive: undefined,
             onsignoutonedrive: undefined,
         },
@@ -97,23 +98,13 @@
 
             this.singinOneDriveBtn = $("<div>Sign in with OneDrive</div>").addClass("signin").appendTo(this.element).click(function () {
                 if ($(this).text() == "Sign in with OneDrive") {
-                    $(this).text("Sign out OneDrive");
-                    that.switcher.show();
                     if (that.options.onsigninonedrive !== undefined) {
                         that.options.onsigninonedrive();
                     }
                 } else {
-                    that.localStorageBtn.addClass("active");
-                    that.oneDriveStorageBtn.removeClass("active");
-                    that.localStorage.show();
-                    that.oneDriveStorage.hide();
-
                     if (that.options.onsignoutonedrive !== undefined) {
                         that.options.onsignoutonedrive();
                     }
-
-                    $(this).text("Sign in with OneDrive");
-                    that.switcher.hide();
                 }
             }); 
 
@@ -154,6 +145,21 @@
                     break;
                 case "onsignoutonedrive":
                     that.options.onsignoutonedrive = value;
+                    break;
+                case "isAuthorized":
+                    that.options.isAuthorized = value;
+                    if (that.options.isAuthorized) {
+                        that.singinOneDriveBtn.text("Sign out OneDrive");
+                        that.switcher.show();
+                    } else {
+                        that.localStorageBtn.addClass("active");
+                        that.oneDriveStorageBtn.removeClass("active");
+                        that.localStorage.show();
+                        that.oneDriveStorage.hide();
+
+                        that.singinOneDriveBtn.text("Sign in with OneDrive");
+                        that.switcher.hide();
+                    }
                     break;
             }
             this._super(key, value);
