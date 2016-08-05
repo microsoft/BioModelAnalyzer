@@ -42,11 +42,12 @@
 
     it("should GetModelList and SetItems on 'LocalStorageChanged' command", () => {
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
-        spyOn(modelRepositoryTest, "GetModelList");
+        spyOn(modelRepositoryTest, "GetModelList").and.callThrough();
         spyOn(localStorageTestDriver, "SetItems");
         window.Commands.Execute("LocalStorageChanged", {});
-        expect(modelRepositoryTest.GetModelList).toHaveBeenCalledWith();
-        var keys = modelRepositoryTest.GetModelList();
+        expect(modelRepositoryTest.GetModelList).toHaveBeenCalled();
+        var keys;
+        modelRepositoryTest.GetModelList().done(function (result) { keys = result; });
         expect(localStorageTestDriver.SetItems).toHaveBeenCalledWith(keys);
     });
 

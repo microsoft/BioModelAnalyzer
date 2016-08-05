@@ -18,20 +18,25 @@ module BMA {
             //constructor() {
             //    this.modelsList = [];
             //}
-            GetModelList(): string[]{
+            GetModelList(): JQueryPromise<string[]>{
+                var result = $.Deferred();
                 var list: string[] = [];
                 for (var attr in this.modelsList) {
                     list.push(this.modelsList[attr]);
                 }
-                return list;
+                result.resolve(list);
+
+                return result.promise();
             }
 
-            LoadModel(id: string): JSON {
+            LoadModel(id: string): JQueryPromise<JSON> {
                 //var i = parseInt(id);
                 //if (i < this.modelsList.length) {
                 //    return JSON.parse('{"test": ' + this.modelsList[i] + '}');
                 //}
-                return JSON.parse('{"test": ' + this.modelsList[id] + '}');
+                var result = $.Deferred();
+                result.resolve(JSON.parse('{"test": ' + this.modelsList[id] + '}'));
+                return result.promise();
             }
 
             RemoveModel(id: string) {

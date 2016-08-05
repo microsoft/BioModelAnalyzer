@@ -23,16 +23,22 @@
                 this.messagebox = messagebox;
                 this.checker = checker;
 
-                var keys = that.tool.GetModelList();
-                this.driver.SetItems(keys);
-                this.driver.Hide();
+                that.tool.GetModelList().done(function (keys) {
+                    that.driver.SetItems(keys);
+                    that.driver.Hide();
+                }).fail(function (errorThrown) {
+                    alert(errorThrown);
+                });
 
                 window.Commands.On("LocalStorageChanged", function () {
-                    var keys = that.tool.GetModelList();
-                    if (keys === undefined || keys.length == 0) 
-                        that.driver.Message("The model repository is empty");
-                    else that.driver.Message('');
-                    that.driver.SetItems(keys);
+                    that.tool.GetModelList().done(function (keys) {
+                        if (keys === undefined || keys.length == 0)
+                            that.driver.Message("The model repository is empty");
+                        else that.driver.Message('');
+                        that.driver.SetItems(keys);
+                    }).fail(function (errorThrown) {
+                        alert(errorThrown);
+                    });
                 });
 
                 window.Commands.On("LocalStorageRemoveModel", function (key) {
@@ -40,9 +46,12 @@
                 });
 
                 window.Commands.On("LocalStorageRequested", function () {
-                    var keys = that.tool.GetModelList();
-                    that.driver.SetItems(keys);
-                    that.driver.Show();
+                    that.tool.GetModelList().done(function (keys) {
+                        that.driver.SetItems(keys);
+                        that.driver.Show();
+                    }).fail(function (errorThrown) {
+                        alert(errorThrown);
+                    });
                 });
 
                 window.Commands.On("LocalStorageSaveModel", function () {
@@ -94,8 +103,12 @@
                     function load() {
                         waitScreen.Show();
                         if (that.tool.IsInRepo(key)) {
-                            appModel.Deserialize(JSON.stringify(that.tool.LoadModel(key)));
-                            that.checker.Snapshot(that.appModel);
+                            that.tool.LoadModel(key).done(function (result) {
+                                appModel.Deserialize(JSON.stringify(result));
+                                that.checker.Snapshot(that.appModel);
+                            }).fail(function (result) {
+                                that.messagebox.Show(JSON.stringify(result));
+                            });
                         }
                         else {
                             that.messagebox.Show("The model was removed from outside");
@@ -107,8 +120,12 @@
 
                 window.Commands.On("LocalStorageInitModel", function (key) {
                     if (that.tool.IsInRepo(key)) {
-                        appModel.Deserialize(JSON.stringify(that.tool.LoadModel(key)));
-                        that.checker.Snapshot(that.appModel);
+                        that.tool.LoadModel(key).done(function (result) {
+                            appModel.Deserialize(JSON.stringify(result));
+                            that.checker.Snapshot(that.appModel);
+                        }).fail(function (result) {
+                            that.messagebox.Show(JSON.stringify(result));
+                        });
                     }
                 });
 
