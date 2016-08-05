@@ -96,7 +96,21 @@ function registerTutorialDialogs (bot: builder.UniversalBot) {
     // see https://docs.botframework.com/en-us/node/builder/chat-reference/classes/_botbuilder_d_.prompts.html#choice
     // the dialogId could be /tutorials
 
-    // bot.dialog('/tutorials', [...])
+    bot.dialog('/tutorials', [
+        function (session) {
+            builder.Prompts.choice(session, "Which tutorial", tutorials.map(tutorial => tutorial.title))
+        },
+    
+        function (session, results: builder.IPromptChoiceResult) {
+            if (results.response) {
+                let tutorialId = tutorials[results.response.index].id
+                let dialogId = `/tutorials/${tutorialId}`
+                session.beginDialog(dialogId)   
+            } else {
+                //session.send("you haven't selected a tutorial")
+            }
+        }
+    ])
 
 
     for (let tutorial of tutorials) {
