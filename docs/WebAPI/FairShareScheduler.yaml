@@ -60,16 +60,24 @@ paths:
           description: Queued - the job is queued and awaits to be chosen by a worker
           schema:
             description: |
-              Approximate position of the job in the queue. 
+              Approximate position of the job in the queue. Starts with zero. 
               Negative value indicates that the position couldn't be determined.
             type: integer
             format: int32
         202:
           description: Executing - the job is being executed
           schema:
-            description: Time when the job was started. See rfc 3339.
-            type: string
-            format: date-time
+            description: Additional information.
+            type: object
+            properties:
+              started:
+                description: Time in milliseconds passed since the execution started (at the moment when this response is built).
+                type: integer
+                format: int32
+              elapsed:
+                description: Time when the job started. See rfc 3339.
+                type: string
+                format: date-time
         203:
           description: Failed - the job is failed
           schema:

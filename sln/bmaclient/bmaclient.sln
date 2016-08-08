@@ -55,6 +55,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebApiTests", "..\..\src\We
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{CC7BADC4-D854-47AE-A58D-D488552C2894}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\docs\WebAPI\FairShareScheduler.yaml = ..\..\docs\WebAPI\FairShareScheduler.yaml
 		..\..\docs\WebAPI\WebApi.yaml = ..\..\docs\WebAPI\WebApi.yaml
 	EndProjectSection
 EndProject

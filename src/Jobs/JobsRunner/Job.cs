@@ -64,6 +64,7 @@ namespace JobsRunner
                     p.StartInfo.RedirectStandardOutput = true;
 
                     StringBuilder errors = new StringBuilder();
+                    StringBuilder output = new StringBuilder();
                     p.ErrorDataReceived += (sender, args) =>
                     {
                         errors.AppendLine(args.Data);
@@ -71,6 +72,7 @@ namespace JobsRunner
                     };
                     p.OutputDataReceived += (sender, args) =>
                     {
+                        output.AppendLine(args.Data);
                         Trace.WriteLine(args.Data, "OUTPUT");
                     };
 
@@ -106,7 +108,7 @@ namespace JobsRunner
 
                         return new JobResult(outputData, pErrors);
                     }
-                    throw new InvalidOperationException(String.Format("The process has exited with code {0}; errors: {1}", p.ExitCode, errors.ToString()));
+                    throw new InvalidOperationException(String.Format("The process has exited with code {0}; errors: {1}; output: {2}", p.ExitCode, errors.ToString(), output.ToString()));
                 }
             }
             finally
