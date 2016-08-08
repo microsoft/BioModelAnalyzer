@@ -1,6 +1,6 @@
 import * as builder from 'botbuilder'
 import * as assert from 'assert'
-import * as strings from '../src/strings'
+import * as strings from '../src/dialogs/strings'
 import {assertConversation} from './util'
 
 describe ('bot conversations', () => {
