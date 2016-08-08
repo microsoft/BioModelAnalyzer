@@ -21,7 +21,7 @@ describe ('bot conversations', () => {
     it ('accepts JSON model file after prompting for it', () => {
         let attachment: builder.IAttachment = {
             contentType: 'application/octet-stream',
-            content: '{}'
+            content: {}
         }
         return assertConversation([
             { user: 'Show me a simulation where x=1'},
@@ -34,7 +34,7 @@ describe ('bot conversations', () => {
     it ('accepts JSON model file without prompting for it', () => {
         let attachment: builder.IAttachment = {
             contentType: 'application/octet-stream',
-            content: '{}'
+            content: {}
         }
         return assertConversation([
             { user: attachment },
@@ -45,12 +45,14 @@ describe ('bot conversations', () => {
     it ('sends JSON model file back to the user when requested', () => {
         let attachment: builder.IAttachment = {
             contentType: 'application/octet-stream',
-            content: '{}'
+            content: {}
         }
         return assertConversation([
+            { user: 'Show me a simulation where x=1'},
+            { bot: strings.MODEL_SEND_PROMPT }, 
             { user: attachment },
             { bot: strings.MODEL_RECEIVED },
-            { user: 'Please send me my model file'},
+            { user: 'start:/requestUploadedModel' /*'Please send me my model file'*/},
             { bot: attachment}
         ])
     })

@@ -8,6 +8,7 @@ export function setup (bot: builder.UniversalBot) {
     registerMiddleware(bot)
     registerLUISDialog(bot)
     registerTutorialDialogs(bot)
+    registerOtherDialogs(bot)
 }
 
 function registerMiddleware (bot: builder.UniversalBot) {
@@ -47,17 +48,6 @@ function registerLUISDialog (bot: builder.UniversalBot) {
                 // invoke LTL parser
                 session.send('Try this: ...')
             }
-
-            /*
-            // send file
-            let message = new builder.Message(session)
-            message.addAttachment({
-                contentType: 'application/octet-stream',
-                content: 'foo'
-            })
-            message.text('attachment coming')
-            session.send(message)
-            */
         },
         (session, results, next) => {
             // check and store attachment
@@ -66,15 +56,21 @@ function registerLUISDialog (bot: builder.UniversalBot) {
                 session.send(strings.TOO_MANY_FILES)
                 return
             }
-            // TODO not sure if this works, bot emulator is crashing
             let json = attachments[0].content
             let model: any
-            try {
-                model = JSON.parse(json)
-            } catch (e) {
-                session.send(strings.INVALID_JSON)
-                return
+            if (typeof json === 'string') {
+                // TODO does that ever happen except in test cases?!
+                // -> who parses incoming JSON? bot framework, or we?
+                try {
+                    model = JSON.parse(json)
+                } catch (e) {
+                    session.send(strings.INVALID_JSON(e.message))
+                    return
+                }
+            } else {
+                model = json
             }
+
             session.userData.bmaModel = model
             session.send(strings.MODEL_RECEIVED)
         }
@@ -143,6 +139,19 @@ function registerTutorialDialogs (bot: builder.UniversalBot) {
         bot.dialog(dialogId, waterfall)
         console.log(`[Tutorial '${tutorial.id}' registered, launch with "start:${dialogId}"]`)
     }
+}
+
+function registerOtherDialogs (bot: builder.UniversalBot) {
+    let dialogId = '/requestUploadedModel'
+    bot.dialog(dialogId, session => {
+        let message = new builder.Message(session)
+        message.addAttachment({
+            contentType: 'application/octet-stream',
+            content: session.userData.bmaModel
+        })
+        message.text('Here is the model you sent me')
+        session.send(message)
+    })
 }
 
 interface Tutorial {

@@ -37,23 +37,41 @@ export function assertConversation (messages: DirectedMessage[]) {
             if (currentMsgIndex === messages.length) {
                 resolve(true)
             } else if ('user' in messages[currentMsgIndex]) {
+                // if the message originates from the user, send it to the bot
                 connector.processMessage(messages[currentMsgIndex].user)
             }
         }
 
+        // handle messages that the user sends to the bot
         bot.on('incoming', (actualMessage: builder.IMessage) => {
             let refMessage = messages[currentMsgIndex]
             assert('user' in refMessage)
             assert.equal(actualMessage.text, connector.toMessage(refMessage.user).text)
             next()
         })
+
+        // handle messages that the bot sends to the user
         bot.on('send', (actualMessage: builder.IMessage) => {
             let refMessage = messages[currentMsgIndex]
             assert('bot' in refMessage)
-            assert.equal(actualMessage.text, connector.toMessage(refMessage.bot).text)
+            let msg = connector.toMessage(refMessage.bot)
+            if (msg.text) {
+                assert.equal(actualMessage.text, msg.text)
+            }
+            if (msg.attachments && msg.attachments.length > 0) {
+                if (msg.attachments.length > 1) {
+                    throw new Error('not implemented yet')
+                }
+                let refAttachment = msg.attachments[0]
+                let actualAttachment = actualMessage.attachments[0]
+                
+
+                assert.deepEqual(actualAttachment.content, refAttachment.content)
+            }
             next()
         })
 
+        // start the conversation
         next()
     })
 }
