@@ -1,5 +1,8 @@
 import * as builder from 'botbuilder'
 
+/**
+ * Registers dialogs that are not grouped into a specific theme yet.
+ */
 export function registerOtherDialogs (bot: builder.UniversalBot) {
     let dialogId = '/requestUploadedModel'
     bot.dialog(dialogId, session => {

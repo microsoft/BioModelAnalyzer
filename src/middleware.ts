@@ -1,5 +1,12 @@
 import * as builder from 'botbuilder'
 
+/** 
+ * Registers middleware for the given bot.
+ * 
+ * Currently, this is for debugging purposes such that arbitrary dialogs
+ * can be started with the message syntax 'start:/dialogId' while skipping
+ * any intent recognizers like LUIS.
+ */
 export function registerMiddleware (bot: builder.UniversalBot) {
     let debugDialogMiddleware: builder.IMiddlewareMap = {
         botbuilder: (session, next) => {

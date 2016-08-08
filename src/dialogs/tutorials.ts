@@ -4,6 +4,7 @@ import * as fs from 'fs'
 
 import * as strings from './strings'
 
+/** The object structure of a YAML tutorial file. */
 interface Tutorial {
     /** The internal tutorial ID, unique amongst all tutorials. */
     id: string
@@ -18,26 +19,24 @@ interface Tutorial {
     steps: TutorialStep[]
 }
 
+/** The object structure of a single tutorial step in a YAML tutorial file. */
 interface TutorialStep {
     /** The text that will be sent to the user. */
     text: string
 }
 
+/** Reads all YAML tutorial files and dynamically creates dialogs from them, including the tutorial selection dialog. */
 export function registerTutorialDialogs (bot: builder.UniversalBot) {
     // TODO make LUIS dialog available within tutorial dialogs
 
+    // all available tutorials
     let tutorialPaths = [
         '1_ltl_for_dummies'
         ].map(name => `data/tutorials/${name}.yaml`)
     
-    // an array of tutorial objects
     let tutorials: Tutorial[] = tutorialPaths.map(path => fs.readFileSync(path, 'utf8')).map(yaml.safeLoad)
 
-    // TODO add tutorial selection dialog via builder.Prompts.choice
-    // see https://docs.botframework.com/en-us/node/builder/chat/prompts/#promptschoice
-    // see https://docs.botframework.com/en-us/node/builder/chat-reference/classes/_botbuilder_d_.prompts.html#choice
-    // the dialogId could be /tutorials
-
+    // the tutorial selection dialog
     bot.dialog('/tutorials', [
         function (session) {
             builder.Prompts.choice(session, "Which tutorial", tutorials.map(tutorial => tutorial.title))
@@ -54,8 +53,9 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
         }
     ])
 
-
+    // the individual tutorial dialogs
     for (let tutorial of tutorials) {
+        // the first two fixed parts of each tutorial...
         let waterfall: builder.IDialogWaterfallStep[] = [
             (session: builder.Session) => {
                 session.send(`Tutorial: ${tutorial.title}`)
@@ -71,6 +71,7 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
             }
         ]
 
+        // ...and the tutorial steps
         waterfall.push(...
             tutorial.steps.map(step => (session: builder.Session, results, next) => {
                 session.send(step.text)
@@ -80,6 +81,9 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
 
         let dialogId = `/tutorials/${tutorial.id}`
         bot.dialog(dialogId, waterfall)
+        
+        // for debugging
+        // TODO remove at some point
         console.log(`[Tutorial '${tutorial.id}' registered, launch with "start:${dialogId}"]`)
     }
 }

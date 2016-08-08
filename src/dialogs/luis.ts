@@ -2,6 +2,9 @@ import * as builder from 'botbuilder'
 import * as config from 'config'
 import * as strings from './strings'
 
+/**
+ * Registers the LUIS dialog as root dialog. 
+ */
 export function registerLUISDialog (bot: builder.UniversalBot) {
     // Create LUIS recognizer that points at our model and add it as the root '/' dialog for our bot.
     let model = 'https://api.projectoxford.ai/luis/v1/application?id=' + config.get('LUIS_MODEL_ID') 
