@@ -53,5 +53,5 @@ Whenever you change source code, you have to restart the server. Use Ctrl-C to s
 
 To make TypeScript happy, you need to supply it with typing definitions of all package dependencies.
 A few libraries have those embedded, but most of them don't.
-For the latter, install the [TypeScript Definition Manager](https://www.npmjs.com/package/typings) with `npm install typings --global`
-and then search for definitions with `typings search apackage`. Installation can be done with `typings install ...`, see the documentation for more details.
+For the latter, search for definitions on <http://microsoft.github.io/TypeSearch/> 
+and install them with `npm install --save @types/...`.

@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "outDir": "lib/test/",
         "inlineSourceMap": true,
         "inlineSources": true
     },
