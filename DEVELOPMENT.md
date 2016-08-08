@@ -55,3 +55,17 @@ To make TypeScript happy, you need to supply it with typing definitions of all p
 A few libraries have those embedded, but most of them don't.
 For the latter case, search for definitions on <http://microsoft.github.io/TypeSearch/> 
 and install them with `npm install --save @types/...`.
+
+### Deployment
+
+https://bmachatbot.azurewebsites.net/
+
+#### Debugging
+
+https://bmachatbot.scm.azurewebsites.net/
+
+#### Articles
+
+https://github.com/woloski/nodeonazure-blog/blob/master/articles/startup-task-to-run-npm-in-azure.markdown
+https://azure.microsoft.com/en-us/documentation/articles/app-service-deploy-local-git/
+http://epikia.eu/2016/07/developing_nodejs_on_azure/

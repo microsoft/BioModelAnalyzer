@@ -39,7 +39,14 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
     // the tutorial selection dialog
     bot.dialog('/tutorials', [
         function (session) {
-            builder.Prompts.choice(session, "Which tutorial", tutorials.map(tutorial => tutorial.title))
+            builder.Prompts.choice(session, 
+                strings.TUTORIAL_SELECT_PROMPT, 
+                tutorials.map(tutorial => tutorial.title), 
+                {
+                    listStyle: builder.ListStyle.list,
+                    maxRetries: 1,
+                    retryPrompt: strings.TUTORIAL_UNKNOWN_SELECT
+                })
         },
     
         function (session, results: builder.IPromptChoiceResult) {
@@ -48,7 +55,7 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
                 let dialogId = `/tutorials/${tutorialId}`
                 session.beginDialog(dialogId)   
             } else {
-                //session.send("you haven't selected a tutorial")
+                session.send(strings.TUTORIAL_SELECT_CANCELLED)
             }
         }
     ])
