@@ -1,45 +1,58 @@
-import {setup as setupBot} from '../src/bot'
 import * as builder from 'botbuilder'
 import * as assert from 'assert'
-
-interface BotReplyCallback {
-    (message: builder.IMessage): any
-}
-
-function onBotReply (bot: builder.UniversalBot, cb: BotReplyCallback) {
-    let testMiddleware: builder.IMiddlewareMap = {
-        send: (event, next) => {
-            if (event.type === 'message') {
-                let message = <builder.IMessage> event
-                cb(message)
-            }
-            next()
-        }
-    }
-    bot.use(testMiddleware)
-}
+import * as strings from '../src/strings'
+import {assertConversation} from './util'
 
 describe ('bot conversations', () => {
-    let bot: builder.UniversalBot
-    let connector: builder.ConsoleConnector
-
-    beforeEach (() => {
-        connector = new builder.ConsoleConnector().listen()
-        bot = new builder.UniversalBot(connector)
-        setupBot(bot)
+    it ('handles unknown messages', () => {
+        return assertConversation([
+            { user: 'Tell me a joke' }, 
+            { bot: strings.UNKNOWN_INTENT }
+        ])
     })
 
-    afterEach (() => {
-        // 'quit' is handled specially by the ConsoleConnector and will clean up
-        connector.processMessage('quit')
+    it ('requests model file before answering LTL queries', () => {
+        return assertConversation([
+            { user: 'Show me a simulation where x=1' },
+            { bot: strings.MODEL_SEND_PROMPT }
+        ])
     })
 
-    it ('handles unknown messages', (done: Function) => {
-        onBotReply(bot, message => {
-            assert.equal(message.text, 'I did not understand you')            
-            done()
-        })
-
-        connector.processMessage('Tell me a joke')
+    it ('accepts JSON model file after prompting for it', () => {
+        let attachment: builder.IAttachment = {
+            contentType: 'application/octet-stream',
+            content: '{}'
+        }
+        return assertConversation([
+            { user: 'Show me a simulation where x=1'},
+            { bot: strings.MODEL_SEND_PROMPT }, 
+            { user: attachment },
+            { bot: strings.MODEL_RECEIVED }
+        ])
     })
+
+    it ('accepts JSON model file without prompting for it', () => {
+        let attachment: builder.IAttachment = {
+            contentType: 'application/octet-stream',
+            content: '{}'
+        }
+        return assertConversation([
+            { user: attachment },
+            { bot: strings.MODEL_RECEIVED }
+        ])
+    })
+
+    it ('sends JSON model file back to the user when requested', () => {
+        let attachment: builder.IAttachment = {
+            contentType: 'application/octet-stream',
+            content: '{}'
+        }
+        return assertConversation([
+            { user: attachment },
+            { bot: strings.MODEL_RECEIVED },
+            { user: 'Please send me my model file'},
+            { bot: attachment}
+        ])
+    })
+    
 })
