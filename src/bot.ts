@@ -2,6 +2,7 @@ import * as builder from 'botbuilder'
 import * as config from 'config'
 import * as yaml from 'js-yaml'
 import * as fs from 'fs'
+import * as strings from './strings'
 
 export function setup (bot: builder.UniversalBot) {
     registerMiddleware(bot)
@@ -29,18 +30,19 @@ function registerMiddleware (bot: builder.UniversalBot) {
 
 function registerLUISDialog (bot: builder.UniversalBot) {
     // Create LUIS recognizer that points at our model and add it as the root '/' dialog for our bot.
-    let model = 'https://api.projectoxford.ai/luis/v1/application?id=' + config.get('LUIS_MODEL_ID') + '&subscription-key=' + config.get('LUIS_KEY')
+    let model = 'https://api.projectoxford.ai/luis/v1/application?id=' + config.get('LUIS_MODEL_ID') 
+        + '&subscription-key=' + config.get('LUIS_KEY')
     let recognizer = new builder.LuisRecognizer(model)
     let dialog = new builder.IntentDialog({ recognizers: [recognizer] })
     bot.dialog('/', dialog)
 
     // Add intent handlers
-    dialog.matches('ExplainLTL', builder.DialogAction.send('LTL means linear temporal logic'))
+    dialog.matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
     dialog.matches('LTLQuery', [
         (session, args, next) => {
             // check if JSON model has been uploaded already, otherwise prompt user
             if (!session.userData.bmaModel) {
-                builder.Prompts.attachment(session, 'Please send me your model as a JSON file')
+                builder.Prompts.attachment(session, strings.MODEL_SEND_PROMPT)
             } else {
                 // invoke LTL parser
                 session.send('Try this: ...')
@@ -61,7 +63,7 @@ function registerLUISDialog (bot: builder.UniversalBot) {
             // check and store attachment
             let attachments: builder.IAttachment[] = results.response
             if (attachments.length > 1) {
-                session.send('Please upload exactly one JSON file')
+                session.send(strings.TOO_MANY_FILES)
                 return
             }
             // TODO not sure if this works, bot emulator is crashing
@@ -70,14 +72,15 @@ function registerLUISDialog (bot: builder.UniversalBot) {
             try {
                 model = JSON.parse(json)
             } catch (e) {
-                session.send('Your uploaded file is not valid JSON')
+                session.send(strings.INVALID_JSON)
                 return
             }
             session.userData.bmaModel = model
+            session.send(strings.MODEL_RECEIVED)
         }
     ])
     dialog.onDefault(function (session, args) {
-        session.send('I did not understand you')
+        session.send(strings.UNKNOWN_INTENT)
     })
 }
 
@@ -118,7 +121,7 @@ function registerTutorialDialogs (bot: builder.UniversalBot) {
             (session: builder.Session) => {
                 session.send(`Tutorial: ${tutorial.title}`)
                 session.send(tutorial.description)
-                builder.Prompts.confirm(session, 'Do you like to start the tutorial?')
+                builder.Prompts.confirm(session, strings.TUTORIAL_START_PROMPT)
             },
             (session: builder.Session, results: builder.IPromptConfirmResult, next) => {
                 if (results.response) {
