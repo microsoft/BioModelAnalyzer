@@ -70,11 +70,11 @@ paths:
             description: Additional information.
             type: object
             properties:
-              started:
+              elapsed:
                 description: Time in milliseconds passed since the execution started (at the moment when this response is built).
                 type: integer
                 format: int32
-              elapsed:
+              started:
                 description: Time when the job started. See rfc 3339.
                 type: string
                 format: date-time
