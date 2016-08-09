@@ -4,6 +4,10 @@
 
 A natural language bot for assisting BioModelAnalyzer users.
 
+[Add development bot to Skype](https://join.skype.com/bot/f5b4f777-06db-45d6-9e7d-8fe6dfcc8e47) (updated daily)
+
+[Add production bot to Skype](https://join.skype.com/bot/f5b4f777-06db-45d6-9e7d-8fe6dfcc8e47)
+
 ## Technologies
 
 - Node.js

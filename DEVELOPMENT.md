@@ -58,7 +58,13 @@ and install them with `npm install --save @types/...`.
 
 ### Deployment
 
-https://bmachatbot.azurewebsites.net/
+The production chat bot is hosted on https://bmachatbot.azurewebsites.net/.
+Deployment happens manually by creating a new "Production" release in https://msrcapt.visualstudio.com/BMAChatBot.
+
+The dev version is hosted on https://bmachatbot-dev.azurewebsites.net/.
+Deployment happens automatically each day at 8am or by manually creating a new "Development" release in https://msrcapt.visualstudio.com/BMAChatBot.
+
+Deployment logs can be found in the release logs of https://msrcapt.visualstudio.com/BMAChatBot.
 
 #### Debugging
 
