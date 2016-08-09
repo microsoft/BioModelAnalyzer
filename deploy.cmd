@@ -97,12 +97,15 @@ goto :EOF
 :Deployment
 echo Handling node.js deployment.
 
-:: 0. Create empty lib\app.js to make KuduSync happy
+:: 0a. Create empty lib\app.js to make KuduSync happy
 :: see https://github.com/projectkudu/kudu/issues/1753
 IF NOT EXIST "%DEPLOYMENT_SOURCE%\lib" (
   call :ExecuteCmd mkdir "%DEPLOYMENT_SOURCE%\lib"
 )
 call :ExecuteCmd copy NUL "%DEPLOYMENT_SOURCE%\lib\app.js"
+
+:: 0b. Clean deployment target to make step 4 easier
+call :ExecuteCmd del /s /q "%DEPLOYMENT_TARGET%"
 
 :: 1. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
@@ -123,10 +126,9 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 
 :: 4. Adjust lib/app.js to fix current working directory when run by iisnode
 :: see https://github.com/tjanczuk/iisnode/pull/233#issuecomment-10242100
-call :ExecuteCmd echo "process.chdir('..');" > "%DEPLOYMENT_SOURCE%\lib\app.tmp"
-call :ExecuteCmd type "%DEPLOYMENT_SOURCE%\lib\app.js" >> "%DEPLOYMENT_SOURCE%\lib\app.tmp"
-call :ExecuteCmd type "%DEPLOYMENT_SOURCE%\lib\app.tmp" > "%DEPLOYMENT_SOURCE%\lib\app.js"
-call
+call :ExecuteCmd echo "process.chdir('..');" > "%DEPLOYMENT_TARGET%\lib\app.tmp"
+call :ExecuteCmd type "%DEPLOYMENT_TARGET%\lib\app.js" >> "%DEPLOYMENT_TARGET%\lib\app.tmp"
+call :ExecuteCmd type "%DEPLOYMENT_TARGET%\lib\app.tmp" > "%DEPLOYMENT_TARGET%\lib\app.js"
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 goto end
