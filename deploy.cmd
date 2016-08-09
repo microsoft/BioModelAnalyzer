@@ -99,7 +99,9 @@ echo Handling node.js deployment.
 
 :: 0. Create empty lib\app.js to make KuduSync happy
 :: see https://github.com/projectkudu/kudu/issues/1753
-call :ExecuteCmd mkdir "%DEPLOYMENT_SOURCE%\lib"
+IF NOT EXIST "%DEPLOYMENT_SOURCE%\lib" (
+  call :ExecuteCmd mkdir "%DEPLOYMENT_SOURCE%\lib"
+)
 call :ExecuteCmd copy NUL "%DEPLOYMENT_SOURCE%\lib\app.js"
 
 :: 1. KuduSync
