@@ -25,28 +25,8 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
         }
     ])
     
-        intents.matches('SelectTutorial', [function (session, args) {}])
-        // function(session, args, next) {
-        //     var tutorialName;
-        //     var entity = builder.EntityRecognizer.findEntity(args.entities, 'Lookup')
-        //     if (entity) {
-        //         tutorialName = builder.EntityRecognizer.findBestMatch(tutorials, entity.entity)
-        //     }
+    intents.matches('SelectTutorial', [function (session, args) {}])
 
-        //     if (!tutorialName) {
-        //         builder.Prompts.choice(session, "Which tutorial would you like to select", tutorials)
-        //     } else {
-        //         next({ response: tutorialName});
-        //     }
-        // },
-        // function (session, results) {
-        //     if (results.response) {
-
-        //     }
-        // }
-    
-        // ])
-    
     intents.matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
     intents.matches('LTLQuery', [
         (session, args, next) => {
