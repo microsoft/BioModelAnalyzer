@@ -29,6 +29,37 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
     intents.matches('SelectTutorial', [function (session, args) {
         
     }])
+    
+    intents.matches('ExplainOp', [function (session, args) {
+            var operator = builder.EntityRecognizer.findEntity(args.entities, 'Operator')
+            var operatorName = operator.entity
+            switch (operatorName)
+            {
+                case 'and':session.send(strings.EXPLAIN_ALWAYS)
+                break;
+                case 'or':session.send(strings.EXPLAIN_OR)
+                break;
+                case 'implies':session.send(strings.EXPLAIN_IMPLIES)
+                break;
+                case 'not':session.send(strings.EXPLAIN_NOT)
+                break;
+                case 'next':session.send(strings.EXPLAIN_NEXT)
+                break;
+                case 'always':session.send(strings.EXPLAIN_ALWAYS)
+                break;
+                case 'eventually':session.send(strings.EXPLAIN_EVENTUALLY)
+                break;
+                case 'upto':session.send(strings.EXPLAIN_UPTO)
+                break;
+                case 'weakuntil':session.send(strings.EXPLAIN_WEAKUNTIL)
+                break;
+                case 'until':session.send(strings.EXPLAIN_UNTIL)
+                break;
+                case 'release':session.send(strings.EXPLAIN_RELEASE)
+                break;
+            }   
+        }
+    ])
 
     intents.matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
     intents.matches('LTLQuery', [
@@ -67,6 +98,7 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
             session.send(strings.MODEL_RECEIVED)
         }
     ])
+    
     intents.onDefault(function (session, args) {
         session.send(strings.UNKNOWN_INTENT)
     })
