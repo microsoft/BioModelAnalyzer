@@ -118,6 +118,7 @@ let ``Check get status response format``() =
 
             let started = System.DateTimeOffset.Parse(json.["started"].ToString())
             Assert.IsTrue(started > t0, "Start time")
+            Assert.IsTrue(started < System.DateTimeOffset.Now, "Start time (2)")
             
             let elapsed = int (json.["elapsed"])
             Assert.Greater(elapsed, lastElapsed, "Elapsed")
