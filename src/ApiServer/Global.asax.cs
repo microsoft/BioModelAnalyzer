@@ -59,6 +59,8 @@ namespace bma.client
                 logger = new FailureTraceLogger();
             container.RegisterInstance<IFailureLogger>(logger);
 
+            container.RegisterInstance<System.Web.Http.Hosting.IHostBufferPolicySelector>(new System.Web.Http.WebHost.WebHostBufferPolicySelector());
+
             IScheduler scheduler;
             string schedulerName = "ltlpolarity"; // todo: can differ for different controllers; use setter injection with name?
             int maxNumberOfQueues = 10; // todo: should take from settings table

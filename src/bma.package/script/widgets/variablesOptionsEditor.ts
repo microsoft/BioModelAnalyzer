@@ -153,14 +153,21 @@
                 that.switcher.children().removeClass("selected");
                 that.textEdButton.addClass("selected");
                 if (that.texteditor.css("display") === "none") {
-                    that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
-                    that.texteditor.tftexteditor({ formula: that.options.formula });
+                    try {
+                        that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
+                        that.texteditor.tftexteditor({ formula: that.options.formula });
+                        that.texteditor.show();
+                        that.formulaeditor.hide();
+                    } catch (ex) {
+                        console.log(ex);
+                        that.element.addClass("bmaeditor-expanded").addClass("bmaeditor-expanded-horizontaly");
+                        that.switcher.children().removeClass("selected");
+                        that.formulaEdButton.addClass("selected");
+                    }
                 }
                 //if (that.options.onvariablechangedcallback !== undefined) {
                 //    that.options.onvariablechangedcallback();
                 //}
-                that.texteditor.show();
-                that.formulaeditor.hide();
                 that.updateLayout();
             });
 
@@ -170,17 +177,26 @@
                     that.switcher.children().removeClass("selected");
                     that.formulaEdButton.addClass("selected");
                     if (that.formulaeditor.css("display") === "none") {
-                        that.options.formula = that.texteditor.tftexteditor("option", "formula");
-                        that.formulaeditor.formulaeditor({
-                            operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
-                        });
+                        try {
+                            that.options.formula = that.texteditor.tftexteditor("option", "formula");
+                            console.log("everything is ok");
+                            that.formulaeditor.formulaeditor({
+                                operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                            });
+
+                            that.texteditor.hide();
+                            that.formulaeditor.show();
+                        } catch (ex) {
+                            console.log(ex);
+                            that.element.removeClass("bmaeditor-expanded").removeClass("bmaeditor-expanded-horizontaly");
+                            that.switcher.children().removeClass("selected");
+                            that.textEdButton.addClass("selected");
+                        }
                     }
+                    that.updateLayout();
                     //if (that.options.onvariablechangedcallback !== undefined) {
                     //    that.options.onvariablechangedcallback();
                     //}
-                    that.texteditor.hide();
-                    that.formulaeditor.show();
-                    that.updateLayout();
                 }
             });
 
@@ -329,9 +345,15 @@
                 case "formula":
                     that.options.formula = value;
                     this.texteditor.tftexteditor({ formula: value });
-                    //this.formulaeditor.formulaeditor({
-                    //    operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
-                    //});
+                    if (this.formulaEdButton.hasClass("selected")) {
+                        try {
+                            this.formulaeditor.formulaeditor({
+                                operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                            });
+                        } catch (ex) {
+                            console.log(ex);
+                        }
+                    }
                     break;
                 case "TFdescription":
                     that.options.TFdescription = value;

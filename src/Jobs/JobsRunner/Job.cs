@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace JobsRunner
@@ -63,6 +64,7 @@ namespace JobsRunner
                     p.StartInfo.RedirectStandardOutput = true;
 
                     StringBuilder errors = new StringBuilder();
+                    StringBuilder output = new StringBuilder();
                     p.ErrorDataReceived += (sender, args) =>
                     {
                         errors.AppendLine(args.Data);
@@ -70,18 +72,29 @@ namespace JobsRunner
                     };
                     p.OutputDataReceived += (sender, args) =>
                     {
+                        output.AppendLine(args.Data);
                         Trace.WriteLine(args.Data, "OUTPUT");
                     };
 
                     Trace.WriteLine(String.Format("Starting process '{0} {1}'", p.StartInfo.FileName, p.StartInfo.Arguments));
-                    p.Start();
 
-                    if (!p.WaitForExit(timeoutMs)) // timeout
+                    try
                     {
-                        Trace.WriteLine("The process will be killed because it has been executing for too long");
-                        p.Kill();
-                        throw new System.TimeoutException("Allowed process execution time was exceeded");
+                        p.Start();
+
+                        if (!p.WaitForExit(timeoutMs)) // timeout
+                        {
+                            Trace.WriteLine("The process will be killed because it has been executing for too long");
+                            p.Kill();
+                            throw new System.TimeoutException("Allowed process execution time was exceeded");
+                        }
                     }
+                    catch(ThreadAbortException)
+                    {
+                        Trace.WriteLine("The thread is requested to abort; killing the process...");
+                        p.Kill();
+                    }
+
                     p.WaitForExit(); // To ensure that the async events are completed
                     Trace.WriteLine(String.Format("The process has exited with code {0}", p.ExitCode));
                     if(p.ExitCode == 0)
@@ -95,7 +108,7 @@ namespace JobsRunner
 
                         return new JobResult(outputData, pErrors);
                     }
-                    throw new InvalidOperationException(String.Format("The process has exited with code {0}; errors: {1}", p.ExitCode, errors.ToString()));
+                    throw new InvalidOperationException(String.Format("The process has exited with code {0}; errors: {1}; output: {2}", p.ExitCode, errors.ToString(), output.ToString()));
                 }
             }
             finally

@@ -713,27 +713,28 @@ module BMA {
                             },
                             201: function (res) {
                                 var notification = "Number ";
-                                var number = parseFloat(res);
+                                var number = parseFloat(res) + 1;
                                 if (number !== NaN && number > 0)
                                     notification += number + " in queue";
                                 else notification = "Queued";
                                 result.notify(notification);
                                 setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
                             },
-                            202: function (res, schema) {
+                            202: function (res) {
                                 var notification = "Executing ";
-                                var timemls = Date.parse(res);
+                                var timemls = parseFloat(res.elapsed);
+                                if (timemls < 0) throw "Server Error: Elapsed time cannot be negative";
                                 if (timemls) {
-                                    var executingTime = Math.floor((new Date().getTime() - timemls) / 1000);
+                                    var executingTime = Math.floor(timemls / 1000);
                                     if (executingTime < 60)
-                                        notification += "since " + executingTime + " second" + (executingTime > 1 ? "s" : "");
+                                        notification += "since " + executingTime + " second" + (Math.abs(executingTime) > 1 ? "s" : "");
                                     else {
                                         executingTime = Math.floor(executingTime / 60);
                                         if (executingTime > 60) {
                                             executingTime = Math.floor(executingTime / 60);
-                                            notification += "since " + executingTime + "hour" + (executingTime > 1 ? "s": "");
+                                            notification += "since " + executingTime + " hour" + (Math.abs(executingTime) > 1 ? "s": "");
                                         } else
-                                            notification += "since " + executingTime + "min" + (executingTime > 1 ? "s" : "");
+                                            notification += "since " + executingTime + " min" + (Math.abs(executingTime) > 1 ? "s" : "");
                                     }
                                 }
                                 result.notify(notification);

@@ -40,21 +40,21 @@ let asStream (obj : JObject) =
 let waitSuccess (appId, jobId) (scheduler : IScheduler) =
     let isSuccess() =
         match scheduler.TryGetStatus (appId, jobId) with
-        | Some (JobStatus.Succeeded, _) -> true
-        | Some (JobStatus.Failed, message) -> failwithf "Job has failed: %s" message
-        | Some (JobStatus.Executing, _) 
-        | Some (JobStatus.Queued, _) -> false
-        | _ -> failwith "Failed to get the job status"
+        | Some (JobStatusWithInfo.Succeeded _) -> true
+        | Some (JobStatusWithInfo.Failed message) -> failwithf "Job has failed: %s" message
+        | Some (JobStatusWithInfo.Executing _) 
+        | Some (JobStatusWithInfo.Queued _) -> false
+        | None -> failwith "Failed to get the job status"
     while not (isSuccess()) do Thread.Sleep(100)
 
 let waitFailure (appId, jobId) (scheduler : IScheduler) =
     let isFailed() =
         match scheduler.TryGetStatus (appId, jobId) with
-        | Some (JobStatus.Succeeded, _) -> failwithf "Job has succeeded"
-        | Some (JobStatus.Failed, message) -> Some message
-        | Some (JobStatus.Executing, _) 
-        | Some (JobStatus.Queued, _) -> None
-        | _ -> failwith "Failed to get the job status"
+        | Some (JobStatusWithInfo.Succeeded _) -> failwithf "Job has succeeded"
+        | Some (JobStatusWithInfo.Failed message) -> Some message
+        | Some (JobStatusWithInfo.Executing _) 
+        | Some (JobStatusWithInfo.Queued _) -> None
+        | None -> failwith "Failed to get the job status"
         
     Seq.initInfinite(id)
     |> Seq.pick (fun _ -> 
@@ -65,11 +65,11 @@ let waitFailure (appId, jobId) (scheduler : IScheduler) =
 let waitExecuting (appId, jobId) (scheduler : IScheduler) =
     let isExecuting() =
         match scheduler.TryGetStatus (appId, jobId) with
-        | Some (JobStatus.Executing, _) -> true
-        | Some (JobStatus.Failed, message) -> failwithf "Job has failed: %s" message
-        | Some (JobStatus.Succeeded, _) 
-        | Some (JobStatus.Queued, _) -> false
-        | _ -> failwith "Failed to get the job status"
+        | Some (JobStatusWithInfo.Executing _) -> true
+        | Some (JobStatusWithInfo.Failed message) -> failwithf "Job has failed: %s" message
+        | Some (JobStatusWithInfo.Succeeded _) 
+        | Some (JobStatusWithInfo.Queued _) -> false
+        | None -> failwith "Failed to get the job status"
     while not (isExecuting()) do Thread.Sleep(100)
 
 let getResult (appId, jobId) (scheduler : IScheduler) =
@@ -152,22 +152,19 @@ let ``Status 'executing' includes execution start time``() =
     let appId = Guid.NewGuid()
     use body = JObject(JProperty("sleep", Timeout.Infinite), JProperty("result", appId)) |> asStream
     let job = { AppId = appId; Body = body }
-    let t0 = DateTime.Now
+    let t0 = DateTimeOffset.Now
     let jobId = scheduler.AddJob(job)
 
     waitExecuting (appId, jobId) scheduler
-    let t1 = DateTime.Now
+    let t1 = DateTimeOffset.Now
 
     match scheduler.TryGetStatus (appId, jobId) with
-    | Some (JobStatus.Executing, info) -> 
-        Trace.WriteLine(sprintf "Status info is %s" info)
-        match DateTime.TryParse info with
-        | true, time -> 
-            Trace.WriteLine(sprintf "Execution start time is %A" time)
-            Assert.IsTrue(t0 < time, "start time is earlier than expected")
-            Assert.IsTrue(t1 > time, "start time is later than expected")
-        | false, _ -> Assert.Fail(sprintf "The status info is not a date time string: %s" info)
-    | Some (s, _) -> Assert.Fail("Status is not 'executing'")
+    | Some (JobStatusWithInfo.Executing time) ->      
+        Trace.WriteLine(sprintf "Execution start time is %A" time)
+        Assert.IsTrue(t0 < time, "start time is earlier than expected")
+        Assert.IsTrue(t1 > time, "start time is later than expected")
+
+    | Some _ -> Assert.Fail("Status is not 'executing'")
     | None -> Assert.Fail("Failed to get the job status")
 
     Assert.IsTrue(scheduler.DeleteJob (appId, jobId), "Job wasn't deleted")
@@ -186,15 +183,11 @@ let ``Status 'queued' includes queue position``() =
     waitExecuting (appId, jobs.[0]) scheduler
 
     match scheduler.TryGetStatus (appId, jobs.[jobs.Length-1]) with
-    | Some (JobStatus.Queued, info) -> 
-        Trace.WriteLine(sprintf "Status info is %s" info)
-        match Int32.TryParse info with
-        | true, pos -> 
-            Trace.WriteLine(sprintf "Position is %d" pos)
-            Assert.IsTrue(pos <= jobs.Length - 2, "position is greater: at least 1 is executing, and 1 is the target job")
-            Assert.IsTrue(pos > 0, "position is 0")
-        | false, _ -> Assert.Fail(sprintf "The status info is not a integer string: %s" info)
-    | Some (_, _) -> Assert.Fail("Status is not 'queued'")
+    | Some (JobStatusWithInfo.Queued pos) -> 
+        Trace.WriteLine(sprintf "Position is %d" pos)
+        Assert.IsTrue(pos <= jobs.Length - 2, "position is greater: at least 1 is executing, and 1 is the target job")
+        Assert.IsTrue(pos > 0, "position is 0")
+    | Some _ -> Assert.Fail("Status is not 'queued'")
     | None -> Assert.Fail("Failed to get the job status")
 
     jobs |> Array.iter(fun jobId -> Assert.IsTrue(scheduler.DeleteJob (appId, jobId), "Job wasn't deleted"))

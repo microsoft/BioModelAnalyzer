@@ -702,7 +702,7 @@
                 }, true);
             } else {
                 if (that.operationLayout !== undefined) {
-                    that.operationLayout.IsVisible = false;
+                    //that.operationLayout.IsVisible = false;
                     that.operationLayout = undefined;
                 }
             }
