@@ -171,6 +171,7 @@
                     that.formulaEdButton.addClass("selected");
                     if (that.formulaeditor.css("display") === "none") {
                         that.options.formula = that.texteditor.tftexteditor("option", "formula");
+                        console.log("everything is ok");
                         that.formulaeditor.formulaeditor({
                             operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
                         });
