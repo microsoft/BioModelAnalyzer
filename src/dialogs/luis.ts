@@ -10,12 +10,28 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
     let model = 'https://api.projectoxford.ai/luis/v1/application?id=' + config.get('LUIS_MODEL_ID') 
         + '&subscription-key=' + config.get('LUIS_KEY')
     let recognizer = new builder.LuisRecognizer(model)
-    let dialog = new builder.IntentDialog({ recognizers: [recognizer] })
-    bot.dialog('/', dialog)
+    let intents = new builder.IntentDialog({ recognizers: [recognizer] })
+    bot.dialog('/', intents)
 
-    // Add intent handlers
-    dialog.matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
-    dialog.matches('LTLQuery', [
+    /**
+     * All intent handlers here 
+     */
+    intents.matches('AboutBot', [function (session) {
+            session.send(strings.ABOUT_BOT)
+        }
+    ])
+
+    intents.matches('ListTutorial', [function (session) {
+            session.beginDialog('/tutorials')
+        }
+    ])
+    
+    intents.matches('SelectTutorial', [function (session, args) {
+        
+    }])
+
+    intents.matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
+    intents.matches('LTLQuery', [
         (session, args, next) => {
             // check if JSON model has been uploaded already, otherwise prompt user
             if (!session.userData.bmaModel) {
@@ -51,7 +67,7 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
             session.send(strings.MODEL_RECEIVED)
         }
     ])
-    dialog.onDefault(function (session, args) {
+    intents.onDefault(function (session, args) {
         session.send(strings.UNKNOWN_INTENT)
     })
 }
