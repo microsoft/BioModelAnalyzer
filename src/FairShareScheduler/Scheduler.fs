@@ -14,13 +14,19 @@ type Job =
     { AppId: AppId
       Body: Stream }
 
+type JobStatusWithInfo =
+    | Succeeded
+    | Queued of position:int
+    | Executing of started:DateTimeOffset
+    | Failed of message:string
+
 
 
 [<Interface>]
 type IScheduler =
     abstract AddJob : Job -> JobId
     abstract DeleteJob : AppId * JobId -> bool
-    abstract TryGetStatus : AppId * JobId -> (JobStatus * string) option
+    abstract TryGetStatus : AppId * JobId -> JobStatusWithInfo option
     abstract TryGetResult : AppId * JobId -> IO.Stream option
 
 type FairShareSchedulerSettings =
@@ -102,21 +108,22 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
             logInfo (sprintf "Job %O is queued" jobId)
             jobId
 
-        member x.TryGetStatus (appId: AppId, jobId: JobId) : (JobStatus * string) option =
+        member x.TryGetStatus (appId: AppId, jobId: JobId) : JobStatusWithInfo option =
             match tryGetJobEntry (appId, jobId) table with
             | None ->
                 logInfo (sprintf "Job %A not found" jobId)
                 None
             | Some job ->
                 match parseStatus job.Status with
-                | JobStatus.Succeeded -> JobStatus.Succeeded, job.StatusInformation
-                | JobStatus.Failed -> JobStatus.Failed, job.StatusInformation
+                | JobStatus.Succeeded -> JobStatusWithInfo.Succeeded
+                | JobStatus.Failed -> JobStatusWithInfo.Failed job.StatusInformation
                 | _ ->
-                    match isExecuting (appId, jobId) with
-                    | Some time -> JobStatus.Executing, time.ToString("o")
-                    | None -> 
+                    match isExecuting (appId, jobId) with 
+                    | Some time -> // EXECUTING
+                        JobStatusWithInfo.Executing time
+                    | None -> // QUEUED
                         let queuePos = getQueuePosition job
-                        JobStatus.Queued, queuePos.ToString()
+                        JobStatusWithInfo.Queued queuePos
                 |> Some
 
         member x.TryGetResult (appId: AppId, jobId: JobId) : IO.Stream option =

@@ -1,5 +1,4 @@
 using bma.Cloud;
-using bma.LTL;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
 using Newtonsoft.Json;
@@ -15,8 +14,9 @@ namespace LTLCheckRole
     {
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
-
+        
         private IWorker worker;
+        private string basePath;
 
         public override void Run()
         {
@@ -24,6 +24,7 @@ namespace LTLCheckRole
 
             try
             {
+                basePath = Environment.CurrentDirectory;
                 worker.Process(DoJob, TimeSpan.FromSeconds(0.5), TimeSpan.FromMinutes(1.0));
             }
             finally
@@ -85,17 +86,14 @@ namespace LTLCheckRole
             var sw = new Stopwatch();
             sw.Start();
 
-            var reader = new StreamReader(input);
-            var input_s = reader.ReadToEnd();
-            var query = JsonConvert.DeserializeObject<LTLPolarityAnalysisInputDTO>(input_s);
+            string input_s = (new StreamReader(input)).ReadToEnd();
 
-            var res = Analysis.Polarity(query);
+            // JobRunner kills the process, if this thread is aborted due to job cancellation.
+            JobsRunner.JobResult result = JobsRunner.Job.RunToCompletion(Path.Combine(basePath, "AnalyzeLTL.exe"), input_s, -1);
 
-            var jsRes = JsonConvert.SerializeObject(res);
-            var output_s = jsRes.ToString();
             var ms = new MemoryStream();
             var writer = new StreamWriter(ms);
-            writer.Write(output_s);
+            writer.Write(result.Content);
             writer.Flush();
             ms.Position = 0;
 

@@ -87,10 +87,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BmaBioCheckAnalyzer\BmaBioCheckAnalyzer.csproj">
-      <Project>{573c06c3-ab0d-4db5-a2e2-53a40e1bba57}</Project>
-      <Name>BmaBioCheckAnalyzer</Name>
-    </ProjectReference>
     <ProjectReference Include="..\FairShareScheduler.Common\FairShareScheduler.Common.fsproj">
       <Project>{850df26e-27b2-4766-99de-b815616c0d90}</Project>
       <Name>FairShareScheduler.Common</Name>
@@ -98,6 +94,14 @@
     <ProjectReference Include="..\FairShareWorker\FairShareWorker.fsproj">
       <Project>{47e591bb-eb9e-41b0-a488-f271177d2616}</Project>
       <Name>FairShareWorker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\AnalyzeLTL\AnalyzeLTL.csproj">
+      <Project>{f27a4a37-7fde-473e-ac6a-dcb38451bbf4}</Project>
+      <Name>AnalyzeLTL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\JobsRunner\JobsRunner.csproj">
+      <Project>{062c2f38-d571-459a-9e67-43c9b074eb9c}</Project>
+      <Name>JobsRunner</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

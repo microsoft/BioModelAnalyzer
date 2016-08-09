@@ -100,6 +100,9 @@
     <Compile Include="JobChecking.fs" />
     <Compile Include="JobsConsoleAppTests.fs" />
     <Compile Include="WebApiTests.fs" />
+    <None Include="incorrect.request.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="App.config" />
     <None Include="Analysis\toymodel-unstable.response.json">
@@ -213,9 +216,6 @@
     <None Include="LTLQueries\Germline v5.2.response.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="LTLQueries\toymodel.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="LTLQueries\toymodel.simulation.response.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -229,6 +229,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="LTLQueries\PhosCas.response.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LTLQueries\toymodel.request.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Simulation\LTLNoPositive.request.json">
