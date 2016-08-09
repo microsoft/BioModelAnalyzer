@@ -1,5 +1,14 @@
 @if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
 
+
+
+:: ==================================
+:: MODIFICATION FROM ORIGINAL SCRIPT:
+:: The :Deployment section has been extended with two steps, everything else is unchanged.
+:: ==================================
+
+
+
 :: ----------------------
 :: KUDU Deployment Script
 :: Version: 1.0.8
@@ -88,6 +97,8 @@ goto :EOF
 :Deployment
 echo Handling node.js deployment.
 
+:: 0. Create empty lib\app.js to make KuduSync happy
+:: see https://github.com/projectkudu/kudu/issues/1753
 call :ExecuteCmd mkdir "%DEPLOYMENT_SOURCE%\lib"
 call :ExecuteCmd copy NUL "%DEPLOYMENT_SOURCE%\lib\app.js"
 
@@ -107,6 +118,13 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
   IF !ERRORLEVEL! NEQ 0 goto error
   popd
 )
+
+:: 4. Adjust lib/app.js to fix current working directory when run by iisnode
+:: see https://github.com/tjanczuk/iisnode/pull/233#issuecomment-10242100
+call :ExecuteCmd echo "process.chdir('..');" > "%DEPLOYMENT_SOURCE%\lib\app.tmp"
+call :ExecuteCmd type "%DEPLOYMENT_SOURCE%\lib\app.js" >> "%DEPLOYMENT_SOURCE%\lib\app.tmp"
+call :ExecuteCmd type "%DEPLOYMENT_SOURCE%\lib\app.tmp" > "%DEPLOYMENT_SOURCE%\lib\app.js"
+call
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 goto end
