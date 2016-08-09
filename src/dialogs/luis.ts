@@ -16,16 +16,19 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
     /**
      * All intent handlers here 
      */
-
-    //TO-DO add description for aboutbot intent in /strings
-    intents.matches('AboutBot', builder.DialogAction.send('about bot'))
+    intents.matches('AboutBot', [function (session) {
+            session.send(strings.ABOUT_BOT)
+        }
+    ])
 
     intents.matches('ListTutorial', [function (session) {
             session.beginDialog('/tutorials')
         }
     ])
     
-    intents.matches('SelectTutorial', [function (session, args) {}])
+    intents.matches('SelectTutorial', [function (session, args) {
+        
+    }])
 
     intents.matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
     intents.matches('LTLQuery', [
