@@ -192,7 +192,7 @@
                     var plusb = $("<button>+</button>").appendTo(plusd);
                     plusd.addClass("testing");
                     plusb.addClass("testing");
-                    var message = $("<div></div>").text(that.options.message).addClass("grey").appendTo(ltltestdiv);
+                    var message = $("<div></div>").text(that.options.message).addClass("grey").css("white-space", "nowrap").appendTo(ltltestdiv);
                     var ul = $("<ul></ul>").addClass("button-list").addClass("LTL-test").css("margin-top", 0).appendTo(ltltestdiv);
                     var li2 = $("<li></li>").addClass("action-button-small").addClass("grey").appendTo(ul);
                     var cancelBtn = $("<button>Cancel</button>").addClass("cancel-button").appendTo(li2).click(function () {
