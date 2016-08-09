@@ -1,5 +1,5 @@
 {
-    "PORT": "port",
+    "PORT": "PORT",
     "APP_ID": "MICROSOFT_APP_ID",
     "APP_PASSWORD": "MICROSOFT_APP_PASSWORD",
     "LUIS_MODEL_ID": "LUIS_MODEL_ID",
