@@ -19,7 +19,6 @@ export function registerOtherDialogs (bot: builder.UniversalBot) {
 
         let model = session.conversationData.bmaModel
         message.text(`Here is the model you sent me (Name: ${model.Model.Name})`)
-        message.text(`url: ${url}`)
         session.send(message)
         next()
     })
