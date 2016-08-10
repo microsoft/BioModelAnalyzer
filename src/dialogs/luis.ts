@@ -1,7 +1,7 @@
 import * as builder from 'botbuilder'
 import * as config from 'config'
 import * as request from 'request'
-import {v4 as uuid} from 'uuid'
+import {v4 as uuid} from 'node-uuid'
 import * as strings from './strings'
 import Storage from '../storage'
 
