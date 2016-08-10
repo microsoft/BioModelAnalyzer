@@ -5,7 +5,7 @@ import {v4 as uuid} from 'uuid'
 import * as strings from './strings'
 import Storage from '../storage'
 
-let storage = new Storage()
+const storage = new Storage()
 
 /**
  * Registers the LUIS dialog as root dialog. 
@@ -70,37 +70,59 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
     intents.matches('LTLQuery', [
         (session, args, next) => {
             // check if JSON model has been uploaded already, otherwise prompt user
-            if (!session.userData.bmaModel) {
+            if (!session.conversationData.bmaModel) {
                 builder.Prompts.attachment(session, strings.MODEL_SEND_PROMPT)
             } else {
                 // invoke LTL parser
                 session.send('Try this: ...')
             }
         },
+        (session, results, next) => receiveModelAttachmentStep(session, results, next),
         (session, results, next) => {
-            // check and store attachment
-            let attachments: builder.IAttachment[] = results.response
-            if (attachments.length > 1) {
-                session.send(strings.TOO_MANY_FILES)
-                return
-            }
-            let url = attachments[0].contentUrl
-            request(url, (error, response, body) => {
-                let len = response.headers['content-length']
-                let modelId = uuid()
-                storage.storeUserModel(modelId, response, len)
-
-                session.userData.bmaModel = null
-                session.userData.bmaModelId = modelId
-
-                session.send(strings.MODEL_RECEIVED)
-
-                // TODO error checking
-            })
+            // invoke LTL parser
+            session.send('Try this: ...')
         }
     ])
     
-    intents.onDefault(function (session, args) {
-        session.send(strings.UNKNOWN_INTENT)
+    intents.onDefault(function (session, results, next) {
+        let attachments = session.message.attachments
+        if (attachments.length > 0) {
+            receiveModelAttachmentStep(session, results, next)
+        } else {
+            session.send(strings.UNKNOWN_INTENT)
+        }
+    })
+}
+
+function receiveModelAttachmentStep (session: builder.Session, results, next) {
+    // check and store attachment
+    let attachments = session.message.attachments
+    if (attachments.length > 1) {
+        session.send(strings.TOO_MANY_FILES)
+        return
+    }
+    let url = attachments[0].contentUrl
+    request(url, (error, response, body) => {
+        if (error) {
+            session.send(strings.HTTP_ERROR(error))
+            return
+        }
+        let model
+        try {
+            model = JSON.parse(body)
+        } catch (e) {
+            session.send(strings.INVALID_JSON(e))
+            return
+        }
+
+        let modelId = session.conversationData.bmaModelId || uuid()
+        storage.storeUserModel(modelId, body).then(() => {
+            session.conversationData.bmaModel = model
+            session.conversationData.bmaModelId = modelId
+            session.send(strings.MODEL_RECEIVED(model.Model.Name))
+            next()
+        }).catch(e => {
+            session.send(strings.HTTP_ERROR(e))
+        })
     })
 }

@@ -1,7 +1,8 @@
+import * as Promise from 'promise'
 import * as azure from 'azure-storage'
 import * as config from 'config'
 
-const USER_MODELS = 'user_models'
+const USER_MODELS = 'usermodels'
 
 export default class Storage {
     blobService
@@ -20,14 +21,31 @@ export default class Storage {
         })
     }
 
-    storeUserModel (id, stream, len) {
-        // TODO handle errors, use Promise
-        // see https://github.com/Azure/azure-storage-node/blob/master/lib/services/blob/blobservice.js
-        this.blobService.createBlockBlobFromStream(USER_MODELS, id, stream, len, {})
+    storeUserModel (id, content) {
+        // TODO think about expiration
+
+        return new Promise((resolve, reject) => {
+            this.blobService.createBlockBlobFromText(USER_MODELS, id, content, {}, (error, response) => {
+                if (error) {
+                    reject(error)
+                } else {
+                    resolve(true)
+                }
+            })
+        })        
     }
 
     getUserModel (id) {
-        // TODO implement
+        return new Promise((resolve, reject) => {
+            this.blobService.getBlobToText(USER_MODELS, id, {}, (error, text) => {
+                if (error) {
+                    reject(error)
+                } else {
+                    let model = JSON.parse(text)
+                    resolve(model)
+                }
+            })
+        })
     }
 
     getUserModelUrl (id) {

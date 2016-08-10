@@ -2,5 +2,7 @@
     "USE_CONSOLE": true,
     "PORT": 3978,
     "APP_ID": null,
-    "APP_PASSWORD": null
+    "APP_PASSWORD": null,
+    "AZURE_STORAGE_ACCOUNT": "UseDevelopmentStorage=true",
+    "AZURE_STORAGE_ACCESS_KEY": null
 }

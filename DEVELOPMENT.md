@@ -6,6 +6,7 @@ The following describes how to set up your local development environment.
 ## Prerequisites
 
 - Install [Node.js](https://nodejs.org/en/download/).
+- Install [Azure Storage Emulator](https://azure.microsoft.com/en-us/documentation/articles/storage-use-emulator/).
 - (Optional) Install [Visual Studio Code](https://code.visualstudio.com/) for TypeScript IDE support. 
 
 ## Project set up
@@ -40,6 +41,8 @@ Run this command in a separate terminal:
 ```sh
 $ npm run watch
 ```
+
+Make sure the Azure Storage Emulator (see Prerequisites) is running before starting the bot server.
 
 To start the bot server, run the following command in a new terminal:
 
