@@ -345,9 +345,15 @@
                 case "formula":
                     that.options.formula = value;
                     this.texteditor.tftexteditor({ formula: value });
-                    //this.formulaeditor.formulaeditor({
-                    //    operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
-                    //});
+                    if (this.formulaEdButton.hasClass("selected")) {
+                        try {
+                            this.formulaeditor.formulaeditor({
+                                operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                            });
+                        } catch (ex) {
+                            console.log(ex);
+                        }
+                    }
                     break;
                 case "TFdescription":
                     that.options.TFdescription = value;
