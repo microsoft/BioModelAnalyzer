@@ -129,6 +129,7 @@ function receiveModelAttachmentStep (bot: builder.UniversalBot, session: builder
         storage.storeUserModel(modelId, buf).then(() => {
             session.conversationData.bmaModel = model
             session.conversationData.bmaModelId = modelId
+            session.save()
             session.send(strings.MODEL_RECEIVED(model.Model.Name))
             next()
         }).catch(e => {
