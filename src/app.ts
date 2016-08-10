@@ -1,7 +1,11 @@
 import * as builder from 'botbuilder'
 import * as restify from 'restify'
 import * as config from 'config'
+import Storage from './storage'
 import {setup as setupBot} from './bot'
+
+let storage = new Storage()
+storage.init()
 
 let bot: builder.UniversalBot
 if (config.get('USE_CONSOLE')) {

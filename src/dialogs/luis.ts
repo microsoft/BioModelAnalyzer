@@ -1,6 +1,11 @@
 import * as builder from 'botbuilder'
 import * as config from 'config'
+import * as request from 'request'
+import {v4 as uuid} from 'uuid'
 import * as strings from './strings'
+import Storage from '../storage'
+
+let storage = new Storage()
 
 /**
  * Registers the LUIS dialog as root dialog. 
@@ -79,23 +84,19 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
                 session.send(strings.TOO_MANY_FILES)
                 return
             }
-            let json = attachments[0].content
-            let model: any
-            if (typeof json === 'string') {
-                // TODO does that ever happen except in test cases?!
-                // -> who parses incoming JSON? bot framework, or we?
-                try {
-                    model = JSON.parse(json)
-                } catch (e) {
-                    session.send(strings.INVALID_JSON(e.message))
-                    return
-                }
-            } else {
-                model = json
-            }
+            let url = attachments[0].contentUrl
+            request(url, (error, response, body) => {
+                let len = response.headers['content-length']
+                let modelId = uuid()
+                storage.storeUserModel(modelId, response, len)
 
-            session.userData.bmaModel = model
-            session.send(strings.MODEL_RECEIVED)
+                session.userData.bmaModel = null
+                session.userData.bmaModelId = modelId
+
+                session.send(strings.MODEL_RECEIVED)
+
+                // TODO error checking
+            })
         }
     ])
     
