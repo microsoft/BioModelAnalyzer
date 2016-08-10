@@ -49,10 +49,13 @@ export default class Storage {
     }
 
     getUserModelUrl (id) {
+        /*
         var sasToken = this.blobService.generateSharedAccessSignature(USER_MODELS, id, {
             AccessPolicy: { Expiry: azure.date.minutesFromNow(60) }
         })
         var sasUrl = this.blobService.getUrl(USER_MODELS, id, sasToken, true)
+        */
+        var sasUrl = this.blobService.getUrl(USER_MODELS, id)
         return sasUrl
     }
 }
