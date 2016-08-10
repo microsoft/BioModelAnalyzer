@@ -102,11 +102,13 @@ function receiveModelAttachmentStep (session: builder.Session, results, next) {
         return
     }
     let url = attachments[0].contentUrl
+    session.send('downloading your model from ' + url)
     request(url, (error, response, body) => {
         if (error) {
             session.send(strings.HTTP_ERROR(error))
             return
         }
+        session.send('body:' + body)
         let model
         try {
             model = JSON.parse(body)
