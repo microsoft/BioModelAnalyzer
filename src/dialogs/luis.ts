@@ -3,7 +3,7 @@ import * as config from 'config'
 import * as request from 'request'
 import {v4 as uuid} from 'node-uuid'
 import * as strings from './strings'
-import NLParser from '../NLParser'
+import NLParser from '../NLParser/NLParser'
 import Storage from '../storage'
 import {downloadAttachments} from '../attachments'
 

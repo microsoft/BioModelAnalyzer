@@ -1,5 +1,5 @@
 import * as chai from 'chai'
-import NLParser from '../src/NLParser'
+import NLParser from '../src/NLParser/NLParser'
 var expect = chai.expect;
 
 describe('token parsing', function () {
@@ -20,6 +20,7 @@ describe('token parsing', function () {
                                 "type": "factor",
                                 "left": {
                                     "type": "relationalExpression",
+                                    "value": { type: "relationalOperator", value: "=" },
                                     "left": "a",
                                     "right": 1
                                 }
@@ -33,6 +34,7 @@ describe('token parsing', function () {
                                     "type": "factor",
                                     "left": {
                                         "type": "relationalExpression",
+                                        "value": { type: "relationalOperator", value: "=" },
                                         "left": "b",
                                         "right": 2
                                     }
@@ -42,15 +44,7 @@ describe('token parsing', function () {
                         },
                         "value": {
                             "type": "binaryOperator",
-                            "value": {
-                                "image": "and",
-                                "offset": 4,
-                                "startLine": 1,
-                                "startColumn": 5,
-                                "endLine": 1,
-                                "endColumn": 7,
-                                "isInsertedInRecovery": false
-                            }
+                            "value": "and"
                         }
                     },
                     "right": null
@@ -66,15 +60,7 @@ describe('token parsing', function () {
             "type": "ltlFormula",
             "left": {
                 "type": "unaryOperator",
-                "value": {
-                    "image": "eventu",
-                    "offset": 19,
-                    "startLine": 1,
-                    "startColumn": 20,
-                    "endLine": 1,
-                    "endColumn": 25,
-                    "isInsertedInRecovery": false
-                },
+                "value": "eventually",
                 "left": {
                     "type": "ltlFormula",
                     "left": {
@@ -87,6 +73,7 @@ describe('token parsing', function () {
                                     "type": "factor",
                                     "left": {
                                         "type": "relationalExpression",
+                                        "value": { type: "relationalOperator", value: "=" },
                                         "left": "a",
                                         "right": 1
                                     }
@@ -100,6 +87,7 @@ describe('token parsing', function () {
                                         "type": "factor",
                                         "left": {
                                             "type": "relationalExpression",
+                                            "value": { type: "relationalOperator", value: "=" },
                                             "left": "b",
                                             "right": 2
                                         }
@@ -109,15 +97,7 @@ describe('token parsing', function () {
                             },
                             "value": {
                                 "type": "binaryOperator",
-                                "value": {
-                                    "image": "and",
-                                    "offset": 4,
-                                    "startLine": 1,
-                                    "startColumn": 5,
-                                    "endLine": 1,
-                                    "endColumn": 7,
-                                    "isInsertedInRecovery": false
-                                }
+                                "value": "and"
                             }
                         },
                         "right": null
@@ -127,10 +107,100 @@ describe('token parsing', function () {
         }
         expect(JSON.stringify(parserResponse.AST)).to.equal(JSON.stringify(expected))
     })
+    it('parse() should re-write if (expression) then (expression) to:  expression implies expression', () => {
+        var sentence = "eventually if a=1 and c=1 then d=1"
+        var parserResponse = NLParser.parse(sentence)
+        var expected = {
+            "type": "ltlFormula",
+            "left": {
+                "type": "ltlFormula",
+                "left": {
+                    "type": "unaryOperator",
+                    "value": "eventually",
+                    "left": {
+                        "type": "expression",
+                        "value": {
+                            "type": "binaryOperator",
+                            "value": "implies"
+                        },
+                        "left": {
+                            "type": "expression",
+                            "left": {
+                                "type": "term",
+                                "left": {
+                                    "type": "factor",
+                                    "left": {
+                                        "type": "factor",
+                                        "left": {
+                                            "type": "relationalExpression",
+                                            "value": {
+                                                "type": "relationalOperator",
+                                                "value": "="
+                                            },
+                                            "left": "a",
+                                            "right": 1
+                                        }
+                                    }
+                                },
+                                "right": {
+                                    "type": "term",
+                                    "left": {
+                                        "type": "factor",
+                                        "left": {
+                                            "type": "factor",
+                                            "left": {
+                                                "type": "relationalExpression",
+                                                "value": {
+                                                    "type": "relationalOperator",
+                                                    "value": "="
+                                                },
+                                                "left": "c",
+                                                "right": 1
+                                            }
+                                        }
+                                    },
+                                    "right": null
+                                },
+                                "value": {
+                                    "type": "binaryOperator",
+                                    "value": "and"
+                                }
+                            },
+                            "right": null
+                        },
+                        "right": {
+                            "type": "expression",
+                            "left": {
+                                "type": "term",
+                                "left": {
+                                    "type": "factor",
+                                    "left": {
+                                        "type": "factor",
+                                        "left": {
+                                            "type": "relationalExpression",
+                                            "value": {
+                                                "type": "relationalOperator",
+                                                "value": "="
+                                            },
+                                            "left": "d",
+                                            "right": 1
+                                        }
+                                    }
+                                },
+                                "right": null
+                            },
+                            "right": null
+                        }
+                    }
+                }
+            }
+        }
+        expect(JSON.stringify(parserResponse.AST)).to.equal(JSON.stringify(expected))
+    })
     it('parse() should return an error set for an invalid set of input tokens', () => {
         var sentence = "if a=1 and c=1"
         var parserResponse = NLParser.parse(sentence)
-        var expected = '[{"name":"NoViableAltException","message":"Expecting: one of these possible Token sequences:\\n  <[GThan] ,[LThan] ,[GThanEq] ,[Eq] ,[LThanEq]>  but found: \'1\'","token":{"image":"1","offset":5,"startLine":1,"startColumn":6,"endLine":1,"endColumn":6,"isInsertedInRecovery":false},"resyncedTokens":[],"context":{"ruleStack":["formula","ifFormula","expression","term","factor","relationalExpression","relationalOperator"],"ruleOccurrenceStack":[1,1,1,1,1,1,1]}},{"name":"NoViableAltException","message":"Expecting: one of these possible Token sequences:\\n  <[GThan] ,[LThan] ,[GThanEq] ,[Eq] ,[LThanEq]>  but found: \'1\'","token":{"image":"1","offset":13,"startLine":1,"startColumn":14,"endLine":1,"endColumn":14,"isInsertedInRecovery":false},"resyncedTokens":[],"context":{"ruleStack":["formula","ifFormula","expression","term","factor","relationalExpression","relationalOperator"],"ruleOccurrenceStack":[1,1,1,1,2,1,1]}},{"name":"MismatchedTokenException","message":"Expecting token of type --> Then <-- but found --> \'\' <--","token":{"image":"","offset":-1,"startLine":-1,"startColumn":-1,"endLine":-1,"endColumn":-1,"isInsertedInRecovery":false},"resyncedTokens":[],"context":{"ruleStack":["formula","ifFormula"],"ruleOccurrenceStack":[1,1]}}]'
+        var expected = '[{"name":"MismatchedTokenException","message":"Expecting --> then <-- but found --> \'\' <--","token":{"image":"","offset":-1,"startLine":-1,"startColumn":-1,"endLine":-1,"endColumn":-1,"isInsertedInRecovery":false},"resyncedTokens":[],"context":{"ruleStack":["formula","ifFormula"],"ruleOccurrenceStack":[1,1]}}]'
         expect(JSON.stringify(parserResponse.errors)).to.equal(expected)
     })
 });
