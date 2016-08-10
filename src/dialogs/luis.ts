@@ -3,6 +3,7 @@ import * as config from 'config'
 import * as request from 'request'
 import {v4 as uuid} from 'node-uuid'
 import * as strings from './strings'
+import NLParser from '../NLParser'
 import Storage from '../storage'
 import {downloadAttachments} from '../attachments'
 
@@ -67,6 +68,16 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
         }
     ])
 
+    function handleLTLQuery (session) {
+        let text = session.message.text
+        let ltl = NLParser.parse(text)
+        if (!ltl.AST) {
+            session.send('I did not understand your query')
+            return
+        }
+        session.send('Try this: ' + JSON.stringify(ltl.AST))
+    }
+
     intents.matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
     intents.matches('LTLQuery', [
         (session, args, next) => {
@@ -74,14 +85,12 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
             if (!session.conversationData.bmaModel) {
                 builder.Prompts.attachment(session, strings.MODEL_SEND_PROMPT)
             } else {
-                // invoke LTL parser
-                session.send('Try this: ...')
+                handleLTLQuery(session)
             }
         },
         (session, results, next) => receiveModelAttachmentStep(bot, session, results, next),
         (session, results, next) => {
-            // invoke LTL parser
-            session.send('Try this: ...')
+            handleLTLQuery(session)
         }
     ])
     
