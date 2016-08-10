@@ -67,6 +67,15 @@ Deployment happens manually by creating a new "Production" release in https://ms
 The dev version is hosted on https://bmachatbot-dev.azurewebsites.net/.
 Deployment happens automatically each day at 8am or by manually creating a new "Development" release in https://msrcapt.visualstudio.com/BMAChatBot.
 
+You can also deploy from the command-line with:
+
+```sh
+$ git remote add azure-dev https://bmabotdeploy@bmachatbot-dev.scm.azurewebsites.net:443/bmachatbot-dev.git
+$ git remote add azure-prod https://bmabotdeploy@bmachatbot.scm.azurewebsites.net:443/bmachatbot.git
+$ git push azure-dev master
+$ # or: git push azure-prod +0.1.0~0:master
+```
+
 Deployment logs can be found in the release logs of https://msrcapt.visualstudio.com/BMAChatBot.
 
 #### Debugging
