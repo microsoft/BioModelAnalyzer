@@ -10,6 +10,7 @@ TODO:
 13) automatically generate the stemmed tokens by passing in the lexer some settings or a factory approach
 14) recursively action
 15) check operator precedence
+16) prepend with a missing eventually if no temporal operator provided
 */
 
 import * as chevrotain from 'chevrotain'
@@ -29,7 +30,7 @@ let GThan = generateStemmedTokenDefinition("GThan", [">", "greater than", "bigge
 let LThan = generateStemmedTokenDefinition("LThan", ["<", "less than", "smaller than"])
 let GThanEq = generateStemmedTokenDefinition("GThanEq", [">=", "greater than or equal to", "bigger than or equal to"])
 let LThanEq = generateStemmedTokenDefinition("LThanEq", ["<=", "less than or equal to", "smaller than or equal to"])
-let Eq = generateStemmedTokenDefinition("Eq", ["=","is equal to", "is same as", "equal", "is"])
+let Eq = generateStemmedTokenDefinition("Eq", ["=", "is equal to", "is same as", "equal", "is"])
 /** 
  *  Boolean operator tokens
  */
@@ -131,7 +132,8 @@ export default class NLParser extends Parser {
         body = this.SUBRULE2(this.expression)
 
         return {
-            type: "IfFormula",
+            type: "expression",
+            value: { type: "binaryOperator", value: Implies.LABEL },
             left: conditionClause,
             right: body
         }
@@ -323,13 +325,8 @@ export default class NLParser extends Parser {
         Parser.performSelfAnalysis(this);
     }
 
-    private preprocessSentence(sentence: string): string {
-        // to lowercase and apply stemming
-        return natural.PorterStemmer.stem(sentence.toLocaleLowerCase())
-    }
-
     static parse(sentence: string) {
-        sentence = natural.PorterStemmer.stem(sentence.toLocaleLowerCase())
+        sentence = sentence.toLowerCase().split(" ").map(natural.PorterStemmer.stem).join(" ")
         var lexedTokens = (new Lexer(allowedTokens)).tokenize(sentence).tokens
         var parser = new NLParser(lexedTokens)
         return {
