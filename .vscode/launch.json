@@ -39,8 +39,8 @@
             "request": "attach",
             "processId": "${command.PickProcess}",
             "port": 5858,
-            "sourceMaps": true,
-            "outDir": "${workspaceRoot}/lib"
+            "sourceMaps": false,
+            "outDir": null
         }
     ]
 }
