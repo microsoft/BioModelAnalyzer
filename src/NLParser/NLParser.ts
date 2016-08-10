@@ -29,7 +29,10 @@ let GThan = generateStemmedTokenDefinition("GThan", [">", "greater than", "bigge
 let LThan = generateStemmedTokenDefinition("LThan", ["<", "less than", "smaller than"])
 let GThanEq = generateStemmedTokenDefinition("GThanEq", [">=", "greater than or equal to", "bigger than or equal to"])
 let LThanEq = generateStemmedTokenDefinition("LThanEq", ["<=", "less than or equal to", "smaller than or equal to"])
-let Eq = generateStemmedTokenDefinition("Eq", ["is equal to", "is same as", "equal", "is"])
+let Eq = generateStemmedTokenDefinition("Eq", ["=","is equal to", "is same as", "equal", "is"])
+/** 
+ *  Boolean operator tokens
+ */
 let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"])
 let Or = generateStemmedTokenDefinition("Or", ["or", "either"])
 let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"])
@@ -57,14 +60,16 @@ WhiteSpace.GROUP = Lexer.SKIPPED
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
-let allowedTokens = [WhiteSpace, IntegerLiteral, If, Then, GThan, LThan, GThanEq, LThanEq, Eq, And, Or, Implies, Eventually, Always,Next, Not, Upto, Until, WUntil, Release, Identifier]
+let allowedTokens = [WhiteSpace, IntegerLiteral, If, Then, GThan, LThan, GThanEq, LThanEq, Eq, And, Or, Implies, Eventually, Always, Next, Not, Upto, Until, WUntil, Release, Identifier]
 
 const configuration: IParserConfig = {
     recoveryEnabled: true
 }
 
-function generateStemmedTokenDefinition(id: string, synonyms: string[]): TokenConstructor {
-    return extendToken(id, RegExp(synonyms.map(natural.PorterStemmer.stem).join('|'), "i"));
+function generateStemmedTokenDefinition(id: string, synonyms: string[]) {
+    var tokenFunction = extendToken(id, RegExp(synonyms.map(natural.PorterStemmer.stem).join('|'), "i"));
+    tokenFunction.LABEL = synonyms[0]
+    return tokenFunction
 }
 
 
@@ -202,7 +207,7 @@ export default class NLParser extends Parser {
         integerLiteral = parseInt(this.CONSUME(IntegerLiteral).image)
         return {
             type: "relationalExpression",
-            operator: relationalOperator,
+            value: relationalOperator,
             left: identifier,
             right: integerLiteral
         }
@@ -213,23 +218,28 @@ export default class NLParser extends Parser {
             type: "relationalOperator",
             value: this.OR([{
                 ALT: () => {
-                    return this.CONSUME(GThan)
+                    this.CONSUME(GThan)
+                    return GThan.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(LThan)
+                    this.CONSUME(LThan)
+                    return LThan.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(GThanEq)
+                    this.CONSUME(GThanEq)
+                    return GThanEq.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(Eq)
+                    this.CONSUME(Eq)
+                    return Eq.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(LThanEq)
+                    this.CONSUME(LThanEq)
+                    return LThanEq.LABEL
                 }
             }])
         }
@@ -240,31 +250,38 @@ export default class NLParser extends Parser {
             type: "binaryOperator",
             value: this.OR([{
                 ALT: () => {
-                    return this.CONSUME(And)
+                    this.CONSUME(And)
+                    return And.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(Or)
+                    this.CONSUME(Or)
+                    return Or.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(Implies)
+                    this.CONSUME(Implies)
+                    return Implies.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(Upto)
+                    this.CONSUME(Upto)
+                    return Upto.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(Until)
+                    this.CONSUME(Until)
+                    return Until.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(Release)
+                    this.CONSUME(Release)
+                    return Release.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(WUntil)
+                    this.CONSUME(WUntil)
+                    return WUntil.LABEL
                 }
             }])
         }
@@ -275,19 +292,23 @@ export default class NLParser extends Parser {
             type: "unaryOperator",
             value: this.OR([{
                 ALT: () => {
-                    return this.CONSUME(Not)
+                    this.CONSUME(Not)
+                    return Not.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(Next)
+                    this.CONSUME(Next)
+                    return Next.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(Always)
+                    this.CONSUME(Always)
+                    return Always.LABEL
                 }
             }, {
                 ALT: () => {
-                    return this.CONSUME(Eventually)
+                    this.CONSUME(Eventually)
+                    return Eventually.LABEL
                 }
             }])
         }

@@ -10,7 +10,6 @@
     "start": "node lib/app.js"
   },
   "dependencies": {
-    "typescript": "beta",
     "@types/chai": "^3.4.30",
     "@types/config": "0.0.29",
     "@types/js-yaml": "^3.5.27",
@@ -20,6 +19,7 @@
     "@types/promise": "^7.1.27",
     "@types/restify": "^2.0.28",
     "@types/underscore": "^1.7.28",
+    "azure-storage": "^1.2.0",
     "botbuilder": "^3.2.3",
     "chai": "^3.5.0",
     "chevrotain": "^0.13.0",
@@ -27,8 +27,11 @@
     "js-yaml": "^3.6.1",
     "mocha": "^3.0.2",
     "natural": "^0.4.0",
+    "node-uuid": "^1.4.7",
     "promise": "^7.1.1",
+    "request": "^2.74.0",
     "restify": "^4.1.1",
+    "typescript": "beta",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
