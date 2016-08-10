@@ -62,7 +62,7 @@ WhiteSpace.GROUP = Lexer.SKIPPED
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
-let allowedTokens = [WhiteSpace, IntegerLiteral, If, Then, GThan, LThan, GThanEq, LThanEq, Eq, And, Or, Implies, Eventually, Always, Next, Not, Upto, Until, WUntil, Release, Identifier]
+let allowedTokens = [WhiteSpace, IntegerLiteral, If, Then, GThan, LThan, GThanEq, LThanEq, Eq,NotEq, And, Or, Implies, Eventually, Always, Next, Not, Upto, Until, WUntil, Release, Identifier]
 
 const configuration: IParserConfig = {
     recoveryEnabled: true
