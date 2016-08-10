@@ -1,6 +1,5 @@
 /*
 TODO:
-2) map if -> then to implies
 4) parenthesis the output
 5) implement fault tolarance
 7) add stemming
@@ -11,6 +10,7 @@ TODO:
 14) recursively action
 15) check operator precedence
 16) prepend with a missing eventually if no temporal operator provided
+17) add not equal to param
 */
 
 import * as chevrotain from 'chevrotain'
@@ -31,6 +31,7 @@ let LThan = generateStemmedTokenDefinition("LThan", ["<", "less than", "smaller 
 let GThanEq = generateStemmedTokenDefinition("GThanEq", [">=", "greater than or equal to", "bigger than or equal to"])
 let LThanEq = generateStemmedTokenDefinition("LThanEq", ["<=", "less than or equal to", "smaller than or equal to"])
 let Eq = generateStemmedTokenDefinition("Eq", ["=", "is equal to", "is same as", "equal", "is"])
+let NotEq = generateStemmedTokenDefinition("NotEq", ["!=", "is not equal to", "is not same as", "not equal", "is not"])
 /** 
  *  Boolean operator tokens
  */
@@ -242,6 +243,11 @@ export default class NLParser extends Parser {
                 ALT: () => {
                     this.CONSUME(LThanEq)
                     return LThanEq.LABEL
+                }
+            }, {
+                ALT: () => {
+                    this.CONSUME(NotEq)
+                    return NotEq.LABEL
                 }
             }])
         }
