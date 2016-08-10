@@ -4,6 +4,7 @@ import * as request from 'request'
 import {v4 as uuid} from 'node-uuid'
 import * as strings from './strings'
 import Storage from '../storage'
+import {downloadAttachments} from '../attachments'
 
 const storage = new Storage()
 
@@ -77,7 +78,7 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
                 session.send('Try this: ...')
             }
         },
-        (session, results, next) => receiveModelAttachmentStep(session, results, next),
+        (session, results, next) => receiveModelAttachmentStep(bot, session, results, next),
         (session, results, next) => {
             // invoke LTL parser
             session.send('Try this: ...')
@@ -87,38 +88,36 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
     intents.onDefault(function (session, results, next) {
         let attachments = session.message.attachments
         if (attachments.length > 0) {
-            receiveModelAttachmentStep(session, results, next)
+            receiveModelAttachmentStep(bot, session, results, next)
         } else {
             session.send(strings.UNKNOWN_INTENT)
         }
     })
 }
 
-function receiveModelAttachmentStep (session: builder.Session, results, next) {
+function receiveModelAttachmentStep (bot: builder.UniversalBot, session: builder.Session, results, next) {
     // check and store attachment
     let attachments = session.message.attachments
     if (attachments.length > 1) {
         session.send(strings.TOO_MANY_FILES)
         return
     }
-    let url = attachments[0].contentUrl
-    session.send('downloading your model from ' + url)
-    request(url, (error, response, body) => {
-        if (error) {
-            session.send(strings.HTTP_ERROR(error))
+    downloadAttachments(bot.connector('*'), session.message, (err, buffers) => {
+        if (err) {
+            session.send(strings.HTTP_ERROR(err))
             return
         }
-        session.send('body:' + body)
+        // TODO handle more than one attachment
+        let buf = buffers[0].toString()
         let model
         try {
-            model = JSON.parse(body)
+            model = JSON.parse(buf)
         } catch (e) {
             session.send(strings.INVALID_JSON(e))
             return
         }
-
         let modelId = session.conversationData.bmaModelId || uuid()
-        storage.storeUserModel(modelId, body).then(() => {
+        storage.storeUserModel(modelId, buf).then(() => {
             session.conversationData.bmaModel = model
             session.conversationData.bmaModelId = modelId
             session.send(strings.MODEL_RECEIVED(model.Model.Name))
