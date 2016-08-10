@@ -37,6 +37,17 @@
                 .done(function (userProfile) {
                     console.log("user: " + userProfile.first_name);
                 });
+
+            repository.GetModelList()
+                .done(function (models) {
+                    console.log("Models found: " + models.length);
+                    for (var i = 0; i < models.length; i++) {
+                        console.log(models[i].name);
+                    }
+                })
+                .fail(function (error) {
+                    console.error("failed: " + error);
+                });
         }
 
         var onLoginFailed = function (failure) { 

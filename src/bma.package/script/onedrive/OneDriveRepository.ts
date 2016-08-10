@@ -56,8 +56,11 @@ module BMA.OneDrive {
     export interface IOneDrive {
         GetUserProfile(): JQueryPromise<OneDriveUserProfile>;
         //CreateFolder(name:string) : JQueryPromise<string>;
-        //FindFolder(name:string) : JQueryPromise<string>;
-        //EnumerateFiles(folderId:string) : JQueryPromise<OneDriveFile[]>;        
+        
+        // Finds a root folder with given name.
+        // Returns its ID or null, if the folder is not found.
+        FindFolder(name:string) : JQueryPromise<string>;
+        EnumerateFiles(folderId:string) : JQueryPromise<OneDriveFile[]>;        
     }
 
     export interface IOneDriveConnector {
@@ -66,14 +69,28 @@ module BMA.OneDrive {
 
 
 
-    class OneDrive implements IOneDrive{
-        private accessToken: any;
+    class OneDrive implements IOneDrive {
+        private accessToken: string;
 
         constructor(session : any){
-            this.accessToken = session.access_token;
+            this.accessToken = <string>session.access_token;
         }
 
-        public GetUserProfile(): JQueryPromise<OneDriveUserProfile>{
+        private oneDriveApi(method, uri, body?) : JQueryXHR {
+            var settings = { 
+                method: method,
+                headers: { "Authorization": "bearer " + this.accessToken },
+                data: undefined,
+                contentType: undefined
+            };
+            if (body) {
+                settings.data = JSON.stringify(body);
+                settings.contentType = "application/json; charset=utf-8";
+            }
+            return $.ajax("https://api.onedrive.com/v1.0" + uri + "?access_token=" + this.accessToken, settings);                
+        }
+
+        public GetUserProfile(): JQueryPromise<OneDriveUserProfile> {
             var d = $.Deferred();
             WL.api({
                 path: "me",
@@ -89,6 +106,27 @@ module BMA.OneDrive {
                 }
             );
             return d.promise();
+        }
+
+        public FindFolder(name:string) : JQueryPromise<string> {
+            return this.oneDriveApi("GET", "/drive/root/children")
+                .then(function(r) {
+                    var folderId : string = null;
+                    for(var i = 0; i < r.value.length; i++)
+                        if(r.value[i].folder && r.value[i].name == name) {
+                            folderId = r.value[i].id;
+                            break; 
+                        }
+                    // TODO: Check for @odata.next if there are more than 200 items!!!
+                    return folderId;                
+                });
+        }
+
+        public EnumerateFiles(folderId:string) : JQueryPromise<OneDriveFile[]> {
+            return this.oneDriveApi("GET", "/drive/items/" + folderId + "/children")
+                .then(function (r) {
+                    return r.value;
+                });
         }
     }
 
@@ -148,6 +186,31 @@ module BMA.OneDrive {
        public GetUserProfile(): JQueryPromise<OneDriveUserProfile> {
            return this.oneDrive.GetUserProfile();
        }        
+
+       public GetModelList(): JQueryPromise<OneDriveFile[]> {
+           var d = $.Deferred();
+           var oneDrive = this.oneDrive;
+
+           oneDrive.FindFolder("BioModelAnalyzer")
+            .done(function(folderId: string){
+                if (folderId){
+                    oneDrive.EnumerateFiles(folderId)
+                        .done(function (files) {
+                            d.resolve(files);
+                        })
+                        .fail(function (error: any) {
+                            d.reject(error);
+                        });
+                }else{
+                    console.log("not found");
+                    d.reject("todo: create then enum");
+                }
+            })
+            .fail(function(error){
+                d.reject(error);
+            });
+            return d.promise();
+       }
     }
 
 
