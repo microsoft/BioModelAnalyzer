@@ -19,7 +19,6 @@ TODO:
 import * as chevrotain from 'chevrotain'
 import * as _ from 'underscore'
 import * as natural from 'natural'
-import { BMAModel } from '../BMAModel'
 import { Parser, Token, IParserConfig, Lexer, TokenConstructor } from 'chevrotain'
 var extendToken = chevrotain.extendToken;
 
