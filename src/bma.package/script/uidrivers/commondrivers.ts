@@ -503,15 +503,76 @@ module BMA {
             }
         }
 
-        export class LocalStorageDriver implements ILocalStorageDriver {
-            private widget: JQuery;
+        export class LocalStorageDriver extends ModelStorageDriver implements ILocalStorageDriver {
 
             constructor(widget: JQuery) {
-                this.widget = widget;
+                super(widget);
             }
 
             public AddItem(key, item) {
                 this.widget.modelstoragewidget("AddItem", key);
+            }
+            
+            public SetItems(keys) {
+                this.widget.modelstoragewidget({ items: keys });
+            }
+            
+        }
+
+        export class OneDriveStorageDriver extends ModelStorageDriver implements ILocalStorageDriver{
+
+            constructor(widget: JQuery) {
+                super(widget);
+            }
+
+            public AddItem(key, item) {
+                this.widget.modelstoragewidget("AddOneDriveItem", key);
+            }
+
+            public SetItems(keys) {
+                this.widget.modelstoragewidget({ oneDriveItems: keys });
+            }
+            
+            public SetOnCopyToLocalCallback(callback: Function) {
+                this.widget.modelstoragewidget({
+                    setoncopycallback: callback
+                });
+            }
+
+            public SetOnMoveToLocalCallback(callback: Function) {
+                this.widget.modelstoragewidget({
+                    setonmovecallback: callback
+                });
+            }
+
+            public SetOnShareCallback(callback: Function) {
+                this.widget.modelstoragewidget({
+                    setonsharecallback: callback
+                });
+            }
+        }
+
+        export class ModelStorageDriver implements ILocalStorageDriver {
+            private localStorageDriver: BMA.UIDrivers.LocalStorageDriver;
+            private oneDriveStorageDriver: BMA.UIDrivers.OneDriveStorageDriver;
+            protected widget: JQuery;
+            private mode = "local";
+
+            constructor(widget: JQuery) {
+                this.widget = widget;
+
+                this.localStorageDriver = new LocalStorageDriver(this.widget);
+                this.oneDriveStorageDriver = new OneDriveStorageDriver(this.widget);
+            }
+
+            public SetAuthorizationStatus(status: boolean) {
+                this.widget.modelstoragewidget({ isAuthorized: status });
+            }
+
+            public AddItem(key, item) {
+                if (this.mode == "local")
+                    this.localStorageDriver.AddItem(key, item);
+                else this.oneDriveStorageDriver.AddItem(key, item);
             }
 
             public Show() {
@@ -523,14 +584,29 @@ module BMA {
             }
 
             public SetItems(keys) {
-                this.widget.modelstoragewidget({ items: keys });
+                if (this.mode == "local")
+                    this.localStorageDriver.SetItems(keys);
+                else this.oneDriveStorageDriver.SetItems(keys);
             }
 
             public Message(msg: string) {
                 this.widget.modelstoragewidget("Message", msg);
             }
-        }
 
+            public SetOnModeChangedCallback() {
+                var that = this;
+                var onmodechanged = function () {
+                    if (that.mode == "local") 
+                        that.mode = "oneDrive";
+                    else that.mode = "local";
+                };
+
+                this.widget.modelstoragewidget({
+                    onmodechangedcallback: onmodechanged
+                });
+            }
+
+        }
 
         export class ModelFileLoader implements IFileLoader {
             private fileInput: JQuery;

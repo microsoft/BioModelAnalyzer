@@ -123,6 +123,12 @@
             var that = this;
             this.options.items.push(item);
             this.localStorage.localstoragewidget( "AddItem", item );
+            this.refresh();
+        },
+
+        AddOneDriveItem: function (item) {
+            var that = this;
+            this.options.oneDriveItems.push(item);
             this.oneDriveStorage.onedrivestoragewidget("AddItem", item);
             this.refresh();
         },
