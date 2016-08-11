@@ -24,7 +24,8 @@ The final step is to create a local configuration file `config/local.json` with 
 ```json
 {
     "LUIS_MODEL_ID": "...",
-    "LUIS_KEY": "..."
+    "LUIS_KEY": "...",
+    "BING_SPELLCHECK_KEY": "..."
 }
 ```
 
