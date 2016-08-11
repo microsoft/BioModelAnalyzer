@@ -3,7 +3,6 @@
 <head>
     <title></title>
 	<meta charset="utf-8" />
-    <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
     <link rel="stylesheet" href="../css/bma.css" type="text/css" />
     <script src="../Scripts/jquery-2.1.4.min.js"></script>
     <script src="../Scripts/jquery-ui-1.11.4.min.js"></script>
@@ -18,7 +17,17 @@
 
         $(document).ready(function () {
             window.Commands = new BMA.CommandRegistry();
-            $("#repo").modelstoragewidget({ items: ["model1", "model2"], oneDriveItems: ["modelOd1", "modelOD2"]});
+            var ls = $("<div></div>").appendTo('body');
+            ls.localstoragewidget({ items: ["model1", "model2"] });
+            var ods = $("<div></div>");
+            ods.onedrivestoragewidget({items: ["modelOd1", "modelOD2"]});
+            $("#repo").modelstoragewidget({ localStorageWidget: ls/*items: ["model1", "model2"]*/, oneDriveWidget: ods });
+
+            $("#repo").modelstoragewidget({
+                onsigninonedrive: function () {
+                    $("#repo").modelstoragewidget({ isAuthorized: true });
+                }
+            });
         });
 
     </script>

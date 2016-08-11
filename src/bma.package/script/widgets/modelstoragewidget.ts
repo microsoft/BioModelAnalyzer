@@ -50,15 +50,26 @@
             this.localStorage = $("<div></div>").addClass("localstorage-repo").appendTo(this.element);
             this.oneDriveStorage = $("<div></div>").addClass("localstorage-repo").appendTo(this.element); 
 
-            this.localStorage.localstoragewidget();
-            this.oneDriveStorage.onedrivestoragewidget();
-            if (this.options.items) {
-                this.localStorage.localstoragewidget({ items: that.options.items });
+            if (that.options.localStorageWidget) {
+                $(that.localStorage).replaceWith(that.options.localStorageWidget);
+                that.localStorage = that.options.localStorageWidget;
+                that.localStorage.addClass("localstorage-repo");
+            }
+            //this.localStorage.localstoragewidget();
+            if (that.options.oneDriveWidget) {
+                $(that.oneDriveStorage).replaceWith(that.options.oneDriveWidget);
+                that.oneDriveStorage = that.options.oneDriveWidget;
+                that.oneDriveStorage.addClass("localstorage-repo");
             }
 
-            if (this.options.oneDriveItems) {
-                this.oneDriveStorage.onedrivestoragewidget({ items: that.options.oneDriveItems });
-            }
+            //this.oneDriveStorage.onedrivestoragewidget();
+            //if (this.options.items) {
+            //    this.localStorage.localstoragewidget({ items: that.options.items });
+            //}
+
+            //if (this.options.oneDriveItems) {
+            //    this.oneDriveStorage.onedrivestoragewidget({ items: that.options.oneDriveItems });
+            //}
             
             this.oneDriveStorage.hide();
 
@@ -119,33 +130,41 @@
             this.message.text(msg);
         },
 
-        AddItem: function (item) {
-            var that = this;
-            this.options.items.push(item);
-            this.localStorage.localstoragewidget( "AddItem", item );
-            this.refresh();
-        },
+        //AddItem: function (item) {
+        //    var that = this;
+        //    this.options.items.push(item);
+        //    this.localStorage.localstoragewidget( "AddItem", item );
+        //    this.refresh();
+        //},
 
-        AddOneDriveItem: function (item) {
-            var that = this;
-            this.options.oneDriveItems.push(item);
-            this.oneDriveStorage.onedrivestoragewidget("AddItem", item);
-            this.refresh();
-        },
+        //AddOneDriveItem: function (item) {
+        //    var that = this;
+        //    this.options.oneDriveItems.push(item);
+        //    this.oneDriveStorage.onedrivestoragewidget("AddItem", item);
+        //    this.refresh();
+        //},
+
+        //GetLocalStorageWidget: function () {
+        //    return this.localStorage;
+        //},
+
+        //GetOneDriveStorageWidget: function () {
+        //    return this.oneDriveStorage;
+        //},
 
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
-                case "items":
-                    this.options.items = value;
-                    this.localStorage.localstoragewidget({ items: that.options.items });
-                    this.refresh();
-                    break;
-                case "oneDriveItems":
-                    this.options.oneDriveItems = value;
-                    this.oneDriveStorage.onedrivestoragewidget({ items: that.options.oneDriveItems});
-                    this.refresh();
-                    break;
+                //case "items":
+                //    this.options.items = value;
+                //    this.localStorage.localstoragewidget({ items: that.options.items });
+                //    this.refresh();
+                //    break;
+                //case "oneDriveItems":
+                //    this.options.oneDriveItems = value;
+                //    this.oneDriveStorage.onedrivestoragewidget({ items: that.options.oneDriveItems});
+                //    this.refresh();
+                //    break;
                 case "onsigninonedrive":
                     that.options.onsigninonedrive = value;
                     break;
@@ -165,6 +184,22 @@
 
                         that.singinOneDriveBtn.text("Sign in with OneDrive");
                         that.switcher.hide();
+                    }
+                    break;
+                case "localStorageWidget":
+                    this.options.localStorageWidget = value;
+                    if (value) {
+                        $(that.localStorage).replaceWith(value);
+                        that.localStorage = that.options.localStorageWidget;
+                        that.localStorage.addClass("localstorage-repo");
+                    }
+                    break;
+                case "oneDriveWidget":
+                    this.options.oneDriveWidget = value;
+                    if (value) {
+                        $(that.oneDriveStorage).replaceWith(value);
+                        that.oneDriveStorage = that.options.oneDriveWidget;
+                        that.oneDriveStorage.addClass("localstorage-repo");
                     }
                     break;
             }

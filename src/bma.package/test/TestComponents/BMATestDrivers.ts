@@ -58,7 +58,7 @@ module BMA {
             //OnRepositoryUpdated();
         }
 
-        export class LocalStorageTestDriver implements BMA.UIDrivers.ILocalStorageDriver {
+        export class LocalStorageTestDriver implements BMA.UIDrivers.IStorageDriver {
 
             public Message(msg: string) { }
 

@@ -19,6 +19,9 @@
 /// <reference path="script\presenters\furthertestingpresenter.ts"/>
 /// <reference path="script\presenters\simulationpresenter.ts"/>
 /// <reference path="script\presenters\formulavalidationpresenter.ts"/>
+/// <reference path="script\presenters\onedrivestoragepresenter.ts"/>
+/// <reference path="script\presenters\storagepresenter.ts"/>
+/// <reference path="script\presenters\localstoragepresenter.ts"/>
 /// <reference path="script\SVGHelper.ts"/>
 /// <reference path="script\changeschecker.ts"/>
 /// <reference path="script\widgets\drawingsurface.ts"/>
@@ -467,7 +470,16 @@ function loadScript(version) {
     var localStorageWidget = $('<div></div>')
         .addClass('window')
         .appendTo('#drawingSurceContainer')
-        .modelstoragewidget();
+        .localstoragewidget();
+    var oneDriveStorageWidget = $("<div></div>").addClass("window")
+        .appendTo('#drawingSurceContainer').onedrivestoragewidget();
+    var modalStorageWidget = $('<div></div>')
+        .addClass('window')
+        .appendTo('#drawingSurceContainer')
+        .modelstoragewidget({
+            localStorageWidget: localStorageWidget,
+            oneDriveWidget: oneDriveStorageWidget
+        });
 
     $("#editor").bmaeditor();
 
@@ -568,11 +580,14 @@ function loadScript(version) {
     var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
     var accordionHider = new BMA.UIDrivers.AccordionHider($("#analytics"));
     var localStorageDriver = new BMA.UIDrivers.LocalStorageDriver(localStorageWidget);
+    var oneDriveStorageDriver = new BMA.UIDrivers.OneDriveStorageDriver(oneDriveStorageWidget);
+    var modelStorageDriver = new BMA.UIDrivers.ModelStorageDriver(modalStorageWidget, localStorageDriver, oneDriveStorageDriver);
     //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
     //var keyframecompactDriver = new BMA.UIDrivers.KeyframesList($('#tabs-3').find('.keyframe-compact'));
     var ltlDriver = new BMA.UIDrivers.LTLViewer($("#analytics"), $('#tabs-3'));
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
+    var oneDriveRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);
 
@@ -606,7 +621,8 @@ function loadScript(version) {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService, waitScreen);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
-
+    var oneDriveStoragePresenter = new BMA.Presenters.OneDriveStoragePresenter(appModel, oneDriveStorageDriver, oneDriveRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
+    var modelStoragePresenter = new BMA.Presenters.StoragePresenter(appModel, modelStorageDriver, oneDriveStoragePresenter, localStoragePresenter, messagebox, changesCheckerTool, logService, waitScreen);
     //LTL Presenters
     var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlSimulationService, ltlPolarityService, lratestservice, popupDriver, exportService, fileLoaderDriver, logService);
 

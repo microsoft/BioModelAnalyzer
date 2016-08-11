@@ -2,14 +2,15 @@
     export module Presenters {
         export class LocalStoragePresenter {
             private appModel: BMA.Model.AppModel;
-            private driver: BMA.UIDrivers.ILocalStorageDriver;
+            private driver: BMA.UIDrivers.LocalStorageDriver;
             private tool: BMA.UIDrivers.IModelRepository;
             private messagebox: BMA.UIDrivers.IMessageServiсe;
             private checker: BMA.UIDrivers.ICheckChanges;
+            private setOnCopy: Function;
 
             constructor(
                 appModel: BMA.Model.AppModel,
-                editor: BMA.UIDrivers.ILocalStorageDriver,
+                editor: BMA.UIDrivers.LocalStorageDriver,
                 tool: BMA.UIDrivers.IModelRepository,
                 messagebox: BMA.UIDrivers.IMessageServiсe,
                 checker: BMA.UIDrivers.ICheckChanges,
@@ -41,7 +42,11 @@
                     });
                 });
 
-                window.Commands.On("LocalStorageRemoveModel", function (key) {
+                //window.Commands.On("LocalStorageRemoveModel", function (key) {
+                //    that.tool.RemoveModel(key);
+                //});
+
+                that.driver.SetOnRemoveModel(function (key) {
                     that.tool.RemoveModel(key);
                 });
 
@@ -66,7 +71,23 @@
                     }
                 });
 
-                window.Commands.On("LocalStorageLoadModel", function (key) {
+                that.driver.SetOnCopyToOneDriveCallback(function (key) {
+                    if (that.tool.IsInRepo(key)) {
+                        that.tool.LoadModel(key).done(function (result) {
+                            if (that.setOnCopy !== undefined)
+                                that.setOnCopy(key, result);
+                        }).fail(function (result) {
+                            that.messagebox.Show(JSON.stringify(result));
+                        });
+                    }
+                    else {
+                        that.messagebox.Show("The model was removed from outside");
+                        window.Commands.Execute("OneDriveStorageChanged", {});
+                    }
+                });
+
+                that.driver.SetOnLoadModel(function (key) {
+                //window.Commands.On("LocalStorageLoadModel", function (key) {
                     try {
                         if (that.checker.IsChanged(that.appModel)) {
                             var userDialog = $('<div></div>').appendTo('body').userdialog({
@@ -130,6 +151,10 @@
                 });
 
                 window.Commands.Execute("LocalStorageChanged", {});
+            }
+
+            public SetOnCopyCallback(callback: Function) {
+                this.setOnCopy = callback;
             }
         }
     }

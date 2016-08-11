@@ -7,6 +7,8 @@
 
         options: {
             items: [],
+            onremovemodel: undefined,
+            onloadmodel: undefined,
         },
 
         _create: function () {
@@ -41,15 +43,19 @@
                 //var a = $('<a></a>').addClass('delete').appendTo(li);
                 var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);// $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//
                 removeBtn.bind("click", function (event) {
-                    event.stopPropagation();
-                    window.Commands.Execute("LocalStorageRemoveModel", "user."+items[$(this).parent().index()]);
+                    if (that.options.onremovemodel !== undefined) 
+                        that.options.onremovemodel("user." + items[$(this).parent().index()]);
+                    //event.stopPropagation();
+                    //window.Commands.Execute("LocalStorageRemoveModel", "user."+items[$(this).parent().index()]);
                 })
             }
 
             this.ol.selectable({
                 stop: function () {
                     var ind = that.repo.find(".ui-selected").index();
-                    window.Commands.Execute("LocalStorageLoadModel", "user."+items[ind]);
+                    if (that.options.onloadmodel !== undefined)
+                        that.options.onloadmodel("user." + items[ind]);
+                    //window.Commands.Execute("LocalStorageLoadModel", "user."+items[ind]);
                 }
             });
 
@@ -71,18 +77,18 @@
                     { title: "Move to OneDrive", cmd: "MoveToOneDrive" },
                     { title: "Copy to OneDrive", cmd: "CopyToOneDrive" },
                 ],
-                beforeOpen: function (event, ui) {
-                    ui.menu.zIndex(50);
-                    if ($(ui.target.context.parentElement).hasClass("table-tags"))
-                        return false;
-                },
                 select: function (event, ui) {
                     var args: any = {};
-                    args.command = ui.cmd;
-                    args.column = $(ui.target.context).index();
+                    var idx = $(ui.target.context).parent().index();
 
-                    if (that.options.onContextMenuItemSelected !== undefined)
-                        that.options.onContextMenuItemSelected(args);
+                    if (that.options.setoncopytoonedrive !== undefined) 
+                        that.options.setoncopytoonedrive("user." + that.options.items[idx]);
+
+                    if ($(ui.item.context).text() == "Move to OneDrive") {
+                        if (that.options.onremovemodel !== undefined)
+                            that.options.onremovemodel("user." + that.options.items[idx]);
+                        //window.Commands.Execute("LocalStorageRemoveModel", "user." + that.options.items[idx]);
+                    }
                 }
             });
         },
@@ -93,14 +99,20 @@
                     this.options.items = value;
                     this.refresh();
                     break;
+                case "onloadmodel":
+                    this.options.onloadmodel = value;
+                    break;
+                case "onremovemodel":
+                    this.options.onremovemodel = value;
+                    break;
+                case "setoncopytoonedrive":
+                    this.options.setoncopytoonedrive = value;
+                    break;
             }
-            //$.Widget.prototype._setOption.apply(this, arguments);
-            //this._super("_setOption", key, value);
             this._super(key, value);
         },
 
         destroy: function () {
-            $.Widget.prototype.destroy.call(this);
             this.element.empty();
         }
 

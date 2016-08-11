@@ -127,7 +127,7 @@ module BMA {
             SetOnCreateStateRequested(callback);
         }
 
-        export interface ILocalStorageDriver {
+        export interface IStorageDriver {
             SetItems(keys);
             AddItem(key, item);
             Show();
