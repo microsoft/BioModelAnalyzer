@@ -178,6 +178,7 @@ function receiveModelAttachmentStep (bot: builder.UniversalBot, session: builder
             next()
         }).catch(e => {
             session.send(strings.HTTP_ERROR(e))
+            session.endDialog()
         })
     })
 }
