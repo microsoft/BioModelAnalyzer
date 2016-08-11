@@ -4,7 +4,7 @@ import * as request from 'request'
 import * as qs from 'querystring'
 import {v4 as uuid} from 'node-uuid'
 import * as strings from './strings'
-import NLParser from '../NLParser/NLParser'
+import {default as NLParser, ParserResponseType } from '../NLParser/NLParser'
 import Storage from '../storage'
 import {downloadAttachments} from '../attachments'
 
@@ -69,14 +69,14 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
         }
     ])
 
-    function handleLTLQuery (session) {
+    function handleLTLQuery (session: builder.Session) {
         let text = session.message.text
-        let ltl = NLParser.parse(text)
-        if (!ltl.AST) {
+        let result = NLParser.parse(text, session.conversationData.bmaModel)
+        if (result.responseType !== ParserResponseType.SUCCESS) {
             session.send('I did not understand your query')
             return
         }
-        session.send('Try this: ' + JSON.stringify(ltl.AST))
+        session.send('Try this: ' + JSON.stringify(result.AST))
     }
 
     intents.matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
