@@ -288,6 +288,7 @@
     <TypeScriptCompile Include="script\presenters\storagepresenter.ts" />
     <TypeScriptCompile Include="script\widgets\modelstoragewidget.ts" />
     <TypeScriptCompile Include="script\widgets\onedrivestoragewidget.ts" />
+    <TypeScriptCompile Include="script\onedrive\OneDriveRepository.ts" />
     <TypeScriptCompile Include="test\ConvertTargetFunctionToOperationTests.ts" />
     <TypeScriptCompile Include="Scripts\rx.aggregates.d.ts" />
     <TypeScriptCompile Include="Scripts\rx.lite.d.ts" />
