@@ -87,6 +87,7 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
                 builder.Prompts.attachment(session, strings.MODEL_SEND_PROMPT)
             } else {
                 handleLTLQuery(session)
+                session.endDialog()
             }
         },
         (session, results, next) => receiveModelAttachmentStep(bot, session, results, next),
