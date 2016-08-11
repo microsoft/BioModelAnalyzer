@@ -11,10 +11,15 @@ TODO:
 15) check operator precedence
 16) prepend with a missing eventually if no temporal operator provided
 17) add not equal to param
+18) handle variables with space in them
+19) convert variable usage to notation
+20) make sure variables are not stemmed
 */
 
 import * as chevrotain from 'chevrotain'
+import * as _ from 'underscore'
 import * as natural from 'natural'
+import { BMAModel } from '../BMAModel'
 import { Parser, Token, IParserConfig, Lexer, TokenConstructor } from 'chevrotain'
 var extendToken = chevrotain.extendToken;
 
@@ -62,7 +67,21 @@ WhiteSpace.GROUP = Lexer.SKIPPED
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
-let allowedTokens = [WhiteSpace, IntegerLiteral, If, Then, GThan, LThan, GThanEq, LThanEq, Eq,NotEq, And, Or, Implies, Eventually, Always, Next, Not, Upto, Until, WUntil, Release, Identifier]
+let allowedTokens = [WhiteSpace, IntegerLiteral, If, Then, GThan, LThan, GThanEq, LThanEq, Eq, NotEq, And, Or, Implies, Eventually, Always, Next, Not, Upto, Until, WUntil, Release, Identifier]
+
+export enum ParserResponseType {
+    SUCCESS,
+    NO_PARSABLE_TOKEN_FOUND,
+    PARSE_ERROR,
+    UNKNOWN_VARIABLES_FOUND
+}
+
+export interface ParserResponse {
+    responseType: ParserResponseType
+    errors?: any
+    AST?: any
+}
+
 
 const configuration: IParserConfig = {
     recoveryEnabled: true
@@ -331,13 +350,46 @@ export default class NLParser extends Parser {
         Parser.performSelfAnalysis(this);
     }
 
-    static parse(sentence: string) {
+    static parse(sentence: string, bmaModel: BMAModel): ParserResponse {
+        let tokensLessIdentifier = _.initial(allowedTokens)
         sentence = sentence.toLowerCase().split(" ").map(natural.PorterStemmer.stem).join(" ")
-        var lexedTokens = (new Lexer(allowedTokens)).tokenize(sentence).tokens
-        var parser = new NLParser(lexedTokens)
-        return {
-            AST: parser.formula(),
-            errors: parser.errors
+        let lexedTokens = (new Lexer(allowedTokens, true)).tokenize(sentence).tokens
+        //partition tokens that are neither operators nor model variables
+        let modelVariables = _.pluck(bmaModel.variables, "Name")
+        let partitionedTokens = _.partition(lexedTokens, (t) => tokensLessIdentifier.some((r) => new RegExp(r.PATTERN).test(t.image)) || _.contains(modelVariables, t.image))
+        //return with an error if unknown variables found in the token stream
+        let tokens = {
+            accepted: partitionedTokens[0],
+            rejected: partitionedTokens[1]
+        }
+        if (!_.isEmpty(tokens.accepted)) {
+            let arithmeticOperators = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
+            //filter accepted tokens to reject relational operators that do not have any operands
+            var filteredTokens = []
+            for (var i = 0; i < tokens.accepted.length; i++) {
+                if (!(arithmeticOperators.some((op) => new RegExp(op.PATTERN).test(tokens.accepted[i].image)) && (i < 1 || i > tokens.accepted.length - 1 || !new RegExp(IntegerLiteral.PATTERN).test(tokens.accepted[i + 1].image) || (!new RegExp(Identifier.PATTERN).test(tokens.accepted[i - 1].image))))) {
+                    filteredTokens.push(tokens.accepted[i])
+                }
+            }
+
+            var parser = new NLParser(tokens.accepted)
+            var AST = parser.formula()
+            if (AST) {
+                return {
+                    responseType: ParserResponseType.SUCCESS,
+                    AST: AST
+                }
+            } else {
+                return {
+                    responseType: ParserResponseType.PARSE_ERROR,
+                    errors: parser.errors,
+                }
+            }
+        } else {
+            return {
+                responseType: ParserResponseType.NO_PARSABLE_TOKEN_FOUND,
+                errors: parser.errors,
+            }
         }
     }
 }

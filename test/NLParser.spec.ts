@@ -4,8 +4,22 @@ var expect = chai.expect;
 
 describe('token parsing', function () {
     it('parse() should return an AST (Abstract Syntax Tree) for a correct set of input tokens', () => {
+        var model = {
+            Name: "testModel",
+            variables: [{
+                Name: "a",
+                Id: 0,
+                RangeFrom: 0,
+                RangeTo: 1
+            }, {
+                Name: "b",
+                Id: 0,
+                RangeFrom: 0,
+                RangeTo: 1
+            }]
+        }
         var sentence = "a=1 and b=2"
-        var parserResponse = NLParser.parse(sentence)
+        var parserResponse = NLParser.parse(sentence, model)
         var expected = {
             "type": "ltlFormula",
             "left": {
@@ -54,8 +68,22 @@ describe('token parsing', function () {
         expect(JSON.stringify(parserResponse.AST)).to.equal(JSON.stringify(expected))
     })
     it('parse() should prepend trailing unary operators maintaining their ordering', () => {
+        var model = {
+            Name: "testModel",
+            variables: [{
+                Name: "a",
+                Id: 0,
+                RangeFrom: 0,
+                RangeTo: 1
+            }, {
+                Name: "b",
+                Id: 0,
+                RangeFrom: 0,
+                RangeTo: 1
+            }]
+        }
         var sentence = "a=1 and b=2 happen eventually"
-        var parserResponse = NLParser.parse(sentence)
+        var parserResponse = NLParser.parse(sentence, model)
         var expected = {
             "type": "ltlFormula",
             "left": {
@@ -108,15 +136,34 @@ describe('token parsing', function () {
         expect(JSON.stringify(parserResponse.AST)).to.equal(JSON.stringify(expected))
     })
     it('parse() should re-write if (expression) then (expression) to:  expression implies expression', () => {
-        var sentence = "eventually if a=1 and c=1 then d=1"
-        var parserResponse = NLParser.parse(sentence)
+        var model = {
+            Name: "testModel",
+            variables: [{
+                Name: "a",
+                Id: 0,
+                RangeFrom: 0,
+                RangeTo: 1
+            }, {
+                Name: "c",
+                Id: 0,
+                RangeFrom: 0,
+                RangeTo: 1
+            }, {
+                Name: "d",
+                Id: 0,
+                RangeFrom: 0,
+                RangeTo: 1
+            }]
+        }
+        var sentence = "if a=1 and c=1 then d=1 eventually"
+        var parserResponse = NLParser.parse(sentence, model)
         var expected = {
             "type": "ltlFormula",
             "left": {
-                "type": "ltlFormula",
+                "type": "unaryOperator",
+                "value": "eventually",
                 "left": {
-                    "type": "unaryOperator",
-                    "value": "eventually",
+                    "type": "ltlFormula",
                     "left": {
                         "type": "expression",
                         "value": {
@@ -197,9 +244,105 @@ describe('token parsing', function () {
         }
         expect(JSON.stringify(parserResponse.AST)).to.equal(JSON.stringify(expected))
     })
+    it('parse() should filter unknown tokens', () => {
+        var model = {
+            Name: "testModel",
+            variables: [{
+                Name: "x",
+                Id: 0,
+                RangeFrom: 0,
+                RangeTo: 1
+            }, {
+                Name: "y",
+                Id: 0,
+                RangeFrom: 0,
+                RangeTo: 1
+            }]
+        }
+        var sentence = "show me a simulation where if x=1 then y=5 eventually"
+        var parserResponse = NLParser.parse(sentence, model)
+        var expected = {
+            "type": "ltlFormula",
+            "left": {
+                "type": "unaryOperator",
+                "value": "eventually",
+                "left": {
+                    "type": "ltlFormula",
+                    "left": {
+                        "type": "expression",
+                        "value": {
+                            "type": "binaryOperator",
+                            "value": "implies"
+                        },
+                        "left": {
+                            "type": "expression",
+                            "left": {
+                                "type": "term",
+                                "left": {
+                                    "type": "factor",
+                                    "left": {
+                                        "type": "factor",
+                                        "left": {
+                                            "type": "relationalExpression",
+                                            "value": {
+                                                "type": "relationalOperator",
+                                                "value": "="
+                                            },
+                                            "left": "x",
+                                            "right": 1
+                                        }
+                                    }
+                                },
+                                "right": null
+                            },
+                            "right": null
+                        },
+                        "right": {
+                            "type": "expression",
+                            "left": {
+                                "type": "term",
+                                "left": {
+                                    "type": "factor",
+                                    "left": {
+                                        "type": "factor",
+                                        "left": {
+                                            "type": "relationalExpression",
+                                            "value": {
+                                                "type": "relationalOperator",
+                                                "value": "="
+                                            },
+                                            "left": "y",
+                                            "right": 5
+                                        }
+                                    }
+                                },
+                                "right": null
+                            },
+                            "right": null
+                        }
+                    }
+                }
+            }
+        }
+        expect(JSON.stringify(parserResponse.AST)).to.equal(JSON.stringify(expected))
+    })
     it('parse() should return an error set for an invalid set of input tokens', () => {
-        var sentence = "if a=1 and c=1"
-        var parserResponse = NLParser.parse(sentence)
+        var model = {
+            Name: "testModel",
+            variables: [{
+                Name: "a",
+                Id: 0,
+                RangeFrom: 0,
+                RangeTo: 1
+            }, {
+                Name: "b",
+                Id: 0,
+                RangeFrom: 0,
+                RangeTo: 1
+            }]
+        }
+        var sentence = "sdfsdf sdfsdf sdfsdf sdf sdf sdf sd f if a=1 and b=1"
+        var parserResponse = NLParser.parse(sentence, model)
         var expected = '[{"name":"MismatchedTokenException","message":"Expecting --> then <-- but found --> \'\' <--","token":{"image":"","offset":-1,"startLine":-1,"startColumn":-1,"endLine":-1,"endColumn":-1,"isInsertedInRecovery":false},"resyncedTokens":[],"context":{"ruleStack":["formula","ifFormula"],"ruleOccurrenceStack":[1,1]}}]'
         expect(JSON.stringify(parserResponse.errors)).to.equal(expected)
     })
