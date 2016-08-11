@@ -350,12 +350,12 @@ export default class NLParser extends Parser {
         Parser.performSelfAnalysis(this);
     }
 
-    static parse(sentence: string, bmaModel: BMAModel): ParserResponse {
+    static parse(sentence: string, bmaModel): ParserResponse {
         let tokensLessIdentifier = _.initial(allowedTokens)
         sentence = sentence.toLowerCase().split(" ").map(natural.PorterStemmer.stem).join(" ")
         let lexedTokens = (new Lexer(allowedTokens, true)).tokenize(sentence).tokens
         //partition tokens that are neither operators nor model variables
-        let modelVariables = _.pluck(bmaModel.variables, "Name")
+        let modelVariables = _.pluck(bmaModel.Model.Variables, "Name")
         let partitionedTokens = _.partition(lexedTokens, (t) => tokensLessIdentifier.some((r) => new RegExp(r.PATTERN).test(t.image)) || _.contains(modelVariables, t.image))
         //return with an error if unknown variables found in the token stream
         let tokens = {

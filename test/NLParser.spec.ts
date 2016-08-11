@@ -4,20 +4,7 @@ var expect = chai.expect;
 
 describe('token parsing', function () {
     it('parse() should return an AST (Abstract Syntax Tree) for a correct set of input tokens', () => {
-        var model = {
-            Name: "testModel",
-            variables: [{
-                Name: "a",
-                Id: 0,
-                RangeFrom: 0,
-                RangeTo: 1
-            }, {
-                Name: "b",
-                Id: 0,
-                RangeFrom: 0,
-                RangeTo: 1
-            }]
-        }
+        var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "a", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "b", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
         var sentence = "a=1 and b=2"
         var parserResponse = NLParser.parse(sentence, model)
         var expected = {
@@ -68,20 +55,7 @@ describe('token parsing', function () {
         expect(JSON.stringify(parserResponse.AST)).to.equal(JSON.stringify(expected))
     })
     it('parse() should prepend trailing unary operators maintaining their ordering', () => {
-        var model = {
-            Name: "testModel",
-            variables: [{
-                Name: "a",
-                Id: 0,
-                RangeFrom: 0,
-                RangeTo: 1
-            }, {
-                Name: "b",
-                Id: 0,
-                RangeFrom: 0,
-                RangeTo: 1
-            }]
-        }
+        var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "a", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "b", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
         var sentence = "a=1 and b=2 happen eventually"
         var parserResponse = NLParser.parse(sentence, model)
         var expected = {
@@ -136,25 +110,7 @@ describe('token parsing', function () {
         expect(JSON.stringify(parserResponse.AST)).to.equal(JSON.stringify(expected))
     })
     it('parse() should re-write if (expression) then (expression) to:  expression implies expression', () => {
-        var model = {
-            Name: "testModel",
-            variables: [{
-                Name: "a",
-                Id: 0,
-                RangeFrom: 0,
-                RangeTo: 1
-            }, {
-                Name: "c",
-                Id: 0,
-                RangeFrom: 0,
-                RangeTo: 1
-            }, {
-                Name: "d",
-                Id: 0,
-                RangeFrom: 0,
-                RangeTo: 1
-            }]
-        }
+        var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "a", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "c", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" },{ "Name": "d", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
         var sentence = "if a=1 and c=1 then d=1 eventually"
         var parserResponse = NLParser.parse(sentence, model)
         var expected = {
@@ -245,20 +201,7 @@ describe('token parsing', function () {
         expect(JSON.stringify(parserResponse.AST)).to.equal(JSON.stringify(expected))
     })
     it('parse() should filter unknown tokens', () => {
-        var model = {
-            Name: "testModel",
-            variables: [{
-                Name: "x",
-                Id: 0,
-                RangeFrom: 0,
-                RangeTo: 1
-            }, {
-                Name: "y",
-                Id: 0,
-                RangeFrom: 0,
-                RangeTo: 1
-            }]
-        }
+        var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "x", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "y", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
         var sentence = "show me a simulation where if x=1 then y=5 eventually"
         var parserResponse = NLParser.parse(sentence, model)
         var expected = {
@@ -327,20 +270,7 @@ describe('token parsing', function () {
         expect(JSON.stringify(parserResponse.AST)).to.equal(JSON.stringify(expected))
     })
     it('parse() should return an error set for an invalid set of input tokens', () => {
-        var model = {
-            Name: "testModel",
-            variables: [{
-                Name: "a",
-                Id: 0,
-                RangeFrom: 0,
-                RangeTo: 1
-            }, {
-                Name: "b",
-                Id: 0,
-                RangeFrom: 0,
-                RangeTo: 1
-            }]
-        }
+        var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "a", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "b", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
         var sentence = "sdfsdf sdfsdf sdfsdf sdf sdf sdf sd f if a=1 and b=1"
         var parserResponse = NLParser.parse(sentence, model)
         var expected = '[{"name":"MismatchedTokenException","message":"Expecting --> then <-- but found --> \'\' <--","token":{"image":"","offset":-1,"startLine":-1,"startColumn":-1,"endLine":-1,"endColumn":-1,"isInsertedInRecovery":false},"resyncedTokens":[],"context":{"ruleStack":["formula","ifFormula"],"ruleOccurrenceStack":[1,1]}}]'
