@@ -1,6 +1,7 @@
 import * as builder from 'botbuilder'
 import * as config from 'config'
 import * as request from 'request'
+import * as qs from 'querystring'
 import {v4 as uuid} from 'node-uuid'
 import * as strings from './strings'
 import NLParser from '../NLParser/NLParser'
@@ -96,10 +97,52 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
     
     intents.onDefault(function (session, results, next) {
         let attachments = session.message.attachments
-        if (attachments.length > 0) {
+        if (attachments && attachments.length > 0) {
             receiveModelAttachmentStep(bot, session, results, next)
         } else {
-            session.send(strings.UNKNOWN_INTENT)
+            if (session.conversationData.hasSpellChecked) {
+                // FIXME reset spellcheck state in other intents too!
+                session.conversationData.hasSpellChecked = false
+                session.send(strings.UNKNOWN_INTENT)
+                return
+            }
+
+            let inputText = session.message.text
+            let params = {
+				// Request parameters, 
+				text: inputText,
+				mode: 'proof'
+			}
+            let spellUrl = 'https://api.cognitive.microsoft.com/bing/v5.0/spellcheck/?' + qs.stringify(params)
+            request(spellUrl, {
+                headers: {
+                    'Ocp-Apim-Subscription-Key': config.get('BING_SPELLCHECK_KEY')
+                },
+                json: true
+            }, (error, response, body) => {
+                if (error || body.flaggedTokens.length === 0) {
+                    session.send(strings.UNKNOWN_INTENT)
+                    return
+                }
+
+                let inputOffset = 0
+                let correctedText = ''
+				for (let flaggedToken of body.flaggedTokens) {
+                    let offset = flaggedToken.offset
+                    if (inputOffset < offset) {
+                        correctedText += inputText.substring(inputOffset, offset)
+                    }
+                    correctedText += flaggedToken.suggestions[0].suggestion
+                    inputOffset = offset + flaggedToken.token.length
+				}
+                session.conversationData.hasSpellChecked = true
+                
+                session.send(strings.SPELLCHECK_ASSUMPTION(correctedText))
+
+                let message = new builder.Message(session)
+                message.text(correctedText)
+                session.dispatch(session.sessionState, message.toMessage())
+            })
         }
     })
 }
