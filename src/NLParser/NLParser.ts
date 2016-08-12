@@ -16,37 +16,43 @@ import * as ASTUtils from './ASTUtils'
 import { Parser, Token, IParserConfig, Lexer, TokenConstructor } from 'chevrotain'
 var extendToken = chevrotain.extendToken;
 
+export enum TokenType {
+    LOGICAL_BINARY,
+    LOGICAL_UNARY,
+    OTHER
+}
+
 /**
  *  GRAMMAR TOKENS
  */
-let If = generateStemmedTokenDefinition("If", ["if"])
-let Then = generateStemmedTokenDefinition("Then", ["then"])
+let If = generateStemmedTokenDefinition("If", ["if"],TokenType.OTHER)
+let Then = generateStemmedTokenDefinition("Then", ["then"],TokenType.OTHER)
 /**
  * Arithmetic operator tokens
  */
-let GThan = generateStemmedTokenDefinition("GThan", [">", "greater than", "bigger than"])
-let LThan = generateStemmedTokenDefinition("LThan", ["<", "less than", "smaller than"])
-let GThanEq = generateStemmedTokenDefinition("GThanEq", [">=", "greater than or equal to", "bigger than or equal to"])
-let LThanEq = generateStemmedTokenDefinition("LThanEq", ["<=", "less than or equal to", "smaller than or equal to"])
-let Eq = generateStemmedTokenDefinition("Eq", ["=", "is equal to", "is same as", "equal", "is"])
-let NotEq = generateStemmedTokenDefinition("NotEq", ["!=", "is not equal to", "is not same as", "not equal", "is not"])
+let GThan = generateStemmedTokenDefinition("GThan", [">", "greater than", "bigger than"],TokenType.OTHER)
+let LThan = generateStemmedTokenDefinition("LThan", ["<", "less than", "smaller than"],TokenType.OTHER)
+let GThanEq = generateStemmedTokenDefinition("GThanEq", [">=", "greater than or equal to", "bigger than or equal to"],TokenType.OTHER)
+let LThanEq = generateStemmedTokenDefinition("LThanEq", ["<=", "less than or equal to", "smaller than or equal to"],TokenType.OTHER)
+let Eq = generateStemmedTokenDefinition("Eq", ["=", "is equal to", "is same as", "equal", "is"],TokenType.OTHER)
+let NotEq = generateStemmedTokenDefinition("NotEq", ["!=", "is not equal to", "is not same as", "not equal", "is not"],TokenType.OTHER)
 /** 
  *  Boolean operator tokens
  */
-let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"], true)
-let Or = generateStemmedTokenDefinition("Or", ["or", "either"], true)
-let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"], true)
+let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"],TokenType.LOGICAL_BINARY)
+let Or = generateStemmedTokenDefinition("Or", ["or", "either"],TokenType.LOGICAL_BINARY)
+let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"],TokenType.LOGICAL_BINARY)
 /**
  *  Temporal operator tokens
  */
-let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "sometime", "some point", "in the long run", "in a while", "soon", "at the end"], false)
-let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"], false)
-let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"], false)
-let Not = generateStemmedTokenDefinition("Not", ["not", "never"], false)
-let Upto = generateStemmedTokenDefinition("Upto", ["upto"], true)
-let Until = generateStemmedTokenDefinition("Until", ["until"], true)
-let WUntil = generateStemmedTokenDefinition("WUntil", ["weak until"], true)
-let Release = generateStemmedTokenDefinition("Release", ["release"], true)
+let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "sometime", "some point", "in the long run", "in a while", "soon", "at the end"],TokenType.LOGICAL_UNARY)
+let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"],TokenType.LOGICAL_UNARY)
+let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"],TokenType.LOGICAL_UNARY)
+let Not = generateStemmedTokenDefinition("Not", ["not", "never"],TokenType.LOGICAL_UNARY)
+let Upto = generateStemmedTokenDefinition("Upto", ["upto"],TokenType.LOGICAL_BINARY)
+let Until = generateStemmedTokenDefinition("Until", ["until"],TokenType.LOGICAL_BINARY)
+let WUntil = generateStemmedTokenDefinition("WUntil", ["weak until"],TokenType.LOGICAL_BINARY)
+let Release = generateStemmedTokenDefinition("Release", ["release"],TokenType.LOGICAL_BINARY)
 /**
  * literals (no stemming required)
  */
@@ -83,10 +89,10 @@ const configuration: IParserConfig = {
     recoveryEnabled: true
 }
 
-function generateStemmedTokenDefinition(id: string, synonyms: string[], isBinaryLogicOperator?: boolean) {
+function generateStemmedTokenDefinition(id: string, synonyms: string[],tokenType: TokenType) {
     var tokenFunction = extendToken(id, RegExp(synonyms.map(natural.PorterStemmer.stem).join('|'), "i"));
     tokenFunction.LABEL = synonyms[0]
-    tokenFunction.IS_BINARY_LOGIC_OPERATOR = isBinaryLogicOperator
+    tokenFunction.TOKEN_TYPE = tokenType
     return tokenFunction
 }
 
@@ -362,7 +368,7 @@ export default class NLParser extends Parser {
                 }
             }
 
-            var parser = new NLParser(tokens.accepted)
+            var parser = new NLParser(filteredTokens)
             var AST = parser.formula()
             if (AST) {
                 return {

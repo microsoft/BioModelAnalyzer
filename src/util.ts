@@ -9,8 +9,12 @@ import * as builder from 'botbuilder'
  */
 export function getPublicResourceUrl (path: string) {
     let host = config.get('HOSTNAME')
-    let port = config.get('PORT')
-    let url = 'http://' + host + (port ? ':' + port : '') + '/' + path
+    let port = config.get<string>('PORT')
+    // if deployed, then the port is the internal port which is a named pipe, so we ignore that
+    if (isNaN(parseInt(port))) {
+        port = null
+    }
+    let url = 'https://' + host + (port ? ':' + port : '') + '/' + path
     return url
 }
 
@@ -34,6 +38,6 @@ export function getTutorialImageAttachment (filename: string): builder.IAttachme
 export function getTutorialModelAttachment (filename: string): builder.IAttachment {
     return {
         contentUrl: getPublicResourceUrl('tutorials/model/' + filename),
-        contentType: mime.lookup(filename)
+        contentType: 'application/octet-stream'
     }
 }

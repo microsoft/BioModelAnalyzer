@@ -90,7 +90,9 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
         waterfall.push(...
             tutorial.steps.map(step => (session: builder.Session, results, next) => {
                 let message = new builder.Message(session)
-                message.text(step.text)
+                if (step.text) {
+                    message.text(step.text)
+                }
                 if (step.image) {                    
                     message.addAttachment(getTutorialImageAttachment(step.image))
                 }
