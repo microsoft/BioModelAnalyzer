@@ -76,7 +76,7 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
             session.send('I did not understand your query')
             return
         }
-        session.send('Try this: ' + JSON.stringify(result.AST))
+        session.send('Try this: ' + result.humanReadableFormula)
     }
 
     intents.matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))

@@ -33,20 +33,20 @@ let NotEq = generateStemmedTokenDefinition("NotEq", ["!=", "is not equal to", "i
 /** 
  *  Boolean operator tokens
  */
-let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"],true)
-let Or = generateStemmedTokenDefinition("Or", ["or", "either"],true)
-let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"],true)
+let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"], true)
+let Or = generateStemmedTokenDefinition("Or", ["or", "either"], true)
+let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"], true)
 /**
  *  Temporal operator tokens
  */
-let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "sometime", "some point", "in the long run", "in a while", "soon", "at the end"],false)
-let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"],false)
-let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"],false)
-let Not = generateStemmedTokenDefinition("Not", ["not", "never"],false)
-let Upto = generateStemmedTokenDefinition("Upto", ["upto"],true)
-let Until = generateStemmedTokenDefinition("Until", ["until"],true)
-let WUntil = generateStemmedTokenDefinition("WUntil", ["weak until"],true)
-let Release = generateStemmedTokenDefinition("Release", ["release"],true)
+let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "sometime", "some point", "in the long run", "in a while", "soon", "at the end"], false)
+let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"], false)
+let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"], false)
+let Not = generateStemmedTokenDefinition("Not", ["not", "never"], false)
+let Upto = generateStemmedTokenDefinition("Upto", ["upto"], true)
+let Until = generateStemmedTokenDefinition("Until", ["until"], true)
+let WUntil = generateStemmedTokenDefinition("WUntil", ["weak until"], true)
+let Release = generateStemmedTokenDefinition("Release", ["release"], true)
 /**
  * literals (no stemming required)
  */
@@ -62,7 +62,7 @@ WhiteSpace.GROUP = Lexer.SKIPPED
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
-let allowedTokens = [WhiteSpace, IntegerLiteral, If, Then, GThan, LThan, GThanEq, LThanEq, NotEq, Eq,And, Or, Implies, Eventually, Always, Next, Not, Upto, Until, WUntil, Release, Identifier]
+let allowedTokens = [WhiteSpace, IntegerLiteral, If, Then, GThan, LThan, GThanEq, LThanEq, NotEq, Eq, And, Or, Implies, Eventually, Always, Next, Not, Upto, Until, WUntil, Release, Identifier]
 
 export enum ParserResponseType {
     SUCCESS,
@@ -73,6 +73,7 @@ export enum ParserResponseType {
 
 export interface ParserResponse {
     responseType: ParserResponseType
+    humanReadableFormula?:string
     errors?: any
     AST?: any
 }
@@ -82,7 +83,7 @@ const configuration: IParserConfig = {
     recoveryEnabled: true
 }
 
-function generateStemmedTokenDefinition(id: string, synonyms: string[],isBinaryLogicOperator?:boolean) {
+function generateStemmedTokenDefinition(id: string, synonyms: string[], isBinaryLogicOperator?: boolean) {
     var tokenFunction = extendToken(id, RegExp(synonyms.map(natural.PorterStemmer.stem).join('|'), "i"));
     tokenFunction.LABEL = synonyms[0]
     tokenFunction.IS_BINARY_LOGIC_OPERATOR = isBinaryLogicOperator
@@ -366,7 +367,7 @@ export default class NLParser extends Parser {
             if (AST) {
                 return {
                     responseType: ParserResponseType.SUCCESS,
-                    AST: ASTUtils.toHumanReadableString(AST)
+                    humanReadableFormula: ASTUtils.toHumanReadableString(AST)
                 }
             } else {
                 return {

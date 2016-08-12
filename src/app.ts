@@ -3,13 +3,6 @@ import * as restify from 'restify'
 import * as config from 'config'
 import Storage from './storage'
 import {setup as setupBot} from './bot'
-import NLParser from './NLParser/NLParser'
-
-
-var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "a", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "c", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "d", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
-var sentence = "if a=1 and c=1 then d=1 eventually"
-var parserResponse = NLParser.parse(sentence, model)
-
 
 let storage = new Storage()
 storage.init()
