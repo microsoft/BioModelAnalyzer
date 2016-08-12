@@ -34,6 +34,6 @@ export function getTutorialImageAttachment (filename: string): builder.IAttachme
 export function getTutorialModelAttachment (filename: string): builder.IAttachment {
     return {
         contentUrl: getPublicResourceUrl('tutorials/model/' + filename),
-        contentType: mime.lookup(filename)
+        contentType: 'application/octet-stream'
     }
 }
