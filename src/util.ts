@@ -25,3 +25,15 @@ export function getTutorialImageAttachment (filename: string): builder.IAttachme
         contentType: mime.lookup(filename)
     }
 }
+
+/**
+ * Returns an IAttachment for a file in the /public/tutorials/model folder.
+ * 
+ * @param filename The models filename, e.g. 'ecoli.json'
+ */
+export function getTutorialModelAttachment (filename: string): builder.IAttachment {
+    return {
+        contentUrl: getPublicResourceUrl('tutorials/model/' + filename),
+        contentType: 'application/octet-stream'
+    }
+}
