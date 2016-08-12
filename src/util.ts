@@ -10,6 +10,7 @@ import * as builder from 'botbuilder'
 export function getPublicResourceUrl (path: string) {
     let host = config.get('HOSTNAME')
     let port = config.get<string>('PORT')
+    // if deployed, then the port is the internal port which is a named pipe, so we ignore that
     if (isNaN(parseInt(port))) {
         port = null
     }

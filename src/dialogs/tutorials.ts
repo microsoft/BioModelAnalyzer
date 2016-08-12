@@ -89,9 +89,6 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
         // ...and the tutorial steps
         waterfall.push(...
             tutorial.steps.map(step => (session: builder.Session, results, next) => {
-                let debug = getTutorialModelAttachment(step.model).contentUrl
-                session.send(debug)
-                
                 let message = new builder.Message(session)
                 if (step.text) {
                     message.text(step.text)
