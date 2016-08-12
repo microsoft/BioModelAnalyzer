@@ -1,16 +1,9 @@
 /*
 TODO:
 4) parenthesis the output
-5) implement fault tolarance
-7) add stemming
 10) pretty print the output
-11) comma sytax when dealing with variables
-12) handle arbitary text anywhere in the string (use the lexer to just ignore the tokens), perhaps use the model to identify tokens that are neither variables nor tokens
-13) automatically generate the stemmed tokens by passing in the lexer some settings or a factory approach
-14) recursively action
 15) check operator precedence
 16) prepend with a missing eventually if no temporal operator provided
-17) add not equal to param
 18) handle variables with space in them
 19) convert variable usage to notation
 20) make sure variables are not stemmed
@@ -19,6 +12,7 @@ TODO:
 import * as chevrotain from 'chevrotain'
 import * as _ from 'underscore'
 import * as natural from 'natural'
+import * as ASTUtils from './ASTUtils'
 import { Parser, Token, IParserConfig, Lexer, TokenConstructor } from 'chevrotain'
 var extendToken = chevrotain.extendToken;
 
@@ -39,20 +33,20 @@ let NotEq = generateStemmedTokenDefinition("NotEq", ["!=", "is not equal to", "i
 /** 
  *  Boolean operator tokens
  */
-let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"])
-let Or = generateStemmedTokenDefinition("Or", ["or", "either"])
-let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"])
+let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"],true)
+let Or = generateStemmedTokenDefinition("Or", ["or", "either"],true)
+let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"],true)
 /**
  *  Temporal operator tokens
  */
-let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "sometime", "some point", "in the long run", "in a while", "soon", "at the end"])
-let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"])
-let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"])
-let Not = generateStemmedTokenDefinition("Not", ["not", "never"])
-let Upto = generateStemmedTokenDefinition("Upto", ["upto"])
-let Until = generateStemmedTokenDefinition("Until", ["until"])
-let WUntil = generateStemmedTokenDefinition("WUntil", ["weak until"])
-let Release = generateStemmedTokenDefinition("Release", ["release"])
+let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "sometime", "some point", "in the long run", "in a while", "soon", "at the end"],false)
+let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"],false)
+let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"],false)
+let Not = generateStemmedTokenDefinition("Not", ["not", "never"],false)
+let Upto = generateStemmedTokenDefinition("Upto", ["upto"],true)
+let Until = generateStemmedTokenDefinition("Until", ["until"],true)
+let WUntil = generateStemmedTokenDefinition("WUntil", ["weak until"],true)
+let Release = generateStemmedTokenDefinition("Release", ["release"],true)
 /**
  * literals (no stemming required)
  */
@@ -63,10 +57,12 @@ let Identifier = extendToken("Identifier", /\w+/);
  */
 let WhiteSpace = extendToken("WhiteSpace", /\s+/);
 WhiteSpace.GROUP = Lexer.SKIPPED
+
+
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
-let allowedTokens = [WhiteSpace, IntegerLiteral, If, Then, GThan, LThan, GThanEq, LThanEq, Eq, NotEq, And, Or, Implies, Eventually, Always, Next, Not, Upto, Until, WUntil, Release, Identifier]
+let allowedTokens = [WhiteSpace, IntegerLiteral, If, Then, GThan, LThan, GThanEq, LThanEq, NotEq, Eq,And, Or, Implies, Eventually, Always, Next, Not, Upto, Until, WUntil, Release, Identifier]
 
 export enum ParserResponseType {
     SUCCESS,
@@ -86,9 +82,10 @@ const configuration: IParserConfig = {
     recoveryEnabled: true
 }
 
-function generateStemmedTokenDefinition(id: string, synonyms: string[]) {
+function generateStemmedTokenDefinition(id: string, synonyms: string[],isBinaryLogicOperator?:boolean) {
     var tokenFunction = extendToken(id, RegExp(synonyms.map(natural.PorterStemmer.stem).join('|'), "i"));
     tokenFunction.LABEL = synonyms[0]
+    tokenFunction.IS_BINARY_LOGIC_OPERATOR = isBinaryLogicOperator
     return tokenFunction
 }
 
@@ -152,21 +149,14 @@ export default class NLParser extends Parser {
 
         return {
             type: "expression",
-            value: { type: "binaryOperator", value: Implies.LABEL },
+            value: { type: "binaryOperator", value: Implies },
             left: conditionClause,
             right: body
         }
     })
 
-    private expression = this.RULE("expression", () => {
-        return {
-            type: "expression",
-            left: this.SUBRULE(this.term),
-            right: null
-        };
-    })
 
-    private term = this.RULE("term", () => {
+    private expression = this.RULE("expression", () => {
         let tree, factors = [],
             operators = []
 
@@ -177,7 +167,7 @@ export default class NLParser extends Parser {
         })
 
         tree = {
-            type: "term",
+            type: "expression",
             left: factors[0],
             right: null
         }
@@ -186,7 +176,7 @@ export default class NLParser extends Parser {
             for (var i = 1; i < factors.length; i++) {
                 subtree.value = operators[i - 1];
                 subtree.right = {
-                    type: "term",
+                    type: "expression",
                     left: factors[i],
                     right: null
                 }
@@ -277,37 +267,37 @@ export default class NLParser extends Parser {
             value: this.OR([{
                 ALT: () => {
                     this.CONSUME(And)
-                    return And.LABEL
+                    return And
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Or)
-                    return Or.LABEL
+                    return Or
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Implies)
-                    return Implies.LABEL
+                    return Implies
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Upto)
-                    return Upto.LABEL
+                    return Upto
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Until)
-                    return Until.LABEL
+                    return Until
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Release)
-                    return Release.LABEL
+                    return Release
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(WUntil)
-                    return WUntil.LABEL
+                    return WUntil
                 }
             }])
         }
@@ -319,22 +309,22 @@ export default class NLParser extends Parser {
             value: this.OR([{
                 ALT: () => {
                     this.CONSUME(Not)
-                    return Not.LABEL
+                    return Not
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Next)
-                    return Next.LABEL
+                    return Next
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Always)
-                    return Always.LABEL
+                    return Always
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Eventually)
-                    return Eventually.LABEL
+                    return Eventually
                 }
             }])
         }
@@ -376,7 +366,7 @@ export default class NLParser extends Parser {
             if (AST) {
                 return {
                     responseType: ParserResponseType.SUCCESS,
-                    AST: AST
+                    AST: ASTUtils.toHumanReadableString(AST)
                 }
             } else {
                 return {
