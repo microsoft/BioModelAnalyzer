@@ -5,15 +5,13 @@ import * as qs from 'querystring'
 import {v4 as uuid} from 'node-uuid'
 import * as strings from './strings'
 import {default as NLParser, ParserResponseType } from '../NLParser/NLParser'
-import Storage from '../storage'
 import {downloadAttachments} from '../attachments'
-
-const storage = new Storage()
+import {ModelStorage} from '../ModelStorage'
 
 /**
  * Registers the LUIS dialog as root dialog. 
  */
-export function registerLUISDialog (bot: builder.UniversalBot) {
+export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: ModelStorage) {
     // Create LUIS recognizer that points at our model and add it as the root '/' dialog for our bot.
     let model = 'https://api.projectoxford.ai/luis/v1/application?id=' + config.get('LUIS_MODEL_ID') 
         + '&subscription-key=' + config.get('LUIS_KEY')
@@ -76,7 +74,7 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
             session.send('I did not understand your query')
             return
         }
-        session.send('Try this: ' + JSON.stringify(result.AST))
+        session.send('Try this: ' + result.humanReadableFormula)
     }
 
     intents.matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
@@ -90,7 +88,7 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
                 session.endDialog()
             }
         },
-        (session, results, next) => receiveModelAttachmentStep(bot, session, results, next),
+        (session, results, next) => receiveModelAttachmentStep(bot, modelStorage, session, results, next),
         (session, results, next) => {
             handleLTLQuery(session)
         }
@@ -99,7 +97,7 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
     intents.onDefault(function (session, results, next) {
         let attachments = session.message.attachments
         if (attachments && attachments.length > 0) {
-            receiveModelAttachmentStep(bot, session, results, next)
+            receiveModelAttachmentStep(bot, modelStorage, session, results, next)
         } else {
             if (session.conversationData.hasSpellChecked) {
                 // FIXME reset spellcheck state in other intents too!
@@ -148,7 +146,7 @@ export function registerLUISDialog (bot: builder.UniversalBot) {
     })
 }
 
-function receiveModelAttachmentStep (bot: builder.UniversalBot, session: builder.Session, results, next) {
+function receiveModelAttachmentStep (bot: builder.UniversalBot, modelStorage: ModelStorage, session: builder.Session, results, next) {
     // check and store attachment
     let attachments = session.message.attachments
     if (attachments.length > 1) {
@@ -170,7 +168,7 @@ function receiveModelAttachmentStep (bot: builder.UniversalBot, session: builder
             return
         }
         let modelId = session.conversationData.bmaModelId || uuid()
-        storage.storeUserModel(modelId, buf).then(() => {
+        modelStorage.storeUserModel(modelId, buf).then(() => {
             session.conversationData.bmaModel = model
             session.conversationData.bmaModelId = modelId
             session.save()

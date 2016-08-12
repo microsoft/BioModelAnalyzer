@@ -1,11 +1,8 @@
 import * as builder from 'botbuilder'
 import * as restify from 'restify'
 import * as config from 'config'
-import Storage from './storage'
+import {BlobModelStorage} from './ModelStorage'
 import {setup as setupBot} from './bot'
-
-let storage = new Storage()
-storage.init()
 
 let server = restify.createServer()
 server.listen(config.get('PORT'), () => {
@@ -37,4 +34,5 @@ if (config.get('USE_CONSOLE')) {
     server.post('/api/messages', connector.listen())
 }
 
-setupBot(bot)
+let modelStorage = new BlobModelStorage()
+setupBot(bot, modelStorage)

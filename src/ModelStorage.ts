@@ -4,14 +4,17 @@ import * as config from 'config'
 
 const USER_MODELS = 'usermodels'
 
-export default class Storage {
+export interface ModelStorage {
+    storeUserModel (id: string, content: string): Promise.IThenable<boolean>
+    getUserModel (id: string): Promise.IThenable<any>
+    getUserModelUrl (id: string): string
+}
+
+export class BlobModelStorage implements ModelStorage {
     blobService
     constructor () {
         this.blobService = azure.createBlobService(config.get('AZURE_STORAGE_ACCOUNT'), config.get('AZURE_STORAGE_ACCESS_KEY'))
-    }
 
-    /** Called on application start */
-    init () {
         this.blobService.createContainerIfNotExists(USER_MODELS, {
             publicAccessLevel: 'blob'
         }, (error, result, response) => {
