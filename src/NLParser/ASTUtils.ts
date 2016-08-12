@@ -49,9 +49,12 @@ function convertReversePolishFormulaToInfix(reversePolishTokens) {
             stack.push(t);
         }
     });
-
+    //handle remaining unary operators
+    stack = stack.reverse();
     while (stack.length > 1) {
-        stack.unshift(stack.pop().LABEL + "(" + stack.pop() + ")")
+        var formula = stack.pop();
+        var operator = stack.pop();
+        stack.push(operator.LABEL + "(" + formula + ")");
     }
-    return stack[0]
+    return stack[0];
 }
