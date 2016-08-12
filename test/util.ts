@@ -3,6 +3,7 @@ import * as Promise from 'promise'
 import * as builder from 'botbuilder'
 import {setup as setupBot} from '../src/bot'
 import TestConnector from './TestConnector'
+import MemoryModelStorage from './MemoryModelStorage'
 
 /**
  * Returns a fresh bot for testing.
@@ -10,7 +11,8 @@ import TestConnector from './TestConnector'
 function createBot () {
     let connector = new TestConnector()
     let bot = new builder.UniversalBot(connector)
-    setupBot(bot)
+    let modelStorage = new MemoryModelStorage()
+    setupBot(bot, modelStorage)
     return bot
 }
 
