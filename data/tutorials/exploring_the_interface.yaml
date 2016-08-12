@@ -13,7 +13,7 @@ steps:
         to a constant environment. To do this you will need to download and import the 
         ecoli.json file into the BMA tool.
 
-      model: ecoli.json
+    - model: ecoli.json
 
     - text: |- 
         To import the model, open the interface and click on the Model tab and then 'Import'
@@ -25,11 +25,11 @@ steps:
         We will start by defining model states. Open the LTL interface from the right hand 
         side and click the plus sign under 'Linear Temporal Logic'.
 
-        image: open_ltl_interface.png
+      image: open_ltl_interface.png
 
     - text: |-
         This will open the LTL state editor. Here you need to select the motor variable from  
         the canvas and assign a value of 1, this can be be seen in the image below.
 
-        image: define_model_state.png
+      image: define_model_state.png
 
