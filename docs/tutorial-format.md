@@ -20,8 +20,9 @@ steps:
 
     # paths are relative to /public/tutorials/img/
     image: ltl_for_dummies_1.jpg
-  
-  - type: 
+    
+    # path: /public/tutorials/model/
+    model: ecoli.json
     
 
 ```

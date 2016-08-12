@@ -1,0 +1,35 @@
+id: exploring_the_interface
+title: Exploring the Interface
+description: |-
+  This tutorial will introduce you to the Bio-Model Analyzer and allow you to 
+  explore its tools.   
+  It takes around 10-15 minutes.
+  When you've successfuly completed the tutorial, you will know how to define
+  and use model states and temporal properties.
+steps:
+    - text: |-
+        To get familiar with the interface, you will be using a pre-built model which 
+        represents the habituation of the chemosensing system in bacteria in response 
+        to a constant environment. To do this you will need to download and import the 
+        ecoli.json file into the BMA tool.
+
+      model: ecoli.json
+
+    - text: |- 
+        To import the model, open the interface and click on the Model tab and then 'Import'
+        , once you have chosen your file, the model should appear as shown in this image.
+
+      image: import_ecoli.png
+
+    - text: |-
+        We will start by defining model states. Open the LTL interface from the right hand 
+        side and click the plus sign under 'Linear Temporal Logic'.
+
+        image: open_ltl_interface.png
+
+    - text: |-
+        This will open the LTL state editor. Here you need to select the motor variable from  
+        the canvas and assign a value of 1, this can be be seen in the image below.
+
+        image: define_model_state.png
+

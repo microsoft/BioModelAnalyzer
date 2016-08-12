@@ -4,6 +4,7 @@ import * as fs from 'fs'
 
 import * as strings from './strings'
 import {getTutorialImageAttachment} from '../util'
+import {getTutorialModelAttachment} from '../util'
 
 /** The object structure of a YAML tutorial file. */
 interface Tutorial {
@@ -27,6 +28,9 @@ interface TutorialStep {
 
     /** The filename of the image that will be sent to the user. */
     image: string
+
+    /** Name of the model that is sent to the user. */
+    model: string
 }
 
 /** Reads all YAML tutorial files and dynamically creates dialogs from them, including the tutorial selection dialog. */
@@ -35,7 +39,7 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
 
     // all available tutorials
     let tutorialPaths = [
-        '1_ltl_for_dummies'
+        'exploring_the_interface'
         ].map(name => `data/tutorials/${name}.yaml`)
     
     let tutorials: Tutorial[] = tutorialPaths.map(path => fs.readFileSync(path, 'utf8')).map(yaml.safeLoad)
@@ -89,6 +93,9 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
                 message.text(step.text)
                 if (step.image) {                    
                     message.addAttachment(getTutorialImageAttachment(step.image))
+                }
+                if (step.model) {
+                    message.addAttachment(getTutorialModelAttachment(step.model))
                 }
                 session.send(message)
                 next()
