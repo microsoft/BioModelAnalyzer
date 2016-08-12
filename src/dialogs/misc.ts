@@ -1,15 +1,13 @@
 import * as builder from 'botbuilder'
-import Storage from '../storage'
-
-const storage = new Storage()
+import {ModelStorage} from '../ModelStorage'
 
 /**
  * Registers dialogs that are not grouped into a specific theme yet.
  */
-export function registerOtherDialogs (bot: builder.UniversalBot) {
+export function registerOtherDialogs (bot: builder.UniversalBot, modelStorage: ModelStorage) {
     bot.dialog('/requestUploadedModel', (session, results, next) => {
         let modelId = session.conversationData.bmaModelId
-        let url = storage.getUserModelUrl(modelId)
+        let url = modelStorage.getUserModelUrl(modelId)
 
         let message = new builder.Message(session)
         message.addAttachment({
