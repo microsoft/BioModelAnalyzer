@@ -1,4 +1,5 @@
 {
     "USE_CONSOLE": false,
+    "PROTOCOL": "https",
     "SERVE_STATIC_VIA_RESTIFY": false
 }
