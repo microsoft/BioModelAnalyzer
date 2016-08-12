@@ -32,7 +32,6 @@ steps:
         the canvas and assign a value of 1, this can be be seen in the image below.
 
       image: define_model_state.png
-<<<<<<< HEAD
 
     - text: |-
         Now return to the LTL interface, notice a new state has been defined as 'A', this is
@@ -59,7 +58,3 @@ steps:
         has been matched
 
       image: ltl_simulation.png
-      
-=======
->>>>>>> 034269f473953fbc2ae9d6596ee2ec52a2c490df
-
