@@ -1,6 +1,8 @@
 {
     "USE_CONSOLE": true,
     "PORT": 3978,
+    "HOSTNAME": "localhost",
+    "SERVE_STATIC_VIA_RESTIFY": true,
     "APP_ID": null,
     "APP_PASSWORD": null,
     "AZURE_STORAGE_ACCOUNT": "UseDevelopmentStorage=true",

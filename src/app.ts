@@ -7,6 +7,16 @@ import {setup as setupBot} from './bot'
 let storage = new Storage()
 storage.init()
 
+let server = restify.createServer()
+server.listen(config.get('PORT'), () => {
+    console.log('%s listening to %s', server.name, server.url)
+})
+if (config.get('SERVE_STATIC_VIA_RESTIFY')) {
+    server.get(/\/?.*/, restify.serveStatic({
+        directory: './public'
+    }))
+}
+
 let botSettings = {
     // this is false by default but we need to access data between unrelated dialogs
     persistConversationData: true
@@ -14,17 +24,11 @@ let botSettings = {
 
 let bot: builder.UniversalBot
 if (config.get('USE_CONSOLE')) {
-    // Create bot and bind to console
+    // Create console bot
     let connector = new builder.ConsoleConnector().listen()
     bot = new builder.UniversalBot(connector, botSettings)
-} else {
-    // Setup Restify Server
-    let server = restify.createServer()
-    server.listen(config.get('PORT'), function () {
-        console.log('%s listening to %s', server.name, server.url)
-    })
-    
-    // Create chat bot
+} else {    
+    // Create server bot
     let connector = new builder.ChatConnector({
         appId: config.get<string>('APP_ID'), 
         appPassword: config.get<string>('APP_PASSWORD')

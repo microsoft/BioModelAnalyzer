@@ -18,8 +18,8 @@ steps:
   - text: |-
       Another message to the user.
 
-    # paths are relative to /data/tutorials/
-    image: img/ltl_for_dummies_1.jpg
+    # paths are relative to /public/tutorials/img/
+    image: ltl_for_dummies_1.jpg
   
   - type: 
     

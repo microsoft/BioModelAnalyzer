@@ -3,6 +3,7 @@ import * as yaml from 'js-yaml'
 import * as fs from 'fs'
 
 import * as strings from './strings'
+import {getTutorialImageAttachment} from '../util'
 
 /** The object structure of a YAML tutorial file. */
 interface Tutorial {
@@ -23,6 +24,9 @@ interface Tutorial {
 interface TutorialStep {
     /** The text that will be sent to the user. */
     text: string
+
+    /** The filename of the image that will be sent to the user. */
+    image: string
 }
 
 /** Reads all YAML tutorial files and dynamically creates dialogs from them, including the tutorial selection dialog. */
@@ -81,7 +85,12 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
         // ...and the tutorial steps
         waterfall.push(...
             tutorial.steps.map(step => (session: builder.Session, results, next) => {
-                session.send(step.text)
+                let message = new builder.Message(session)
+                message.text(step.text)
+                if (step.image) {                    
+                    message.addAttachment(getTutorialImageAttachment(step.image))
+                }
+                session.send(message)
                 next()
             })
         )
