@@ -6,22 +6,23 @@ export let HTTP_ERROR = (msg: string) => `HTTP Error: ${msg}`
 export let TOO_MANY_FILES = 'Please upload exactly one JSON file'
 export let MODEL_RECEIVED = (name: string) => `I received your model titled ${name} and will use it from now on`
 export let TUTORIAL_SELECT_PROMPT = 'Which tutorial would you like to do?'
-export let TUTORIAL_START_PROMPT = 'Do you like to start the tutorial?'
+export let TUTORIAL_START_PROMPT = 'Would you like to start the tutorial?'
 export let TUTORIAL_SELECT_CANCELLED = 'Tutorial selection cancelled.'
 export let TUTORIAL_UNKNOWN_SELECT = 'Please input a tutorial number, or anything else to cancel.'
 export let ABOUT_BOT = 'Hello, I am the BMA Bot and I will assist you in creating LTL formulas to query your model. To help you along the way, I will provide you with tutorials and examples.'
 export let SPELLCHECK_ASSUMPTION = (corrected: string) => `I assume you meant: "${corrected}"`
 
-//TODO explain each operator below and confirm with BMA users that the definitions are sufficient
+//Explaination for each operator 
 
-export let EXPLAIN_AND = 'this explains the and operator'
-export let EXPLAIN_OR = 'this explains the OR operator'
-export let EXPLAIN_IMPLIES = 'this explains the IMPLIES operator'
-export let EXPLAIN_NOT = 'this explains the NOT operator'
-export let EXPLAIN_NEXT = 'this explains the NEXT operator'
-export let EXPLAIN_ALWAYS = 'this explains the always operator'
-export let EXPLAIN_EVENTUALLY = 'this explains the EVENTUALLY operator'
-export let EXPLAIN_UPTO = 'this explains the UPTO operator'
-export let EXPLAIN_WEAKUNTIL = 'this explains the WEAKUNTIL operator'
-export let EXPLAIN_UNTIL = 'this explains the UNTIL operator'
-export let EXPLAIN_RELEASE = 'this explains the RELEASE operator'
+export let EXPLAIN_AND = 'The AND operator returns a true value if both the expressions are true, and returns false otherwise'
+export let EXPLAIN_OR = 'The OR operator returns a true value if either one of the expressions are true, otherwise false is returned'
+export let EXPLAIN_IMPLIES = 'When two expressions are used with the implies operator, e.g. A implies B, it means that if A is true B must also be true. The IMPLIES operator returns a true value in this scenario.'
+export let EXPLAIN_NOT = 'The NOT operator returns a true value if the expression is false, and returns false if it equals to true'
+export let EXPLAIN_NEXT = 'Within a state model, The NEXT operator returns true if the immediate state after holds a true value'
+export let EXPLAIN_ALWAYS = 'Within a state model, the always operator returns true if all the states hold a true value'
+export let EXPLAIN_EVENTUALLY = 'Within a state model, the EVENTUALLY operator returns true if some state in the future holds a true value'
+export let EXPLAIN_UNTIL = 'Similar to the AND operator, the UNTIL operator requires two operands. For UNTIL, A until B, implies that A remains true until B becomes true'
+export let EXPLAIN_RELEASE = 'This operator requires two operands. In the scenario, A release B: B holds a true value until and including the point when A first becomes true. If A is never true, B will remain true'
+//TODO explain UPTO
+export let EXPLAIN_UPTO = 'This explains th upto operator '
+export let EXPLAIN_WEAKUNTIL = 'Similar to the UNTIL operator, in the example A weakuntil B, A remains true until B holds a true value, however it does not require B to ever hold a true value, and therefore A always remains true' 
