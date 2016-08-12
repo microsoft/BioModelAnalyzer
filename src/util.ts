@@ -9,7 +9,10 @@ import * as builder from 'botbuilder'
  */
 export function getPublicResourceUrl (path: string) {
     let host = config.get('HOSTNAME')
-    let port = config.get('PORT')
+    let port = config.get<string>('PORT')
+    if (isNaN(parseInt(port))) {
+        port = null
+    }
     let url = 'https://' + host + (port ? ':' + port : '') + '/' + path
     return url
 }

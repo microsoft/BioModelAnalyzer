@@ -4,8 +4,11 @@ import * as config from 'config'
 import {BlobModelStorage} from './ModelStorage'
 import {setup as setupBot} from './bot'
 
+let port = config.get('PORT')
+console.log('starting on port:', port)
+
 let server = restify.createServer()
-server.listen(config.get('PORT'), () => {
+server.listen(port, () => {
     console.log('%s listening to %s', server.name, server.url)
 })
 if (config.get('SERVE_STATIC_VIA_RESTIFY')) {
