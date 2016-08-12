@@ -1,6 +1,7 @@
 {
     "USE_CONSOLE": true,
     "PORT": 3978,
+    "PROTOCOL": "http",
     "HOSTNAME": "localhost",
     "SERVE_STATIC_VIA_RESTIFY": true,
     "APP_ID": null,

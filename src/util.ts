@@ -14,7 +14,7 @@ export function getPublicResourceUrl (path: string) {
     if (isNaN(parseInt(port))) {
         port = null
     }
-    let url = 'https://' + host + (port ? ':' + port : '') + '/' + path
+    let url = config.get('PROTOCOL') + '://' + host + (port ? ':' + port : '') + '/' + path
     return url
 }
 
