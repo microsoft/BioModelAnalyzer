@@ -10,7 +10,7 @@ import * as builder from 'botbuilder'
 export function getPublicResourceUrl (path: string) {
     let host = config.get('HOSTNAME')
     let port = config.get('PORT')
-    let url = 'http://' + host + (port ? ':' + port : '') + '/' + path
+    let url = 'https://' + host + (port ? ':' + port : '') + '/' + path
     return url
 }
 
