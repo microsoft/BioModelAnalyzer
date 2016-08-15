@@ -39,7 +39,8 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
 
     // all available tutorials
     let tutorialPaths = [
-        'exploring_the_interface'
+        'exploring_the_interface',
+        'ecoli'
         ].map(name => `data/tutorials/${name}.yaml`)
     
     let tutorials: Tutorial[] = tutorialPaths.map(path => fs.readFileSync(path, 'utf8')).map(yaml.safeLoad)
