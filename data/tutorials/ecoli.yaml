@@ -1,0 +1,21 @@
+id: ecoli
+title: Ecoli
+description: |-
+  This tutorial will look at the habituation of the chemosensing system in bacteria in response   
+  to a constant environment.
+  It takes around 10 minutes.
+steps:
+    - text: |-
+        This tutorial is a follow on to the 'Exploring the interface' tutorial and requires
+        you to have downloaded and imported the Ecoli model into the BMA tool. If you haven't
+        done that already, follow the link below.
+
+        model: ecoli2.json
+
+    - text: |-
+        We are interested in showing that the motor in the model always returns to the unbiased 
+        state. We can do this with our existing state by dragging a “not” operator to the canvas,
+        dragging “A” from the always operator into the “not” operator, and finally by dragging 
+        the whole query into the always socket.
+
+        image: always_not_a.png
