@@ -29,7 +29,7 @@ steps:
 
     - text: |-
         This will open the LTL state editor. Here you need to select the motor variable from  
-        the canvas and assign a value of 1, this can be be seen in the image below.
+        the canvas and assign a value of 1, this can be seen in the image below.
 
       image: define_model_state.png
 
