@@ -33,7 +33,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     ])
 
     intents.matches('UploadedModel', [function (session, args) {
-            session.beginDialog('requestUploadedModel')
+            session.beginDialog('/requestUploadedModel')
         }
     ])
 
