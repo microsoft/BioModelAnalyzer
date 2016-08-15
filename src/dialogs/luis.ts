@@ -151,6 +151,10 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
                     correctedText += flaggedToken.suggestions[0].suggestion
                     inputOffset = offset + flaggedToken.token.length
 				}
+                if (inputOffset < inputText.length) {
+                    correctedText += inputText.substring(inputOffset)
+                }
+
                 session.conversationData.hasSpellChecked = true
                 session.save()
                 
