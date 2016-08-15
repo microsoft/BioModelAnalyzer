@@ -44,6 +44,9 @@ function convertReversePolishFormulaToInfix(reversePolishTokens) {
                 var varY = stack.pop()
                 stack.unshift("(" + varY + " " + t.LABEL + " " + varX + ")");
             }
+        } else if (t.TOKEN_TYPE == TokenType.LOGICAL_UNARY && stack.length >= 1) {
+            var varX = stack.pop()
+            stack.unshift(t.LABEL + "(" + varX + ")");
         }
         else {
             stack.push(t);

@@ -48,7 +48,7 @@ let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"], To
 /**
  *  Temporal operator tokens
  */
-let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "some point", "in the long run", "in a while", "soon", "at the end"], TokenType.LOGICAL_UNARY, Keyword)
+let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "some point", "in the long run", "in a while", "soon", "at the end","sometime"], TokenType.LOGICAL_UNARY, Keyword)
 let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"], TokenType.LOGICAL_UNARY, Keyword)
 let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"], TokenType.LOGICAL_UNARY, Keyword)
 let Not = generateStemmedTokenDefinition("Not", ["not", "never"], TokenType.LOGICAL_UNARY, Keyword)
@@ -96,10 +96,11 @@ const configuration: IParserConfig = {
 }
 
 function generateStemmedTokenDefinition(id: string, synonyms: string[], tokenType: TokenType, alternative?: TokenConstructor) {
-    var tokenFunction = extendToken(id, RegExp(synonyms.map(natural.PorterStemmer.stem).join('|'), "i"), alternative);
+    let stemmedSynonyms = synonyms.map(natural.PorterStemmer.stem)
+    var tokenFunction = extendToken(id, RegExp(stemmedSynonyms.join('|'), "i"), alternative);
     tokenFunction.LABEL = synonyms[0]
     tokenFunction.TOKEN_TYPE = tokenType
-    tokenFunction.SYNONYMS = synonyms
+    tokenFunction.SYNONYMS = stemmedSynonyms
     return tokenFunction
 }
 
@@ -380,8 +381,8 @@ export default class NLParser extends Parser {
             if (AST) {
                 return {
                     responseType: ParserResponseType.SUCCESS,
-                    humanReadableFormula: ASTUtils.toHumanReadableString(AST)
-                    AST:AST
+                    humanReadableFormula: ASTUtils.toHumanReadableString(AST),
+                    AST: AST
                 }
             } else {
                 return {
