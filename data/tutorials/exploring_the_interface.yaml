@@ -1,60 +1,60 @@
 id: exploring_the_interface
 title: Exploring the Interface
-description: |-
-  This tutorial will introduce you to the Bio-Model Analyzer and allow you to 
-  explore its tools.   
+description: >-
+  This tutorial will introduce you to the Bio-Model Analyzer and allow you to
+  explore its tools.
   It takes around 10-15 minutes.
   When you've successfuly completed the tutorial, you will know how to define
   and use model states and temporal properties.
 steps:
-    - text: |-
-        To get familiar with the interface, you will be using a pre-built model which 
-        represents the habituation of the chemosensing system in bacteria in response 
-        to a constant environment. To do this you will need to download and import the 
+    - text: >-
+        To get familiar with the interface, you will be using a pre-built model which
+        represents the habituation of the chemosensing system in bacteria in response
+        to a constant environment. To do this you will need to download and import the
         ecoli.json file into the BMA tool.
 
       model: ecoli1.json
 
-    - text: |- 
+    - text: >- 
         To import the model, open the interface and click on the Model tab and then 'Import'
         , once you have chosen your file, the model should appear as shown in this image.
 
       image: import_ecoli.png
 
-    - text: |-
-        We will start by defining model states. Open the LTL interface from the right hand 
+    - text: >-
+        We will start by defining model states. Open the LTL interface from the right hand
         side and click the plus sign under 'Linear Temporal Logic'.
 
       image: open_ltl_interface.png
 
-    - text: |-
-        This will open the LTL state editor. Here you need to select the motor variable from  
+    - text: >-
+        This will open the LTL state editor. Here you need to select the motor variable from
         the canvas and assign a value of 1, this can be seen in the image below.
 
       image: define_model_state.png
 
-    - text: |-
+    - text: >-
         Now return to the LTL interface, notice a new state has been defined as 'A', this is
         the one we just created. Now click on the bottom '+' sign to define a new
         temporal property.
 
-    - text: |-
-        As an example we will be testing to see if the model can reside in the unbiased state 
+    - text: >-
+        As an example we will be testing to see if the model can reside in the unbiased state
         (motor=1). We can start by asking for traces where A is always true. To do this, drag
         the always operator into the canvas, and plug the 'A' state into the socket.
 
       image: define_temporal_property.png
 
-    - text: |- 
+    - text: >-
         Once you have selected how many steps you require, cick on test to test the query. You
-        will now see the operator in green and red stripes. Green stripes indicate the traces 
+        will now see the operator in green and red stripes. Green stripes indicate the traces
         that satisfy the query, whereas red is the opposite.
 
       image: run_temporal_property.png
 
-    - text: |-
-        To explore the traces that satisfy or fail the query, click the 'Open' button. This  
-        should open an LTL simulation graph from where you can see if your expression 
+    - text: >-
+        To explore the traces that satisfy or fail the query, click the 'Open' button. This
+        should open an LTL simulation graph from where you can see if your expression
         has been matched
 
       image: ltl_simulation.png
