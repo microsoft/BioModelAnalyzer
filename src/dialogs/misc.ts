@@ -20,4 +20,10 @@ export function registerOtherDialogs (bot: builder.UniversalBot, modelStorage: M
         session.send(message)
         next()
     })
+    bot.dialog('/removeUploadedModel', (session, results, next) => {
+        //session.conversationData.bmaModelId = null
+        session.conversationData.bmaModel = null
+        session.send('Model removed')
+        next()
+    })
 }
