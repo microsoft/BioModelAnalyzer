@@ -41,7 +41,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             var operatorName = operator.entity
             switch (operatorName)
             {
-                case 'and':session.send(strings.EXPLAIN_ALWAYS)
+                case 'and':session.send(strings.EXPLAIN_AND)
                 break;
                 case 'or':session.send(strings.EXPLAIN_OR)
                 break;
