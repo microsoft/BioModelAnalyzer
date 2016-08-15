@@ -133,6 +133,8 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
                 if (error || body.flaggedTokens.length === 0) {
                     if (error) {
                         console.error(error)
+                    } else {
+                        console.log('spellcheck:', body)
                     }
                     session.send(strings.UNKNOWN_INTENT)
                     return
