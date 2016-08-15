@@ -107,9 +107,5 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
 
         let dialogId = `/tutorials/${tutorial.id}`
         bot.dialog(dialogId, waterfall)
-        
-        // for debugging
-        // TODO remove at some point
-        console.log(`[Tutorial '${tutorial.id}' registered, launch with "start:${dialogId}"]`)
     }
 }

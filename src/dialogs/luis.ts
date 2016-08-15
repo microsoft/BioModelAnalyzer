@@ -110,8 +110,10 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             receiveModelAttachmentStep(bot, modelStorage, session, results, next)
         } else {
             if (session.conversationData.hasSpellChecked) {
+                console.log('hasSpellChecked==true')
                 // FIXME reset spellcheck state in other intents too!
                 session.conversationData.hasSpellChecked = false
+                session.save()
                 session.send(strings.UNKNOWN_INTENT)
                 return
             }
@@ -147,6 +149,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
                     inputOffset = offset + flaggedToken.token.length
 				}
                 session.conversationData.hasSpellChecked = true
+                session.save()
                 
                 session.send(strings.SPELLCHECK_ASSUMPTION(correctedText))
 
