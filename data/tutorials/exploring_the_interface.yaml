@@ -15,7 +15,7 @@ steps:
         represent what each step should look like, refer back to these to make sure
         you are on the right track. 
 
-      model: ecoli.json
+      model: ecoli1.json
 
     - text: |- 
         To import the model, open the interface and click on the Model tab and then 'Import'

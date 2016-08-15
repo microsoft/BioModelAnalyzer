@@ -14,7 +14,8 @@ export function registerMiddleware (bot: builder.UniversalBot) {
             let debugPrefix = 'start:'
 
             if (text === 'cancel') {
-                session.endDialog()
+                session.send('OK.')
+                session.cancelDialog(0)
             } else if (text.match(new RegExp(`^${debugPrefix}.+`))) {
                 let dialogId = text.substr(debugPrefix.length)
                 session.beginDialog(dialogId)
