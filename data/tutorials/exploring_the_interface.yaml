@@ -8,10 +8,12 @@ description: >-
   and use model states and temporal properties.
 steps:
     - text: >-
-        To get familiar with the interface, you will be using a pre-built model which
-        represents the habituation of the chemosensing system in bacteria in response
-        to a constant environment. To do this you will need to download and import the
-        ecoli.json file into the BMA tool.
+        To get familiar with the interface, you will be using a pre-built model. 
+        To do this you will need to download and import the ecoli.json file into 
+        the BMA tool.
+        NOTE: Throughout the tutorials, you will be presented with images that 
+        represent what each step should look like, refer back to these to make sure
+        you are on the right track. 
 
       model: ecoli1.json
 
@@ -58,3 +60,7 @@ steps:
         has been matched
 
       image: ltl_simulation.png
+
+    - text: >|
+        This is the end of the tutorial, to carry on working on this model I would recommend you
+        visited the Ecoli tutorial. 
