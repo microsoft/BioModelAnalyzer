@@ -10,6 +10,7 @@ export let TUTORIAL_START_PROMPT = 'Would you like to start the tutorial?'
 export let TUTORIAL_SELECT_CANCELLED = 'Tutorial selection cancelled.'
 export let TUTORIAL_UNKNOWN_SELECT = 'Please input a tutorial number, or anything else to cancel.'
 export let ABOUT_BOT = 'Hello, I am the BMA Bot and I will assist you in creating LTL formulas to query your model. To help you along the way, I will provide you with tutorials and examples. Ask me any questions you have about using the BMA and I will try to help you.'
+export let ABOUT_SIMULATIONS = 'LTL queries are used to find simulations of a given legnth that end in a given loop (a fix point or cycle)'
 export let SPELLCHECK_ASSUMPTION = (corrected: string) => `I assume you meant: "${corrected}"`
 
 //Explaination for each operator 
@@ -24,5 +25,5 @@ export let EXPLAIN_EVENTUALLY = 'Within a state model, the EVENTUALLY operator r
 export let EXPLAIN_UNTIL = 'Similar to the AND operator, the UNTIL operator requires two operands. For UNTIL, A until B, implies that A remains true until B becomes true'
 export let EXPLAIN_RELEASE = 'This operator requires two operands. In the scenario, A release B: B holds a true value until and including the point when A first becomes true. If A is never true, B will remain true'
 //TODO explain UPTO
-export let EXPLAIN_UPTO = 'This explains th upto operator '
+export let EXPLAIN_UPTO = 'This explains the upto operator '
 export let EXPLAIN_WEAKUNTIL = 'Similar to the UNTIL operator, in the example A weakuntil B, A remains true until B holds a true value, however it does not require B to ever hold a true value, and therefore A always remains true' 

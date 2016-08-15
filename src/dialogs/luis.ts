@@ -27,6 +27,17 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         }
     ])
 
+    intents.matches('AboutSimulations', [function (session) {
+            session.send(strings.ABOUT_SIMULATIONS)
+        }
+    ])
+
+    //TODO - uplaoded model 
+    intents.matches('UploadedModel', [function (session, args) {
+
+        }
+    ])
+
     intents.matches('ListTutorial', [function (session) {
             session.beginDialog('/tutorials')
         }
