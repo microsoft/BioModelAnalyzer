@@ -28,34 +28,34 @@ export enum TokenType {
 /**
  *  GRAMMAR TOKENS
  */
-let If = generateStemmedTokenDefinition("If", ["if"],TokenType.OTHER,Keyword)
-let Then = generateStemmedTokenDefinition("Then", ["then"],TokenType.OTHER,Keyword)
+let If = generateStemmedTokenDefinition("If", ["if"], TokenType.OTHER, Keyword)
+let Then = generateStemmedTokenDefinition("Then", ["then"], TokenType.OTHER, Keyword)
 /**
  * Arithmetic operator tokens
  */
-let GThan = generateStemmedTokenDefinition("GThan", [">", "greater than", "bigger than"],TokenType.OTHER,Keyword)
-let LThan = generateStemmedTokenDefinition("LThan", ["<", "less than", "smaller than"],TokenType.OTHER,Keyword)
-let GThanEq = generateStemmedTokenDefinition("GThanEq", [">=", "greater than or equal to", "bigger than or equal to"],TokenType.OTHER,Keyword)
-let LThanEq = generateStemmedTokenDefinition("LThanEq", ["<=", "less than or equal to", "smaller than or equal to"],TokenType.OTHER,Keyword)
-let Eq = generateStemmedTokenDefinition("Eq", ["=", "is equal to", "is same as", "equal", "is"],TokenType.OTHER,Keyword)
-let NotEq = generateStemmedTokenDefinition("NotEq", ["!=", "is not equal to", "is not same as", "not equal", "is not"],TokenType.OTHER,Keyword)
+let GThan = generateStemmedTokenDefinition("GThan", [">", "greater than", "bigger than"], TokenType.OTHER, Keyword)
+let LThan = generateStemmedTokenDefinition("LThan", ["<", "less than", "smaller than"], TokenType.OTHER, Keyword)
+let GThanEq = generateStemmedTokenDefinition("GThanEq", [">=", "greater than or equal to", "bigger than or equal to"], TokenType.OTHER, Keyword)
+let LThanEq = generateStemmedTokenDefinition("LThanEq", ["<=", "less than or equal to", "smaller than or equal to"], TokenType.OTHER, Keyword)
+let Eq = generateStemmedTokenDefinition("Eq", ["=", "is equal to", "is same as", "equal", "is"], TokenType.OTHER, Keyword)
+let NotEq = generateStemmedTokenDefinition("NotEq", ["!=", "is not equal to", "is not same as", "not equal", "is not"], TokenType.OTHER, Keyword)
 /** 
  *  Boolean operator tokens
  */
-let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"],TokenType.LOGICAL_BINARY,Keyword)
-let Or = generateStemmedTokenDefinition("Or", ["or", "either"],TokenType.LOGICAL_BINARY,Keyword)
-let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"],TokenType.LOGICAL_BINARY,Keyword)
+let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"], TokenType.LOGICAL_BINARY, Keyword)
+let Or = generateStemmedTokenDefinition("Or", ["or", "either"], TokenType.LOGICAL_BINARY, Keyword)
+let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"], TokenType.LOGICAL_BINARY, Keyword)
 /**
  *  Temporal operator tokens
  */
-let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "some point", "in the long run", "in a while", "soon", "at the end"],TokenType.LOGICAL_UNARY,Keyword)
-let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"],TokenType.LOGICAL_UNARY,Keyword)
-let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"],TokenType.LOGICAL_UNARY,Keyword)
-let Not = generateStemmedTokenDefinition("Not", ["not", "never"],TokenType.LOGICAL_UNARY,Keyword)
-let Upto = generateStemmedTokenDefinition("Upto", ["upto"],TokenType.LOGICAL_BINARY,Keyword)
-let Until = generateStemmedTokenDefinition("Until", ["until"],TokenType.LOGICAL_BINARY,Keyword)
-let WUntil = generateStemmedTokenDefinition("WUntil", ["weak until"],TokenType.LOGICAL_BINARY,Keyword)
-let Release = generateStemmedTokenDefinition("Release", ["release"],TokenType.LOGICAL_BINARY,Keyword)
+let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "some point", "in the long run", "in a while", "soon", "at the end"], TokenType.LOGICAL_UNARY, Keyword)
+let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"], TokenType.LOGICAL_UNARY, Keyword)
+let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"], TokenType.LOGICAL_UNARY, Keyword)
+let Not = generateStemmedTokenDefinition("Not", ["not", "never"], TokenType.LOGICAL_UNARY, Keyword)
+let Upto = generateStemmedTokenDefinition("Upto", ["upto"], TokenType.LOGICAL_BINARY, Keyword)
+let Until = generateStemmedTokenDefinition("Until", ["until"], TokenType.LOGICAL_BINARY, Keyword)
+let WUntil = generateStemmedTokenDefinition("WUntil", ["weak until"], TokenType.LOGICAL_BINARY, Keyword)
+let Release = generateStemmedTokenDefinition("Release", ["release"], TokenType.LOGICAL_BINARY, Keyword)
 /**
  * literals (no stemming required)
  */
@@ -74,7 +74,7 @@ Keyword.LONGER_ALT = Identifier;
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
-let allowedTokens = [WhiteSpace, IntegerLiteral, Identifier,Keyword,If, Then, GThan, LThan, GThanEq, LThanEq, NotEq, Eq, And, Or, Implies, Eventually, Always, Next, Not, Upto, Until, WUntil, Release]
+let allowedTokens = [WhiteSpace, IntegerLiteral, If, Then, GThan, LThan, GThanEq, LThanEq, NotEq, Eq, And, Or, Implies, Eventually, Always, Next, Not, Upto, Until, WUntil, Release, Identifier]
 
 export enum ParserResponseType {
     SUCCESS,
@@ -85,7 +85,7 @@ export enum ParserResponseType {
 
 export interface ParserResponse {
     responseType: ParserResponseType
-    humanReadableFormula?:string
+    humanReadableFormula?: string
     errors?: any
     AST?: any
 }
@@ -95,8 +95,8 @@ const configuration: IParserConfig = {
     recoveryEnabled: true
 }
 
-function generateStemmedTokenDefinition(id: string, synonyms: string[],tokenType: TokenType,alternative?:TokenConstructor) {
-    var tokenFunction = extendToken(id, RegExp(synonyms.map(natural.PorterStemmer.stem).join('|'), "i"),alternative);
+function generateStemmedTokenDefinition(id: string, synonyms: string[], tokenType: TokenType, alternative?: TokenConstructor) {
+    var tokenFunction = extendToken(id, RegExp(synonyms.map(natural.PorterStemmer.stem).join('|'), "i"), alternative);
     tokenFunction.LABEL = synonyms[0]
     tokenFunction.TOKEN_TYPE = tokenType
     tokenFunction.SYNONYMS = synonyms
@@ -357,9 +357,9 @@ export default class NLParser extends Parser {
         //partition tokens that are neither operators nor model variables
         let modelVariables = _.pluck(bmaModel.Model.Variables, "Name")
         let tokensLessIdentifier = _.initial(allowedTokens)
-        sentence = sentence.toLowerCase().split(" ").map((t)=>_.contains(modelVariables,t) ? t : natural.PorterStemmer.stem(t)).join(" ")
+        sentence = sentence.toLowerCase().split(" ").map((t) => _.contains(modelVariables, t) ? t : natural.PorterStemmer.stem(t)).join(" ")
         let lexedTokens = (new Lexer(allowedTokens, true)).tokenize(sentence).tokens
-        let partitionedTokens = _.partition(lexedTokens, (t) => tokensLessIdentifier.some((r) => _.contains(r.SYNONYMS,t.image)) || _.contains(modelVariables, t.image) || IntegerLiteral.PATTERN.test(t.image))
+        let partitionedTokens = _.partition(lexedTokens, (t) => tokensLessIdentifier.some((r) => _.contains(r.SYNONYMS, t.image)) || _.contains(modelVariables, t.image) || IntegerLiteral.PATTERN.test(t.image))
         //return with an error if unknown variables found in the token stream
         let tokens = {
             accepted: partitionedTokens[0],
@@ -381,6 +381,7 @@ export default class NLParser extends Parser {
                 return {
                     responseType: ParserResponseType.SUCCESS,
                     humanReadableFormula: ASTUtils.toHumanReadableString(AST)
+                    AST:AST
                 }
             } else {
                 return {
