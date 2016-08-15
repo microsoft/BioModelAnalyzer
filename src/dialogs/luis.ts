@@ -118,7 +118,6 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
 
             let inputText = session.message.text
             let params = {
-				// Request parameters, 
 				text: inputText,
 				mode: 'proof'
 			}
@@ -130,6 +129,9 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
                 json: true
             }, (error, response, body) => {
                 if (error || body.flaggedTokens.length === 0) {
+                    if (error) {
+                        console.error(error)
+                    }
                     session.send(strings.UNKNOWN_INTENT)
                     return
                 }
