@@ -2,7 +2,8 @@ id: ecoli
 title: Ecoli
 description: |-
   This tutorial will look at the habituation of the chemosensing system in bacteria in response   
-  to a constant environment.
+  to a constant environment, and will query if the motor in the model returns to an unbiased
+  state.
   It takes around 10 minutes.
 steps:
     - text: |-
@@ -19,3 +20,39 @@ steps:
         the whole query into the always socket.
 
         image: always_not_a.png
+
+    - text: |- 
+        Once your LTL query has been prepared on the canvas, click on the 'Test' button. This should
+        result in the query going red, indicating that there are no traces where this is true, 
+        and suggesting that all simulations eventually satisfy A. 
+
+        image: run_alwaysnota.png
+
+    - text: |-
+        Finally, we will test the endpoints of the model. We can start by using the eventually 
+        operator which confirms the previous result; all traces eventually result in A being satisfied
+        at some point. This is shown graphically by the query turning green. 
+
+        image: run_eventuallya.png
+
+    - text: |- 
+        However, we are interested specifically if all simulations end in a self loop where A is true, 
+        or a loop where A is true. To test this we can nest an “and” operator within eventually and 
+        select both self loops and oscillations in the different sockets.
+
+    - text: |-
+        To speed this up, we can create one “Eventually ( (A) and ( ) )” query, and the left click and 
+        copy. Then have one as 'eventually A and (self loops)'' and the other as 'eventually A and 
+        (oscillations)
+
+        image: copying_query.png
+
+    - text: |-
+        Testing for self loop and oscillations reveals that all traces of length 10 end in a self loop 
+        where A is true. 
+
+        image: ecoli_result.png
+
+    - text: |-
+        This is the end of this tutorial, 
+
