@@ -61,6 +61,6 @@ steps:
 
       image: ltl_simulation.png
 
-    - text: >|
+    - text: >-
         This is the end of the tutorial, to carry on working on this model I would recommend you
         visited the Ecoli tutorial. 
