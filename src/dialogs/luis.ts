@@ -121,7 +121,8 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             let inputText = session.message.text
             let params = {
 				text: inputText,
-				mode: 'proof'
+				mode: 'proof',
+                mkt: 'en-GB'
 			}
             let spellUrl = 'https://api.cognitive.microsoft.com/bing/v5.0/spellcheck/?' + qs.stringify(params)
             request(spellUrl, {
@@ -134,8 +135,6 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
                     if (error) {
                         console.error(error)
                     } else {
-                        console.log('spellcheck key:', config.get('BING_SPELLCHECK_KEY'))
-                        console.log('spellcheck URI:', spellUrl)
                         console.log('spellcheck response:', body)
                     }
                     session.send(strings.UNKNOWN_INTENT)
