@@ -54,5 +54,6 @@ steps:
       image: ecoli_result.png
 
     - text: >-
-        This is the end of this tutorial, 
+        This is the end of this tutorial. You should have now successfuly learnt how to test the state
+        of a model using the loop and oscillation functions. 
 
