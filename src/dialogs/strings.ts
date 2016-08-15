@@ -10,7 +10,7 @@ export let TUTORIAL_START_PROMPT = 'Would you like to start the tutorial?'
 export let TUTORIAL_SELECT_CANCELLED = 'Tutorial selection cancelled.'
 export let TUTORIAL_UNKNOWN_SELECT = 'Please input a tutorial number, or anything else to cancel.'
 export let ABOUT_BOT = 'Hello, I am the BMA Bot and I will assist you in creating LTL formulas to query your model. To help you along the way, I will provide you with tutorials and examples. Ask me any questions you have about using the BMA and I will try to help you.'
-export let ABOUT_SIMULATIONS = 'LTL queries are used to find simulations of a given legnth that end in a given loop (a fix point or cycle)'
+export let ABOUT_SIMULATIONS = 'LTL queries are used to find simulations of a given length that end in a loop (a fix point or cycle)'
 export let SPELLCHECK_ASSUMPTION = (corrected: string) => `I assume you meant: "${corrected}"`
 
 //Explaination for each operator 
