@@ -110,7 +110,7 @@ describe('token parsing', function () {
         expect(JSON.stringify(parserResponse.AST)).to.equal(JSON.stringify(expected))
     })
     it('parse() should re-write if (expression) then (expression) to:  expression implies expression', () => {
-        var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "a", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "c", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" },{ "Name": "d", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
+        var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "a", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "c", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "d", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
         var sentence = "if a=1 and c=1 then d=1 eventually"
         var parserResponse = NLParser.parse(sentence, model)
         var expected = {
@@ -275,5 +275,12 @@ describe('token parsing', function () {
         var parserResponse = NLParser.parse(sentence, model)
         var expected = '[{"name":"MismatchedTokenException","message":"Expecting --> then <-- but found --> \'\' <--","token":{"image":"","offset":-1,"startLine":-1,"startColumn":-1,"endLine":-1,"endColumn":-1,"isInsertedInRecovery":false},"resyncedTokens":[],"context":{"ruleStack":["formula","ifFormula"],"ruleOccurrenceStack":[1,1]}}]'
         expect(JSON.stringify(parserResponse.errors)).to.equal(expected)
+    })
+    it('parse() should handle a complex query with prefix, inline and suffix temporal operators with if/then clase', () => {
+        var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "y", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "x", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
+        var sentence = "give me some simulation where it is always the case that if x is 1 then y is 5 is followed by x is 5 in the eventual case"
+        var parserResponse = NLParser.parse(sentence, model)
+        var expected = '"eventually(always((x=1 implies y=5)))'
+        expect(parserResponse.humanReadableFormula).to.equal(expected)
     })
 });
