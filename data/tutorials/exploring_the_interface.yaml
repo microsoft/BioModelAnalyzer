@@ -13,11 +13,7 @@ steps:
         to a constant environment. To do this you will need to download and import the 
         ecoli.json file into the BMA tool.
 
-<<<<<<< HEAD
-        model: ecoli1.json
-=======
       model: ecoli.json
->>>>>>> be8eecf197de727f2ccf9ad88e22e241647bbf7d
 
     - text: |- 
         To import the model, open the interface and click on the Model tab and then 'Import'
