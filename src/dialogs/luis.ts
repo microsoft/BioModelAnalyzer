@@ -134,7 +134,9 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
                     if (error) {
                         console.error(error)
                     } else {
-                        console.log('spellcheck:', body)
+                        console.log('spellcheck key:', config.get('BING_SPELLCHECK_KEY'))
+                        console.log('spellcheck URI:', spellUrl)
+                        console.log('spellcheck response:', body)
                     }
                     session.send(strings.UNKNOWN_INTENT)
                     return
