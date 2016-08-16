@@ -24,7 +24,7 @@ export class BlobModelStorage implements ModelStorage {
             // origin is http://biomodelanalyzer.research.microsoft.com
             // so BMA_URL without the path part at the end
             let bmaUrl = url.parse(config.get<string>('BMA_URL'))
-            let bmaOrigin = bmaUrl.protocol + bmaUrl.host
+            let bmaOrigin = bmaUrl.protocol + '//' + bmaUrl.host
 
             var serviceProperties = result
             serviceProperties.Cors = {
