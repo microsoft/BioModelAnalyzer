@@ -25,6 +25,8 @@ export class BlobModelStorage implements ModelStorage {
                 CorsRule: [{
                     AllowedOrigins: [config.get('BMA_HOST')],
                     AllowedMethods: ['GET'],
+                    AllowedHeaders: [],
+                    ExposedHeaders: [],
                     MaxAgeInSeconds: 3600
                 }]
             }
