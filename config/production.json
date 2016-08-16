@@ -3,5 +3,6 @@
     "PROTOCOL": "https",
     "SERVE_STATIC_VIA_RESTIFY": "0",
     "BMA_URL": "http://biomodelanalyzer.research.microsoft.com/tool.html",
+    "BMA_HOST": "biomodelanalyzer.research.microsoft.com",
     "ENABLE_SPELLCHECK": "1"
 }

@@ -15,6 +15,27 @@ export class BlobModelStorage implements ModelStorage {
     constructor () {
         this.blobService = azure.createBlobService(config.get('AZURE_STORAGE_ACCOUNT'), config.get('AZURE_STORAGE_ACCESS_KEY'))
 
+        // enable CORS
+        this.blobService.getServiceProperties((error, result, response) => {
+            if (error) {
+                throw error
+            }  
+            var serviceProperties = result
+            serviceProperties.Cors = {
+                CorsRule: [{
+                    AllowedOrigins: [config.get('BMA_HOST')],
+                    AllowedMethods: ['GET'],
+                    MaxAgeInSeconds: 3600
+                }]
+            }
+            this.blobService.setServiceProperties(serviceProperties, (error, result, response) => {  
+                if (error) {
+                    throw error
+                }
+            })
+        })
+        
+        // create container
         this.blobService.createContainerIfNotExists(USER_MODELS, {
             publicAccessLevel: 'blob'
         }, (error, result, response) => {
