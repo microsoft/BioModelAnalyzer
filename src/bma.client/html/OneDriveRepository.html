@@ -42,11 +42,28 @@
                 .done(function (models) {
                     console.log("Models found: " + models.length);
                     for (var i = 0; i < models.length; i++) {
-                        console.log(models[i].name);
+                        var model = models[i];
+                        console.log(model);                        
                     }
                 })
                 .fail(function (error) {
                     console.error("failed: " + error);
+                });
+
+            repository.SaveModel("sample2.json", { "name": "sample" }) 
+                .done(function (r) {
+                    console.log("saved: ");
+                    console.log(r);
+                    repository.LoadModel(r)
+                        .done(function (content) {
+                            console.log("File loaded: " + JSON.stringify(content));
+                        })
+                        .fail(function (error) {
+                            console.error("failed to load");
+                        });
+                })
+                .fail(function (err) {
+                    console.error("failed to save");
                 });
         }
 

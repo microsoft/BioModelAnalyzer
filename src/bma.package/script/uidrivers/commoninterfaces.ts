@@ -149,8 +149,14 @@ module BMA {
             HighlightAreas(areas: { x: number; y: number; width: number; height: number; fill: string}[]);
         }
 
+
+
+        export interface ModelInfo {
+            name: string;
+        }
+
         export interface IModelRepository {
-            GetModelList(): string[];
+            GetModelList(): string[]; // return JqueryPromise<ModelInfo[]>
             LoadModel(id: string): JSON;
             RemoveModel(id: string);
             SaveModel(id: string, model: JSON);

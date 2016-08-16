@@ -284,6 +284,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="script\onedrive\OneDrive.ts" />
     <TypeScriptCompile Include="script\onedrive\OneDriveRepository.ts" />
     <TypeScriptCompile Include="test\ConvertTargetFunctionToOperationTests.ts" />
     <TypeScriptCompile Include="Scripts\rx.aggregates.d.ts" />
