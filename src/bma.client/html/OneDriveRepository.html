@@ -43,7 +43,12 @@
                     console.log("Models found: " + models.length);
                     for (var i = 0; i < models.length; i++) {
                         var model = models[i];
-                        console.log(model);                        
+                        console.log(model);
+
+                        repository.IsInRepo(model.id)
+                            .done(function(exists) {
+                                console.log("model exists: " + exists);
+                            });
                     }
                 })
                 .fail(function (error) {
@@ -54,7 +59,7 @@
                 .done(function (r) {
                     console.log("saved: ");
                     console.log(r);
-                    repository.LoadModel(r)
+                    repository.LoadModel(r.id)
                         .done(function (content) {
                             console.log("File loaded: " + JSON.stringify(content));
                         })

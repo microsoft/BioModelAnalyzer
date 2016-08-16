@@ -31,7 +31,8 @@ module BMA.OneDrive {
 
     // todo: enable pages when getting file list
     class OneDrive implements IOneDrive {
-        private static selectFields = "select=id,name,@content.downloadUrl";
+        private static selectFields = "select=id,name";
+        private static selectDownloadFields = OneDrive.selectFields + ",@content.downloadUrl";
         private accessToken: string;
 
         constructor(session: any) {
@@ -104,15 +105,15 @@ module BMA.OneDrive {
                             if (r.value[i].folder && r.value[i].name == name) {
                                 d.resolve(r.value[i].id); // folder found
                                 return;
-                            }                        
+                            }
                         // Check for @odata.nextLink if there are more than 200 items (default page size):
                         if (typeof (r["@odata.nextLink"]) === "string") {
                             find(r["@odata.nextLink"]); // continue search on the next page
                         } else {
                             d.resolve(null); // folder not found
-                        }                        
+                        }
                     })
-                    .fail(function(err){
+                    .fail(function (err) {
                         d.reject(err);
                     });
             };
@@ -122,20 +123,11 @@ module BMA.OneDrive {
         }
 
         public EnumerateFiles(folderId: string): JQueryPromise<OneDriveFile[]> {
-            var d = $.Deferred<OneDriveFile[]>();
-            var that = this;
-            var enumerate = function (uri) {
-                that.oneDriveApi("GET", uri, null, OneDrive.selectFields) 
-                    .done(function (r) {
-                        // TODO: Check for @odata.next if there are more than 200 items!!!
-                        d.resolve(r.value);
-                    })
-                    .fail(function (err) {
-                        d.reject(err);
-                    });
-            };
-            enumerate("/drive/items/" + folderId + "/children");
-            return d.promise();
+            return this.oneDriveApi("GET", "/drive/items/" + folderId + "/children", null, OneDrive.selectFields)
+                .then(function (r) {
+                    // TODO: Check for @odata.next if there are more than 200 items!!!
+                    return r.value;
+                });
         }
 
         public SaveFile(folderId: string, name: string, content: JSON): JQueryPromise<OneDriveFile> {
@@ -145,12 +137,19 @@ module BMA.OneDrive {
 
         public LoadFile(fileId: string): JQueryPromise<JSON> {
             var that = this;
-            return this.oneDriveApi("GET", "/drive/items/" + fileId, null, OneDrive.selectFields)
+            return this.oneDriveApi("GET", "/drive/items/" + fileId, null, OneDrive.selectDownloadFields)
                 .then(function (file) {
                     return that.get(file["@content.downloadUrl"])
                         .then(function (data, status, xhr: JQueryXHR) {
                             return data;
                         });
+                });
+        }
+
+        public FileExists(fileId: string): JQueryPromise<boolean> {
+            return this.oneDriveApi("GET", "/drive/items/" + fileId, null, OneDrive.selectFields + ",file")
+                .then(function (file) {
+                    return typeof (file) === "object" && typeof (file["file"]) === "object";
                 });
         }
     }

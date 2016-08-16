@@ -153,6 +153,7 @@ module BMA {
 
         export interface ModelInfo {
             name: string;
+            id: string;
         }
 
         export interface IModelRepository {

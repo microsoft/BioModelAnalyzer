@@ -9,8 +9,6 @@ module BMA.OneDrive {
     }
 
     export interface OneDriveFile extends BMA.UIDrivers.ModelInfo {
-        id: string;
-        "@content.downloadUrl": string;
     }
 
     export class LoginFailure {
@@ -34,6 +32,8 @@ module BMA.OneDrive {
         /// Creates or replaces a file in the given folder. 
         /// Returns the saved file information.
         SaveFile(folderId: string, name: string, content: JSON): JQueryPromise<OneDriveFile>;
+
+        FileExists(fileId: string): JQueryPromise<boolean>;
 
         LoadFile(fileId: string): JQueryPromise<JSON>;
     }
@@ -117,27 +117,32 @@ module BMA.OneDrive {
 
         /* IModelRepository implementation */
 
-        public GetModelList(): JQueryPromise<string[]> {
+        public GetModelList(): JQueryPromise<BMA.UIDrivers.ModelInfo[]> {
             var that = this;
             return this.UseBmaFolder(false)
-                .then(function (folderId) {
+                .then<OneDriveFile[]>(function (folderId) {
                     if (folderId) {
                         return that.EnumerateModels(folderId);
                     } else { // no bma folder
-                        return new Array<string>(0);
+                        var d = $.Deferred();
+                        d.resolve(new Array<OneDriveFile>(0));
+                        return d;
                     }
                 });
         }
 
-        public LoadModel(file: OneDriveFile): JQueryPromise<JSON> {
-            var that = this;
-            return this.oneDrive.LoadFile(file.id);
+        public IsInRepo(fileId: string): JQueryPromise<boolean> {
+            return this.oneDrive.FileExists(fileId);
+        }
+
+        public LoadModel(fileId: string): JQueryPromise<JSON> {
+            return this.oneDrive.LoadFile(fileId);
         }
 
         /// Saves model to the BMA folder using `modelName` as file name.
         /// Creates the BMA folder, unless it exists.
         /// Returns id of the saved file.
-        public SaveModel(modelName: string, modelContent: JSON): JQueryPromise<OneDriveFile> {
+        public SaveModel(modelName: string, modelContent: JSON): JQueryPromise<BMA.UIDrivers.ModelInfo> {
             var that = this;
             return this.UseBmaFolder(true)
                 .then<OneDriveFile>(function (folderId: string) {
