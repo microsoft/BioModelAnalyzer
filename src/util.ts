@@ -33,11 +33,29 @@ export function getTutorialImageAttachment (filename: string): builder.IAttachme
 /**
  * Returns an IAttachment for a file in the /public/tutorials/model folder.
  * 
- * @param filename The models filename, e.g. 'ecoli.json'
+ * @param filename The model's filename, e.g. 'ecoli.json'
  */
 export function getTutorialModelAttachment (filename: string): builder.IAttachment {
     return {
-        contentUrl: getPublicResourceUrl('tutorials/model/' + filename),
+        contentUrl: getTutorialModelUrl(filename),
         contentType: 'application/octet-stream'
     }
+}
+
+/**
+ * Returns the public URL of a tutorial model file.
+ * 
+ * @param filename The model's filename, e.g. 'ecoli.json'
+ */
+export function getTutorialModelUrl (filename: string): string {
+    return getPublicResourceUrl('tutorials/model/' + filename)
+}
+
+/**
+ * Returns a BMA URL which opens the given model URL.
+ * 
+ * @param modelUrl The URL of the model that BMA should open.
+ */
+export function getBMAModelUrl (modelUrl: string): string {
+    return config.get('BMA_URL') + '?Model=' + modelUrl
 }

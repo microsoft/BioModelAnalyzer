@@ -3,8 +3,8 @@ import * as yaml from 'js-yaml'
 import * as fs from 'fs'
 
 import * as strings from './strings'
-import {getTutorialImageAttachment} from '../util'
-import {getTutorialModelAttachment} from '../util'
+import {getTutorialImageAttachment, getBMAModelUrl, getTutorialModelUrl} from '../util'
+import {} from '../util'
 
 /** The object structure of a YAML tutorial file. */
 interface Tutorial {
@@ -97,10 +97,11 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
                 if (step.image) {                    
                     message.addAttachment(getTutorialImageAttachment(step.image))
                 }
-                if (step.model) {
-                    message.addAttachment(getTutorialModelAttachment(step.model))
-                }
                 session.send(message)
+                if (step.model) {
+                    let bmaModelUrl = getBMAModelUrl(getTutorialModelUrl(step.model))
+                    session.send(strings.OPEN_BMA_URL(bmaModelUrl))
+                }
                 next()
             })
         )

@@ -11,7 +11,12 @@ let server = restify.createServer()
 server.listen(port, () => {
     console.log('%s listening to %s', server.name, server.url)
 })
+
+// in development, static files are served directly via restify (instead of IIS)
 if (config.get('SERVE_STATIC_VIA_RESTIFY')) {
+    // enable CORS so that the BMA tool can open our tutorial model URLs
+    server.use(restify.CORS())
+    
     server.get(/\/?.*/, restify.serveStatic({
         directory: './public'
     }))

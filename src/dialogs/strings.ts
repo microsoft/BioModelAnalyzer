@@ -12,6 +12,7 @@ export let TUTORIAL_UNKNOWN_SELECT = 'Please input a tutorial number, or anythin
 export let ABOUT_BOT = 'Hello, I am the BMA Bot and I will assist you in creating LTL formulas to query your model. To help you along the way, I will provide you with tutorials and examples. Ask me any questions you have about using the BMA and I will try to help you.'
 export let ABOUT_SIMULATIONS = 'LTL queries are used to find simulations of a given length that end in a loop (a fix point or cycle)'
 export let SPELLCHECK_ASSUMPTION = (corrected: string) => `I assume you meant: "${corrected}"`
+export let OPEN_BMA_URL = (url: string) => `Open in browser: ${url}`
 
 //Explaination for each operator 
 

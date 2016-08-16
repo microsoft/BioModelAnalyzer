@@ -1,5 +1,6 @@
 {
     "USE_CONSOLE": false,
     "PROTOCOL": "https",
-    "SERVE_STATIC_VIA_RESTIFY": false
+    "SERVE_STATIC_VIA_RESTIFY": false,
+    "BMA_URL": "http://biomodelanalyzer.research.microsoft.com/tool.html"
 }

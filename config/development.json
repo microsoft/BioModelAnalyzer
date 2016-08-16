@@ -7,5 +7,6 @@
     "APP_ID": null,
     "APP_PASSWORD": null,
     "AZURE_STORAGE_ACCOUNT": "UseDevelopmentStorage=true",
-    "AZURE_STORAGE_ACCESS_KEY": null
+    "AZURE_STORAGE_ACCESS_KEY": null,
+    "BMA_URL": "http://biomodelanalyzer.research.microsoft.com/tool.html"
 }
