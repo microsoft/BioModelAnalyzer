@@ -35,7 +35,7 @@ module BMA.OneDrive {
         /// Returns the saved file information.
         SaveFile(folderId: string, name: string, content: JSON): JQueryPromise<OneDriveFile>;
 
-        LoadFile(file: OneDriveFile): JQueryPromise<JSON>;
+        LoadFile(fileId: string): JQueryPromise<JSON>;
     }
 
     export interface IOneDriveConnector {
@@ -116,10 +116,7 @@ module BMA.OneDrive {
 
         public LoadModel(file: OneDriveFile): JQueryPromise<JSON> {
             var that = this;
-            return this.UseBmaFolder(false)
-                .then<JSON>(function (folderId: string) {
-                    return that.oneDrive.LoadFile(file);
-                });
+            return this.oneDrive.LoadFile(file.id);
         }
 
         /// Saves moodel to the BMA folder using `modelName` as file name.
