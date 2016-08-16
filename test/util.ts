@@ -1,6 +1,7 @@
 import * as assert from 'assert'
 import * as Promise from 'promise'
 import * as builder from 'botbuilder'
+import * as config from 'config'
 import {setup as setupBot} from '../src/bot'
 import TestConnector from './TestConnector'
 import MemoryModelStorage from './MemoryModelStorage'
@@ -10,7 +11,10 @@ import MemoryModelStorage from './MemoryModelStorage'
  */
 function createBot () {
     let connector = new TestConnector()
-    let bot = new builder.UniversalBot(connector)
+    let bot = new builder.UniversalBot(connector, {
+        // this is false by default but we need to access data between unrelated dialogs
+        persistConversationData: true
+    })
     let modelStorage = new MemoryModelStorage()
     setupBot(bot, modelStorage)
     return bot
@@ -21,7 +25,7 @@ export interface DirectedMessage {
     user?: string | builder.IAttachment
 
     /** A message from the bot */
-    bot?: string | builder.IAttachment
+    bot?: string | builder.IAttachment | ((msg: builder.IMessage) => void)
 }
 
 /**
@@ -55,20 +59,25 @@ export function assertConversation (messages: DirectedMessage[]) {
         // handle messages that the bot sends to the user
         bot.on('send', (actualMessage: builder.IMessage) => {
             let refMessage = messages[currentMsgIndex]
+            assert(refMessage, 'Too many bot messages received. text: ' + actualMessage.text)
             assert('bot' in refMessage)
-            let msg = connector.toMessage(refMessage.bot)
-            if (msg.text) {
-                assert.equal(actualMessage.text, msg.text)
-            }
-            if (msg.attachments && msg.attachments.length > 0) {
-                if (msg.attachments.length > 1) {
-                    throw new Error('not implemented yet')
+            if (typeof refMessage.bot === 'function') {
+                refMessage.bot(actualMessage)
+            } else {
+                let msg = connector.toMessage(refMessage.bot)
+                if (msg.text) {
+                    assert.equal(actualMessage.text, msg.text)
                 }
-                let refAttachment = msg.attachments[0]
-                let actualAttachment = actualMessage.attachments[0]
-                
+                if (msg.attachments && msg.attachments.length > 0) {
+                    if (msg.attachments.length > 1) {
+                        throw new Error('not implemented yet')
+                    }
+                    let refAttachment = msg.attachments[0]
+                    let actualAttachment = actualMessage.attachments[0]
+                    
 
-                assert.deepEqual(actualAttachment.content, refAttachment.content)
+                    assert.deepEqual(actualAttachment.content, refAttachment.content)
+                }
             }
             next()
         })

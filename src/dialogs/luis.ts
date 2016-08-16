@@ -77,8 +77,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         }
     ])
 
-    function handleLTLQuery (session: builder.Session) {
-        let text = session.message.text
+    function handleLTLQuery (session: builder.Session, text: string) {
         let result = NLParser.parse(text, session.conversationData.bmaModel)
         if (result.responseType !== ParserResponseType.SUCCESS) {
             session.send('I did not understand your query')
@@ -92,15 +91,18 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         (session, args, next) => {
             // check if JSON model has been uploaded already, otherwise prompt user
             if (!session.conversationData.bmaModel) {
+                session.conversationData.lastMessageText = session.message.text
+                session.save()
                 builder.Prompts.attachment(session, strings.MODEL_SEND_PROMPT)
             } else {
-                handleLTLQuery(session)
+                handleLTLQuery(session, session.message.text)
                 session.endDialog()
             }
         },
         (session, results, next) => receiveModelAttachmentStep(bot, modelStorage, session, results, next),
         (session, results, next) => {
-            handleLTLQuery(session)
+            handleLTLQuery(session, session.conversationData.lastMessageText)
+            delete session.conversationData.lastMessageText
         }
     ])
     
@@ -109,8 +111,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         if (attachments && attachments.length > 0) {
             receiveModelAttachmentStep(bot, modelStorage, session, results, next)
         } else {
-            if (session.conversationData.hasSpellChecked) {
-                console.log('hasSpellChecked==true')
+            if (config.get('ENABLE_SPELLCHECK') === '0' || session.conversationData.hasSpellChecked) {
                 // FIXME reset spellcheck state in other intents too!
                 session.conversationData.hasSpellChecked = false
                 session.save()
@@ -140,6 +141,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
                     session.send(strings.UNKNOWN_INTENT)
                     return
                 }
+                console.log('spellcheck response:', body)
 
                 let inputOffset = 0
                 let correctedText = ''
