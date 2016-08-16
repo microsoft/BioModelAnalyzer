@@ -14,7 +14,7 @@ Recognises user asking about simulations
 Example: What kind of simulations can you find?
 
 *Back*
-> needs implementation
+needs implementation
 Chosen intent for when user requires to go back, may be useful for tutorials
 Users current coversation is stored, 'Back' is invoked and data from the conversation is retrieved.
 Example: Please go back
@@ -47,12 +47,12 @@ Required param: Operator
 Example: Do you have an example that shows me how to use the implies operator?
 
 *OperatorInteractions*
-> needs implementation
+needs implementation
 Knowledgbase query, explains and provides examples of different interaction possibilities.
 Example: How can I use eventually always 
 
 *SelectTutorial*
-> needs implementation (may not be needed)
+needs implementation (may not be needed)
 Chosen intent when user asks for a specific tutorial 
 Example: Are there any tutorials that can explain stability
 
