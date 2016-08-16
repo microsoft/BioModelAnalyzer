@@ -2,7 +2,7 @@ import * as assert from 'assert'
 import * as Promise from 'promise'
 import * as builder from 'botbuilder'
 import * as config from 'config'
-import {setup as setupBot} from '../src/bot'
+import {setup as setupBot} from '../../src/bot'
 import TestConnector from './TestConnector'
 import MemoryModelStorage from './MemoryModelStorage'
 
