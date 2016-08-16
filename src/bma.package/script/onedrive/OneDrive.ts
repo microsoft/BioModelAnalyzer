@@ -139,14 +139,8 @@ module BMA.OneDrive {
         }
 
         public SaveFile(folderId: string, name: string, content: JSON): JQueryPromise<OneDriveFile> {
-            var that = this;
             // Replaces if exists
             return this.oneDriveApi("PUT", "/drive/items/" + folderId + "/children/" + name + "/content", content);
-                //.then(function (r) {
-                //    // The item returns by the PUT operation contains @content.downloadUrl which doesn't support cross-origin request;
-                //    // so we here GET the item again and it will contain proper download url, which can be downloaded from JavaScript.
-                //    return that.oneDriveApi("GET", "/drive/items/" + r.id, null, OneDrive.selectFields);                        
-                //});
         }
 
         public LoadFile(fileId: string): JQueryPromise<JSON> {
