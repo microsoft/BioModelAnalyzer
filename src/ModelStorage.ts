@@ -1,6 +1,7 @@
 import * as Promise from 'promise'
 import * as azure from 'azure-storage'
 import * as config from 'config'
+import * as url from 'url'
 
 const USER_MODELS = 'usermodels'
 
@@ -19,11 +20,16 @@ export class BlobModelStorage implements ModelStorage {
         this.blobService.getServiceProperties((error, result, response) => {
             if (error) {
                 throw error
-            }  
+            }
+            // origin is http://biomodelanalyzer.research.microsoft.com
+            // so BMA_URL without the path part at the end
+            let bmaUrl = url.parse(config.get<string>('BMA_URL'))
+            let bmaOrigin = bmaUrl.protocol + bmaUrl.host
+
             var serviceProperties = result
             serviceProperties.Cors = {
                 CorsRule: [{
-                    AllowedOrigins: [config.get('BMA_HOST')],
+                    AllowedOrigins: [bmaOrigin],
                     AllowedMethods: ['GET'],
                     AllowedHeaders: [],
                     ExposedHeaders: [],

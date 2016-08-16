@@ -9,6 +9,5 @@
     "AZURE_STORAGE_ACCOUNT": "UseDevelopmentStorage=true",
     "AZURE_STORAGE_ACCESS_KEY": null,
     "BMA_URL": "http://biomodelanalyzer.research.microsoft.com/tool.html",
-    "BMA_HOST": "biomodelanalyzer.research.microsoft.com",
     "ENABLE_SPELLCHECK": "1"
 }
