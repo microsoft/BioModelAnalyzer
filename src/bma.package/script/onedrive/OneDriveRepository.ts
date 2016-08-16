@@ -36,6 +36,9 @@ module BMA.OneDrive {
         FileExists(fileId: string): JQueryPromise<boolean>;
 
         LoadFile(fileId: string): JQueryPromise<JSON>;
+
+        /// Returns true, if the operation is successful.
+        RemoveFile(fileId: string): JQueryPromise<boolean>;
     }
 
     export interface IOneDriveConnector {
@@ -139,15 +142,19 @@ module BMA.OneDrive {
             return this.oneDrive.LoadFile(fileId);
         }
 
-        /// Saves model to the BMA folder using `modelName` as file name.
+        /// Saves model to the BMA folder using `modelName` plus extension ".json" as file name.
         /// Creates the BMA folder, unless it exists.
-        /// Returns id of the saved file.
+        /// Returns information about the saved file.
         public SaveModel(modelName: string, modelContent: JSON): JQueryPromise<BMA.UIDrivers.ModelInfo> {
             var that = this;
             return this.UseBmaFolder(true)
                 .then<OneDriveFile>(function (folderId: string) {
                     return that.oneDrive.SaveFile(folderId, modelName + ".json", modelContent).then(OneDriveRepository.UpdateName);
                 });
+        }
+
+        public RemoveModel(fileId: string): JQueryPromise<boolean> {
+            return this.oneDrive.RemoveFile(fileId);
         }
     }
 }

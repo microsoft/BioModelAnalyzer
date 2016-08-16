@@ -152,6 +152,14 @@ module BMA.OneDrive {
                     return typeof (file) === "object" && typeof (file["file"]) === "object";
                 });
         }
+
+        public RemoveFile(fileId: string): JQueryPromise<boolean> {
+            return this.oneDriveApi("DELETE", "/drive/items/" + fileId)
+                .then(function (data, status, xhr) {
+                    // If successful, this call returns a 204 No Content response to indicate that resource was deleted and there was nothing to return.
+                    return xhr.status === 204;
+                });
+        }
     }
 
     export class OneDriveConnector implements IOneDriveConnector {
