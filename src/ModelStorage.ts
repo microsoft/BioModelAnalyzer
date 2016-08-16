@@ -28,6 +28,8 @@ export class BlobModelStorage implements ModelStorage {
                     MaxAgeInSeconds: 3600
                 }]
             }
+            console.log('setting blob service properties:')
+            console.log(serviceProperties)
             this.blobService.setServiceProperties(serviceProperties, (error, result, response) => {  
                 if (error) {
                     throw error
