@@ -1,9 +1,32 @@
 import * as builder from 'botbuilder'
 import * as assert from 'assert'
+import * as restify from 'restify'
 import * as strings from '../src/dialogs/strings'
 import {assertConversation} from './util'
 
+const PORT = 5678
+
+function asAttachment (filename): builder.IAttachment {
+    return {
+        contentType: 'application/octet-stream',
+        contentUrl: `http://localhost:${PORT}/${filename}`
+    }
+}
+
 describe ('bot conversations', () => {
+    let server: restify.Server
+    before(() => {
+        server = restify.createServer()
+        server.listen(PORT)
+        server.get(/\/?.*/, restify.serveStatic({
+            directory: './test/data'
+        }))
+    })
+
+    after(() => {
+        server.close()
+    })
+
     it ('handles unknown messages', () => {
         return assertConversation([
             { user: 'Tell me a joke' }, 
@@ -19,42 +42,29 @@ describe ('bot conversations', () => {
     })
 
     it ('accepts JSON model file after prompting for it', () => {
-        let attachment: builder.IAttachment = {
-            contentType: 'application/octet-stream',
-            content: {}
-        }
         return assertConversation([
             { user: 'Show me a simulation where x=1'},
             { bot: strings.MODEL_SEND_PROMPT }, 
-            { user: attachment },
-            { bot: strings.MODEL_RECEIVED }
+            { user: asAttachment('testmodel.json') },
+            { bot: strings.MODEL_RECEIVED('model 1') },
+            { bot: 'Try this: x=1'}
         ])
     })
 
     it ('accepts JSON model file without prompting for it', () => {
-        let attachment: builder.IAttachment = {
-            contentType: 'application/octet-stream',
-            content: {}
-        }
         return assertConversation([
-            { user: attachment },
-            { bot: strings.MODEL_RECEIVED }
+            { user: asAttachment('testmodel.json') },
+            { bot: strings.MODEL_RECEIVED('model 1') }
         ])
     })
 
     it ('sends JSON model file back to the user when requested', () => {
-        let attachment: builder.IAttachment = {
-            contentType: 'application/octet-stream',
-            content: {}
-        }
         return assertConversation([
-            { user: 'Show me a simulation where x=1'},
-            { bot: strings.MODEL_SEND_PROMPT }, 
-            { user: attachment },
-            { bot: strings.MODEL_RECEIVED },
-            { user: 'start:/requestUploadedModel' /*'Please send me my model file'*/},
-            { bot: attachment}
+            { user: asAttachment('testmodel.json') },
+            { bot: strings.MODEL_RECEIVED('model 1') },
+            { user: 'which model did I upload?'},
+            { bot: msg => assert(msg.text.startsWith('Here is the model you sent me:'), `Mismatch: "${msg.text}"`) }
         ])
     })
-    
+  
 })
