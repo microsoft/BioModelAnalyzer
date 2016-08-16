@@ -4,7 +4,6 @@ import * as fs from 'fs'
 
 import * as strings from './strings'
 import {getTutorialImageAttachment, getBMAModelUrl, getTutorialModelUrl} from '../util'
-import {} from '../util'
 
 /** The object structure of a YAML tutorial file. */
 interface Tutorial {

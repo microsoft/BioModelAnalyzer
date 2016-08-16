@@ -13,6 +13,7 @@ export let ABOUT_BOT = 'Hello, I am the BMA Bot and I will assist you in creatin
 export let ABOUT_SIMULATIONS = 'LTL queries are used to find simulations of a given length that end in a loop (a fix point or cycle)'
 export let SPELLCHECK_ASSUMPTION = (corrected: string) => `I assume you meant: "${corrected}"`
 export let OPEN_BMA_URL = (url: string) => `Open in browser: ${url}`
+export let HERE_IS_YOUR_UPLOADED_MODEL = (url: string) => `Here is the model you sent me: ${url}`
 
 //Explaination for each operator 
 
