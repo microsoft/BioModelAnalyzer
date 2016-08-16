@@ -29,7 +29,7 @@ export class BlobModelStorage implements ModelStorage {
                 }]
             }
             console.log('setting blob service properties:')
-            console.log(serviceProperties)
+            console.log(JSON.stringify(serviceProperties, null, 4))
             this.blobService.setServiceProperties(serviceProperties, (error, result, response) => {  
                 if (error) {
                     throw error
