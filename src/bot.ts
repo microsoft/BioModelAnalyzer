@@ -1,5 +1,4 @@
 import * as builder from 'botbuilder'
-import * as config from 'config'
 
 import {registerMiddleware} from './middleware'
 import {registerLUISDialog} from './dialogs/luis'

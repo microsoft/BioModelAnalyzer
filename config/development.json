@@ -1,12 +1,13 @@
 {
-    "USE_CONSOLE": true,
+    "USE_CONSOLE": "1",
     "PORT": 3978,
     "PROTOCOL": "http",
     "HOSTNAME": "localhost",
-    "SERVE_STATIC_VIA_RESTIFY": true,
+    "SERVE_STATIC_VIA_RESTIFY": "true",
     "APP_ID": null,
     "APP_PASSWORD": null,
     "AZURE_STORAGE_ACCOUNT": "UseDevelopmentStorage=true",
     "AZURE_STORAGE_ACCESS_KEY": null,
-    "BMA_URL": "http://biomodelanalyzer.research.microsoft.com/tool.html"
+    "BMA_URL": "http://biomodelanalyzer.research.microsoft.com/tool.html",
+    "ENABLE_SPELLCHECK": "1"
 }

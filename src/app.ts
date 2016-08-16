@@ -13,7 +13,7 @@ server.listen(port, () => {
 })
 
 // in development, static files are served directly via restify (instead of IIS)
-if (config.get('SERVE_STATIC_VIA_RESTIFY')) {
+if (config.get('SERVE_STATIC_VIA_RESTIFY') === '1') {
     // enable CORS so that the BMA tool can open our tutorial model URLs
     server.use(restify.CORS())
     
@@ -28,7 +28,7 @@ let botSettings = {
 }
 
 let bot: builder.UniversalBot
-if (config.get('USE_CONSOLE')) {
+if (config.get('USE_CONSOLE') === '1') {
     // Create console bot
     let connector = new builder.ConsoleConnector().listen()
     bot = new builder.UniversalBot(connector, botSettings)

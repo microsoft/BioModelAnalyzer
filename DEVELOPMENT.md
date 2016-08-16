@@ -30,7 +30,7 @@ The final step is to create a local configuration file `config/local.json` with 
 ```
 
 By default, in development mode the bot is run inside the console.
-To run it as an actual server, add `"USE_CONSOLE": false` to `config/local.json`.
+To run it as an actual server, add `"USE_CONSOLE": "0"` to `config/local.json`.
 In development mode, the server runs without authentication.
 
 ### Development
