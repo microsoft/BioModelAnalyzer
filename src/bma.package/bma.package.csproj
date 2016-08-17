@@ -383,6 +383,7 @@
     <TypeScriptCompile Include="test\LTLServiceFormulaConvertionTests.ts" />
     <TypeScriptCompile Include="test\ModelHelperTests.ts" />
     <TypeScriptCompile Include="test\ModelTest.ts" />
+    <TypeScriptCompile Include="test\OneDriveRepositoryTest.ts" />
     <TypeScriptCompile Include="test\ProgressionTableTest.ts" />
     <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
     <TypeScriptCompile Include="test\ResultWindowViewerTest.ts" />
