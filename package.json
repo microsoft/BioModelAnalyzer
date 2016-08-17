@@ -5,7 +5,7 @@
   "scripts": {
     "compile": "tsc & exit 0",
     "postinstall": "npm run compile",
-    "test": "mocha --require ./test/init.js test/**/*.ts",
+    "test": "mocha --require ./test/helpers/init.js test/**/*.ts",
     "watch": "tsc --watch",
     "start": "node lib/app.js"
   },

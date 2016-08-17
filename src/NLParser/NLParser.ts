@@ -1,7 +1,5 @@
 /*
 TODO:
-4) parenthesis the output
-10) pretty print the output
 15) check operator precedence
 16) prepend with a missing eventually if no temporal operator provided
 18) handle variables with space in them
@@ -10,6 +8,10 @@ TODO:
 21) later = eventually next (composite)
 22) check operator precedence
 23) word substrings are matching to te operators
+24) handle multi letter words -> matching error between operators and text
+    -> using the match longest we are able to match and solve this problem
+    -> but then in the AST we have issues as everything matches to words
+25) blows up with empty string
 */
 
 import * as chevrotain from 'chevrotain'
@@ -28,53 +30,68 @@ export enum TokenType {
 /**
  *  GRAMMAR TOKENS
  */
-let If = generateStemmedTokenDefinition("If", ["if"], TokenType.OTHER, Keyword)
-let Then = generateStemmedTokenDefinition("Then", ["then"], TokenType.OTHER, Keyword)
+let If = generateStemmedTokenDefinition("If", ["if"], TokenType.OTHER)
+let Then = generateStemmedTokenDefinition("Then", ["then"], TokenType.OTHER)
 /**
  * Arithmetic operator tokens
  */
-let GThan = generateStemmedTokenDefinition("GThan", [">", "greater than", "bigger than"], TokenType.OTHER, Keyword)
-let LThan = generateStemmedTokenDefinition("LThan", ["<", "less than", "smaller than"], TokenType.OTHER, Keyword)
-let GThanEq = generateStemmedTokenDefinition("GThanEq", [">=", "greater than or equal to", "bigger than or equal to"], TokenType.OTHER, Keyword)
-let LThanEq = generateStemmedTokenDefinition("LThanEq", ["<=", "less than or equal to", "smaller than or equal to"], TokenType.OTHER, Keyword)
-let Eq = generateStemmedTokenDefinition("Eq", ["=", "is equal to", "is same as", "equal", "is"], TokenType.OTHER, Keyword)
-let NotEq = generateStemmedTokenDefinition("NotEq", ["!=", "is not equal to", "is not same as", "not equal", "is not"], TokenType.OTHER, Keyword)
+let GThan = generateStemmedTokenDefinition("GThan", [">", "greater than", "bigger than"], TokenType.OTHER)
+let LThan = generateStemmedTokenDefinition("LThan", ["<", "less than", "smaller than"], TokenType.OTHER)
+let GThanEq = generateStemmedTokenDefinition("GThanEq", [">=", "greater than or equal to", "bigger than or equal to"], TokenType.OTHER)
+let LThanEq = generateStemmedTokenDefinition("LThanEq", ["<=", "less than or equal to", "smaller than or equal to"], TokenType.OTHER)
+let Eq = generateStemmedTokenDefinition("Eq", ["=", "is equal to", "is same as", "equal", "is"], TokenType.OTHER)
+let NotEq = generateStemmedTokenDefinition("NotEq", ["!=", "is not equal to", "is not same as", "not equal", "is not"], TokenType.OTHER)
 /** 
  *  Boolean operator tokens
  */
-let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"], TokenType.LOGICAL_BINARY, Keyword)
-let Or = generateStemmedTokenDefinition("Or", ["or", "either"], TokenType.LOGICAL_BINARY, Keyword)
-let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"], TokenType.LOGICAL_BINARY, Keyword)
+let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"], TokenType.LOGICAL_BINARY)
+let Or = generateStemmedTokenDefinition("Or", ["or", "either"], TokenType.LOGICAL_BINARY)
+let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"], TokenType.LOGICAL_BINARY)
+let Not = generateStemmedTokenDefinition("Not", ["not", "never"], TokenType.LOGICAL_UNARY)
 /**
  *  Temporal operator tokens
  */
-let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "some point", "in the long run", "in a while", "soon", "at the end","sometime"], TokenType.LOGICAL_UNARY, Keyword)
-let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"], TokenType.LOGICAL_UNARY, Keyword)
-let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"], TokenType.LOGICAL_UNARY, Keyword)
-let Not = generateStemmedTokenDefinition("Not", ["not", "never"], TokenType.LOGICAL_UNARY, Keyword)
-let Upto = generateStemmedTokenDefinition("Upto", ["upto"], TokenType.LOGICAL_BINARY, Keyword)
-let Until = generateStemmedTokenDefinition("Until", ["until"], TokenType.LOGICAL_BINARY, Keyword)
-let WUntil = generateStemmedTokenDefinition("WUntil", ["weak until"], TokenType.LOGICAL_BINARY, Keyword)
-let Release = generateStemmedTokenDefinition("Release", ["release"], TokenType.LOGICAL_BINARY, Keyword)
+let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "some point", "in the long run", "in a while", "soon", "at the end", "sometime"], TokenType.LOGICAL_UNARY)
+let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"], TokenType.LOGICAL_UNARY)
+let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"], TokenType.LOGICAL_UNARY)
+let Upto = generateStemmedTokenDefinition("Upto", ["upto"], TokenType.LOGICAL_BINARY)
+let Until = generateStemmedTokenDefinition("Until", ["until"], TokenType.LOGICAL_BINARY)
+let WUntil = generateStemmedTokenDefinition("WUntil", ["weak until"], TokenType.LOGICAL_BINARY)
+let Release = generateStemmedTokenDefinition("Release", ["release"], TokenType.LOGICAL_BINARY)
 /**
  * literals (no stemming required)
  */
 let IntegerLiteral = extendToken("IntegerLiteral", /\d+/);
-let Identifier = extendToken("Identifier", /\w+/);
+let ModelVariable = extendToken("ModelVariable", new RegExp("(MODELVAR)" + "(\\()" + "(\\d+)" + "(\\))"));
 /**
  *  Ignored tokens
  */
 let WhiteSpace = extendToken("WhiteSpace", /\s+/);
 WhiteSpace.GROUP = Lexer.SKIPPED
-
-var Keyword = extendToken("Keyword", Lexer.NA);
-// LONGER_ALT will make the Lexer perfer a longer Identifier over a Keyword.
-Keyword.LONGER_ALT = Identifier;
-
+/**
+ *  Reject non-matching token
+ */
+var NotMatched = extendToken("NotMatched", /\.*/);
+NotMatched.GROUP = Lexer.NA
+/**
+ *  Token groups
+ */
+let REJECT = [NotMatched]
+let IGNORE = [WhiteSpace]
+let LITERALS = [ModelVariable, IntegerLiteral]
+let CONSTRUCTS = [If, Then]
+let ARITHMETIC_OPERATORS = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
+let BOOLEAN_OPERATORS = [And, Or, Implies, Not]
+let TEMPORAL_OPERATORS = [Eventually, Always, Next, Upto, Until, WUntil, Release]
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
-let allowedTokens = [WhiteSpace, IntegerLiteral, If, Then, GThan, LThan, GThanEq, LThanEq, NotEq, Eq, And, Or, Implies, Eventually, Always, Next, Not, Upto, Until, WUntil, Release, Identifier]
+let ALLOWED_TOKENS = IGNORE
+    .concat(LITERALS)
+    .concat(CONSTRUCTS)
+    .concat(ARITHMETIC_OPERATORS)
+    .concat(BOOLEAN_OPERATORS)
+    .concat(TEMPORAL_OPERATORS)
 
 export enum ParserResponseType {
     SUCCESS,
@@ -100,7 +117,7 @@ function generateStemmedTokenDefinition(id: string, synonyms: string[], tokenTyp
     var tokenFunction = extendToken(id, RegExp(stemmedSynonyms.join('|'), "i"), alternative);
     tokenFunction.LABEL = synonyms[0]
     tokenFunction.TOKEN_TYPE = tokenType
-    tokenFunction.SYNONYMS = stemmedSynonyms
+    tokenFunction.SYNONYMS = synonyms
     return tokenFunction
 }
 
@@ -227,14 +244,15 @@ export default class NLParser extends Parser {
     })
 
     private relationalExpression = this.RULE("relationalExpression", () => {
-        let identifier, relationalOperator, integerLiteral
-        identifier = this.CONSUME(Identifier).image
+        let modelVariableTokens, relationalOperator, integerLiteral
+        //deconstruct the matched pattern to extract the variable id
+        modelVariableTokens = this.CONSUME(ModelVariable).image.match(ModelVariable.PATTERN)
         relationalOperator = this.SUBRULE(this.relationalOperator)
         integerLiteral = parseInt(this.CONSUME(IntegerLiteral).image)
         return {
             type: "relationalExpression",
             value: relationalOperator,
-            left: identifier,
+            left: { type: "modelVariable", id: parseInt(modelVariableTokens[3]) },
             right: integerLiteral
         }
     })
@@ -347,52 +365,43 @@ export default class NLParser extends Parser {
 
     //for internal purpose only
     private constructor(inputTokens: Token[]) {
-        super(inputTokens, allowedTokens, configuration)
+        super(inputTokens, ALLOWED_TOKENS, configuration)
         // very important to call this after all the rules have been defined.
         // otherwise the parser may not work correctly as it will lack information
         // derived during the self analysis phase.
         Parser.performSelfAnalysis(this);
     }
 
-    static parse(sentence: string, bmaModel): ParserResponse {
-        //partition tokens that are neither operators nor model variables
-        let modelVariables = _.pluck(bmaModel.Model.Variables, "Name")
-        let tokensLessIdentifier = _.initial(allowedTokens)
-        sentence = sentence.toLowerCase().split(" ").map((t) => _.contains(modelVariables, t) ? t : natural.PorterStemmer.stem(t)).join(" ")
-        let lexedTokens = (new Lexer(allowedTokens, true)).tokenize(sentence).tokens
-        let partitionedTokens = _.partition(lexedTokens, (t) => tokensLessIdentifier.some((r) => _.contains(r.SYNONYMS, t.image)) || _.contains(modelVariables, t.image) || IntegerLiteral.PATTERN.test(t.image))
-        //return with an error if unknown variables found in the token stream
-        let tokens = {
-            accepted: partitionedTokens[0],
-            rejected: partitionedTokens[1]
+    private static applyPreprocessing(sentence: string, bmaModel): string {
+        var processedSentence
+        var modelVariables = bmaModel.Model.Variables
+        var modelVariableRegex = new RegExp("(" + _.pluck(modelVariables, "Name").join("|") + ")(\\s*)(" + ARITHMETIC_OPERATORS.map((op) => op.SYNONYMS.join("|")).join("|") + ")(\\s*\\d+)", "ig");
+        var matchedGroups, variableTokens = [];
+        while ((matchedGroups = modelVariableRegex.exec(sentence)) !== null) {
+            //The variable will always on the 1st index as the 0th index is the entire group and the variable is matched in the 1st group of the regex expression
+            variableTokens.push({ offset: matchedGroups.index, name: matchedGroups[1], id: _.find(bmaModel.Model.Variables, (v: any) => v.Name === matchedGroups[1]).Id })
         }
-        if (!_.isEmpty(tokens.accepted)) {
-            let arithmeticOperators = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
-            //filter accepted tokens to reject relational operators that do not have any operands
-            var filteredTokens = []
-            for (var i = 0; i < tokens.accepted.length; i++) {
-                if (!(arithmeticOperators.some((op) => new RegExp(op.PATTERN).test(tokens.accepted[i].image)) && (i < 1 || i > tokens.accepted.length - 1 || !new RegExp(IntegerLiteral.PATTERN).test(tokens.accepted[i + 1].image) || (!new RegExp(Identifier.PATTERN).test(tokens.accepted[i - 1].image))))) {
-                    filteredTokens.push(tokens.accepted[i])
-                }
-            }
+        variableTokens.forEach(t => sentence = sentence.replace(new RegExp("\\b" + t.name + "\\b", "ig"), "MODELVAR(" + t.id + ")"))
+        return sentence;
+    }
 
-            var parser = new NLParser(filteredTokens)
-            var AST = parser.formula()
-            if (AST) {
-                return {
-                    responseType: ParserResponseType.SUCCESS,
-                    humanReadableFormula: ASTUtils.toHumanReadableString(AST),
-                    AST: AST
-                }
-            } else {
-                return {
-                    responseType: ParserResponseType.PARSE_ERROR,
-                    errors: parser.errors,
-                }
+    static parse(sentence: string, bmaModel): ParserResponse {
+        //parse the input string to find and identify model variables to denote them so there are no lexing conflicts
+        sentence = this.applyPreprocessing(sentence, bmaModel)
+        //lex the sentence to get token stream where illegal tokens are ignored
+        let lexedTokens = (new Lexer(ALLOWED_TOKENS, true)).tokenize(sentence).tokens
+        //parse the token stream
+        var parser = new NLParser(lexedTokens)
+        var AST = parser.formula()
+        if (AST) {
+            return {
+                responseType: ParserResponseType.SUCCESS,
+                humanReadableFormula: ASTUtils.toHumanReadableString(AST, bmaModel),
+                AST: AST
             }
         } else {
             return {
-                responseType: ParserResponseType.NO_PARSABLE_TOKEN_FOUND,
+                responseType: ParserResponseType.PARSE_ERROR,
                 errors: parser.errors,
             }
         }

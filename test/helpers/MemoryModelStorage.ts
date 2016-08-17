@@ -1,5 +1,5 @@
 import * as Promise from 'promise'
-import {ModelStorage} from '../src/ModelStorage'
+import {ModelStorage} from '../../src/ModelStorage'
 
 export default class MemoryModelStorage implements ModelStorage {
     models: { [id: string]: any }

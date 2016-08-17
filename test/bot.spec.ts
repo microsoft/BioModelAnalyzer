@@ -2,7 +2,7 @@ import * as builder from 'botbuilder'
 import * as assert from 'assert'
 import * as restify from 'restify'
 import * as strings from '../src/dialogs/strings'
-import {assertConversation} from './util'
+import {assertConversation} from './helpers/util'
 
 const PORT = 5678
 

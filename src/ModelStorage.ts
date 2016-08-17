@@ -1,6 +1,7 @@
 import * as Promise from 'promise'
 import * as azure from 'azure-storage'
 import * as config from 'config'
+import * as url from 'url'
 
 const USER_MODELS = 'usermodels'
 
@@ -15,6 +16,36 @@ export class BlobModelStorage implements ModelStorage {
     constructor () {
         this.blobService = azure.createBlobService(config.get('AZURE_STORAGE_ACCOUNT'), config.get('AZURE_STORAGE_ACCESS_KEY'))
 
+        // enable CORS
+        this.blobService.getServiceProperties((error, result, response) => {
+            if (error) {
+                throw error
+            }
+            // origin is http://biomodelanalyzer.research.microsoft.com
+            // so BMA_URL without the path part at the end
+            let bmaUrl = url.parse(config.get<string>('BMA_URL'))
+            let bmaOrigin = bmaUrl.protocol + '//' + bmaUrl.host
+
+            var serviceProperties = result
+            serviceProperties.Cors = {
+                CorsRule: [{
+                    AllowedOrigins: [bmaOrigin],
+                    AllowedMethods: ['GET'],
+                    AllowedHeaders: [],
+                    ExposedHeaders: [],
+                    MaxAgeInSeconds: 3600
+                }]
+            }
+            console.log('setting blob service properties:')
+            console.log(JSON.stringify(serviceProperties, null, 4))
+            this.blobService.setServiceProperties(serviceProperties, (error, result, response) => {  
+                if (error) {
+                    throw error
+                }
+            })
+        })
+        
+        // create container
         this.blobService.createContainerIfNotExists(USER_MODELS, {
             publicAccessLevel: 'blob'
         }, (error, result, response) => {
