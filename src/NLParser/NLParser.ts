@@ -8,10 +8,10 @@ TODO:
 21) later = eventually next (composite)
 22) check operator precedence
 23) word substrings are matching to te operators
-24) handle multi letter words -> matching error between operators and text
-    -> using the match longest we are able to match and solve this problem
-    -> but then in the AST we have issues as everything matches to words
 25) blows up with empty string
+26) check for variable usage outside range
+27) support on/off for boolean variables 
+28) limit post fixing to the closest expression
 */
 
 import * as chevrotain from 'chevrotain'
@@ -107,17 +107,12 @@ export interface ParserResponse {
     AST?: any
 }
 
-
-const configuration: IParserConfig = {
-    recoveryEnabled: true
-}
-
 function generateStemmedTokenDefinition(id: string, synonyms: string[], tokenType: TokenType, alternative?: TokenConstructor) {
-    let stemmedSynonyms = synonyms.map(natural.PorterStemmer.stem)
-    var tokenFunction = extendToken(id, RegExp(stemmedSynonyms.join('|'), "i"), alternative);
+    let stemmedSynonyms = synonyms.map((s) => s.split(" ").map(natural.PorterStemmer.stem).join(" "))
+    var tokenFunction = extendToken(id, RegExp(tokenType === TokenType.LOGICAL_BINARY ? "(\\b)(" + stemmedSynonyms.join('|') + ")(\\b)" : stemmedSynonyms.join('|'), "i"), alternative);
     tokenFunction.LABEL = synonyms[0]
     tokenFunction.TOKEN_TYPE = tokenType
-    tokenFunction.SYNONYMS = synonyms
+    tokenFunction.NON_STEMMED_SYNONYMS = synonyms
     return tokenFunction
 }
 
@@ -167,10 +162,16 @@ export default class NLParser extends Parser {
             resultTree = tree
         }
         return {
-            type: "ltlFormula",
-            left: resultTree
+            AST: {
+                type: "ltlFormula",
+                left: resultTree
+            }
         }
-    })
+    }, {
+            resyncEnabled: true, recoveryValueFunc: () => {
+                return { resyncedTokens: _.first(this.errors).resyncedTokens }
+            }
+        })
 
     private ifFormula = this.RULE("ifFormula", () => {
         let conditionClause, body
@@ -365,7 +366,9 @@ export default class NLParser extends Parser {
 
     //for internal purpose only
     private constructor(inputTokens: Token[]) {
-        super(inputTokens, ALLOWED_TOKENS, configuration)
+        super(inputTokens, ALLOWED_TOKENS, {
+            recoveryEnabled: true
+        })
         // very important to call this after all the rules have been defined.
         // otherwise the parser may not work correctly as it will lack information
         // derived during the self analysis phase.
@@ -375,14 +378,15 @@ export default class NLParser extends Parser {
     private static applyPreprocessing(sentence: string, bmaModel): string {
         var processedSentence
         var modelVariables = bmaModel.Model.Variables
-        var modelVariableRegex = new RegExp("(" + _.pluck(modelVariables, "Name").join("|") + ")(\\s*)(" + ARITHMETIC_OPERATORS.map((op) => op.SYNONYMS.join("|")).join("|") + ")(\\s*\\d+)", "ig");
+        var modelVariableRelationOpRegex = new RegExp("(" + _.pluck(modelVariables, "Name").join("|") + ")(\\s*)(" + ARITHMETIC_OPERATORS.map((op) => op.NON_STEMMED_SYNONYMS.join("|")).join("|") + ")(\\s*\\d+)", "ig");
         var matchedGroups, variableTokens = [];
-        while ((matchedGroups = modelVariableRegex.exec(sentence)) !== null) {
+        while ((matchedGroups = modelVariableRelationOpRegex.exec(sentence)) !== null) {
             //The variable will always on the 1st index as the 0th index is the entire group and the variable is matched in the 1st group of the regex expression
             variableTokens.push({ offset: matchedGroups.index, name: matchedGroups[1], id: _.find(bmaModel.Model.Variables, (v: any) => v.Name === matchedGroups[1]).Id })
         }
         variableTokens.forEach(t => sentence = sentence.replace(new RegExp("\\b" + t.name + "\\b", "ig"), "MODELVAR(" + t.id + ")"))
-        return sentence;
+        //stem the sentence
+        return sentence.split(" ").map((t) => ModelVariable.PATTERN.test(t) ? t : natural.PorterStemmer.stem(t)).join(" ")
     }
 
     static parse(sentence: string, bmaModel): ParserResponse {
@@ -392,13 +396,15 @@ export default class NLParser extends Parser {
         let lexedTokens = (new Lexer(ALLOWED_TOKENS, true)).tokenize(sentence).tokens
         //parse the token stream
         var parser = new NLParser(lexedTokens)
-        var AST = parser.formula()
-        if (AST) {
+        var parserResponse = parser.formula()
+        if (parserResponse.AST) {
             return {
                 responseType: ParserResponseType.SUCCESS,
-                humanReadableFormula: ASTUtils.toHumanReadableString(AST, bmaModel),
-                AST: AST
+                humanReadableFormula: ASTUtils.toHumanReadableString(parserResponse.AST, bmaModel),
+                AST: parserResponse.AST
             }
+        } else if (parserResponse.resyncedTokens) {
+            return this.parse(sentence.substring(_.first(parserResponse.resyncedTokens).offset, sentence.length), bmaModel)
         } else {
             return {
                 responseType: ParserResponseType.PARSE_ERROR,
@@ -407,4 +413,3 @@ export default class NLParser extends Parser {
         }
     }
 }
-
