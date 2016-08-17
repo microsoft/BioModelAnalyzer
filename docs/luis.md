@@ -3,7 +3,7 @@ Below is the documentation for the entities and intents used to build the LUIS m
 Use examples shown to invoke intents in luis.ts
 
 # Intents
-*AboutBot*
+*AboutBot*__
 Recognises user greeting the bot, or asking for help.
 @return ABOUT_BOT
 Example: hello

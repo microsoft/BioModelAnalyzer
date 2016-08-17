@@ -1,0 +1,9 @@
+id: temporal_operators
+title: How to use Temporal operators
+description: >-
+  This tutorial will give you a quick walkthrough of the basic temporal operators available
+  in the Bio-Model Analyzer. 
+  It will take around 10 minutes, and by the end of this you should know how to successfully
+  use 
+steps:
+    - text: >-
