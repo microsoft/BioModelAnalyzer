@@ -1,8 +1,13 @@
 import * as builder from 'botbuilder'
 import * as restify from 'restify'
 import * as config from 'config'
-import {BlobModelStorage} from './ModelStorage'
-import {setup as setupBot} from './bot'
+import { BlobModelStorage } from './ModelStorage'
+import { setup as setupBot } from './bot'
+import NLParser from './NLParser/NLParser'
+
+var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "x", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "y", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
+var sentence = "give me some simulation where it is always the case that if x is 1 then y is 5 and followed by x is 5 in the eventual case"
+var parserResponse = NLParser.parse(sentence, model)
 
 let port = config.get('PORT')
 console.log('starting on port:', port)
@@ -16,7 +21,7 @@ server.listen(port, () => {
 if (config.get('SERVE_STATIC_VIA_RESTIFY') === '1') {
     // enable CORS so that the BMA tool can open our tutorial model URLs
     server.use(restify.CORS())
-    
+
     server.get(/\/?.*/, restify.serveStatic({
         directory: './public'
     }))
@@ -32,10 +37,10 @@ if (config.get('USE_CONSOLE') === '1') {
     // Create console bot
     let connector = new builder.ConsoleConnector().listen()
     bot = new builder.UniversalBot(connector, botSettings)
-} else {    
+} else {
     // Create server bot
     let connector = new builder.ChatConnector({
-        appId: config.get<string>('APP_ID'), 
+        appId: config.get<string>('APP_ID'),
         appPassword: config.get<string>('APP_PASSWORD')
     })
     bot = new builder.UniversalBot(connector, botSettings)
