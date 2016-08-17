@@ -9,5 +9,6 @@
     "AZURE_STORAGE_ACCOUNT": "UseDevelopmentStorage=true",
     "AZURE_STORAGE_ACCESS_KEY": null,
     "BMA_URL": "http://biomodelanalyzer.research.microsoft.com/tool.html",
+    "BMA_BACKEND_URL": "http://bmamath.cloudapp.net/api/",
     "ENABLE_SPELLCHECK": "1"
 }
