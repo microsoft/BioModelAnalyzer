@@ -5,10 +5,6 @@ import { BlobModelStorage } from './ModelStorage'
 import { setup as setupBot } from './bot'
 import NLParser from './NLParser/NLParser'
 
-var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "x", "Id": 1, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "y", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "z", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
-var sentence = "show me a simulation where if k is 1 then t is 1"
-var parserResponse = NLParser.parse(sentence, model)
-
 let port = config.get('PORT')
 console.log('starting on port:', port)
 
