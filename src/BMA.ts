@@ -10,9 +10,9 @@ const BACKEND_URL = config.get('BMA_BACKEND_URL')
  * @param model The "Model" part of a BmaJsonModel.
  * @param formula An expanded formula to run, e.g. "(Eventually (And (= 10 1) SelfLoop))".
  */
-export function runFastSimulation (model: BmaModel, formula: string, stepCount: number): Promise.IThenable<BmaJsonAnalyzeLTLSimulationResponse> {
+export function runFastSimulation (model: Model, formula: string, stepCount: number): Promise.IThenable<AnalyzeLTLSimulationResponse> {
     let url = BACKEND_URL + 'AnalyzeLTLSimulation'
-    let req: BmaJsonAnalyzeLTLSimulationRequest = {
+    let req: AnalyzeLTLSimulationRequest = {
         Formula: formula,
         Number_of_steps: stepCount,
         Name: model.Name,
@@ -29,16 +29,16 @@ export function runFastSimulation (model: BmaModel, formula: string, stepCount: 
                 reject(error)
                 return
             }
-            let resp = body as BmaJsonAnalyzeLTLSimulationResponse
+            let resp = body as AnalyzeLTLSimulationResponse
             resolve(resp)
         })
     })
 }
 
-export function runThoroughSimulation(model: BmaModel, formula: string, stepCount: number,
-        fastSimulationResponse: BmaJsonAnalyzeLTLSimulationResponse): Promise.IThenable<BmaJsonAnalyzeLTLPolarityResponse> {
+export function runThoroughSimulation(model: Model, formula: string, stepCount: number,
+        fastSimulationResponse: AnalyzeLTLSimulationResponse): Promise.IThenable<AnalyzeLTLPolarityResponse> {
     let url = BACKEND_URL + 'AnalyzeLTLPolarity'
-    let req: BmaJsonAnalyzeLTLPolarityRequest = {
+    let req: AnalyzeLTLPolarityRequest = {
         Formula: formula,
         Polarity: !fastSimulationResponse.Status,
         Number_of_steps: stepCount,
@@ -56,28 +56,26 @@ export function runThoroughSimulation(model: BmaModel, formula: string, stepCoun
                 reject(error)
                 return
             }
-            let resp = body as BmaJsonAnalyzeLTLSimulationResponse
+            let resp = body as AnalyzeLTLSimulationResponse
             resolve(resp)
         })
     })
 }
 
-// TODO unit test
-
 /** Returns a formula in expanded string format that can be used in API calls. */
-export function getExpandedFormula (model: BmaModel, states: BmaLtlState[], formula: BmaLtlOperation) {
-    let op = new BmaLtlOperationImpl(formula)
+export function getExpandedFormula (model: Model, states: LtlState[], formula: LtlOperation) {
+    let op = LtlOperationImpl.from(formula)
     return '(' + doGetExpandedFormula(model, states, op) + ')'
 }
 
-function doGetExpandedFormula (model: BmaModel, states: BmaLtlState[], formula: BmaLtlFormulaImpl) {
-    if (formula instanceof BmaLtlSelfLoopStateImpl) {
+function doGetExpandedFormula (model: Model, states: LtlState[], formula: LtlFormula) {
+    if (formula instanceof LtlSelfLoopStateImpl) {
         return 'SelfLoop'
-    } else if (formula instanceof BmaLtlOscillationStateImpl) {
+    } else if (formula instanceof LtlOscillationStateImpl) {
         return 'Oscillation'
-    } else if (formula instanceof BmaLtlTrueStateImpl) {
+    } else if (formula instanceof LtlTrueStateImpl) {
         return 'True'
-    } else if (formula instanceof BmaLtlStateNameReferenceImpl) {
+    } else if (formula instanceof LtlNameStateReferenceImpl) {
         let stateName = formula.name
         let state = states.filter(state => state.name === stateName)[0]
         let ops = state.operands
@@ -85,11 +83,11 @@ function doGetExpandedFormula (model: BmaModel, states: BmaLtlState[], formula: 
         return ops.slice(1).reduce((l,r) =>
             `AND (${l}) (${r.operator} ${varId(r.leftOperand.name)} ${r.rightOperand['const']})`,
             `${ops[0].operator} ${varId(ops[0].leftOperand.name)} ${ops[0].rightOperand['const']}`)
-    } else if (formula instanceof BmaLtlOperationImpl) {
+    } else if (formula instanceof LtlOperationImpl) {
         let ops = formula.operands
             .map(op => '(' + doGetExpandedFormula(model, states, op) + ')')
             .join(' ')
-        return formula.operator.name + ops
+        return formula.operator.name + ' ' + ops
     }
 }
 
@@ -109,7 +107,7 @@ function doGetExpandedFormula (model: BmaModel, states: BmaLtlState[], formula: 
  * 1-2min in which case the only information available would come
  * from the AnalyzeLTLSimulation request.
  */
-interface BmaJsonAnalyzeLTLSimulationRequest {
+interface AnalyzeLTLSimulationRequest {
     /** LTL expanded formula, e.g. "(Eventually (And (= 10 1) SelfLoop))" */
     Formula: string
 
@@ -118,11 +116,11 @@ interface BmaJsonAnalyzeLTLSimulationRequest {
 
     // the following properties are an inlined BmaModel
     Name: string
-    Variables: BmaVariable[]
-    Relationships: BmaVariableRelationship[]
+    Variables: Variable[]
+    Relationships: VariableRelationship[]
 }
 
-interface BmaJsonAnalyzeLTLSimulationResponse {
+interface AnalyzeLTLSimulationResponse {
     /** 
      * True, if the formula is true for some simulations.
      * False, if the formula is false for some simulations.
@@ -137,7 +135,7 @@ interface BmaJsonAnalyzeLTLSimulationResponse {
     /** If an error occurs, then this contains the error message. */
     Error?: string
     
-    Ticks: BmaSimulationTick[]
+    Ticks: SimulationTick[]
     /** Not sure what this is used for. It's null even on errors. */
     
     ErrorMessages?: string[]
@@ -150,7 +148,7 @@ interface BmaJsonAnalyzeLTLSimulationResponse {
 /**
  * The JSON format for an AnalyzeLTLPolarity API request.
  */
-interface BmaJsonAnalyzeLTLPolarityRequest {
+interface AnalyzeLTLPolarityRequest {
     /** LTL expanded formula, e.g. "(Eventually (And (= 10 1) SelfLoop))" */
     Formula: string
 
@@ -168,25 +166,25 @@ interface BmaJsonAnalyzeLTLPolarityRequest {
 
     // the following properties are an inlined BmaModel
     Name: string
-    Variables: BmaVariable[]
-    Relationships: BmaVariableRelationship[]
+    Variables: Variable[]
+    Relationships: VariableRelationship[]
 }
 
-interface BmaJsonAnalyzeLTLPolarityResponse extends BmaJsonAnalyzeLTLSimulationResponse {
+interface AnalyzeLTLPolarityResponse extends AnalyzeLTLSimulationResponse {
     /**
      * See BmaJsonAnalyzeLTLSimulationResponse docs.
      */
     status: boolean
 }
 
-interface BmaSimulationTick {
+interface SimulationTick {
     /** integer, first tick starts at 0 */
     Time: number
 
-    Variables: BmaSimulationTickVariable[]
+    Variables: SimulationTickVariable[]
 }
 
-interface BmaSimulationTickVariable {
+interface SimulationTickVariable {
     /** Variable ID */
     Id: number
 
@@ -201,22 +199,22 @@ interface BmaSimulationTickVariable {
  * The JSON model format of the BMA tool.
  * Note that this is different to the JSON format used for API calls. 
  */
-interface BmaJsonModel {
-    Model: BmaModel
+export interface ModelFile {
+    Model: Model
 
     /** Model layout */
     Layout: any
 
-    ltl: BmaLtl
+    ltl: Ltl
 }
 
-interface BmaModel {
+export interface Model {
     Name: string
-    Variables: BmaVariable[]
-    Relationships: BmaVariableRelationship[]
+    Variables: Variable[]
+    Relationships: VariableRelationship[]
 }
 
-interface BmaVariable {
+export interface Variable {
     Id: number
 
     Name: string    
@@ -231,7 +229,7 @@ interface BmaVariable {
     Formula: string
 }
 
-interface BmaVariableRelationship {
+export interface VariableRelationship {
     id: number
 
     /** Variable ID */
@@ -244,33 +242,64 @@ interface BmaVariableRelationship {
     Type: string
 }
 
-interface BmaLtl {
-    states: BmaLtlState[]
-    operations: BmaLtlOperation[]
+export interface Ltl {
+    states: LtlState[]
+    operations: LtlOperation[]
 }
 
-interface BmaLtlState {
+const NameStateType = 'Keyframe'
+export interface LtlState {
     /** Keyframe */
     _type: string
 
     name: string
     description: string    
-    operands: BmaLtlStateEquation[]
+    operands: LtlStateEquation[]
 }
 
-interface BmaLtlStateEquation {
+export class LtlStateImpl implements LtlState {
+    _type = NameStateType
+    description = ''
+    operands: LtlStateEquation[]
+
+    constructor (public name: string, equations: LtlCompactStateEquation[]) {
+        this.operands = equations.map(eq => ({
+            _type: 'KeyframeEquation',
+            leftOperand: {
+                _type: 'NameOperand',
+                name: eq.variable
+            },
+            operator: eq.operator,
+            rightOperand: {
+                _type: 'ConstOperand',
+                const: eq.value
+            }
+        }))
+    }
+}
+
+export type LtlStateEquationOperatorSymbol =
+    '=' | '>' | '<' | '<=' | '>=' | '!='
+
+export interface LtlCompactStateEquation {
+    variable: string
+    operator: LtlStateEquationOperatorSymbol
+    value: number
+}
+
+export interface LtlStateEquation {
     /** "KeyframeEquation" */
     _type: string
 
-    leftOperand: BmaLtlStateNameOperand
+    leftOperand: LtlStateNameOperand
 
     /** =, <, ... */
-    operator: string
+    operator: LtlStateEquationOperatorSymbol
 
-    rightOperand: BmaLtlStateConstOperand
+    rightOperand: LtlStateConstOperand
 }
 
-interface BmaLtlStateNameOperand {
+export interface LtlStateNameOperand {
     /** "NameOperand" */
     _type: string
 
@@ -278,7 +307,7 @@ interface BmaLtlStateNameOperand {
     name: string
 }
 
-interface BmaLtlStateConstOperand {
+export interface LtlStateConstOperand {
     /** "ConstOperand" */
     _type: string
 
@@ -287,30 +316,35 @@ interface BmaLtlStateConstOperand {
 }
 
 /** Root interface for all formula interfaces */
-interface BmaLtlFormula {
+export interface LtlFormula {
     _type: string
 }
 
+const OperationType = 'Operation'
 /** An LTL formula made up of operators and state references. */
-interface BmaLtlOperation extends BmaLtlFormula {
+export interface LtlOperation extends LtlFormula {
     /** "Operation" */
     _type: string
 
-    operator: BmaLtlOperationOperator
+    operator: LtlOperationOperator
 
-    operands: BmaLtlFormula[]
+    operands: LtlFormula[]
 }
 
-interface BmaLtlOperationOperator {
-    /** "ALWAYS", "NOT", "AND", "EVENTUALLY", ... */
-    name: string
+export type LtlOperatorName =
+    'AND' | 'OR' | 'IMPLIES' | 'NOT' |
+    'NEXT' | 'ALWAYS' | 'EVENTUALLY' | 'UPTO' |
+    'WEAKUNTIL' | 'UNTIL' | 'RELEASE'
+
+export interface LtlOperationOperator {
+    name: LtlOperatorName
 
     /** Number of operands the operator accepts, 
      *  equals array length of "operands" in BmaLtlOperation */
     operandsCount: number
 }
 
-interface BmaLtlStateNameReference extends BmaLtlFormula {
+export interface LtlNameStateReference extends LtlFormula {
     /** "Keyframe" */
     _type: string
 
@@ -318,62 +352,68 @@ interface BmaLtlStateNameReference extends BmaLtlFormula {
     name: string
 }
 
-interface BmaLtlSelfLoopState extends BmaLtlFormula {
+const SelfLoopStateType = 'SelfLoopKeyframe'
+export interface LtlSelfLoopState extends LtlFormula {
     /** "SelfLoopKeyframe" */
     _type: string
 }
 
-interface BmaLtlOscillationState extends BmaLtlFormula {
+const OscillationStateType = 'OscillationKeyframe'
+export interface LtlOscillationState extends LtlFormula {
     /** "OscillationKeyframe" */
     _type: string
 }
 
-interface BmaLtlTrueState extends BmaLtlFormula {
+const TrueStateType = 'TrueKeyframe'
+export interface LtlTrueState extends LtlFormula {
     /** "TrueKeyframe" */
     _type: string
 }
 
-/** This exists purely because interfaces do not exist at runtime */
-class BmaLtlFormulaImpl implements BmaLtlFormula {
-    _type: string
-    constructor (formula: BmaLtlFormula) {
-        this._type = formula._type
-    }
-}
-
 /**
- * Wraps an untyped BmaLtlOperation object into a typed object.
- * This makes it easier to write algorithms on it which walk the nested tree
+ * Wraps an untyped LtlOperation object into a typed object.
+ * This makes it easier to write algorithms on it which walk the nested tree.
  */
-class BmaLtlOperationImpl extends BmaLtlFormulaImpl implements BmaLtlOperation {
-    operator: BmaLtlOperationOperator
-    operands: BmaLtlFormulaImpl[]
-    constructor (operation: BmaLtlOperation) {
-        super(operation)
-        this.operator = operation.operator
-        this.operands = operation.operands.map(op => {
+export class LtlOperationImpl implements LtlOperation {
+    _type = OperationType
+    operator: LtlOperationOperator
+    operands: LtlFormula[]
+
+    static from (operation: LtlOperation) {
+        return new LtlOperationImpl(operation.operator.name, operation.operands)
+    }
+
+    constructor (operator: LtlOperatorName, operands: LtlFormula[]) {
+        this.operator = {
+            name: operator,
+            operandsCount: operands.length
+        }
+        this.operands = operands.map(op => {
             switch (op._type) {
-                case 'Operation': return new BmaLtlOperationImpl(op as BmaLtlOperation)
-                case 'Keyframe': return new BmaLtlStateNameReferenceImpl(op as BmaLtlStateNameReference)
-                case 'SelfLoopKeyframe': return new BmaLtlSelfLoopStateImpl(op as BmaLtlSelfLoopState)
-                case 'OscillationKeyframe': return new BmaLtlOscillationStateImpl(op as BmaLtlOscillationState)
-                case 'TrueKeyframe': return new BmaLtlTrueStateImpl(op as BmaLtlTrueState)
+                case OperationType: return LtlOperationImpl.from(op as LtlOperation)
+                case NameStateType: return new LtlNameStateReferenceImpl((<LtlNameStateReference>op).name)
+                case SelfLoopStateType: return new LtlSelfLoopStateImpl()
+                case OscillationStateType: return new LtlOscillationStateImpl()
+                case TrueStateType: return new LtlTrueStateImpl()
                 default: throw new Error('Not implemented: ' + op._type)
             }
         })
     }
 }
 
-class BmaLtlStateNameReferenceImpl extends BmaLtlFormulaImpl implements BmaLtlStateNameReference {
-    name: string
-    constructor (state: BmaLtlStateNameReference) {
-        super(state)
-        this.name = state.name
-    }
+export class LtlNameStateReferenceImpl implements LtlNameStateReference {
+    _type = NameStateType
+    constructor (public name: string) {}
 }
 
-class BmaLtlSelfLoopStateImpl extends BmaLtlFormulaImpl implements BmaLtlSelfLoopState {}
+export class LtlSelfLoopStateImpl implements LtlSelfLoopState {
+    _type = SelfLoopStateType
+}
 
-class BmaLtlOscillationStateImpl extends BmaLtlFormulaImpl implements BmaLtlOscillationState {}
+export class LtlOscillationStateImpl implements LtlOscillationState {
+    _type = OscillationStateType
+}
 
-class BmaLtlTrueStateImpl extends BmaLtlFormulaImpl implements BmaLtlTrueState {}
+export class LtlTrueStateImpl implements LtlTrueState {
+    _type = TrueStateType
+}
