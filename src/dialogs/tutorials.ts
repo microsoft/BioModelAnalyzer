@@ -5,6 +5,15 @@ import * as fs from 'fs'
 import * as strings from './strings'
 import {getTutorialImageAttachment, getBMAModelUrl, getTutorialModelUrl} from '../util'
 
+/** 
+ * All listed tutorials are offered to the user in that order. 
+ * Strings are filenames in /data/tutorials/ without extension. 
+ */
+const TUTORIALS = [
+    'exploring_the_interface',
+    'ecoli'
+]
+
 /** The object structure of a YAML tutorial file. */
 interface Tutorial {
     /** The internal tutorial ID, unique amongst all tutorials. */
@@ -37,10 +46,7 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
     // TODO make LUIS dialog available within tutorial dialogs
 
     // all available tutorials
-    let tutorialPaths = [
-        'exploring_the_interface',
-        'ecoli'
-        ].map(name => `data/tutorials/${name}.yaml`)
+    let tutorialPaths = TUTORIALS.map(name => `data/tutorials/${name}.yaml`)
     
     let tutorials: Tutorial[] = tutorialPaths.map(path => fs.readFileSync(path, 'utf8')).map(yaml.safeLoad)
 
