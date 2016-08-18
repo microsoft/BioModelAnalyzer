@@ -1,17 +1,14 @@
 /*
 TODO:
-15) check operator precedence
-16) prepend with a missing eventually if no temporal operator provided
-18) handle variables with space in them
-19) convert variable usage to notation
-20) make sure variables are not stemmed
+
 21) later = eventually next (composite)
 22) check operator precedence
-23) word substrings are matching to te operators
 25) blows up with empty string
 26) check for variable usage outside range
 27) support on/off for boolean variables 
 28) limit post fixing to the closest expression
+29) if/then implies check
+30) redundandant operators eventually eventually 
 */
 
 import * as chevrotain from 'chevrotain'
@@ -22,8 +19,9 @@ import { Parser, Token, IParserConfig, Lexer, TokenConstructor } from 'chevrotai
 var extendToken = chevrotain.extendToken;
 
 export enum TokenType {
-    LOGICAL_BINARY,
-    LOGICAL_UNARY,
+    MODELVAR,
+    BINARY,
+    UNARY,
     OTHER
 }
 
@@ -44,39 +42,35 @@ let NotEq = generateStemmedTokenDefinition("NotEq", ["!=", "is not equal to", "i
 /** 
  *  Boolean operator tokens
  */
-let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"], TokenType.LOGICAL_BINARY)
-let Or = generateStemmedTokenDefinition("Or", ["or", "either"], TokenType.LOGICAL_BINARY)
-let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"], TokenType.LOGICAL_BINARY)
-let Not = generateStemmedTokenDefinition("Not", ["not", "never"], TokenType.LOGICAL_UNARY)
+let And = generateStemmedTokenDefinition("And", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"], TokenType.BINARY)
+let Or = generateStemmedTokenDefinition("Or", ["or", "either"], TokenType.BINARY)
+let Implies = generateStemmedTokenDefinition("Implies", ["implies", "means"], TokenType.BINARY)
+let Not = generateStemmedTokenDefinition("Not", ["not", "never"], TokenType.UNARY)
 /**
  *  Temporal operator tokens
  */
-let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "some point", "in the long run", "in a while", "soon", "at the end", "sometime"], TokenType.LOGICAL_UNARY)
-let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"], TokenType.LOGICAL_UNARY)
-let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"], TokenType.LOGICAL_UNARY)
-let Upto = generateStemmedTokenDefinition("Upto", ["upto"], TokenType.LOGICAL_BINARY)
-let Until = generateStemmedTokenDefinition("Until", ["until"], TokenType.LOGICAL_BINARY)
-let WUntil = generateStemmedTokenDefinition("WUntil", ["weak until"], TokenType.LOGICAL_BINARY)
-let Release = generateStemmedTokenDefinition("Release", ["release"], TokenType.LOGICAL_BINARY)
+let Eventually = generateStemmedTokenDefinition("Eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "some point", "in the long run", "in a while", "soon", "at the end", "sometime"], TokenType.UNARY)
+let Always = generateStemmedTokenDefinition("Always", ["always", "invariably", "perpetually", "forever", "constantly"], TokenType.UNARY)
+let Next = generateStemmedTokenDefinition("Next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"], TokenType.UNARY)
+let Upto = generateStemmedTokenDefinition("Upto", ["upto"], TokenType.BINARY)
+let Until = generateStemmedTokenDefinition("Until", ["until"], TokenType.BINARY)
+let WUntil = generateStemmedTokenDefinition("WUntil", ["weak until"], TokenType.BINARY)
+let Release = generateStemmedTokenDefinition("Release", ["release"], TokenType.BINARY)
 /**
  * literals (no stemming required)
  */
 let IntegerLiteral = extendToken("IntegerLiteral", /\d+/);
 let ModelVariable = extendToken("ModelVariable", new RegExp("(MODELVAR)" + "(\\()" + "(\\d+)" + "(\\))"));
+ModelVariable.TokenType = TokenType.MODELVAR
 /**
  *  Ignored tokens
  */
 let WhiteSpace = extendToken("WhiteSpace", /\s+/);
 WhiteSpace.GROUP = Lexer.SKIPPED
-/**
- *  Reject non-matching token
- */
-var NotMatched = extendToken("NotMatched", /\.*/);
-NotMatched.GROUP = Lexer.NA
+
 /**
  *  Token groups
  */
-let REJECT = [NotMatched]
 let IGNORE = [WhiteSpace]
 let LITERALS = [ModelVariable, IntegerLiteral]
 let CONSTRUCTS = [If, Then]
@@ -109,9 +103,9 @@ export interface ParserResponse {
 
 function generateStemmedTokenDefinition(id: string, synonyms: string[], tokenType: TokenType, alternative?: TokenConstructor) {
     let stemmedSynonyms = synonyms.map((s) => s.split(" ").map(natural.PorterStemmer.stem).join(" "))
-    var tokenFunction = extendToken(id, RegExp(tokenType === TokenType.LOGICAL_BINARY ? "(\\b)(" + stemmedSynonyms.join('|') + ")(\\b)" : stemmedSynonyms.join('|'), "i"), alternative);
+    var tokenFunction = extendToken(id, RegExp(tokenType === TokenType.BINARY ? "(\\b)(" + stemmedSynonyms.join('|') + ")(\\b)" : stemmedSynonyms.join('|'), "i"), alternative);
     tokenFunction.LABEL = synonyms[0]
-    tokenFunction.TOKEN_TYPE = tokenType
+    tokenFunction.TokenType = tokenType
     tokenFunction.NON_STEMMED_SYNONYMS = synonyms
     return tokenFunction
 }
@@ -129,15 +123,16 @@ export default class NLParser extends Parser {
             subtree.left = this.SUBRULE(this.unaryOperator)
             subtree = subtree.left
         })
+
         subtree.left = this.OR([{
             ALT: () => {
-                return this.SUBRULE(this.expression)
+                return this.SUBRULE(this.conditionalsExpression)
             }
         }, {
             ALT: () => {
-                return this.SUBRULE(this.ifFormula)
+                return this.SUBRULE(this.disjunctionExpression)
             }
-        }]);
+        }])
 
         var trailingTree, lastTrailingNode
 
@@ -173,44 +168,43 @@ export default class NLParser extends Parser {
             }
         })
 
-    private ifFormula = this.RULE("ifFormula", () => {
+    private conditionalsExpression = this.RULE("conditionalsExpression", () => {
         let conditionClause, body
         this.CONSUME(If)
-        conditionClause = this.SUBRULE(this.expression)
+        conditionClause = this.SUBRULE(this.disjunctionExpression)
         this.CONSUME(Then)
-        body = this.SUBRULE2(this.expression)
+        body = this.SUBRULE2(this.disjunctionExpression)
 
         return {
-            type: "expression",
-            value: { type: "binaryOperator", value: Implies },
+            type: "conditionalsExpression",
+            value: Implies,
             left: conditionClause,
             right: body
         }
     })
 
+    private disjunctionExpression = this.RULE("disjunctionExpression", () => {
+        let tree, lhs, rhs = [], operators = []
 
-    private expression = this.RULE("expression", () => {
-        let tree, factors = [],
-            operators = []
-
-        factors.push(this.SUBRULE(this.factor));
+        lhs = this.SUBRULE(this.conjunctionExpression);
         this.MANY(() => {
-            operators.push(this.SUBRULE(this.binaryOperator))
-            factors.push(this.SUBRULE2(this.factor))
+            this.CONSUME(Or)
+            operators.push(Or)
+            rhs.push(this.SUBRULE2(this.conjunctionExpression));
         })
 
         tree = {
-            type: "expression",
-            left: factors[0],
+            type: "disjunctionExpression",
+            left: lhs,
             right: null
         }
-        if (factors.length > 1) {
+        if (!_.isEmpty(rhs)) {
             var subtree = tree;
-            for (var i = 1; i < factors.length; i++) {
-                subtree.value = operators[i - 1];
+            for (var i = 0; i < rhs.length; i++) {
+                subtree.value = operators[i];
                 subtree.right = {
-                    type: "expression",
-                    left: factors[i],
+                    type: "conjunctionExpression",
+                    left: rhs[i],
                     right: null
                 }
                 subtree = subtree.right
@@ -219,9 +213,68 @@ export default class NLParser extends Parser {
         return tree;
     })
 
-    private factor = this.RULE("factor", () => {
+    private conjunctionExpression = this.RULE("conjunctionExpression", () => {
+        let tree, lhs, rhs = [], operators = []
+
+        lhs = this.SUBRULE(this.temporalExpression);
+        this.MANY(() => {
+            this.CONSUME(And)
+            operators.push(And)
+            rhs.push(this.SUBRULE2(this.temporalExpression));
+        })
+
+        tree = {
+            type: "conjunctionExpression",
+            left: lhs,
+            right: null
+        }
+        if (!_.isEmpty(rhs)) {
+            var subtree = tree;
+            for (var i = 0; i < rhs.length; i++) {
+                subtree.value = operators[i];
+                subtree.right = {
+                    type: "atomicExpression",
+                    left: rhs[i],
+                    right: null
+                }
+                subtree = subtree.right
+            }
+        }
+        return tree;
+    })
+
+    private temporalExpression = this.RULE("temporalExpression", () => {
+        let tree, lhs, rhs = [], operators = []
+
+        lhs = this.SUBRULE(this.atomicExpression);
+        this.MANY(() => {
+            operators.push(this.SUBRULE(this.binaryTemporalOperators))
+            rhs.push(this.SUBRULE2(this.atomicExpression));
+        })
+
+        tree = {
+            type: "temporalExpression",
+            left: lhs,
+            right: null
+        }
+        if (!_.isEmpty(rhs)) {
+            var subtree = tree;
+            for (var i = 0; i < rhs.length; i++) {
+                subtree.value = operators[i];
+                subtree.right = {
+                    type: "temporalExpression",
+                    left: rhs[i],
+                    right: null
+                }
+                subtree = subtree.right
+            }
+        }
+        return tree;
+    })
+
+    private atomicExpression = this.RULE("atomicExpression", () => {
         var lastNode, tree = {
-            type: "factor",
+            type: "atomicExpression",
             left: null
         }
 
@@ -239,7 +292,7 @@ export default class NLParser extends Parser {
             tree.left = relationalExpression
         }
         return {
-            type: "factor",
+            type: "atomicExpression",
             left: tree
         }
     })
@@ -253,11 +306,38 @@ export default class NLParser extends Parser {
         return {
             type: "relationalExpression",
             value: relationalOperator,
-            left: { type: "modelVariable", id: parseInt(modelVariableTokens[3]) },
+            left: { type: TokenType.MODELVAR, id: parseInt(modelVariableTokens[3]) },
             right: integerLiteral
         }
     })
 
+
+    private binaryTemporalOperators = this.RULE("binaryTemporalOperators", () => {
+        return {
+            type: "binaryTemporalOperators",
+            value: this.OR([{
+                ALT: () => {
+                    this.CONSUME(Until)
+                    return GThan.LABEL
+                }
+            }, {
+                ALT: () => {
+                    this.CONSUME(WUntil)
+                    return LThan.LABEL
+                }
+            }, {
+                ALT: () => {
+                    this.CONSUME(Release)
+                    return GThanEq.LABEL
+                }
+            }, {
+                ALT: () => {
+                    this.CONSUME(Upto)
+                    return Eq.LABEL
+                }
+            }])
+        }
+    });
     private relationalOperator = this.RULE("relationalOperator", () => {
         return {
             type: "relationalOperator",
@@ -290,48 +370,6 @@ export default class NLParser extends Parser {
                 ALT: () => {
                     this.CONSUME(NotEq)
                     return NotEq.LABEL
-                }
-            }])
-        }
-    });
-
-    private binaryOperator = this.RULE("binaryOperator", () => {
-        return {
-            type: "binaryOperator",
-            value: this.OR([{
-                ALT: () => {
-                    this.CONSUME(And)
-                    return And
-                }
-            }, {
-                ALT: () => {
-                    this.CONSUME(Or)
-                    return Or
-                }
-            }, {
-                ALT: () => {
-                    this.CONSUME(Implies)
-                    return Implies
-                }
-            }, {
-                ALT: () => {
-                    this.CONSUME(Upto)
-                    return Upto
-                }
-            }, {
-                ALT: () => {
-                    this.CONSUME(Until)
-                    return Until
-                }
-            }, {
-                ALT: () => {
-                    this.CONSUME(Release)
-                    return Release
-                }
-            }, {
-                ALT: () => {
-                    this.CONSUME(WUntil)
-                    return WUntil
                 }
             }])
         }
