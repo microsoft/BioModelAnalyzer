@@ -2,13 +2,13 @@
 TODO:
 
 21) later = eventually next (composite)
-22) check operator precedence
 25) blows up with empty string
 26) check for variable usage outside range
 27) support on/off for boolean variables 
 28) limit post fixing to the closest expression
-29) if/then implies check
 30) redundandant operators eventually eventually 
+31) unknown variable usage handling
+32) error messages that make sense eg: missing then for if
 */
 
 import * as chevrotain from 'chevrotain'
@@ -164,7 +164,8 @@ export default class NLParser extends Parser {
         }
     }, {
             resyncEnabled: true, recoveryValueFunc: () => {
-                return { resyncedTokens: _.first(this.errors).resyncedTokens }
+                let error: any = _.first(this.errors)
+                return { resyncedToken: _.first(error.resyncedTokens), errorToken: error.token }
             }
         })
 
@@ -286,6 +287,7 @@ export default class NLParser extends Parser {
             lastNode = subTree
         })
         var relationalExpression = this.SUBRULE(this.relationalExpression)
+
         if (lastNode) {
             lastNode.left = relationalExpression
         } else {
@@ -298,15 +300,15 @@ export default class NLParser extends Parser {
     })
 
     private relationalExpression = this.RULE("relationalExpression", () => {
-        let modelVariableTokens, relationalOperator, integerLiteral
+        let modelVariableId, relationalOperator, integerLiteral
         //deconstruct the matched pattern to extract the variable id
-        modelVariableTokens = this.CONSUME(ModelVariable).image.match(ModelVariable.PATTERN)
+        modelVariableId = parseInt(this.CONSUME(ModelVariable).image.match(new RegExp(ModelVariable.PATTERN))[3])
         relationalOperator = this.SUBRULE(this.relationalOperator)
         integerLiteral = parseInt(this.CONSUME(IntegerLiteral).image)
         return {
             type: "relationalExpression",
             value: relationalOperator,
-            left: { type: TokenType.MODELVAR, id: parseInt(modelVariableTokens[3]) },
+            left: { type: TokenType.MODELVAR, id: modelVariableId },
             right: integerLiteral
         }
     })
@@ -404,9 +406,7 @@ export default class NLParser extends Parser {
 
     //for internal purpose only
     private constructor(inputTokens: Token[]) {
-        super(inputTokens, ALLOWED_TOKENS, {
-            recoveryEnabled: true
-        })
+        super(inputTokens, ALLOWED_TOKENS)
         // very important to call this after all the rules have been defined.
         // otherwise the parser may not work correctly as it will lack information
         // derived during the self analysis phase.
@@ -427,7 +427,7 @@ export default class NLParser extends Parser {
         return sentence.split(" ").map((t) => ModelVariable.PATTERN.test(t) ? t : natural.PorterStemmer.stem(t)).join(" ")
     }
 
-    static parse(sentence: string, bmaModel): ParserResponse {
+    static parse(sentence: string, bmaModel, resynchedPrefix?: string): ParserResponse {
         //parse the input string to find and identify model variables to denote them so there are no lexing conflicts
         sentence = this.applyPreprocessing(sentence, bmaModel)
         //lex the sentence to get token stream where illegal tokens are ignored
@@ -441,9 +441,20 @@ export default class NLParser extends Parser {
                 humanReadableFormula: ASTUtils.toHumanReadableString(parserResponse.AST, bmaModel),
                 AST: parserResponse.AST
             }
-        } else if (parserResponse.resyncedTokens) {
-            return this.parse(sentence.substring(_.first(parserResponse.resyncedTokens).offset, sentence.length), bmaModel)
+        } else if (parserResponse.resyncedToken) {
+            var resynchedSuffix = sentence.substring(parserResponse.resyncedToken.offset, sentence.length);
+            if (resynchedPrefix && resynchedPrefix !== resynchedSuffix) {
+                return this.parse(sentence.substring(0, parserResponse.errorToken.offset) + resynchedSuffix, bmaModel, resynchedSuffix)
+            } else if (!resynchedPrefix) {
+                return this.parse(resynchedSuffix, bmaModel, resynchedSuffix)
+            } else {
+                return returnParseError()
+            }
         } else {
+            return returnParseError()
+        }
+
+        function returnParseError() {
             return {
                 responseType: ParserResponseType.PARSE_ERROR,
                 errors: parser.errors,

@@ -1,5 +1,5 @@
 import * as chai from 'chai'
-import NLParser from '../src/NLParser/NLParser'
+import {default as NLParser,ParserResponseType} from '../src/NLParser/NLParser'
 var expect = chai.expect;
 
 it('parse() handles LTL operator precedence and assosiativeity correctly', () => {
@@ -41,10 +41,26 @@ it('parse() should prepend trailing unary operators maintaining their ordering',
     var expected = "eventually((a=1 and b=2))"
     expect(parserResponse.humanReadableFormula).to.equal(expected)
 })
-it('parse() should return an error set for an invalid set of input tokens', () => {
-    var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "a", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "b", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
-    var sentence = "sdfsdf sdfsdf sdfsdf sdf sdf sdf sd f if a=1 and b=1"
+it('parse() should automatically recover from tokens that appear incorrectly anywhere in the token stream according to the grammar', () => {
+    var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "x", "Id": 1, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "y", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "z", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
+    var sentence = "no that and previous one were incorrect show me a simulation where it is always the case that if x is 1 then y is 5 and the whole thing is followed by z is 25"
     var parserResponse = NLParser.parse(sentence, model)
-    var expected = '[{"name":"MismatchedTokenException","message":"Expecting --> then <-- but found --> \'\' <--","token":{"image":"","offset":-1,"startLine":-1,"startColumn":-1,"endLine":-1,"endColumn":-1,"isInsertedInRecovery":false},"resyncedTokens":[],"context":{"ruleStack":["formula","ifFormula"],"ruleOccurrenceStack":[1,1]}}]'
-    expect(JSON.stringify(parserResponse.errors)).to.equal(expected)
+    var expected = "always((x=1 implies (y=5 and next(z=25))))"
+    expect(parserResponse.humanReadableFormula).to.equal(expected)
+})
+
+it('parse() should throw an error when sentence cannot be parsed', () => {
+    var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "x", "Id": 1, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "y", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "z", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
+    var sentence = "show me a simulation where it is always the case that if x is 1 then y is and or or or or 5 "
+    var parserResponse = NLParser.parse(sentence, model)
+    var expected = ParserResponseType.PARSE_ERROR
+    expect(parserResponse.responseType).to.equal(expected)
+})
+
+it('parse() should throw an error for unknown variable usage', () => {
+    var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "x", "Id": 1, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "y", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "z", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
+    var sentence = "show me a simulation where if k is 1 then t is 1"
+    var parserResponse = NLParser.parse(sentence, model)
+    var expected = ParserResponseType.UNKNOWN_VARIABLES_FOUND
+    expect(parserResponse.responseType).to.equal(expected)
 })
