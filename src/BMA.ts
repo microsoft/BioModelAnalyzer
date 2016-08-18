@@ -22,14 +22,19 @@ export function runFastSimulation (model: Model, formula: string, stepCount: num
 
     return new Promise((resolve, reject) => {
         request.post(url, {
-            body: JSON.stringify(req),
-            json: true
+            body: req,
+            json: true,
         }, (error, response, body) => {
             if (error) {
                 reject(error)
                 return
             }
             let resp = body as AnalyzeLTLSimulationResponse
+            if (resp.Error) {
+                reject('API error: ' + resp.Error)
+                console.error(resp.ErrorMessages)
+                return
+            }
             resolve(resp)
         })
     })
@@ -49,7 +54,7 @@ export function runThoroughSimulation(model: Model, formula: string, stepCount: 
 
     return new Promise((resolve, reject) => {
         request.post(url, {
-            body: JSON.stringify(req),
+            body: req,
             json: true
         }, (error, response, body) => {
             if (error) {
@@ -57,6 +62,11 @@ export function runThoroughSimulation(model: Model, formula: string, stepCount: 
                 return
             }
             let resp = body as AnalyzeLTLSimulationResponse
+            if (resp.Error) {
+                reject('API error: ' + resp.Error)
+                console.error(resp.ErrorMessages)
+                return
+            }
             resolve(resp)
         })
     })
@@ -81,13 +91,16 @@ function doGetExpandedFormula (model: Model, states: LtlState[], formula: LtlFor
         let ops = state.operands
         let varId = name => model.Variables.filter(variable => variable.Name === name)[0].Id
         return ops.slice(1).reduce((l,r) =>
-            `AND (${l}) (${r.operator} ${varId(r.leftOperand.name)} ${r.rightOperand['const']})`,
+            `And (${l}) (${r.operator} ${varId(r.leftOperand.name)} ${r.rightOperand['const']})`,
             `${ops[0].operator} ${varId(ops[0].leftOperand.name)} ${ops[0].rightOperand['const']}`)
     } else if (formula instanceof LtlOperationImpl) {
         let ops = formula.operands
             .map(op => '(' + doGetExpandedFormula(model, states, op) + ')')
             .join(' ')
-        return formula.operator.name + ' ' + ops
+        let opName = formula.operator.name
+        // the API expects 'And', whereas the model object has 'AND'
+        let opNameApi = opName[0] + opName.substr(1).toLowerCase()
+        return opNameApi + ' ' + ops
     }
 }
 
@@ -174,7 +187,7 @@ interface AnalyzeLTLPolarityResponse extends AnalyzeLTLSimulationResponse {
     /**
      * See BmaJsonAnalyzeLTLSimulationResponse docs.
      */
-    status: boolean
+    Status: boolean
 }
 
 interface SimulationTick {
