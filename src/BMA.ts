@@ -5,10 +5,18 @@ import * as request from 'request'
 const BACKEND_URL = config.get('BMA_BACKEND_URL')
  
 /**
+ * Runs a fast simulation against the public BMA server API.
  * 
+ * The result of the simulation asserts one of the two following:
+ * - The formula is sometimes true. (response.Status == true)
+ * - The formula is sometimes false. (response.Status == false)
+ * To assert whether the formula is always true/false or has duality (sometimes true and sometimes false),
+ * a thorough simulation has to be run with the result of the fast simulation.
+ * See runThoroughSimulation() for details.
  * 
  * @param model The "Model" part of a BmaJsonModel.
- * @param formula An expanded formula to run, e.g. "(Eventually (And (= 10 1) SelfLoop))".
+ * @param formula An expanded formula to run, e.g. "(Eventually (And (= 10 1) SelfLoop))". See getExpandedFormula().
+ * @param stepCount The maximum number of time steps to simulate.
  */
 export function runFastSimulation (model: Model, formula: string, stepCount: number): Promise.IThenable<AnalyzeLTLSimulationResponse> {
     let url = BACKEND_URL + 'AnalyzeLTLSimulation'
@@ -40,6 +48,18 @@ export function runFastSimulation (model: Model, formula: string, stepCount: num
     })
 }
 
+/**
+ * Runs a thorough/polarity simulation against the public BMA server API using the result of a fast simulation.
+ * 
+ * The result of the simulation asserts one of the following:
+ * - The formula is always true (false). (response.Status == false)
+ * - The formula is sometimes true and sometimes false. (response.Status == true)
+ * 
+ * @param model The "Model" part of a BmaJsonModel.
+ * @param formula An expanded formula to run, e.g. "(Eventually (And (= 10 1) SelfLoop))". See getExpandedFormula().
+ * @param stepCount The maximum number of time steps to simulate.
+ * @param fastSimulationResponse The response of a fast simulation using the same model, formula, and steps.
+ */
 export function runThoroughSimulation(model: Model, formula: string, stepCount: number,
         fastSimulationResponse: AnalyzeLTLSimulationResponse): Promise.IThenable<AnalyzeLTLPolarityResponse> {
     let url = BACKEND_URL + 'AnalyzeLTLPolarity'
@@ -133,6 +153,9 @@ interface AnalyzeLTLSimulationRequest {
     Relationships: VariableRelationship[]
 }
 
+/**
+ * The JSON format for an AnalyzeLTLSimulation API response.
+ */
 interface AnalyzeLTLSimulationResponse {
     /** 
      * True, if the formula is true for some simulations.
@@ -149,9 +172,11 @@ interface AnalyzeLTLSimulationResponse {
     Error?: string
     
     Ticks: SimulationTick[]
-    /** Not sure what this is used for. It's null even on errors. */
     
+    /** Detailed error messages. This may be null even if Error is defined. */
     ErrorMessages?: string[]
+
+    /** Detailed debug messages. */
     DebugMessages?: string[]
 
     /** integer, not sure what this is */
@@ -183,6 +208,9 @@ interface AnalyzeLTLPolarityRequest {
     Relationships: VariableRelationship[]
 }
 
+/**
+ * The JSON format for an AnalyzeLTLPolarity API response.
+ */
 interface AnalyzeLTLPolarityResponse extends AnalyzeLTLSimulationResponse {
     /**
      * See BmaJsonAnalyzeLTLSimulationResponse docs.
@@ -221,12 +249,14 @@ export interface ModelFile {
     ltl: Ltl
 }
 
+/** The value of the "Model" property of a JSON model file. */
 export interface Model {
     Name: string
     Variables: Variable[]
     Relationships: VariableRelationship[]
 }
 
+/** An array item within the "Model.Variables" array of a JSON model file. */
 export interface Variable {
     Id: number
 
@@ -242,6 +272,7 @@ export interface Variable {
     Formula: string
 }
 
+/** An array item within the "Model.Relationships" array of a JSON model file. */
 export interface VariableRelationship {
     id: number
 
@@ -255,6 +286,7 @@ export interface VariableRelationship {
     Type: string
 }
 
+/** The value of the "Ltl" property of a JSON model file. */
 export interface Ltl {
     states: LtlState[]
     operations: LtlOperation[]
