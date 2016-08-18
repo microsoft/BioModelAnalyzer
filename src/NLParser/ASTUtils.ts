@@ -22,7 +22,7 @@ function performPostOrderTraversal(node, outputTokens, bmaModel) {
     }
     if (node.value) {
         if (node.type == "relationalExpression") {
-            if (node.left.type === "modelVariable") {
+            if (node.left.type === TokenType.MODELVAR) {
                 let left = _.find(bmaModel.Model.Variables, (v: any) => v.Id === node.left.id).Name
                 left = left.indexOf(' ') >= 0 ? "(" + left + ")" : left
                 outputTokens.unshift(left + node.value.value + node.right);
@@ -30,7 +30,7 @@ function performPostOrderTraversal(node, outputTokens, bmaModel) {
                 throw Error("relationalExpression must be of the form modelVariable(arithmetic operator)integer")
             }
         }
-        else if (node.value.type === "binaryOperator") {
+        else if (node.value.type === TokenType.BINARY) {
             outputTokens.unshift(node.value.value);
         }
         else {
@@ -41,28 +41,27 @@ function performPostOrderTraversal(node, outputTokens, bmaModel) {
 function convertReversePolishFormulaToInfix(reversePolishTokens) {
     var stack = [];
     _.each(reversePolishTokens, function (t: any) {
-        if (t.TOKEN_TYPE === TokenType.LOGICAL_BINARY) {
+        if (t.TokenType === TokenType.BINARY) {
             if (stack.length < 2) {
                 throw Error("Parse Exception");
             }
             else {
-                var varX = stack.pop()
-                var varY = stack.pop()
+                var varX = stack.shift()
+                var varY = stack.shift()
                 stack.unshift("(" + varY + " " + t.LABEL + " " + varX + ")");
             }
-        } else if (t.TOKEN_TYPE == TokenType.LOGICAL_UNARY && stack.length >= 1) {
-            var varX = stack.pop()
+        } else if (t.TokenType == TokenType.UNARY && stack.length >= 1) {
+            var varX = stack.shift()
             stack.unshift(t.LABEL + "(" + varX + ")");
         }
         else {
-            stack.push(t);
+            stack.unshift(t);
         }
     });
     //handle remaining unary operators
-    stack = stack.reverse();
     while (stack.length > 1) {
-        var formula = stack.pop();
-        var operator = stack.pop();
+        var formula = stack.shift();
+        var operator = stack.shift();
         stack.push(operator.LABEL + "(" + formula + ")");
     }
     return stack[0];

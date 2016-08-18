@@ -2,11 +2,11 @@ import * as chai from 'chai'
 import NLParser from '../src/NLParser/NLParser'
 var expect = chai.expect;
 
-it('parse() should handle a complex query with prefix, inline and suffix temporal operators with if/then clase', () => {
-    var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "y", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "x", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
-    var sentence = "give me some simulation where it is always the case that if x is 1 then y is 5 is followed by x is 5 in the eventual case"
+it('parse() handles LTL operator precedence and assosiativeity correctly', () => {
+    var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "x", "Id": 1, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "y", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "z", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
+    var sentence = "give me some simulation where it is always the case that if x is 1 then y is 5 and followed by z is 25"
     var parserResponse = NLParser.parse(sentence, model)
-    var expected = '"eventually(always((x=1 implies y=5)))'
+    var expected = "always((x=1 implies (y=5 and next(z=25))))"
     expect(parserResponse.humanReadableFormula).to.equal(expected)
 })
 
