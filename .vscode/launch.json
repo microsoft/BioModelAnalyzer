@@ -18,8 +18,8 @@
                 "NODE_ENV": "development"
             },
             "externalConsole": false,
-            "sourceMaps": false,
-            "outDir": null
+            "sourceMaps": true,
+            "outDir": "${workspaceRoot}/lib"
         },
         {
             "name": "Attach",
@@ -39,8 +39,8 @@
             "request": "attach",
             "processId": "${command.PickProcess}",
             "port": 5858,
-            "sourceMaps": false,
-            "outDir": null
+            "sourceMaps": true,
+            "outDir": "${workspaceRoot}/lib"
         }
     ]
 }
