@@ -1,3 +1,6 @@
+/**
+ *  Please read ./NLParserDocumentation.md for a high level explaination of the parser
+ */
 import { Parser, Token, IParserConfig, Lexer, TokenConstructor, extendToken } from 'chevrotain'
 import * as _ from 'underscore'
 import * as natural from 'natural'
