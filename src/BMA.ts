@@ -299,15 +299,15 @@ export interface LtlState {
 
     name: string
     description: string    
-    operands: LtlStateEquation[]
+    operands: LtlStateRelationalExpression[]
 }
 
 export class LtlStateImpl implements LtlState {
     _type = NameStateType
     description = ''
-    operands: LtlStateEquation[]
+    operands: LtlStateRelationalExpression[]
 
-    constructor (public name: string, equations: LtlCompactStateEquation[]) {
+    constructor (public name: string, equations: LtlCompactStateRelationalExpression[]) {
         this.operands = equations.map(eq => ({
             _type: 'KeyframeEquation',
             leftOperand: {
@@ -323,23 +323,23 @@ export class LtlStateImpl implements LtlState {
     }
 }
 
-export type LtlStateEquationOperatorSymbol =
+export type LtlStateRelationalOperatorSymbol =
     '=' | '>' | '<' | '<=' | '>=' | '!='
 
-export interface LtlCompactStateEquation {
+export interface LtlCompactStateRelationalExpression {
     variable: string
-    operator: LtlStateEquationOperatorSymbol
+    operator: LtlStateRelationalOperatorSymbol
     value: number
 }
 
-export interface LtlStateEquation {
+export interface LtlStateRelationalExpression {
     /** "KeyframeEquation" */
     _type: string
 
     leftOperand: LtlStateNameOperand
 
     /** =, <, ... */
-    operator: LtlStateEquationOperatorSymbol
+    operator: LtlStateRelationalOperatorSymbol
 
     rightOperand: LtlStateConstOperand
 }
