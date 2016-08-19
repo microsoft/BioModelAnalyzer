@@ -2,6 +2,8 @@ import * as config from 'config'
 import * as mime from 'mime'
 import * as builder from 'botbuilder'
 
+const STATIC_URL_PREFIX = 'static/'
+
 /**
  * Returns the public url of a file in the /public folder.
  * 
@@ -25,7 +27,7 @@ export function getPublicResourceUrl (path: string) {
  */
 export function getTutorialImageAttachment (filename: string): builder.IAttachment {
     return {
-        contentUrl: getPublicResourceUrl('tutorials/img/' + filename),
+        contentUrl: getPublicResourceUrl(STATIC_URL_PREFIX + 'tutorials/img/' + filename),
         contentType: mime.lookup(filename)
     }
 }
@@ -48,7 +50,7 @@ export function getTutorialModelAttachment (filename: string): builder.IAttachme
  * @param filename The model's filename, e.g. 'ecoli.json'
  */
 export function getTutorialModelUrl (filename: string): string {
-    return getPublicResourceUrl('tutorials/model/' + filename)
+    return getPublicResourceUrl(STATIC_URL_PREFIX + 'tutorials/model/' + filename)
 }
 
 /**

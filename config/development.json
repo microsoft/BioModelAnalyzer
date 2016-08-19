@@ -3,7 +3,7 @@
     "PORT": 3978,
     "PROTOCOL": "http",
     "HOSTNAME": "localhost",
-    "SERVE_STATIC_VIA_RESTIFY": "true",
+    "SERVE_STATIC_VIA_EXPRESS": "1",
     "APP_ID": null,
     "APP_PASSWORD": null,
     "AZURE_STORAGE_ACCOUNT": "UseDevelopmentStorage=true",
