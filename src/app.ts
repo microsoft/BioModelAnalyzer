@@ -1,26 +1,25 @@
+import {dirname, join as joinPath} from 'path'
 import * as builder from 'botbuilder'
-import * as restify from 'restify'
+import * as express from 'express'
+import * as cors from 'cors'
 import * as config from 'config'
 import { BlobModelStorage } from './ModelStorage'
 import { setup as setupBot } from './bot'
 import NLParser from './NLParser/NLParser'
 
 let port = config.get('PORT')
-console.log('starting on port:', port)
+console.log('starting server on port:', port)
 
-let server = restify.createServer()
-server.listen(port, () => {
-    console.log('%s listening to %s', server.name, server.url)
-})
+//let server = restify.createServer()
+let server = express()
+server.listen(port)
 
 // in development, static files are served directly via restify (instead of IIS)
-if (config.get('SERVE_STATIC_VIA_RESTIFY') === '1') {
+if (config.get('SERVE_STATIC_VIA_EXPRESS') === '1') {
     // enable CORS so that the BMA tool can open our tutorial model URLs
-    server.use(restify.CORS())
-
-    server.get(/\/?.*/, restify.serveStatic({
-        directory: './public'
-    }))
+    server.use(cors())
+    console.log('serving static files via express')
+    server.use('/static', express.static('public'))
 }
 
 let botSettings = {
