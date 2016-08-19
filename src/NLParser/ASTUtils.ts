@@ -1,6 +1,3 @@
-//need to handle unary operators
-//temporal and logic
-
 import { Token } from 'chevrotain'
 import * as _ from 'underscore'
 import { TokenType } from './NLParser'
@@ -9,28 +6,25 @@ import { TokenType } from './NLParser'
  */
 export function toHumanReadableString(AST, bmaModel) {
     var reversePolishTokens = [];
-    performPostOrderTraversal(AST, reversePolishTokens, bmaModel);
+    toReversePolishFormula(AST, reversePolishTokens, bmaModel);
     return convertReversePolishFormulaToInfix(reversePolishTokens.reverse())
 }
 
-function performPostOrderTraversal(node, outputTokens, bmaModel) {
+function toReversePolishFormula(node, outputTokens, bmaModel) {
     if (node.left) {
-        performPostOrderTraversal(node.left, outputTokens, bmaModel);
+        toReversePolishFormula(node.left, outputTokens, bmaModel);
     }
     if (node.right) {
-        performPostOrderTraversal(node.right, outputTokens, bmaModel);
+        toReversePolishFormula(node.right, outputTokens, bmaModel);
     }
     if (node.value) {
         if (node.type == "relationalExpression") {
-            if (node.left.type === TokenType.MODELVAR) {
-                let left = _.find(bmaModel.Model.Variables, (v: any) => v.Id === node.left.id).Name
-                left = left.indexOf(' ') >= 0 ? "(" + left + ")" : left
-                outputTokens.unshift(left + node.value.value + node.right);
-            } else {
-                throw Error("relationalExpression must be of the form modelVariable(arithmetic operator)integer")
-            }
+            let left = _.find(bmaModel.Model.Variables, (v: any) => v.Id === node.left.id).Name
+            //Add brackets if the variable name has space in it eg: protein and molecule => (protein and molecule) 
+            left = left.indexOf(' ') >= 0 ? "(" + left + ")" : left
+            outputTokens.unshift(left + node.value.value + node.right);
         }
-        else if (node.value.type === TokenType.BINARY) {
+        else if (node.value.type === TokenType.BINARY_OPERATOR) {
             outputTokens.unshift(node.value.value);
         }
         else {
@@ -41,7 +35,7 @@ function performPostOrderTraversal(node, outputTokens, bmaModel) {
 function convertReversePolishFormulaToInfix(reversePolishTokens) {
     var stack = [];
     _.each(reversePolishTokens, function (t: any) {
-        if (t.TokenType === TokenType.BINARY) {
+        if (t.TOKEN_TYPE === TokenType.BINARY_OPERATOR) {
             if (stack.length < 2) {
                 throw Error("Parse Exception");
             }
@@ -50,7 +44,7 @@ function convertReversePolishFormulaToInfix(reversePolishTokens) {
                 var varY = stack.shift()
                 stack.unshift("(" + varY + " " + t.LABEL + " " + varX + ")");
             }
-        } else if (t.TokenType == TokenType.UNARY && stack.length >= 1) {
+        } else if (t.TOKEN_TYPE == TokenType.UNARY_OPERATOR && stack.length >= 1) {
             var varX = stack.shift()
             stack.unshift(t.LABEL + "(" + varX + ")");
         }

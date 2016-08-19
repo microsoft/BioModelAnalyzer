@@ -56,11 +56,3 @@ it('parse() should throw an error when sentence cannot be parsed', () => {
     var expected = ParserResponseType.PARSE_ERROR
     expect(parserResponse.responseType).to.equal(expected)
 })
-
-it('parse() should throw an error for unknown variable usage', () => {
-    var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "x", "Id": 1, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "y", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "z", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
-    var sentence = "show me a simulation where if k is 1 then t is 1"
-    var parserResponse = NLParser.parse(sentence, model)
-    var expected = ParserResponseType.UNKNOWN_VARIABLES_FOUND
-    expect(parserResponse.responseType).to.equal(expected)
-})
