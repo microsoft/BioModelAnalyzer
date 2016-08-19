@@ -156,7 +156,7 @@ interface AnalyzeLTLSimulationRequest {
 /**
  * The JSON format for an AnalyzeLTLSimulation API response.
  */
-interface AnalyzeLTLSimulationResponse {
+export interface AnalyzeLTLSimulationResponse {
     /** 
      * True, if the formula is true for some simulations.
      * False, if the formula is false for some simulations.
@@ -211,21 +211,21 @@ interface AnalyzeLTLPolarityRequest {
 /**
  * The JSON format for an AnalyzeLTLPolarity API response.
  */
-interface AnalyzeLTLPolarityResponse extends AnalyzeLTLSimulationResponse {
+export interface AnalyzeLTLPolarityResponse extends AnalyzeLTLSimulationResponse {
     /**
      * See BmaJsonAnalyzeLTLSimulationResponse docs.
      */
     Status: boolean
 }
 
-interface SimulationTick {
+export interface SimulationTick {
     /** integer, first tick starts at 0 */
     Time: number
 
     Variables: SimulationTickVariable[]
 }
 
-interface SimulationTickVariable {
+export interface SimulationTickVariable {
     /** Variable ID */
     Id: number
 
