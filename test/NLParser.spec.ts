@@ -1,6 +1,5 @@
-import * as chai from 'chai'
+import { expect } from 'chai'
 import { default as NLParser, ParserResponseType } from '../src/NLParser/NLParser'
-var expect = chai.expect;
 
 it('parse() handles LTL operator precedence and assosiativeity correctly', () => {
     var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "x", "Id": 1, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "y", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "z", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
