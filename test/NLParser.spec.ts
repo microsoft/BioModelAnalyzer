@@ -1,5 +1,5 @@
 import * as chai from 'chai'
-import {default as NLParser,ParserResponseType} from '../src/NLParser/NLParser'
+import { default as NLParser, ParserResponseType } from '../src/NLParser/NLParser'
 var expect = chai.expect;
 
 it('parse() handles LTL operator precedence and assosiativeity correctly', () => {
@@ -57,10 +57,10 @@ it('parse() should throw an error when sentence cannot be parsed', () => {
     expect(parserResponse.responseType).to.equal(expected)
 })
 
-it('parse() should throw an error for unknown variable usage', () => {
-    var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "x", "Id": 1, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "y", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "z", "Id": 3, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
-    var sentence = "show me a simulation where if k is 1 then t is 1"
+it('parse() should thandle variables with spances in them as well as keywords', () => {
+    var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "protein and molecules", "Id": 1, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "active protein", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
+    var sentence = "show me a simulation where if protein and molecules is 1 then active protein is 5 "
     var parserResponse = NLParser.parse(sentence, model)
-    var expected = ParserResponseType.UNKNOWN_VARIABLES_FOUND
-    expect(parserResponse.responseType).to.equal(expected)
+    var expected = "((protein and molecules)=1 implies (active protein)=5)"
+    expect(parserResponse.humanReadableFormula).to.equal(expected)
 })
