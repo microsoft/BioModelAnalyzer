@@ -21,7 +21,7 @@ steps:
         protein a = 1, and B is protein b = 1. As you can see, states do not have to be 
         bound to a specific value, inequalties can be used to make comparisons. 
 
-      img: states_ab.png
+      image: states_ab.png
 
     - text: >-
         We want to see an instance where both A and B are equal to 1. This can be done using 
@@ -36,7 +36,7 @@ steps:
         a or c being equal to a value of 4. Again, this should return some cases being true, and 
         some being false.
 
-      img: a_or_b.png
+      image: a_or_b.png
 
     - text: >- 
         The NOT operator allows you to test for all instances except those that satisfy the 
@@ -58,7 +58,7 @@ steps:
         this query it turns red hence indicating that there are no instances where this is true, and 
         that all simultations eventually satisfy A. 
 
-      img: run_alwaysnota.png 
+      image: run_alwaysnota.png 
 
     - text: >-
         The last operator that will be explained in this tutorial is the IMPLIES operator.

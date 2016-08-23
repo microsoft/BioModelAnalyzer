@@ -18,7 +18,7 @@ steps:
       sometime in a future state. In this example, we have the motor that has a value of 1 
       (the unbiased state), create this state using the LTL state editor.
 
-      img: define_model_state.png
+      image: define_model_state.png
 
     - text: >-
       As an example we want to test the endpoint of our model, to see if the state is satisfied at
@@ -29,7 +29,7 @@ steps:
       Run the query, it should turn green. A solid green query indicates that the query has been 
       satisifed for all cases, and therefore state A eventually becomes true within all traces.
 
-      img: run_eventuallya.png
+      image: run_eventuallya.png
 
     - text: >-
       Now we will move onto the operator, ALWAYS. This operator can be used to check if a state 
