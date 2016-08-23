@@ -6,7 +6,7 @@
     "compile": "tsc & exit 0",
     "postinstall": "npm run compile",
     "test": "mocha --require ./test/helpers/init.js test/**/*.ts",
-    "diagram": "browserify lib/NLParser/diagram.js -u wordnet-db -u lapack -o lib/parser-diagram.bundle.js && http-server . -c-1 -o docs/parser-diagram.html",
+    "diagram": "browserify lib/NLParser/diagram.js --ignore-missing -o lib/parser-diagram.bundle.js && http-server . -c-1 -o docs/parser-diagram.html",
     "watch": "tsc --watch",
     "start": "node lib/app.js"
   },
@@ -45,6 +45,7 @@
     "@types/mocha": "^2.2.29",
     "browserify": "^13.1.0",
     "chai": "^3.5.0",
+    "http-server": "^0.9.0",
     "mocha": "^3.0.1",
     "ts-node": "^1.2.2"
   }

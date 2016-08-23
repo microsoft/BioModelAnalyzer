@@ -69,8 +69,6 @@ steps:
         Running this test should return true for all cases, and essentialy means that for every trace
         of A being 1, B is also 1. 
 
-        //TODO ADD IMPLIES IMAGE
-
     - text: >-
         This is the end of the 'How to use Boolean operators' tutorial, you should now be comfortable using 
         and experimenting with operators; AND, OR, NOT and IMPLIES
