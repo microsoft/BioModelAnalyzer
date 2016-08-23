@@ -5,8 +5,11 @@ import * as qs from 'querystring'
 import {v4 as uuid} from 'node-uuid'
 import * as strings from './strings'
 import {default as NLParser, ParserResponseType } from '../NLParser/NLParser'
+import {toStatesAndFormula} from '../NLParser/ASTUtils'
 import {downloadAttachments} from '../attachments'
 import {ModelStorage} from '../ModelStorage'
+import * as BMA from '../BMA'
+import {getBMAModelUrl} from '../util'
 
 /**
  * Registers the LUIS dialog as root dialog. 
@@ -109,12 +112,24 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     ])
 
     function handleLTLQuery (session: builder.Session, text: string) {
-        let result = NLParser.parse(text, session.conversationData.bmaModel)
+        let bmaModel = session.conversationData.bmaModel
+        let result = NLParser.parse(text, bmaModel)
         if (result.responseType !== ParserResponseType.SUCCESS) {
             session.send('I did not understand your query')
             return
         }
         session.send('Try this: ' + result.humanReadableFormula)
+
+        // merge formula into model copy and offer to user via URL
+        let ltl = toStatesAndFormula(result.AST, bmaModel)
+        let newBmaModel: BMA.ModelFile = JSON.parse(JSON.stringify(bmaModel))
+        newBmaModel.ltl = ltl
+        //newBmaModel.ltl.operations.push(...ltl.operations)
+        //newBmaModel.ltl.states.push(...ltl.states)
+
+        modelStorage.storeGeneratedModel(JSON.stringify(newBmaModel)).then(url => {
+            session.send('Open directly: ' + getBMAModelUrl(url))
+        })
     }
 
     intents.matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))

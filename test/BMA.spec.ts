@@ -6,15 +6,18 @@ let testmodel: BMA.ModelFile = require('./data/testmodel.json')
 
 let states1 = [
     new BMA.LtlStateImpl('A', [{
-        variable: 'x',
+        variableName: 'x',
+        variableId: 3,
         operator: '=',
         value: 0
     }, {
-        variable: 'y',
+        variableName: 'y',
+        variableId: 2,
         operator: '>=',
         value: 1
     }, {
-        variable: 'z',
+        variableName: 'z',
+        variableId: 5,
         operator: '!=',
         value: 1
     }])

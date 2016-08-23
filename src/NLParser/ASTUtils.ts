@@ -1,4 +1,3 @@
-import { Token } from 'chevrotain'
 import * as _ from 'underscore'
 import { TokenType } from './NLParser'
 import * as BMA from '../BMA'
@@ -77,41 +76,91 @@ export function toStatesAndFormula (node, bmaModel: BMA.ModelFile): BMA.Ltl {
     // A-Z
     let letters: string[] = Array.apply(0, Array(26)).map((x, y) => String.fromCharCode(65 + y))
 
-    let states = bmaModel.ltl.states
+    let states = bmaModel.ltl.states.slice()
     let unusedStateName = () => _.find(letters, letter => !states.some(state => state.name === letter))
 
-    function walk (node, states: BMA.LtlState[]): BMA.LtlFormula[]  {
+    function walk (node, states: BMA.LtlState[]): BMA.LtlFormula  {
         if (node.type === 'relationalExpression') {
             let stateName = unusedStateName()
             let relationalExpression: BMA.LtlCompactStateRelationalExpression = {
-                variable: varName(node.left.id),
+                variableName: varName(node.left.id),
+                variableId: node.left.id,
                 operator: node.value.value,
                 value: node.right
             }
             states.push(new BMA.LtlStateImpl(stateName, [relationalExpression]))
-            return [new BMA.LtlNameStateReferenceImpl(stateName)]
+            return new BMA.LtlNameStateReferenceImpl(stateName)
         } else if (node.type === TokenType.BINARY_OPERATOR || (node.value && node.value.TOKEN_TYPE === TokenType.BINARY_OPERATOR)) {
             // check for AND-nested relationalExpression tree
             // this becomes a state
             
-            // TODO implement
-
             // FIXME don't use LABEL for testing
-            if (node.value.LABEL == 'And' && node.right.type === 'relationalExpression') {
-                
+            if (node.value.LABEL == 'and' && node.left.type === 'relationalExpression') {
+                let relExprs = [node.left]
+                let curNode = node.right
+                while (curNode.value.LABEL == 'and' && curNode.left.type === 'relationalExpression') {
+                    relExprs.push(curNode.left)
+                    curNode = curNode.right
+                }
+                let stateName = unusedStateName()
+                if (curNode.type === 'relationalExpression') {
+                    // we can completely collapse the AND-tree to a state
+                    relExprs.push(curNode)
+
+                    let relationalExpressions: BMA.LtlCompactStateRelationalExpression[] = relExprs.map(relExprNode => ({
+                        variableName: varName(relExprNode.left.id),
+                        variableId: relExprNode.left.id,
+                        operator: relExprNode.value.value,
+                        value: relExprNode.right
+                    }))
+
+                    states.push(new BMA.LtlStateImpl(stateName, relationalExpressions))
+                    return new BMA.LtlNameStateReferenceImpl(stateName)
+                } else {
+                    // more nodes are coming
+                    let relationalExpressions: BMA.LtlCompactStateRelationalExpression[] = relExprs.map(relExprNode => ({
+                        variableName: varName(relExprNode.left.id),
+                        variableId: relExprNode.left.id,
+                        operator: relExprNode.value.value,
+                        value: relExprNode.right
+                    }))
+
+                    states.push(new BMA.LtlStateImpl(stateName, relationalExpressions))
+                    // A and <rest>
+                    return new BMA.LtlOperationImpl(node.value.LABEL, [new BMA.LtlNameStateReferenceImpl(stateName), walk(curNode, states)])
+                }
+            } else {
+                return new BMA.LtlOperationImpl(node.value.LABEL, [walk(node.left, states), walk(node.right, states)])
             }
 
-            return []
         } else if (node.type === TokenType.UNARY_OPERATOR || (node.value && node.value.TOKEN_TYPE === TokenType.UNARY_OPERATOR)) {
-            return [new BMA.LtlOperationImpl(node.value.LABEL, walk(node.left, states))]
+            return new BMA.LtlOperationImpl(node.value.LABEL, [walk(node.left, states)])
         } else {
             return walk(node.left, states)
         }
     }
 
-    let formulas = walk(node, states)
+    let simplifiedAST = simplifyAST(node)
+    //console.log(JSON.stringify(simplifiedAST, null, 2))
+    let formula = walk(simplifiedAST, states)
     return {
-        operations: formulas as BMA.LtlOperation[], // FIXME remove cast
+        operations: [formula] as BMA.LtlOperation[], // FIXME remove cast
         states
     }
+}
+
+/** Removes all redundant nodes in the tree to make processing easier. */
+export function simplifyAST (node) {
+    if (typeof node === 'string' || typeof node === 'number') {
+    } else if ('id' in node) {
+    } else if (node.type === 'relationalExpression') {
+    } else if (node.type === TokenType.BINARY_OPERATOR || (node.value && node.value.TOKEN_TYPE === TokenType.BINARY_OPERATOR)) {
+        node.left = simplifyAST(node.left)
+        node.right = simplifyAST(node.right)
+    } else if (node.type === TokenType.UNARY_OPERATOR || (node.value && node.value.TOKEN_TYPE === TokenType.UNARY_OPERATOR)) {
+        node.left = simplifyAST(node.left)
+    } else {
+        node = simplifyAST(node.left)
+    }
+    return node
 }

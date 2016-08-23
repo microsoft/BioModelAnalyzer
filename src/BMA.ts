@@ -74,7 +74,8 @@ export class LtlStateImpl implements LtlState {
             _type: 'KeyframeEquation',
             leftOperand: {
                 _type: 'NameOperand',
-                name: eq.variable
+                name: eq.variableName,
+                id: eq.variableId
             },
             operator: eq.operator,
             rightOperand: {
@@ -89,7 +90,8 @@ export type LtlStateRelationalOperatorSymbol =
     '=' | '>' | '<' | '<=' | '>=' | '!='
 
 export interface LtlCompactStateRelationalExpression {
-    variable: string
+    variableName: string
+    variableId: number
     operator: LtlStateRelationalOperatorSymbol
     value: number
 }
@@ -112,6 +114,9 @@ export interface LtlStateNameOperand {
 
     /** Variable name */
     name: string
+
+    /** Variable ID */
+    id: number
 }
 
 export interface LtlStateConstOperand {
@@ -192,7 +197,7 @@ export class LtlOperationImpl implements LtlOperation {
 
     constructor (operator: LtlOperatorName, operands: LtlFormula[]) {
         this.operator = {
-            name: operator,
+            name: operator.toUpperCase() as LtlOperatorName,
             operandsCount: operands.length
         }
         this.operands = operands.map(op => {

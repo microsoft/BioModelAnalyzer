@@ -2,13 +2,16 @@ import * as Promise from 'promise'
 import * as azure from 'azure-storage'
 import * as config from 'config'
 import * as url from 'url'
+import {v4 as uuid} from 'node-uuid'
 
 const USER_MODELS = 'usermodels'
+const GENERATED_MODELS = 'genmodels'
 
 export interface ModelStorage {
     storeUserModel (id: string, content: string): Promise.IThenable<boolean>
     getUserModel (id: string): Promise.IThenable<any>
     getUserModelUrl (id: string): string
+    storeGeneratedModel (content: string): Promise.IThenable<string>
 }
 
 export class BlobModelStorage implements ModelStorage {
@@ -45,14 +48,16 @@ export class BlobModelStorage implements ModelStorage {
             })
         })
         
-        // create container
-        this.blobService.createContainerIfNotExists(USER_MODELS, {
-            publicAccessLevel: 'blob'
-        }, (error, result, response) => {
-            if (error) {
-                throw error
-            }
-        })
+        // create containers
+        for (let container of [USER_MODELS, GENERATED_MODELS]) {
+            this.blobService.createContainerIfNotExists(container, {
+                publicAccessLevel: 'blob'
+            }, (error, result, response) => {
+                if (error) {
+                    throw error
+                }
+            })
+        }
     }
 
     storeUserModel (id, content) {
@@ -91,5 +96,21 @@ export class BlobModelStorage implements ModelStorage {
         */
         var sasUrl = this.blobService.getUrl(USER_MODELS, id)
         return sasUrl
+    }
+
+    storeGeneratedModel (content) {
+        // TODO remove old models
+
+        let id = uuid()
+        return new Promise((resolve, reject) => {
+            this.blobService.createBlockBlobFromText(GENERATED_MODELS, id, content, {}, (error, response) => {
+                if (error) {
+                    reject(error)
+                } else {
+                    let url = this.blobService.getUrl(GENERATED_MODELS, id)
+                    resolve(url)
+                }
+            })
+        })
     }
 }
