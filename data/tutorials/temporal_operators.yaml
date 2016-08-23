@@ -41,14 +41,10 @@ steps:
         by clicking the green examples. Here, you can see a trace of 10 steps where the motor stays 
         within the unbiased state with a constant value at 1 
 
-      // TODO add image
-
     - text: >- 
         Moving on, we will now look at the NEXT operator. Create a simple query that states NEXT A, and 
         run it. See the picture below to match your results. The traces returned below are those that satisfy 
         the query, and essentialy mean that the immediate next state of the model would have A = to 1. 
-
-      // TODO add image
 
     - text: >- 
         The last temporal operator that we will be looking at within this tutorial is the UNTIL operator.
