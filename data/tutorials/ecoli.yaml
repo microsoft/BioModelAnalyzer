@@ -7,11 +7,27 @@ description: >-
   It takes around 10 minutes.
 steps:
     - text: >-
-        This tutorial is a follow on to the 'Exploring the interface' tutorial and requires
-        you to have downloaded and imported the Ecoli model into the BMA tool. If you haven't
-        done that already, follow the link below.
+        We will be using the ecoli model throughout this tutorial, please import the JSON into 
+        BMA or follow the link below. 
 
-      model: ecoli2.json
+      model: ecoli1.json
+    
+    - text: >-
+        We will start by defining model states. Open the LTL interface from the right hand
+        side and click the plus sign under 'Linear Temporal Logic'.
+
+      image: open_ltl_interface.png
+
+    - text: >-
+        This will open the LTL state editor. Here you need to select the motor variable from
+        the canvas and assign a value of 1, this can be seen in the image below.
+
+      image: define_model_state.png
+
+    - text: >-
+        Now return to the LTL interface, notice a new state has been defined as 'A', this is
+        the one we just created. Now click on the bottom '+' sign to define a new
+        temporal property.
 
     - text: >-
         We are interested in showing that the motor in the model always returns to the unbiased 

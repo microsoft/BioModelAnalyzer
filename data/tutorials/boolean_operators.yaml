@@ -12,23 +12,41 @@ steps:
         that can be downloaded from the link below. This model consists of a cell, containing 
         three proteins each ranging from 0 to 4.
 
-      model: toymodelstable.json
+      model: ToyModelStable.json
 
     - text: >-
         To start off with, we will be creating two states, that we can input into the boolean 
         operators and examine the results. Open the Linear Temporal Logic tab from the right 
-        hand side and click on the upper plus sign. From here create two states, A and B. A is 
-        protein a = 1, and B is protein b = 1. As you can see, states do not have to be 
-        bound to a specific value, inequalties can be used to make comparisons. 
+        hand side and click on the upper plus sign.
 
-      img: states_ab.png
+      image: open_ltl_interface.png
+    
+    - text: >-
+        From here create two states, A and B. A is x = 1, and B is y = 1. As you can see, states 
+        do not have to be bound to a specific value, inequalties can be used to make comparisons. 
+        NOTE: When creating a new state, in this case Protein2, use the plus sign at the top in 
+        the grey sidebar. 
+
+      image: states_ab.png
 
     - text: >-
         We want to see an instance where both A and B are equal to 1. This can be done using 
         the AND operator. AND takes two states (expressions) and returns cases where both 
-        states equal the defined value at the same time. In this case, there are traces where this 
-        is true and false (indicated by green/red stripes). To examine the true cases, 
-        click open and then click examples with a green tick.  
+        states equal the defined value at the same time.
+
+    - text: >-
+        Open the LTL editor again, but now click on the lower + sign to create a new temporal property
+        Use the canvas and drag and drop the AND operator and put A and B into the sockets, and test it. 
+        NOTE: A query will not run until all sockets have been occupied.
+
+      image: create_aandb.png
+    
+    - text: >- 
+        In this case, there are traces where this is true and false (indicated by green/red stripes).
+        To examine the true cases, click open and the click examples with a green tick. You should 
+        now see this. 
+
+      image: run_aandb.png
 
     - text: >- 
         The OR operator works similar to AND, however it doesn't require both states to be true 
@@ -36,7 +54,15 @@ steps:
         a or c being equal to a value of 4. Again, this should return some cases being true, and 
         some being false.
 
-      img: a_or_b.png
+      image: a_or_b.png
+
+      - text: >-
+        The IMPLIES operator can be used when we want to check if a state is a subsequent of another defined 
+        state. For example, using the same 'toymodelstable' model we can check if A implies B.
+
+    - text: >-
+        Running this test should return true for all cases, and essentialy means that for every trace
+        of A being 1, B is also 1. 
 
     - text: >- 
         The NOT operator allows you to test for all instances except those that satisfy the 
@@ -45,12 +71,12 @@ steps:
         to start from scratch or carry on here. 
 
     - text: >-
-        Download and import the model for ecoli now, using the link below. In this model we are 
-        interested in showing that the motor always returns to its unbiased state. Rather than 
-        checking each case, we can easily reverse the idea and test to see if there are any cases 
-        when it doesn't return to an unbiased state. 
+        Download the model for ecoli now, using the link below. In this model we are interested
+        in showing that the motor always returns to its unbiased state (in this case it has 
+        to equal to 1). Rather than checking each case, we can easily reverse the idea and test to see 
+        if there are any cases when it doesn't return to an unbiased state. 
 
-      model: ecoli2.json
+      model: ecoli1.json
 
     - text: >-
         This can easily be achieved by creating a state A, that defines the motor = 1, and plugging it 
@@ -58,16 +84,7 @@ steps:
         this query it turns red hence indicating that there are no instances where this is true, and 
         that all simultations eventually satisfy A. 
 
-      img: run_alwaysnota.png 
-
-    - text: >-
-        The last operator that will be explained in this tutorial is the IMPLIES operator.
-        This operator can be used when we want to check if a state is a subsequent of another defined 
-        state. For example, using the same 'toymodelstable' model we can check if A implies B.
-
-    - text: >-
-        Running this test should return true for all cases, and essentialy means that for every trace
-        of A being 1, B is also 1. 
+      image: run_alwaysnota.png 
 
     - text: >-
         This is the end of the 'How to use Boolean operators' tutorial, you should now be comfortable using 
