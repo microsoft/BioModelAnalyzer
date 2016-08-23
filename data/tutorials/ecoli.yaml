@@ -11,7 +11,7 @@ steps:
         you to have downloaded and imported the Ecoli model into the BMA tool. If you haven't
         done that already, follow the link below.
 
-      model: ecoli2.json
+      model: ecoli1.json
 
     - text: >-
         We are interested in showing that the motor in the model always returns to the unbiased 

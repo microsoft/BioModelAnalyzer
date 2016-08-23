@@ -11,7 +11,7 @@ steps:
         As you may be familiar with the Ecoli model from other tutorials, reupload that into the 
         BMA tool using the link below
 
-      model: ecoli2.json
+      model: ecoli1.json
 
     - text: >- 
         The EVENTUALLY operator is used in cases when we need to test if a query is satisfied 
