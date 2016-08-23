@@ -4,6 +4,53 @@ description: >-
   This tutorial will give you a quick walkthrough of the basic temporal operators available
   in the Bio-Model Analyzer. 
   It will take around 10 minutes, and by the end of this you should know how to successfully
-  use 
+  use EVENTUALLY, ALWAYS, NEXT, and UNTIL
 steps:
     - text: >-
+      In this tutorial we will be looking at how to use temporal operators within our queries.
+      As you may be familiar with the Ecoli model from other tutorials, reupload that into the 
+      BMA tool using the link below
+
+      model: ecoli2.json
+
+    - text: >- 
+      The EVENTUALLY operator is used in cases when we need to test if a query is satisfied 
+      sometime in a future state. In this example, we have the motor that has a value of 1 
+      (the unbiased state), create this state using the LTL state editor.
+
+      img: define_model_state.png
+
+    - text: >-
+      As an example we want to test the endpoint of our model, to see if the state is satisfied at
+      some point. This can be achieved using the EVENTUALLY operator. Drag and drop EVENTUALLY 
+      into the canvas and plug in state A into the socket.
+
+    - text: >- 
+      Run the query, it should turn green. A solid green query indicates that the query has been 
+      satisifed for all cases, and therefore state A eventually becomes true within all traces.
+
+      img: run_eventuallya.png
+
+    - text: >-
+      Now we will move onto the operator, ALWAYS. This operator can be used to check if a state 
+      stays constant within all traces. Using the same ecoli model and motor state defined, run 
+      ALWAYS A.
+
+    - text: >-
+      This should result in some true and some false cases. Examine the cases that satisfy the query 
+      by clicking the green examples. Here, you can see a trace of 10 steps where the motor stays 
+      within the unbiased state with a constant value at 1 
+
+      // TODO add image
+
+    - text: >- 
+      Moving on, we will now look at the NEXT operator. Create a simple query that states NEXT A, and 
+      run it. See the picture below to match your results. The traces returned below are those that satisfy 
+      the query, and essentialy mean that the immediate next state of the model would have A = to 1. 
+
+      // TODO add image
+
+    - text: >- 
+      The last temporal operator that we will be looking at within this tutorial is the UNTIL operator.
+
+      

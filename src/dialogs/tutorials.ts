@@ -11,6 +11,9 @@ import {getTutorialImageAttachment, getBMAModelUrl, getTutorialModelUrl} from '.
  */
 const TUTORIALS = [
     'exploring_the_interface',
+    'boolean_operators',
+    'temporal_operators',
+    'advanced_temporal_operators',   
     'ecoli'
 ]
 

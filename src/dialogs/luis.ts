@@ -77,6 +77,37 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         }
     ])
 
+    intents.matches('OperatorExample', [function (session, args) {
+            var operator = builder.EntityRecognizer.findEntity(args.entities, 'Operator')
+            var operatorName = operator.entity
+            switch (operatorName)
+            {
+                case 'and':session.send(strings.EXAMPLE_AND)
+                break;
+                case 'or':session.send(strings.EXAMPLE_OR)
+                break;
+                case 'implies':session.send(strings.EXAMPLE_IMPLIES)
+                break;
+                case 'not':session.send(strings.EXAMPLE_NOT)
+                break;
+                case 'next':session.send(strings.EXAMPLE_NEXT)
+                break;
+                case 'always':session.send(strings.EXAMPLE_ALWAYS)
+                break;
+                case 'eventually':session.send(strings.EXAMPLE_EVENTUALLY)
+                break;
+                case 'upto':session.send(strings.EXAMPLE_UPTO)
+                break;
+                case 'weakuntil':session.send(strings.EXAMPLE_WEAKUNTIL)
+                break;
+                case 'until':session.send(strings.EXAMPLE_UNTIL)
+                break;
+                case 'release':session.send(strings.EXAMPLE_RELEASE)
+                break;
+            }   
+        }
+    ])
+
     function handleLTLQuery (session: builder.Session, text: string) {
         let result = NLParser.parse(text, session.conversationData.bmaModel)
         if (result.responseType !== ParserResponseType.SUCCESS) {
