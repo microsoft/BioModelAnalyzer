@@ -19,6 +19,12 @@ export default class MemoryModelStorage implements ModelStorage {
         return toDataUrl(this.models[id])
     }
 
+    removeUserModel (id) {
+        let existed = id in this.models
+        delete this.models[id]
+        return Promise.resolve(existed)
+    }
+
     storeGeneratedModel (model) {
         return Promise.resolve(toDataUrl(model))
     }

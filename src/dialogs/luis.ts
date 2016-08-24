@@ -19,7 +19,10 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     let model = 'https://api.projectoxford.ai/luis/v1/application?id=' + config.get('LUIS_MODEL_ID') 
         + '&subscription-key=' + config.get('LUIS_KEY')
     let recognizer = new builder.LuisRecognizer(model)
-    let intents = new builder.IntentDialog({ recognizers: [recognizer] })
+    let intents = new builder.IntentDialog({ 
+        recognizers: [recognizer], 
+        intentThreshold: 0.3 // default is 0.1
+    })
     bot.dialog('/', intents)
     
     /** A wrapper around intents.matches() which handles resetting of the hasSpellChecked flag. See intents.onDefault below for more details. */
@@ -29,6 +32,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         }
         let firstStep = dialog[0]
         dialog[0] = function (session, args, next) {
+            console.log(`Message: "${session.message.text}" [intent: ${args.intent} score: ${args.score}]`)
             if (session.conversationData.hasSpellChecked) {
                 session.conversationData.hasSpellChecked = false
                 session.save()
@@ -49,6 +53,10 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
 
     matches('UploadedModel', (session, args) => {
         session.beginDialog('/requestUploadedModel')
+    })
+
+    matches('RemoveModel', (session, args) => {
+        session.beginDialog('/removeUploadedModel')
     })
 
     matches('ListTutorial', (session) => {
@@ -160,7 +168,10 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             receiveModelAttachmentStep(bot, modelStorage, session, results, next)
             return
         }
-        
+
+        console.log(`Message: "${session.message.text}" [not recognized]`)
+        console.log(JSON.stringify(results, null, 2))
+
         if (config.get('ENABLE_SPELLCHECK') === '0' || session.conversationData.hasSpellChecked) {
             session.conversationData.hasSpellChecked = false
             session.save()

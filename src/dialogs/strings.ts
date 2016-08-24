@@ -14,6 +14,8 @@ export let ABOUT_SIMULATIONS = 'LTL queries are used to find simulations of a gi
 export let SPELLCHECK_ASSUMPTION = (corrected: string) => `I assume you meant: "${corrected}"`
 export let OPEN_BMA_URL = (url: string) => `Open in browser: ${url}`
 export let HERE_IS_YOUR_UPLOADED_MODEL = (url: string) => `Here is the model you sent me: ${url}`
+export let NO_MODEL_FOUND = 'I do not have a model from you.'
+export let MODEL_REMOVED = 'I removed your model.'
 
 //Explaination for each operator 
 

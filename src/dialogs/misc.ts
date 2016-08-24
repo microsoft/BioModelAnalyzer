@@ -9,14 +9,26 @@ import * as strings from './strings'
 export function registerOtherDialogs (bot: builder.UniversalBot, modelStorage: ModelStorage) {
     bot.dialog('/requestUploadedModel', (session, results, next) => {
         let modelId = session.conversationData.bmaModelId
+        if (!modelId) {
+            session.send(strings.NO_MODEL_FOUND)
+            next()
+            return
+        }
         let url = getBMAModelUrl(modelStorage.getUserModelUrl(modelId))
         session.send(strings.HERE_IS_YOUR_UPLOADED_MODEL(url))
         next()
     })
     bot.dialog('/removeUploadedModel', (session, results, next) => {
-        //session.conversationData.bmaModelId = null
-        session.conversationData.bmaModel = null
-        session.send('Model removed')
+        let id = session.conversationData.bmaModelId
+        if (!id) {
+            session.send(strings.NO_MODEL_FOUND)
+            next()
+            return
+        }
+        delete session.conversationData.bmaModelId
+        delete session.conversationData.bmaModel
+        modelStorage.removeUserModel(id)
+        session.send(strings.MODEL_REMOVED)
         next()
     })
 }
