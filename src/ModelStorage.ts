@@ -3,15 +3,16 @@ import * as azure from 'azure-storage'
 import * as config from 'config'
 import * as url from 'url'
 import {v4 as uuid} from 'node-uuid'
+import * as BMA from './BMA'
 
 const USER_MODELS = 'usermodels'
 const GENERATED_MODELS = 'genmodels'
 
 export interface ModelStorage {
-    storeUserModel (id: string, content: string): Promise.IThenable<boolean>
+    storeUserModel (id: string, model: BMA.ModelFile): Promise.IThenable<boolean>
     getUserModel (id: string): Promise.IThenable<any>
     getUserModelUrl (id: string): string
-    storeGeneratedModel (content: string): Promise.IThenable<string>
+    storeGeneratedModel (model: BMA.ModelFile): Promise.IThenable<string>
 }
 
 export class BlobModelStorage implements ModelStorage {
@@ -60,8 +61,9 @@ export class BlobModelStorage implements ModelStorage {
         }
     }
 
-    storeUserModel (id, content) {
+    storeUserModel (id, model) {
         // TODO think about expiration
+        let content = JSON.stringify(model, null, 2)
 
         return new Promise((resolve, reject) => {
             this.blobService.createBlockBlobFromText(USER_MODELS, id, content, {}, (error, response) => {
@@ -88,18 +90,13 @@ export class BlobModelStorage implements ModelStorage {
     }
 
     getUserModelUrl (id) {
-        /*
-        var sasToken = this.blobService.generateSharedAccessSignature(USER_MODELS, id, {
-            AccessPolicy: { Expiry: azure.date.minutesFromNow(60) }
-        })
-        var sasUrl = this.blobService.getUrl(USER_MODELS, id, sasToken, true)
-        */
-        var sasUrl = this.blobService.getUrl(USER_MODELS, id)
-        return sasUrl
+        var url = this.blobService.getUrl(USER_MODELS, id)
+        return url
     }
 
-    storeGeneratedModel (content) {
+    storeGeneratedModel (model) {
         // TODO remove old models
+        let content = JSON.stringify(model, null, 2)
 
         let id = uuid()
         return new Promise((resolve, reject) => {

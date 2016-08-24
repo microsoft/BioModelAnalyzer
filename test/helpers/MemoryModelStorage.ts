@@ -6,18 +6,26 @@ export default class MemoryModelStorage implements ModelStorage {
     constructor () {
         this.models = {}
     }
-    storeUserModel (id: string, content: string) {
-        this.models[id] = JSON.parse(content)
+    storeUserModel (id, model) {
+        this.models[id] = model
         return Promise.resolve(true)
     }
 
-    getUserModel (id: string) {
+    getUserModel (id) {
         return Promise.resolve(this.models[id])
     }
 
-    getUserModelUrl (id: string) {
-        let json = JSON.stringify(this.models[id])
-        let base64 = new Buffer(json).toString('base64')
-        return 'data:application/json;base64,' + base64
+    getUserModelUrl (id) {
+        return toDataUrl(this.models[id])
     }
+
+    storeGeneratedModel (model) {
+        return Promise.resolve(toDataUrl(model))
+    }
+}
+
+function toDataUrl (obj: any) {
+    let json = JSON.stringify(obj)
+    let base64 = new Buffer(json).toString('base64')
+    return 'data:application/json;base64,' + base64
 }
