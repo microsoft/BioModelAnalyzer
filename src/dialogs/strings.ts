@@ -1,5 +1,8 @@
 export let LTL_DESCRIPTION = 'LTL means linear temporal logic'
 export let UNKNOWN_INTENT = 'I did not understand you'
+export let UNKNOWN_LTL_QUERY = 'I did not understand your query'
+export let TRY_THIS_FORMULA = (formula: string) => `Try this: ${formula}`
+export let OPEN_BMA_MODEL_LINK = (url: string) => `Open directly: ${url}`
 export let MODEL_SEND_PROMPT = 'Please send me your model as a JSON file'
 export let INVALID_JSON = (msg: string) => `Your uploaded file is not valid JSON (Error: ${msg})`
 export let HTTP_ERROR = (msg: string) => `HTTP Error: ${msg}`
@@ -16,6 +19,14 @@ export let OPEN_BMA_URL = (url: string) => `Open in browser: ${url}`
 export let HERE_IS_YOUR_UPLOADED_MODEL = (url: string) => `Here is the model you sent me: ${url}`
 export let NO_MODEL_FOUND = 'I do not have a model from you.'
 export let MODEL_REMOVED = 'I removed your model.'
+
+// simulation outcomes
+export let SIMULATION_DUALITY = (steps: number) => `I ran a simulation with ${steps} steps. The formula is sometimes true and sometimes false.`
+export let SIMULATION_ALWAYS_TRUE = (steps: number) => `I ran a simulation with ${steps} steps. The formula is always true.`
+export let SIMULATION_ALWAYS_FALSE = (steps: number) => `I ran a simulation with ${steps} steps. The formula is always false.`
+export let SIMULATION_PARTIAL_TRUE = (steps: number) => `I ran a partial simulation with ${steps} steps. The formula is either always or just sometimes true. Please check the full results yourself using the link above.`
+export let SIMULATION_PARTIAL_FALSE = (steps: number) => `I ran a partial simulation with ${steps} steps. The formula is either always or just sometimes false. Please check the full results yourself using the link above.`
+export let SIMULATION_CANCELLED = 'I tried to run a simulation but it took too long so I cancelled it. Please check the results yourself using the link above.'
 
 //Explaination for each operator 
 

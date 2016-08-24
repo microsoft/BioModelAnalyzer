@@ -183,33 +183,31 @@ export interface LtlTrueState extends LtlFormula {
 }
 
 /**
- * Wraps an untyped LtlOperation object into a typed object.
- * This makes it easier to write algorithms on it which walk the nested tree.
+ * Wraps an untyped LtlFormula object into a typed object.
+ * This makes it easier to write algorithms on it which walk the nested tree based on the *Impl classes.
  */
+export function fromFormula (formula: LtlFormula): LtlFormula {
+    switch (formula._type) {
+        case OperationType: return new LtlOperationImpl((<LtlOperation>formula).operator.name, (<LtlOperation>formula).operands)
+        case NameStateType: return new LtlNameStateReferenceImpl((<LtlNameStateReference>formula).name)
+        case SelfLoopStateType: return new LtlSelfLoopStateImpl()
+        case OscillationStateType: return new LtlOscillationStateImpl()
+        case TrueStateType: return new LtlTrueStateImpl()
+        default: throw new Error('Not implemented: ' + formula._type)
+    }
+}
+
 export class LtlOperationImpl implements LtlOperation {
     _type = OperationType
     operator: LtlOperationOperator
     operands: LtlFormula[]
-
-    static from (operation: LtlOperation) {
-        return new LtlOperationImpl(operation.operator.name, operation.operands)
-    }
 
     constructor (operator: LtlOperatorName, operands: LtlFormula[]) {
         this.operator = {
             name: operator.toUpperCase() as LtlOperatorName,
             operandsCount: operands.length
         }
-        this.operands = operands.map(op => {
-            switch (op._type) {
-                case OperationType: return LtlOperationImpl.from(op as LtlOperation)
-                case NameStateType: return new LtlNameStateReferenceImpl((<LtlNameStateReference>op).name)
-                case SelfLoopStateType: return new LtlSelfLoopStateImpl()
-                case OscillationStateType: return new LtlOscillationStateImpl()
-                case TrueStateType: return new LtlTrueStateImpl()
-                default: throw new Error('Not implemented: ' + op._type)
-            }
-        })
+        this.operands = operands.map(fromFormula)
     }
 }
 

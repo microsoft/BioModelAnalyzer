@@ -5,6 +5,19 @@ import * as BMA from './BMA'
 
 const BACKEND_URL = config.get('BMA_BACKEND_URL')
  
+export interface SimulationOptions {
+    /** Number of simulation steps */
+    steps?: number
+
+    /** Time in seconds after which to cancel the request */
+    timeout?: number
+}
+
+const DefaultSimOptions = {
+    steps: 10,
+    timeout: 60
+}
+
 /**
  * Runs a fast simulation against the public BMA server API.
  * 
@@ -17,13 +30,15 @@ const BACKEND_URL = config.get('BMA_BACKEND_URL')
  * 
  * @param model The "Model" part of a BmaJsonModel.
  * @param formula An expanded formula to run, e.g. "(Eventually (And (= 10 1) SelfLoop))". See getExpandedFormula().
- * @param stepCount The maximum number of time steps to simulate.
+ * @param options.steps The maximum number of time steps to simulate.
+ * @param options.timeout The HTTP request timeout after which to cancel the request.
  */
-export function runFastSimulation (model: BMA.Model, formula: string, stepCount: number): Promise.IThenable<AnalyzeLTLSimulationResponse> {
+export function runFastSimulation (model: BMA.Model, formula: string, options: SimulationOptions = DefaultSimOptions): Promise.IThenable<AnalyzeLTLSimulationResponse> {
+    console.log(`running "${formula}" against AnalyzeLTLSimulation API`)
     let url = BACKEND_URL + 'AnalyzeLTLSimulation'
     let req: AnalyzeLTLSimulationRequest = {
         Formula: formula,
-        Number_of_steps: stepCount,
+        Number_of_steps: options.steps || DefaultSimOptions.steps,
         Name: model.Name,
         Relationships: model.Relationships,
         Variables: model.Variables
@@ -33,6 +48,7 @@ export function runFastSimulation (model: BMA.Model, formula: string, stepCount:
         request.post(url, {
             body: req,
             json: true,
+            timeout: (options.timeout || DefaultSimOptions.timeout) * 1000
         }, (error, response, body) => {
             if (error) {
                 reject(error)
@@ -40,7 +56,7 @@ export function runFastSimulation (model: BMA.Model, formula: string, stepCount:
             }
             let resp = body as AnalyzeLTLSimulationResponse
             if (resp.Error) {
-                reject('API error: ' + resp.Error)
+                reject({ message: resp.Error })
                 console.error(resp.ErrorMessages)
                 return
             }
@@ -61,13 +77,14 @@ export function runFastSimulation (model: BMA.Model, formula: string, stepCount:
  * @param stepCount The maximum number of time steps to simulate.
  * @param fastSimulationResponse The response of a fast simulation using the same model, formula, and steps.
  */
-export function runThoroughSimulation(model: BMA.Model, formula: string, stepCount: number,
-        fastSimulationResponse: AnalyzeLTLSimulationResponse): Promise.IThenable<AnalyzeLTLPolarityResponse> {
+export function runThoroughSimulation(model: BMA.Model, formula: string, fastSimResponse: AnalyzeLTLSimulationResponse,
+        options: SimulationOptions = DefaultSimOptions): Promise.IThenable<AnalyzeLTLPolarityResponse> {
+    console.log(`running "${formula}" against AnalyzeLTLPolarity API`)
     let url = BACKEND_URL + 'AnalyzeLTLPolarity'
     let req: AnalyzeLTLPolarityRequest = {
         Formula: formula,
-        Polarity: !fastSimulationResponse.Status,
-        Number_of_steps: stepCount,
+        Polarity: !fastSimResponse.Status,
+        Number_of_steps: options.steps || DefaultSimOptions.steps,
         Name: model.Name,
         Relationships: model.Relationships,
         Variables: model.Variables
@@ -76,7 +93,8 @@ export function runThoroughSimulation(model: BMA.Model, formula: string, stepCou
     return new Promise((resolve, reject) => {
         request.post(url, {
             body: req,
-            json: true
+            json: true,
+            timeout: (options.timeout || DefaultSimOptions.timeout) * 1000
         }, (error, response, body) => {
             if (error) {
                 reject(error)
@@ -84,7 +102,7 @@ export function runThoroughSimulation(model: BMA.Model, formula: string, stepCou
             }
             let resp = body as AnalyzeLTLSimulationResponse
             if (resp.Error) {
-                reject('API error: ' + resp.Error)
+                reject({ message: resp.Error })
                 console.error(resp.ErrorMessages)
                 return
             }
@@ -94,8 +112,8 @@ export function runThoroughSimulation(model: BMA.Model, formula: string, stepCou
 }
 
 /** Returns a formula in expanded string format that can be used in API calls. */
-export function getExpandedFormula (model: BMA.Model, states: BMA.LtlState[], formula: BMA.LtlOperation) {
-    let op = BMA.LtlOperationImpl.from(formula)
+export function getExpandedFormula (model: BMA.Model, states: BMA.LtlState[], formula: BMA.LtlFormula) {
+    let op = BMA.fromFormula(formula)
     return '(' + doGetExpandedFormula(model, states, op) + ')'
 }
 

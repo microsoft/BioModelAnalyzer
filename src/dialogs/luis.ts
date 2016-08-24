@@ -9,6 +9,7 @@ import {toStatesAndFormula} from '../NLParser/ASTUtils'
 import {downloadAttachments} from '../attachments'
 import {ModelStorage} from '../ModelStorage'
 import * as BMA from '../BMA'
+import * as BMAApi from '../BMAApi'
 import {getBMAModelUrl} from '../util'
 
 /**
@@ -127,10 +128,10 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         let bmaModel = session.conversationData.bmaModel
         let result = NLParser.parse(text, bmaModel)
         if (result.responseType !== ParserResponseType.SUCCESS) {
-            session.send('I did not understand your query')
+            session.send(strings.UNKNOWN_LTL_QUERY)
             return
         }
-        session.send('Try this: ' + result.humanReadableFormula)
+        session.send(strings.TRY_THIS_FORMULA(result.humanReadableFormula))
 
         // merge formula into model copy and offer to user via URL
         let ltl = toStatesAndFormula(result.AST, bmaModel)
@@ -138,7 +139,41 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         newBmaModel.ltl = ltl
 
         modelStorage.storeGeneratedModel(newBmaModel).then(url => {
-            session.send('Open directly: ' + getBMAModelUrl(url))
+            session.send(strings.OPEN_BMA_MODEL_LINK(getBMAModelUrl(url)))
+        })
+
+        let steps = 10
+        let simulationOptions = {
+            steps,
+            timeout: 3
+        }
+        let expandedFormula = BMAApi.getExpandedFormula(bmaModel.Model, ltl.states, ltl.operations[0])
+        BMAApi.runFastSimulation(bmaModel.Model, expandedFormula, simulationOptions).then(responseFast => {
+            BMAApi.runThoroughSimulation(bmaModel.Model, expandedFormula, responseFast, simulationOptions).then(responseThorough => {
+                if (responseThorough.Status) {
+                    session.send(strings.SIMULATION_DUALITY(steps))
+                } else if (responseFast.Status) {
+                    session.send(strings.SIMULATION_ALWAYS_TRUE(steps))
+                } else {
+                    session.send(strings.SIMULATION_ALWAYS_FALSE(steps))
+                }
+            }).catch(e => {
+                if (e.code === 'ETIMEDOUT') {
+                    if (responseFast.Status) {
+                        session.send(strings.SIMULATION_PARTIAL_TRUE(steps))
+                    } else {
+                        session.send(strings.SIMULATION_PARTIAL_FALSE(steps))
+                    }
+                } else {
+                    throw e
+                }
+            })
+        }).catch(e => {
+            if (e.code === 'ETIMEDOUT') {
+                session.send(strings.SIMULATION_CANCELLED)
+            } else {
+                throw e
+            }
         })
     }
 
