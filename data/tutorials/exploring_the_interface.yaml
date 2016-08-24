@@ -8,59 +8,92 @@ description: >-
   and use model states and temporal properties.
 steps:
     - text: >-
-        To get familiar with the interface, you will be using a pre-built model. 
-        The link below opens that model in the BMA tool.
-        
-        NOTE: Throughout the tutorials, you will be presented with images that 
-        represent what each step should look like, refer back to these to make sure
-        you are on the right track. 
-
-      model: ecoli1.json
+        The Bio-Model Analyzer is a biological modelling tool that will allow you 
+        to create sketches of biological systems and define its properties. One of 
+        its main aims is to check for model stabilization, however in this tutorial 
+        you will be introduced to LTL and how it might be useful for querying your 
+        model. 
 
     - text: >- 
-        To import the model, open the interface and click on the Model tab and then 'Import'
-        , once you have chosen your file, the model should appear as shown in this image.
-
-      image: import_ecoli.png
-
+        Linear Temporal Logic (LTL) is a modal temporal logic, and it will help us 
+        define an infinite sequence of states. It is useful within the BMA as it 
+        allows us to query paths, and how current paths may change or be affected
+        in the future. 
+    
     - text: >-
-        We will start by defining model states. Open the LTL interface from the right hand
-        side and click the plus sign under 'Linear Temporal Logic'.
+        Now we will be looking at the features provided by the interface and how 
+        you may be using them.
+
+    - text: >- 
+        As you will be working with various models, it is important that you save changes
+        and keep a copy, so that they can be used later. Models in the BMA are saved
+        as a JSON file. To save a copy, or use previously created models you can use the 
+        import and export features which can be accessed on the left hand side as shown.
+        
+        NOTE: Throughout the tutorials, you will be presented with images that represent 
+        what each step should look like, refer back to these to make sure you are on the 
+        right track 
+
+      image: import_export.png
+    
+    - text: >- 
+        Here's a task for you, create a simple model that consists of a cell with three 
+        intracellular proteins x, y and z that each range from 0 to 4. x must have a activating 
+        relationship towards y, y needs an activating relationship towards z, and z needs 
+        inhibiting relationship towards x. See the image below to match your structure, or 
+        use the model already created using the link below. 
+
+      image: toy_model.png
+      model: ToyModelStable.json 
+     
+    - text: >-
+        Now that you have a model ready, you can start using the LTL editor. The LTL editor 
+        can be found on the right hand side of the interface, and allows you to create states 
+        and define temporal properties. 
 
       image: open_ltl_interface.png
 
     - text: >-
-        This will open the LTL state editor. Here you need to select the motor variable from
-        the canvas and assign a value of 1, this can be seen in the image below.
+        Lets start by assigning values to the intracellular proteins, so we can later use them 
+        in our queries. From the LTL editor, click on the upper plus sign, this should open 
+        a new tab. Here assign x = to 1 as state A and y = 1 to state B. NOTE: When creating 
+        new states, use the upper plus sign. 
 
-      image: define_model_state.png
-
-    - text: >-
-        Now return to the LTL interface, notice a new state has been defined as 'A', this is
-        the one we just created. Now click on the bottom '+' sign to define a new
-        temporal property.
+      image: states_ab.png
 
     - text: >-
-        As an example we will be testing to see if the model can reside in the unbiased state
-        (motor=1). We can start by asking for traces where A is always true. To do this, drag
-        the always operator into the canvas, and plug the 'A' state into the socket.
+        Now that the states have been defined, we can use them in our LTL queries. Lets start 
+        with a basic one to get you familarised with the interface. Go back to the LTL editor 
+        and click on the lower + sign under temporal properties. 
 
-      image: define_temporal_property.png
-
-    - text: >-
-        Once you have selected how many steps you require, cick on test to test the query. You
-        will now see the operator in green and red stripes. Green stripes indicate the traces
-        that satisfy the query, whereas red is the opposite.
-
-      image: run_temporal_property.png
+      image: open_ltl_interface.png
 
     - text: >-
-        To explore the traces that satisfy or fail the query, click the 'Open' button. This
-        should open an LTL simulation graph from where you can see if your expression
-        has been matched
+        States and operators have all been defined above the canvas, you can just drag and drop 
+        them to use. Create a query that states A AND B, check the image below to see how you 
+        have progressed.
+        NOTE: Oscillations and fixed points can be also tested from using the built in states.
+        Also, If you need to delete a query/state/operator drag it towards the bottom of the 
+        canvas into the recycle bin.
 
-      image: ltl_simulation.png
+      image: create_aandb.png 
+
+    - text: >- 
+        Change the number of steps you want it to test for (default if 10) and test the query. 
+        As you can see the query now has green and red stripes. Green indicates true and red is 
+        for false cases. In this case we have traces of both true and false. Click open to examine 
+        the restuls, both true and false cases can be seen. 
+
+      image: run_aandb.png 
 
     - text: >-
-        This is the end of the tutorial, to carry on working on this model I would recommend you
-        visited the Ecoli tutorial. 
+        From the results we can see the simulation has returned a case where both A and B are 
+        1, and the results for the 10 steps can be seen. 
+        NOTE: figures highlighted in yellow indicate a stable state.
+
+    - text: >-
+        You have now come to the end of the 'Exploring the interface' tutorial, and you should be 
+        comfortable with using the different features provided by the interface. To learn how LTL may 
+        be useful in querying your model please visit the 3 tutorials How to use; Boolean, Temporal 
+        and Advanced Temporal operators. 
+        
