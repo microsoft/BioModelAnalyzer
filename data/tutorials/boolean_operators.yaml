@@ -56,7 +56,7 @@ steps:
 
       image: a_or_b.png
 
-      - text: >-
+    - text: >-
         The IMPLIES operator can be used when we want to check if a state is a subsequent of another defined 
         state. For example, using the same 'toymodelstable' model we can check if A implies B.
 
