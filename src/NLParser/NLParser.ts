@@ -1,3 +1,5 @@
+/// <reference path="../../node_modules/chevrotain/lib/chevrotain.d.ts" />
+
 /**
  *  Please read ./NLParserDocumentation.md for a high level explaination of the parser
  */
@@ -65,29 +67,35 @@ let WUntil = generateStemmedTokenDefinition("WUntil", "weak until", ["weak until
 let Release = generateStemmedTokenDefinition("Release", "release", ["release"], TokenType.BINARY_OPERATOR)
 
 /**  literals (no stemming required) */
-let IntegerLiteral = extendToken("IntegerLiteral", /\d+/);
+class IntegerLiteral extends Token {
+    static PATTERN = /\d+/
+}
 
 /**  Model variable token: in the form MODELVAR(varId) (no stemming required) */
-let ModelVariable = extendToken("ModelVariable", RegExp("(MODELVAR)" + "(\\()" + "(\\d+)" + "(\\))"));
-ModelVariable.TokenType = TokenType.MODELVAR
+class ModelVariable extends Token {
+    static PATTERN = RegExp("(MODELVAR)" + "(\\()" + "(\\d+)" + "(\\))")
+    static TokenType = TokenType.MODELVAR
+}
 
 /**  Ignored tokens : We ignore whitespaces as token boundaries are defined using the token set and can be processed by the lexer accordingly */
-let WhiteSpace = extendToken("WhiteSpace", /\s+/);
-WhiteSpace.GROUP = Lexer.SKIPPED
+class WhiteSpace extends Token {
+    static PATTERN = /\s+/
+    static GROUP = Lexer.SKIPPED
+}
 
 /**
  *  Token groups for accessibility
  */
-let IGNORE = [WhiteSpace]
-let LITERALS = [ModelVariable, IntegerLiteral]
-let CONSTRUCTS = [If, Then]
-let ARITHMETIC_OPERATORS = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
-let BOOLEAN_OPERATORS = [And, Or, Implies, Not]
-let TEMPORAL_OPERATORS = [Eventually, Always, Next, Upto, Until, WUntil, Release]
+let IGNORE: typeof Token[] = [WhiteSpace]
+let LITERALS: typeof Token[] = [ModelVariable, IntegerLiteral]
+let CONSTRUCTS: typeof Token[] = [If, Then]
+let ARITHMETIC_OPERATORS: typeof Token[] = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
+let BOOLEAN_OPERATORS: typeof Token[] = [And, Or, Implies, Not]
+let TEMPORAL_OPERATORS: typeof Token[] = [Eventually, Always, Next, Upto, Until, WUntil, Release]
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
-let ALLOWED_TOKENS = IGNORE
+let ALLOWED_TOKENS: typeof Token[] = IGNORE
     .concat(LITERALS)
     .concat(CONSTRUCTS)
     .concat(ARITHMETIC_OPERATORS)
@@ -103,15 +111,21 @@ let ALLOWED_TOKENS = IGNORE
  *  3) we use the chevrotain function extendToken to generate a TokenConstructor
  *  4) we augment the generated TokenConstructor with static properties that are used in later processing
  */
-function generateStemmedTokenDefinition(id: string, label: string, synonyms: string[], tokenType: TokenType) {
+function generateStemmedTokenDefinition(id: string, label: string, synonyms: string[], tokenType: TokenType): typeof Token {
     let stemmedSynonyms = synonyms.map(s => s.split(" ").map(natural.PorterStemmer.stem).join(" "))
     //We require explicit token boundaries on binary tokens to ensure input strings do not get match with tokens that are substrings eg: notch and not
-    let tokenFunction = extendToken(id, RegExp(tokenType == TokenType.BINARY_OPERATOR ? "(\\b)(" + stemmedSynonyms.join('|') + ")(\\b)" : stemmedSynonyms.join('|'), "i"));
-    //properties to help in parsing the generated AST
-    tokenFunction.LABEL = label
-    tokenFunction.TOKEN_TYPE = tokenType
-    tokenFunction.NON_STEMMED_SYNONYMS = synonyms
-    return tokenFunction
+    let pattern = RegExp(tokenType == TokenType.BINARY_OPERATOR ? "(\\b)(" + stemmedSynonyms.join('|') + ")(\\b)" : stemmedSynonyms.join('|'), "i")
+
+    let tokenClass = class extends Token {
+        static PATTERN = pattern
+        static LABEL = label
+
+        // custom properties
+        static TOKEN_TYPE = tokenType
+        static NON_STEMMED_SYNONYMS = synonyms
+    }
+    Object.defineProperty(tokenClass.prototype.constructor, 'name', {value: id})
+    return tokenClass
 }
 /**
  *  NLParser: This class implicitly defines the grammar of the language based on the structure of the RULE,MANY,OR,SUBRULE and CONSUME operations. The operator precedence is explicitly defined by the level at which the assosiated rule is defined in the hierarchy
