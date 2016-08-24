@@ -185,12 +185,14 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
                 if (error) {
                     console.error(error)
                 } else {
-                    console.log('spellcheck response:', body)
+                    console.log('spellcheck response:')
+                    console.log(JSON.stringify(body, null, 2))
                 }
                 session.send(strings.UNKNOWN_INTENT)
                 return
             }
-            console.log('spellcheck response:', body)
+            console.log('spellcheck response:')
+            console.log(JSON.stringify(body, null, 2))
 
             let inputOffset = 0
             let correctedText = ''
