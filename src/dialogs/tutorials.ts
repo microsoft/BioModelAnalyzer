@@ -46,8 +46,6 @@ interface TutorialStep {
 
 /** Reads all YAML tutorial files and dynamically creates dialogs from them, including the tutorial selection dialog. */
 export function registerTutorialDialogs (bot: builder.UniversalBot) {
-    // TODO make LUIS dialog available within tutorial dialogs
-
     // all available tutorials
     let tutorialPaths = TUTORIALS.map(name => `data/tutorials/${name}.yaml`)
     
@@ -97,9 +95,10 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
 
         // ...and the tutorial steps
         waterfall.push(...
-            tutorial.steps.map(step => (session: builder.Session, results, next) => {
+            tutorial.steps.map((step, i) => (session: builder.Session, results, next) => {
                 let message = new builder.Message(session)
                 if (step.text) {
+                    // TODO prefix text with [i/n] where i is the current step and n is the total number of steps
                     message.text(step.text)
                 }
                 if (step.image) {                    
