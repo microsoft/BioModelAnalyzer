@@ -86,16 +86,16 @@ class WhiteSpace extends Token {
 /**
  *  Token groups for accessibility
  */
-let IGNORE: typeof Token[] = [WhiteSpace]
-let LITERALS: typeof Token[] = [ModelVariable, IntegerLiteral]
-let CONSTRUCTS: typeof Token[] = [If, Then]
-let ARITHMETIC_OPERATORS: typeof Token[] = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
-let BOOLEAN_OPERATORS: typeof Token[] = [And, Or, Implies, Not]
-let TEMPORAL_OPERATORS: typeof Token[] = [Eventually, Always, Next, Upto, Until, WUntil, Release]
+let IGNORE = [WhiteSpace]
+let LITERALS = [ModelVariable, IntegerLiteral]
+let CONSTRUCTS = [If, Then]
+let ARITHMETIC_OPERATORS = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
+let BOOLEAN_OPERATORS = [And, Or, Implies, Not]
+let TEMPORAL_OPERATORS = [Eventually, Always, Next, Upto, Until, WUntil, Release]
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
-let ALLOWED_TOKENS: typeof Token[] = IGNORE
+let ALLOWED_TOKENS = (<typeof Token[]> IGNORE)
     .concat(LITERALS)
     .concat(CONSTRUCTS)
     .concat(ARITHMETIC_OPERATORS)
