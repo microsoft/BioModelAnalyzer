@@ -48,10 +48,10 @@ Knowledgbase query, explains and provides examples of different interaction poss
 
 *Example: How can I use eventually always* 
 
-#### SelectTutorial
-Chosen intent when user asks for a specific tutorial 
+#### RemoveModel
+Recognises user wanting to delete their model
 
-*Example: Are there any tutorials that can explain stability*
+*Example: please remove the uploaded model* 
 
 #### UploadedModel
 Recognises user asking for their model, and returns model name

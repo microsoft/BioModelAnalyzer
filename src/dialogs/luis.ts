@@ -51,6 +51,10 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         session.beginDialog('/requestUploadedModel')
     })
 
+    matches('RemoveModel', (session, args) => {
+        session.beginDialog('/removeUploadedModel')
+    })
+
     matches('ListTutorial', (session) => {
         session.beginDialog('/tutorials')
     })
