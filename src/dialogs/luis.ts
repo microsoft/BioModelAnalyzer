@@ -21,95 +21,103 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     let recognizer = new builder.LuisRecognizer(model)
     let intents = new builder.IntentDialog({ recognizers: [recognizer] })
     bot.dialog('/', intents)
-
-    /**
-     * All intent handlers here 
-     */
-    intents.matches('AboutBot', [function (session) {
-            session.send(strings.ABOUT_BOT)
-        }
-    ])
-
-    intents.matches('AboutSimulations', [function (session) {
-            session.send(strings.ABOUT_SIMULATIONS)
-        }
-    ])
-
-    intents.matches('UploadedModel', [function (session, args) {
-            session.beginDialog('/requestUploadedModel')
-        }
-    ])
-
-    intents.matches('ListTutorial', [function (session) {
-            session.beginDialog('/tutorials')
-        }
-    ])
     
-    intents.matches('SelectTutorial', [function (session, args) {
+    /** A wrapper around intents.matches() which handles resetting of the hasSpellChecked flag. See intents.onDefault below for more details. */
+    function matches (intent: string, dialog: builder.IDialogWaterfallStep[]|builder.IDialogWaterfallStep, dialogArgs?: any): builder.IntentDialog {
+        if (!Array.isArray(dialog)) {
+            dialog = [dialog]
+        }
+        let firstStep = dialog[0]
+        dialog[0] = function (session, args, next) {
+            if (session.conversationData.hasSpellChecked) {
+                session.conversationData.hasSpellChecked = false
+                session.save()
+            }
+            firstStep(session, args, next)
+        }
+        return intents.matches(intent, dialog, dialogArgs)
+    }
+
+    // All intent handlers here
+    matches('AboutBot', (session) => {
+        session.send(strings.ABOUT_BOT)
+    })
+
+    matches('AboutSimulations', (session) => {
+        session.send(strings.ABOUT_SIMULATIONS)
+    })
+
+    matches('UploadedModel', (session, args) => {
+        session.beginDialog('/requestUploadedModel')
+    })
+
+    matches('ListTutorial', (session) => {
+        session.beginDialog('/tutorials')
+    })
+    
+    matches('SelectTutorial', (session, args) => {
         
-    }])
+    })
     
-    intents.matches('ExplainOp', [function (session, args) {
-            var operator = builder.EntityRecognizer.findEntity(args.entities, 'Operator')
-            var operatorName = operator.entity
-            switch (operatorName)
-            {
-                case 'and':session.send(strings.EXPLAIN_AND)
-                break;
-                case 'or':session.send(strings.EXPLAIN_OR)
-                break;
-                case 'implies':session.send(strings.EXPLAIN_IMPLIES)
-                break;
-                case 'not':session.send(strings.EXPLAIN_NOT)
-                break;
-                case 'next':session.send(strings.EXPLAIN_NEXT)
-                break;
-                case 'always':session.send(strings.EXPLAIN_ALWAYS)
-                break;
-                case 'eventually':session.send(strings.EXPLAIN_EVENTUALLY)
-                break;
-                case 'upto':session.send(strings.EXPLAIN_UPTO)
-                break;
-                case 'weakuntil':session.send(strings.EXPLAIN_WEAKUNTIL)
-                break;
-                case 'until':session.send(strings.EXPLAIN_UNTIL)
-                break;
-                case 'release':session.send(strings.EXPLAIN_RELEASE)
-                break;
-            }   
+    matches('ExplainOp', (session, args) => {
+        let operator = builder.EntityRecognizer.findEntity(args.entities, 'Operator')
+        let operatorName = operator.entity
+        switch (operatorName)
+        {
+            case 'and':session.send(strings.EXPLAIN_AND)
+            break
+            case 'or':session.send(strings.EXPLAIN_OR)
+            break
+            case 'implies':session.send(strings.EXPLAIN_IMPLIES)
+            break
+            case 'not':session.send(strings.EXPLAIN_NOT)
+            break
+            case 'next':session.send(strings.EXPLAIN_NEXT)
+            break
+            case 'always':session.send(strings.EXPLAIN_ALWAYS)
+            break
+            case 'eventually':session.send(strings.EXPLAIN_EVENTUALLY)
+            break
+            case 'upto':session.send(strings.EXPLAIN_UPTO)
+            break
+            case 'weakuntil':session.send(strings.EXPLAIN_WEAKUNTIL)
+            break
+            case 'until':session.send(strings.EXPLAIN_UNTIL)
+            break
+            case 'release':session.send(strings.EXPLAIN_RELEASE)
+            break
         }
-    ])
+    })
 
-    intents.matches('OperatorExample', [function (session, args) {
-            var operator = builder.EntityRecognizer.findEntity(args.entities, 'Operator')
-            var operatorName = operator.entity
-            switch (operatorName)
-            {
-                case 'and':session.send(strings.EXAMPLE_AND)
-                break;
-                case 'or':session.send(strings.EXAMPLE_OR)
-                break;
-                case 'implies':session.send(strings.EXAMPLE_IMPLIES)
-                break;
-                case 'not':session.send(strings.EXAMPLE_NOT)
-                break;
-                case 'next':session.send(strings.EXAMPLE_NEXT)
-                break;
-                case 'always':session.send(strings.EXAMPLE_ALWAYS)
-                break;
-                case 'eventually':session.send(strings.EXAMPLE_EVENTUALLY)
-                break;
-                case 'upto':session.send(strings.EXAMPLE_UPTO)
-                break;
-                case 'weakuntil':session.send(strings.EXAMPLE_WEAKUNTIL)
-                break;
-                case 'until':session.send(strings.EXAMPLE_UNTIL)
-                break;
-                case 'release':session.send(strings.EXAMPLE_RELEASE)
-                break;
-            }   
-        }
-    ])
+    matches('OperatorExample', (session, args) => {
+        let operator = builder.EntityRecognizer.findEntity(args.entities, 'Operator')
+        let operatorName = operator.entity
+        switch (operatorName)
+        {
+            case 'and':session.send(strings.EXAMPLE_AND)
+            break
+            case 'or':session.send(strings.EXAMPLE_OR)
+            break
+            case 'implies':session.send(strings.EXAMPLE_IMPLIES)
+            break
+            case 'not':session.send(strings.EXAMPLE_NOT)
+            break
+            case 'next':session.send(strings.EXAMPLE_NEXT)
+            break
+            case 'always':session.send(strings.EXAMPLE_ALWAYS)
+            break
+            case 'eventually':session.send(strings.EXAMPLE_EVENTUALLY)
+            break
+            case 'upto':session.send(strings.EXAMPLE_UPTO)
+            break
+            case 'weakuntil':session.send(strings.EXAMPLE_WEAKUNTIL)
+            break
+            case 'until':session.send(strings.EXAMPLE_UNTIL)
+            break
+            case 'release':session.send(strings.EXAMPLE_RELEASE)
+            break
+        }   
+    })
 
     function handleLTLQuery (session: builder.Session, text: string) {
         let bmaModel = session.conversationData.bmaModel
@@ -124,16 +132,14 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         let ltl = toStatesAndFormula(result.AST, bmaModel)
         let newBmaModel: BMA.ModelFile = JSON.parse(JSON.stringify(bmaModel))
         newBmaModel.ltl = ltl
-        //newBmaModel.ltl.operations.push(...ltl.operations)
-        //newBmaModel.ltl.states.push(...ltl.states)
 
-        modelStorage.storeGeneratedModel(JSON.stringify(newBmaModel)).then(url => {
+        modelStorage.storeGeneratedModel(newBmaModel).then(url => {
             session.send('Open directly: ' + getBMAModelUrl(url))
         })
     }
 
-    intents.matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
-    intents.matches('LTLQuery', [
+    matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
+    matches('LTLQuery', [
         (session, args, next) => {
             // check if JSON model has been uploaded already, otherwise prompt user
             if (!session.conversationData.bmaModel) {
@@ -152,67 +158,67 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         }
     ])
     
-    intents.onDefault(function (session, results, next) {
+    intents.onDefault((session, results, next) => {
         let attachments = session.message.attachments
         if (attachments && attachments.length > 0) {
             receiveModelAttachmentStep(bot, modelStorage, session, results, next)
-        } else {
-            if (config.get('ENABLE_SPELLCHECK') === '0' || session.conversationData.hasSpellChecked) {
-                // FIXME reset spellcheck state in other intents too!
-                session.conversationData.hasSpellChecked = false
-                session.save()
+            return
+        }
+        
+        if (config.get('ENABLE_SPELLCHECK') === '0' || session.conversationData.hasSpellChecked) {
+            session.conversationData.hasSpellChecked = false
+            session.save()
+            session.send(strings.UNKNOWN_INTENT)
+            return
+        }
+
+        let inputText = session.message.text
+        let params = {
+            text: inputText,
+            mode: 'proof',
+            mkt: 'en-GB'
+        }
+        let spellUrl = 'https://api.cognitive.microsoft.com/bing/v5.0/spellcheck/?' + qs.stringify(params)
+        request(spellUrl, {
+            headers: {
+                'Ocp-Apim-Subscription-Key': config.get('BING_SPELLCHECK_KEY')
+            },
+            json: true
+        }, (error, response, body) => {
+            if (error || body.flaggedTokens.length === 0) {
+                if (error) {
+                    console.error(error)
+                } else {
+                    console.log('spellcheck response:', body)
+                }
                 session.send(strings.UNKNOWN_INTENT)
                 return
             }
+            console.log('spellcheck response:', body)
 
-            let inputText = session.message.text
-            let params = {
-				text: inputText,
-				mode: 'proof',
-                mkt: 'en-GB'
-			}
-            let spellUrl = 'https://api.cognitive.microsoft.com/bing/v5.0/spellcheck/?' + qs.stringify(params)
-            request(spellUrl, {
-                headers: {
-                    'Ocp-Apim-Subscription-Key': config.get('BING_SPELLCHECK_KEY')
-                },
-                json: true
-            }, (error, response, body) => {
-                if (error || body.flaggedTokens.length === 0) {
-                    if (error) {
-                        console.error(error)
-                    } else {
-                        console.log('spellcheck response:', body)
-                    }
-                    session.send(strings.UNKNOWN_INTENT)
-                    return
+            let inputOffset = 0
+            let correctedText = ''
+            for (let flaggedToken of body.flaggedTokens) {
+                let offset = flaggedToken.offset
+                if (inputOffset < offset) {
+                    correctedText += inputText.substring(inputOffset, offset)
                 }
-                console.log('spellcheck response:', body)
+                correctedText += flaggedToken.suggestions[0].suggestion
+                inputOffset = offset + flaggedToken.token.length
+            }
+            if (inputOffset < inputText.length) {
+                correctedText += inputText.substring(inputOffset)
+            }
 
-                let inputOffset = 0
-                let correctedText = ''
-				for (let flaggedToken of body.flaggedTokens) {
-                    let offset = flaggedToken.offset
-                    if (inputOffset < offset) {
-                        correctedText += inputText.substring(inputOffset, offset)
-                    }
-                    correctedText += flaggedToken.suggestions[0].suggestion
-                    inputOffset = offset + flaggedToken.token.length
-				}
-                if (inputOffset < inputText.length) {
-                    correctedText += inputText.substring(inputOffset)
-                }
+            session.conversationData.hasSpellChecked = true
+            session.save()
+            
+            session.send(strings.SPELLCHECK_ASSUMPTION(correctedText))
 
-                session.conversationData.hasSpellChecked = true
-                session.save()
-                
-                session.send(strings.SPELLCHECK_ASSUMPTION(correctedText))
-
-                let message = new builder.Message(session)
-                message.text(correctedText)
-                session.dispatch(session.sessionState, message.toMessage())
-            })
-        }
+            let message = new builder.Message(session)
+            message.text(correctedText)
+            session.dispatch(session.sessionState, message.toMessage())
+        })
     })
 }
 
@@ -230,7 +236,7 @@ function receiveModelAttachmentStep (bot: builder.UniversalBot, modelStorage: Mo
         }
         // TODO handle more than one attachment
         let buf = buffers[0].toString()
-        let model
+        let model: BMA.ModelFile
         try {
             model = JSON.parse(buf)
         } catch (e) {
@@ -238,7 +244,7 @@ function receiveModelAttachmentStep (bot: builder.UniversalBot, modelStorage: Mo
             return
         }
         let modelId = session.conversationData.bmaModelId || uuid()
-        modelStorage.storeUserModel(modelId, buf).then(() => {
+        modelStorage.storeUserModel(modelId, model).then(() => {
             session.conversationData.bmaModel = model
             session.conversationData.bmaModelId = modelId
             session.save()
