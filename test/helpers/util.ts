@@ -59,7 +59,10 @@ export function assertConversation (messages: DirectedMessage[]) {
         // handle messages that the bot sends to the user
         bot.on('send', (actualMessage: builder.IMessage) => {
             let refMessage = messages[currentMsgIndex]
-            assert(refMessage, 'Too many bot messages received. text: ' + actualMessage.text)
+            if (!refMessage) {
+                console.log('Ignoring additional message from bot: "' + actualMessage.text.substr(0, 30) + ' [...]"')
+                return
+            }
             assert('bot' in refMessage)
             if (typeof refMessage.bot === 'function') {
                 refMessage.bot(actualMessage)

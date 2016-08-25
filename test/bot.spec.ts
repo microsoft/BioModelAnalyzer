@@ -1,6 +1,7 @@
 import * as builder from 'botbuilder'
 import * as assert from 'assert'
-import * as restify from 'restify'
+import * as express from 'express'
+import * as http from 'http'
 import * as strings from '../src/dialogs/strings'
 import {assertConversation} from './helpers/util'
 
@@ -14,13 +15,12 @@ function asAttachment (filename): builder.IAttachment {
 }
 
 describe ('bot conversations', () => {
-    let server: restify.Server
+    let app: express.Express
+    let server: http.Server
     before(() => {
-        server = restify.createServer()
-        server.listen(PORT)
-        server.get(/\/?.*/, restify.serveStatic({
-            directory: './test/data'
-        }))
+        app = express()
+        app.use('/', express.static('./test/data'))
+        server = app.listen(PORT)        
     })
 
     after(() => {

@@ -56,9 +56,9 @@ describe('BMAApi module', () => {
     describe('#runThoroughSimulation', () => {
         it('should return the correct polarity response', () => {
             let formula = '(Eventually True)'
-            return BMAApi.runFastSimulation(testmodel.Model, formula, 10).then(resp1 => {
+            return BMAApi.runFastSimulation(testmodel.Model, formula).then(resp1 => {
                 assert.strictEqual(resp1.Status, true)
-                return BMAApi.runThoroughSimulation(testmodel.Model, formula, 10, resp1).then(resp2 => {
+                return BMAApi.runThoroughSimulation(testmodel.Model, formula, resp1).then(resp2 => {
                     assert.strictEqual(resp2.Status, false)
                 })
             })
