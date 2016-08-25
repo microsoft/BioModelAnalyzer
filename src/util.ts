@@ -9,7 +9,7 @@ const STATIC_URL_PREFIX = 'static/'
  * 
  * @param path Path relative to /public, e.g. 'tutorials/img/foo.png'
  */
-export function getPublicResourceUrl (path: string) {
+function getPublicResourceUrl (path: string) {
     let host = config.get('HOSTNAME')
     let port = config.get<string>('PORT')
     // if deployed, then the port is the internal port which is a named pipe, so we ignore that
@@ -29,18 +29,6 @@ export function getTutorialImageAttachment (filename: string): builder.IAttachme
     return {
         contentUrl: getPublicResourceUrl(STATIC_URL_PREFIX + 'tutorials/img/' + filename),
         contentType: mime.lookup(filename)
-    }
-}
-
-/**
- * Returns an IAttachment for a file in the /public/tutorials/model folder.
- * 
- * @param filename The model's filename, e.g. 'ecoli.json'
- */
-export function getTutorialModelAttachment (filename: string): builder.IAttachment {
-    return {
-        contentUrl: getTutorialModelUrl(filename),
-        contentType: 'application/octet-stream'
     }
 }
 
