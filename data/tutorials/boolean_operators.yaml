@@ -24,7 +24,7 @@ steps:
     - text: >-
         From here create two states, A and B. A is x = 1, and B is y = 1. As you can see, states 
         do not have to be bound to a specific value, inequalties can be used to make comparisons. 
-        NOTE: When creating a new state, in this case Protein2, use the plus sign at the top in 
+        NOTE: When creating a new state, in this case B, use the plus sign at the top in 
         the grey sidebar. 
 
       image: states_ab.png
