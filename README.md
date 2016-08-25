@@ -14,3 +14,7 @@ A natural language bot for assisting BioModelAnalyzer users.
 - TypeScript
 - [LUIS](https://www.luis.ai/)
 - [Bot Framework](https://dev.botframework.com/)
+
+## Architecture
+
+![Architecture overview](docs/img/architecture.png)
