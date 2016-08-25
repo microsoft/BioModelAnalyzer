@@ -29,9 +29,11 @@ The final step is to create a local configuration file `config/local.json` with 
 }
 ```
 
-By default, in development mode the bot is run inside the console.
-To run it as an actual server, add `"USE_CONSOLE": "0"` to `config/local.json`.
-In development mode, the server runs without authentication.
+By default, in development mode the bot is run as a local server without authentication
+and works out of the box with the Azure Storage Emulator.
+
+To run the bot inside a console without server, add `"USE_CONSOLE": "1"` to `config/local.json`.
+Note that this mode has limited features (e.g. no attachment support).
 
 ### Development
 
