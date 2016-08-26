@@ -37,8 +37,9 @@ export enum TokenType {
     /** grammar specefic tokens eg: if/then  */
     GRAMMAR_CONSTRUCT
 }
-/**
- *  GRAMMAR TOKENS: The set of tokens that are accepted by the grammar of our language, where each terminal token is augmented with a set of synonyms that can also be matched in the input token stream
+/*
+ *  GRAMMAR TOKENS: The set of tokens that are accepted by the grammar of our language,
+ *  where each terminal token is augmented with a set of synonyms that can also be matched in the input token stream
  */
 let If = generateStemmedTokenDefinition("If", "if", ["if"], TokenType.GRAMMAR_CONSTRUCT)
 let Then = generateStemmedTokenDefinition("Then", "then", ["then"], TokenType.GRAMMAR_CONSTRUCT)
@@ -73,7 +74,7 @@ class IntegerLiteral extends Token {
 
 /**  Model variable token: in the form MODELVAR(varId) (no stemming required) */
 class ModelVariable extends Token {
-    static PATTERN = RegExp("(MODELVAR)" + "(\\()" + "(\\d+)" + "(\\))")
+    static PATTERN = /(MODELVAR)(\()(\d+)(\))/
     static TokenType = TokenType.MODELVAR
 }
 
@@ -103,7 +104,8 @@ let ALLOWED_TOKENS = (<typeof Token[]> IGNORE)
     .concat(TEMPORAL_OPERATORS)
 
 /**
- *  Token Stemming: As part of initialisation, each token is stemmed as we perform stemming on the input sentence. This allows input tokens such as : "eventual","eventually" to be matched with the same token "eventually". Example execution: 
+ *  Token Stemming: As part of initialisation, each token is stemmed as we perform stemming on the input sentence. 
+ *  This allows input tokens such as : "eventual","eventually" to be matched with the same token "eventually". Example execution: 
  * 
  *  input: let Eventually = generateStemmedTokenDefinition("Eventually", "eventually", ["eventually", "finally", ...],TokenType.UNARY_OPERATOR)
  *  1) each synonym in the synonym set is stemmed 
@@ -128,7 +130,8 @@ function generateStemmedTokenDefinition(id: string, label: string, synonyms: str
     return tokenClass
 }
 /**
- *  NLParser: This class implicitly defines the grammar of the language based on the structure of the RULE,MANY,OR,SUBRULE and CONSUME operations. The operator precedence is explicitly defined by the level at which the assosiated rule is defined in the hierarchy
+ *  NLParser: This class implicitly defines the grammar of the language based on the structure of the RULE,MANY,OR,SUBRULE and CONSUME operations.
+ *  The operator precedence is explicitly defined by the level at which the assosiated rule is defined in the hierarchy
  */
 export default class NLParser extends Parser {
 
@@ -184,7 +187,8 @@ export default class NLParser extends Parser {
             }
         }
     }, {     /**
-             *  Resync Root: This is invoked whenever an unexpected token is encountered, the parser returns a set of "resynched" tokens that are possible tokens less error token encountered that could be successfully parsed
+             *  Resync Root: This is invoked whenever an unexpected token is encountered, the parser returns a set of "resynched" tokens 
+             *  that are possible tokens less error token encountered that could be successfully parsed
              */
             resyncEnabled: true, recoveryValueFunc: () => {
                 let error: any = _.first(this.errors)
@@ -210,7 +214,9 @@ export default class NLParser extends Parser {
         }
     })
     /**
-     *  Base rule for all expressions as it has the lowest precedence eg: (a=1 and b=1)(this is still a disjunctionExpression with an implicit disjunction), (a=1 or (a=1 and a=2))
+     *  Base rule for all expressions as it has the lowest precedence.
+     *  E.g.: (a=1 and b=1) (this is still a disjunctionExpression with an implicit disjunction)
+     *        (a=1 or (a=1 and a=2))
      */
     private disjunctionExpression = this.RULE("disjunctionExpression", () => {
         let lhs, rhs = [], operators = []
@@ -229,7 +235,8 @@ export default class NLParser extends Parser {
     })
 
     /**
-     *  Conjunction expressions have higher precedence than disjunction expressions hence their order in the tree, these are of the form: (a=1 and b=2)
+     *  Conjunction expressions have higher precedence than disjunction expressions hence their order in the tree.
+     *  These are of the form: (a=1 and b=2)
      */
     private conjunctionExpression = this.RULE("conjunctionExpression", () => {
         let lhs, rhs = [], operators = []
@@ -247,7 +254,8 @@ export default class NLParser extends Parser {
     })
 
     /**
-     *  Temporal expressions can be of the form: always(x=1), (always(x=1) until eventually(k=2)), binary temporal operators have a higher precedence than logical binary operators
+     *  Temporal expressions can be of the form: always(x=1), (always(x=1) until eventually(k=2)).
+     *  Binary temporal operators have a higher precedence than logical binary operators.
      */
     private temporalExpression = this.RULE("temporalExpression", () => {
         let lhs, rhs = [], operators = []
@@ -297,11 +305,12 @@ export default class NLParser extends Parser {
      */
     private relationalExpression = this.RULE("relationalExpression", () => {
         let modelVariableId, relationalOperator, integerLiteral
-        //consume the model variable token ie:  MODELVAR(variableId)
+        // consume the model variable token ie:  MODELVAR(variableId)
         let image = this.CONSUME(ModelVariable).image
-        //The model variables are always encoded in the form MODELVAR(variableId), which means the variable id will always be found at the 4th group in the RegExp.match results
+        // The model variables are always encoded in the form MODELVAR(variableId), 
+        // which means the variable id will always be found at the 4th group in the RegExp.match results
         modelVariableId = parseInt(image.match(new RegExp(ModelVariable.PATTERN))[3])
-        //deconstruct the matched pattern to extract the variable id
+        // deconstruct the matched pattern to extract the variable id
         relationalOperator = this.SUBRULE(this.relationalOperator)
         integerLiteral = parseInt(this.CONSUME(IntegerLiteral).image)
         return {
@@ -431,11 +440,16 @@ export default class NLParser extends Parser {
     }
 
     /**
-     *  Detects variable usage in the string using the supplied model eg: a is 1 and encodes the variables as MODELVAR(k) where k is the id of the variable a and then performs stemming on the remaining tokens
+     *  Detects variable usage in the string using the supplied model, e.g. "a is 1",
+     *  and encodes the variables as MODELVAR(k) where k is the id of the variable a
+     *  and then performs stemming on the remaining tokens.
      */
     private static applyPreprocessing(sentence: string, bmaModel): string {
         var modelVariables = bmaModel.Model.Variables
-        var modelVariableRelationOpRegex = new RegExp("(" + _.pluck(modelVariables, "Name").join("|") + ")(\\s*)(" + ARITHMETIC_OPERATORS.map((op) => op.NON_STEMMED_SYNONYMS.join("|")).join("|") + ")(\\s*\\d+)", "ig");
+        var modelVariableRelationOpRegex = new RegExp(
+            "(" + _.pluck(modelVariables, "Name").join("|") + 
+            ")(\\s*)(" + ARITHMETIC_OPERATORS.map((op) => op.NON_STEMMED_SYNONYMS.join("|")).join("|") +
+            ")(\\s*\\d+)", "ig")
         var matchedGroups, variableTokens = [];
         while ((matchedGroups = modelVariableRelationOpRegex.exec(sentence)) !== null) {
             //The variable will always on the 1st index as the 0th index is the entire group and the variable is matched in the 1st group of the regex expression

@@ -79,15 +79,19 @@ export function toStatesAndFormula (node, bmaModel: BMA.ModelFile): BMA.Ltl {
     let states = bmaModel.ltl.states.slice()
     let unusedStateName = () => _.find(letters, letter => !states.some(state => state.name === letter))
 
+    function toCompactRelationalExpression (node): BMA.LtlCompactStateRelationalExpression {
+        return {
+            variableName: varName(node.left.id),
+            variableId: node.left.id,
+            operator: node.value.value,
+            value: node.right
+        }
+    }
+
     function walk (node, states: BMA.LtlState[]): BMA.LtlFormula  {
         if (node.type === 'relationalExpression') {
             let stateName = unusedStateName()
-            let relationalExpression: BMA.LtlCompactStateRelationalExpression = {
-                variableName: varName(node.left.id),
-                variableId: node.left.id,
-                operator: node.value.value,
-                value: node.right
-            }
+            let relationalExpression = toCompactRelationalExpression(node)
             states.push(new BMA.LtlStateImpl(stateName, [relationalExpression]))
             return new BMA.LtlNameStateReferenceImpl(stateName)
         } else if (node.type === TokenType.BINARY_OPERATOR || (node.value && node.value.TOKEN_TYPE === TokenType.BINARY_OPERATOR)) {
@@ -96,38 +100,30 @@ export function toStatesAndFormula (node, bmaModel: BMA.ModelFile): BMA.Ltl {
             
             // FIXME don't use LABEL for testing
             if (node.value.LABEL == 'and' && node.left.type === 'relationalExpression') {
-                let relExprs = [node.left]
+                let relExprNodes = [node.left]
                 let curNode = node.right
                 while (curNode.value.LABEL == 'and' && curNode.left.type === 'relationalExpression') {
-                    relExprs.push(curNode.left)
+                    relExprNodes.push(curNode.left)
                     curNode = curNode.right
                 }
                 let stateName = unusedStateName()
+
                 if (curNode.type === 'relationalExpression') {
-                    // we can completely collapse the AND-tree to a state
-                    relExprs.push(curNode)
+                    // no more nodes, we can collapse the tree of relational expressions to a single name state (see if-else below)
+                    relExprNodes.push(curNode)
+                }
+                let relationalExpressions = relExprNodes.map(toCompactRelationalExpression)
 
-                    let relationalExpressions: BMA.LtlCompactStateRelationalExpression[] = relExprs.map(relExprNode => ({
-                        variableName: varName(relExprNode.left.id),
-                        variableId: relExprNode.left.id,
-                        operator: relExprNode.value.value,
-                        value: relExprNode.right
-                    }))
+                states.push(new BMA.LtlStateImpl(stateName, relationalExpressions))
+                let stateNameRef = new BMA.LtlNameStateReferenceImpl(stateName)
 
-                    states.push(new BMA.LtlStateImpl(stateName, relationalExpressions))
-                    return new BMA.LtlNameStateReferenceImpl(stateName)
+                if (curNode.type === 'relationalExpression') {
+                    // tree is collapsed to a single state name reference
+                    return stateNameRef
                 } else {
-                    // more nodes are coming
-                    let relationalExpressions: BMA.LtlCompactStateRelationalExpression[] = relExprs.map(relExprNode => ({
-                        variableName: varName(relExprNode.left.id),
-                        variableId: relExprNode.left.id,
-                        operator: relExprNode.value.value,
-                        value: relExprNode.right
-                    }))
-
-                    states.push(new BMA.LtlStateImpl(stateName, relationalExpressions))
-                    // A and <rest>
-                    return new BMA.LtlOperationImpl(node.value.LABEL, [new BMA.LtlNameStateReferenceImpl(stateName), walk(curNode, states)])
+                    // more nodes that are not relational expressions are coming
+                    // we create a state and <rest>
+                    return new BMA.LtlOperationImpl(node.value.LABEL, [stateNameRef, walk(curNode, states)])
                 }
             } else {
                 return new BMA.LtlOperationImpl(node.value.LABEL, [walk(node.left, states), walk(node.right, states)])
@@ -141,10 +137,15 @@ export function toStatesAndFormula (node, bmaModel: BMA.ModelFile): BMA.Ltl {
     }
 
     let simplifiedAST = simplifyAST(node)
-    //console.log(JSON.stringify(simplifiedAST, null, 2))
     let formula = walk(simplifiedAST, states)
+    
+    // The following cast from LtlFormula to LtlOperation is a hack.
+    // The BMA JSON format doesn't strictly allow it, but it still works in the tool (apart from some error messages and not being able to save).
+    // TODO should a formula that is not an operation be wrapped in an Eventually operator? (is that equivalent?)
+    let operations = [formula] as BMA.LtlOperation[]
+
     return {
-        operations: [formula] as BMA.LtlOperation[], // FIXME remove cast
+        operations,
         states
     }
 }
