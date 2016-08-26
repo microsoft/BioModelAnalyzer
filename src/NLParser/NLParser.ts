@@ -6,6 +6,7 @@
 import { Parser, Token, IParserConfig, Lexer, TokenConstructor, extendToken } from 'chevrotain'
 import * as _ from 'underscore'
 import * as natural from 'natural'
+import * as AST from './AST'
 import * as ASTUtils from './ASTUtils'
 /** 
  *  Parser response structure
@@ -199,7 +200,7 @@ export default class NLParser extends Parser {
     /**
      *  Conditional Expression example: if x=1 then z=2
      */
-    private conditionalsExpression = this.RULE("conditionalsExpression", () => {
+    private conditionalsExpression = this.RULE<AST.ConditionalsExpression>("conditionalsExpression", () => {
         let conditionClause, body
         this.CONSUME(If)
         conditionClause = this.SUBRULE(this.disjunctionExpression)
@@ -208,7 +209,7 @@ export default class NLParser extends Parser {
 
         return {
             type: "conditionalsExpression",
-            value: Implies,
+            value: { type: 'impliesOperator', value: Implies.LABEL},
             left: conditionClause,
             right: body
         }
@@ -218,19 +219,19 @@ export default class NLParser extends Parser {
      *  E.g.: (a=1 and b=1) (this is still a disjunctionExpression with an implicit disjunction)
      *        (a=1 or (a=1 and a=2))
      */
-    private disjunctionExpression = this.RULE("disjunctionExpression", () => {
-        let lhs, rhs = [], operators = []
+    private disjunctionExpression = this.RULE<AST.DisjunctionExpression>("disjunctionExpression", () => {
+        let rhs: AST.ConjunctionExpression[] = []
+        let operators = []
 
-        lhs = this.SUBRULE(this.conjunctionExpression);
+        let lhs = this.SUBRULE(this.conjunctionExpression)
         this.MANY(() => {
             this.CONSUME(Or)
             operators.push(Or)
-            rhs.push(this.SUBRULE2(this.conjunctionExpression));
+            rhs.push(this.SUBRULE2(this.conjunctionExpression))
         })
-        return NLParser.appendRHSOperatorTreeToExistingTree({
+        return NLParser.appendRHSOperatorTreeToExistingTree<AST.DisjunctionExpression>({
             type: "disjunctionExpression",
-            left: lhs,
-            right: null
+            left: lhs
         }, rhs, operators, "conjunctionExpression")
     })
 
@@ -238,18 +239,19 @@ export default class NLParser extends Parser {
      *  Conjunction expressions have higher precedence than disjunction expressions hence their order in the tree.
      *  These are of the form: (a=1 and b=2)
      */
-    private conjunctionExpression = this.RULE("conjunctionExpression", () => {
-        let lhs, rhs = [], operators = []
-        lhs = this.SUBRULE(this.temporalExpression);
+    private conjunctionExpression = this.RULE<AST.ConjunctionExpression>("conjunctionExpression", () => {
+        let rhs: AST.TemporalExpression[] = []
+        let operators = []
+
+        let lhs = this.SUBRULE(this.temporalExpression)
         this.MANY(() => {
             this.CONSUME(And)
             operators.push(And)
-            rhs.push(this.SUBRULE2(this.temporalExpression));
+            rhs.push(this.SUBRULE2(this.temporalExpression))
         })
-        return NLParser.appendRHSOperatorTreeToExistingTree({
+        return NLParser.appendRHSOperatorTreeToExistingTree<AST.ConjunctionExpression>({
             type: "conjunctionExpression",
-            left: lhs,
-            right: null
+            left: lhs
         }, rhs, operators, "temporalExpression")
     })
 
@@ -257,97 +259,95 @@ export default class NLParser extends Parser {
      *  Temporal expressions can be of the form: always(x=1), (always(x=1) until eventually(k=2)).
      *  Binary temporal operators have a higher precedence than logical binary operators.
      */
-    private temporalExpression = this.RULE("temporalExpression", () => {
-        let lhs, rhs = [], operators = []
-        lhs = this.SUBRULE(this.atomicExpression);
+    private temporalExpression = this.RULE<AST.TemporalExpression>("temporalExpression", () => {
+        let rhs: AST.AtomicExpression[] = []
+        let operators = []
+
+        let lhs = this.SUBRULE(this.atomicExpression)
         this.MANY(() => {
-            operators.push(this.SUBRULE(this.binaryTemporalOperators))
-            rhs.push(this.SUBRULE2(this.atomicExpression));
+            operators.push(this.SUBRULE(this.binaryTemporalOperator))
+            rhs.push(this.SUBRULE2(this.atomicExpression))
         })
-        return NLParser.appendRHSOperatorTreeToExistingTree({
+        return NLParser.appendRHSOperatorTreeToExistingTree<AST.TemporalExpression>({
             type: "temporalExpression",
-            left: lhs,
-            right: null
+            left: lhs
         }, rhs, operators, "atomicExpression")
     })
 
     /**
      *  Atomic expressions eg: eventually(a=1)
      */
-    private atomicExpression = this.RULE("atomicExpression", () => {
-        var lastNode, tree = {
+    private atomicExpression = this.RULE<AST.AtomicExpression>("atomicExpression", () => {
+        let lastNode
+        let tree: AST.AtomicExpression = {
             type: "atomicExpression",
             left: null
         }
 
         this.MANY(() => {
-            var operator = this.SUBRULE(this.unaryOperator)
-            var subTree = tree
+            let operator = this.SUBRULE(this.unaryOperator)
+            let subTree = tree
             subTree.left = operator
             subTree = subTree.left
             lastNode = subTree
         })
-        var relationalExpression = this.SUBRULE(this.relationalExpression)
+        let relationalExpression = this.SUBRULE(this.relationalExpression)
 
         if (lastNode) {
             lastNode.left = relationalExpression
         } else {
             tree.left = relationalExpression
         }
-        return {
-            type: "atomicExpression",
-            left: tree
-        }
+        return tree
     })
 
     /**
      *  A single unit eg:  MODELVAR(1) = 1 where MODELVAR(1) is the encoding of the actual variable with id=1
      */
-    private relationalExpression = this.RULE("relationalExpression", () => {
-        let modelVariableId, relationalOperator, integerLiteral
+    private relationalExpression = this.RULE<AST.RelationalExpression>("relationalExpression", () => {
         // consume the model variable token ie:  MODELVAR(variableId)
         let image = this.CONSUME(ModelVariable).image
         // The model variables are always encoded in the form MODELVAR(variableId), 
         // which means the variable id will always be found at the 4th group in the RegExp.match results
-        modelVariableId = parseInt(image.match(new RegExp(ModelVariable.PATTERN))[3])
+        let modelVariableId = parseInt(image.match(new RegExp(ModelVariable.PATTERN))[3])
         // deconstruct the matched pattern to extract the variable id
-        relationalOperator = this.SUBRULE(this.relationalOperator)
-        integerLiteral = parseInt(this.CONSUME(IntegerLiteral).image)
+        let relationalOperator = this.SUBRULE(this.relationalOperator)
+        let integerLiteral = parseInt(this.CONSUME(IntegerLiteral).image)
         return {
             type: "relationalExpression",
             value: relationalOperator,
-            left: { type: TokenType.MODELVAR, id: modelVariableId },
-            right: integerLiteral
+            left: { type: "modelVariable", value: modelVariableId },
+            right: { type: "integerLiteral", value: integerLiteral }
         }
     })
 
-    private binaryTemporalOperators = this.RULE("binaryTemporalOperators", () => {
+    private binaryTemporalOperator = this.RULE<AST.BinaryTemporalOperator>("binaryTemporalOperator", () => {
         return {
-            type: "binaryTemporalOperators",
+            type: "binaryTemporalOperator",
             value: this.OR([{
                 ALT: () => {
                     this.CONSUME(Until)
-                    return GThan.LABEL
+                    return Until.LABEL
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(WUntil)
-                    return LThan.LABEL
+                    return WUntil.LABEL
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Release)
-                    return GThanEq.LABEL
+                    return Release.LABEL
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Upto)
-                    return Eq.LABEL
+                    return Upto.LABEL
                 }
-            }])
+            }]) as AST.BinaryTemporalOperatorSymbol
         }
     });
-    private relationalOperator = this.RULE("relationalOperator", () => {
+    private relationalOperator = this.RULE<AST.RelationalOperator>("relationalOperator", () => {
         return {
             type: "relationalOperator",
             value: this.OR([{
@@ -380,34 +380,34 @@ export default class NLParser extends Parser {
                     this.CONSUME(NotEq)
                     return NotEq.LABEL
                 }
-            }])
+            }]) as AST.RelationalOperatorSymbol
         }
     });
 
-    private unaryOperator = this.RULE("unaryOperator", () => {
+    private unaryOperator = this.RULE<AST.UnaryOperator>("unaryOperator", () => {
         return {
             type: "unaryOperator",
             value: this.OR([{
                 ALT: () => {
                     this.CONSUME(Not)
-                    return Not
+                    return Not.LABEL
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Next)
-                    return Next
+                    return Next.LABEL
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Always)
-                    return Always
+                    return Always.LABEL
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Eventually)
-                    return Eventually
+                    return Eventually.LABEL
                 }
-            }])
+            }]) as AST.UnaryOperatorSymbol
         }
     });
 
@@ -421,22 +421,21 @@ export default class NLParser extends Parser {
     }
 
     /**
-     * Helper fuction to traverse and append the the RHS to the existing tree when constructing the expression trees
+     * Helper fuction to traverse and append the RHS to the existing tree when constructing the expression trees
      */
-    private static appendRHSOperatorTreeToExistingTree = (tree, rhs, operators, childExpressionName) => {
+    private static appendRHSOperatorTreeToExistingTree<T extends AST.Node<any,any>> (tree: T, rhs: AST.Node<any,any>[], operators, childExpressionName: AST.NodeType): T {
         if (!_.isEmpty(rhs)) {
-            var subtree = tree;
-            for (var i = 0; i < rhs.length; i++) {
-                subtree.value = operators[i];
+            let subtree = tree
+            for (let i = 0; i < rhs.length; i++) {
+                subtree.value = { value: operators[i].LABEL }
                 subtree.right = {
                     type: childExpressionName,
-                    left: rhs[i],
-                    right: null
+                    left: rhs[i]
                 }
                 subtree = subtree.right
             }
         }
-        return tree;
+        return tree
     }
 
     /**
@@ -506,3 +505,4 @@ export default class NLParser extends Parser {
         }
     }
 }
+
