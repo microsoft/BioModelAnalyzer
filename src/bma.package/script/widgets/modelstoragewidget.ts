@@ -107,7 +107,7 @@
             //        "param1=value1,param2=value2", "row3");
             //}
 
-            this.singinOneDriveBtn = $("<div>Sign in with OneDrive</div>").addClass("signin").appendTo(this.element).click(function () {
+            this.singinOneDriveBtn = $("<div>Sign in with OneDrive</div>").attr("id", "signin").addClass("signin").appendTo(this.element).click(function () {
                 if ($(this).text() == "Sign in with OneDrive") {
                     if (that.options.onsigninonedrive !== undefined) {
                         that.options.onsigninonedrive();
@@ -192,6 +192,12 @@
                         $(that.localStorage).replaceWith(value);
                         that.localStorage = that.options.localStorageWidget;
                         that.localStorage.addClass("localstorage-repo");
+
+                        that.localStorage.localstoragewidget({
+                            onmessagechanged: function (msg) {
+                                that.message.text(msg);
+                            }
+                        });
                     }
                     break;
                 case "oneDriveWidget":
@@ -200,6 +206,12 @@
                         $(that.oneDriveStorage).replaceWith(value);
                         that.oneDriveStorage = that.options.oneDriveWidget;
                         that.oneDriveStorage.addClass("localstorage-repo");
+
+                        that.oneDriveStorage.onedrivestoragewidget({
+                            onmessagechanged: function (msg) {
+                                that.message.text(msg);
+                            }
+                        });
                     }
                     break;
             }

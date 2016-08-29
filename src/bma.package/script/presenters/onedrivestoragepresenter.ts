@@ -2,16 +2,16 @@
     export module Presenters {
         export class OneDriveStoragePresenter {
             private appModel: BMA.Model.AppModel;
-            private driver: BMA.UIDrivers.OneDriveStorageDriver;
-            private tool: BMA.UIDrivers.IModelRepository;
+            private driver: BMA.UIDrivers.IOneDriveDriver;
+            private tool: BMA.OneDrive.OneDriveRepository;
             private messagebox: BMA.UIDrivers.IMessageServiсe;
             private checker: BMA.UIDrivers.ICheckChanges;
             private setOnCopy: Function;
 
             constructor(
                 appModel: BMA.Model.AppModel,
-                editor: BMA.UIDrivers.OneDriveStorageDriver,
-                tool: BMA.UIDrivers.IModelRepository,
+                editor: BMA.UIDrivers.IOneDriveDriver,
+                tool: BMA.OneDrive.OneDriveRepository,
                 messagebox: BMA.UIDrivers.IMessageServiсe,
                 checker: BMA.UIDrivers.ICheckChanges,
                 logService: BMA.ISessionLog,
@@ -26,7 +26,7 @@
 
                 that.tool.GetModelList().done(function (keys) {
                     that.driver.SetItems(keys);
-                    that.driver.Hide();
+                    //that.driver.Hide();
                 }).fail(function (errorThrown) {
                     alert(errorThrown);
                     });
@@ -122,7 +122,7 @@
                 window.Commands.On("OneDriveStorageRequested", function () {
                     that.tool.GetModelList().done(function (keys) {
                         that.driver.SetItems(keys);
-                        that.driver.Show();
+                        //that.driver.Show();
                     }).fail(function (errorThrown) {
                         alert(errorThrown);
                     });

@@ -44,6 +44,8 @@ module.exports = function (grunt) {
                     "script/presenters/formulavalidationpresenter.js",
                     "script/presenters/furthertestingpresenter.js",
                     "script/presenters/localstoragepresenter.js",
+                    "script/presenters/storagepresenter.js",
+                    "script/presenters/onedrivestoragepresenter.js",
                     "script/UserLog.js",
                     "script/widgets/accordeon.js",
                     "script/widgets/bmaslider.js",

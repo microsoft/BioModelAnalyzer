@@ -503,7 +503,7 @@ module BMA {
             }
         }
 
-        export class LocalStorageDriver implements IStorageDriver {
+        export class LocalStorageDriver implements ILocalStorageDriver {
             private widget;
 
             constructor(widget: JQuery) {
@@ -536,20 +536,20 @@ module BMA {
                 });
             }
 
-            public Show() {
-                this.widget.show();
-            }
+            //public Show() {
+            //    this.widget.show();
+            //}
 
-            public Hide() {
-                this.widget.hide();
-            }
+            //public Hide() {
+            //    this.widget.hide();
+            //}
 
             public Message(msg: string) {
                 this.widget.localstoragewidget("Message", msg);
             }
         }
 
-        export class OneDriveStorageDriver implements IStorageDriver {
+        export class OneDriveStorageDriver implements IOneDriveDriver {
             private widget;
 
             constructor(widget: JQuery) {
@@ -576,13 +576,13 @@ module BMA {
                 });
             }
 
-            public Show() {
-                this.widget.show();
-            }
+            //public Show() {
+            //    this.widget.show();
+            //}
 
-            public Hide() {
-                this.widget.hide();
-            }
+            //public Hide() {
+            //    this.widget.hide();
+            //}
 
             public Message(msg: string) {
                 this.widget.onedrivestoragewidget("Message", msg);
@@ -614,7 +614,7 @@ module BMA {
             
         }
 
-        export class ModelStorageDriver {
+        export class ModelStorageDriver implements IModelStorageDriver {
             private ldriver: LocalStorageDriver;
             private oddriver: OneDriveStorageDriver;
             private widget;
@@ -625,6 +625,14 @@ module BMA {
 
                 this.ldriver = ldriver;
                 this.oddriver = oddriver;
+            }
+
+            public Show() {
+                this.widget.show();
+            }
+
+            public Hide() {
+                this.widget.hide();
             }
 
             public SetAuthorizationStatus(status: boolean) {

@@ -58,7 +58,7 @@ module BMA {
             //OnRepositoryUpdated();
         }
 
-        export class LocalStorageTestDriver implements BMA.UIDrivers.IStorageDriver {
+        export class LocalStorageTestDriver implements BMA.UIDrivers.ILocalStorageDriver {
 
             public Message(msg: string) { }
 
@@ -72,6 +72,15 @@ module BMA {
             }
 
             public SetItems(keys) {
+            }
+
+            public SetOnLoadModel(callback: Function) {
+            }
+
+            public SetOnRemoveModel(callback: Function) {
+            }
+
+            public SetOnCopyToOneDriveCallback(callback: Function) {
             }
         }
 

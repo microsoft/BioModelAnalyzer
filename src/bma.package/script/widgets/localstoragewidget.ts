@@ -63,7 +63,8 @@
         },
 
         Message: function (msg) {
-            this.message.text(msg);
+            if (this.onmessagechanged !== undefined)
+                this.onmessagechanged(msg);
         },
 
         createContextMenu: function () {
@@ -107,6 +108,9 @@
                     break;
                 case "setoncopytoonedrive":
                     this.options.setoncopytoonedrive = value;
+                    break;
+                case "onmessagechanged":
+                    this.options.onmessagechanged = value;
                     break;
             }
             this._super(key, value);
