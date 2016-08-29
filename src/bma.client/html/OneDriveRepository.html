@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>OneDrive Repository</title>
-    
+
     <script src="//js.live.net/v5.0/wl.js"></script>
     <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="//js.live.net/v5.0/wl.js"></script>
@@ -42,24 +42,49 @@
                 .done(function (models) {
                     console.log("Models found: " + models.length);
                     for (var i = 0; i < models.length; i++) {
-                        console.log(models[i].name);
+                        var model = models[i];
+                        console.log(model);
+
+                        repository.IsInRepo(model.id)
+                            .done(function (exists) {
+                                console.log("model exists: " + exists);
+                            });
                     }
                 })
                 .fail(function (error) {
                     console.error("failed: " + error);
                 });
+
+            repository.SaveModel("sample3", { "name": "sample" })
+                .done(function (r) {
+                    console.log("saved: ");
+                    console.log(r);
+                    repository.LoadModel(r.id)
+                        .done(function (content) {
+                            console.log("File loaded: " + JSON.stringify(content));
+                            repository.RemoveModel(r.id)
+                                .done(function (rem) { console.log("Removed: " + rem); })
+                                .fail(function (err) { console.error("Failed to remove: " + err); })
+                        })
+                        .fail(function (error) {
+                            console.error("failed to load");
+                        });
+                })
+                .fail(function (err) {
+                    console.error("failed to save");
+                });
         }
 
-        var onLoginFailed = function (failure) { 
+        var onLoginFailed = function (failure) {
             console.error("Login failed: " + failure.error_description);
         };
 
 
-        var onLogout = function (logout) { 
+        var onLogout = function (logout) {
             console.log("Logout");
         };
 
-       
+
         $(function () {
             connector.Enable(onLogin, onLoginFailed, onLogout);
         });

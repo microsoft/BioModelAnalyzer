@@ -26,6 +26,7 @@ module.exports = function (grunt) {
                     "script/localRepository.js",
                     "script/changeschecker.js",
                     "script/onedrive/OneDriveRepository.js",
+                    "script/onedrive/OneDrive.js",
                     "script/model/biomodel.js",
                     "script/model/model.js",
                     "script/model/analytics.js",  
