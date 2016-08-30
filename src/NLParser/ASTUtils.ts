@@ -1,5 +1,4 @@
 import * as _ from 'underscore'
-import { TokenType } from './NLParser'
 import * as AST from './AST'
 import * as BMA from '../BMA'
 
@@ -11,26 +10,24 @@ import * as BMA from '../BMA'
  * @param bmaModel The BMA model.
  */
 export function toHumanReadableString (node: AST.Node<any,any>, bmaModel: BMA.ModelFile) {
-    console.log(JSON.stringify(node, null, 2))
-    process.exit()
     let varName = id => _.find(bmaModel.Model.Variables, v => v.Id === id).Name
 
     let left = node.left ? toHumanReadableString(node.left, bmaModel) : null
     let right = node.right ? toHumanReadableString(node.right, bmaModel) : null
 
-    if (node.type === 'modelVariable') {
+    if (node.type === AST.Type.ModelVariable) {
         let name = varName(node.value)
         return name.indexOf(' ') >= 0 ? '(' + name + ')' : name
-    } else if (AST.TerminalTypes.indexOf(node.type) !== -1) {
+    } else if (_.contains(AST.TerminalTypes, node.type)) {
         return node.value
-    } else if (node.type === 'relationalExpression') {
-        return left + node.value.value + right
-    } else if (AST.BinaryExpressionTypes.indexOf(node.type) !== -1 && node.right) {
-        return '(' + left + ' ' + node.value.value + ' ' + right + ')'
-    } else if (AST.UnaryExpressionTypes.indexOf(node.type) !== -1) {
-        return node.value.value + '(' + left + ')'
+    } else if (node.type === AST.Type.RelationalExpression) {
+        return left + (<AST.RelationalExpression>node).value.value + right
+    } else if (_.contains(AST.BinaryExpressionTypes, node.type)) {
+        return '(' + left + ' ' + (<AST.BinaryExpression>node).value.value + ' ' + right + ')'
+    } else if (_.contains(AST.UnaryExpressionTypes, node.type)) {
+        return (<AST.UnaryExpression>node).value.value + '(' + left + ')'
     } else {
-        return left
+        throw new Error('Unknown node type: ' + node.type)
     }
 }
 
@@ -40,23 +37,21 @@ export function toHumanReadableString (node: AST.Node<any,any>, bmaModel: BMA.Mo
  * @param node The AST.
  * @param bmaModel The BMA model.
  */
-export function toAPIString (node, bmaModel: BMA.ModelFile) {
+export function toAPIString (node: AST.Node<any,any>, bmaModel: BMA.ModelFile) {
     let varName = id => _.find(bmaModel.Model.Variables, v => v.Id === id).Name
     let upper = (s: string) => s[0].toUpperCase() + s.substr(1)
 
     let left = node.left ? toAPIString(node.left, bmaModel) : null
     let right = node.right ? toAPIString(node.right, bmaModel) : null
 
-    if (typeof node === 'string' || typeof node === 'number') {
-        return node
-    } else if ('id' in node) {
-        return node.id
-    } else if (node.type === 'relationalExpression') {
-        return '(' + node.value.value + ' ' + left + ' ' + right + ')'
-    } else if (node.type === TokenType.BINARY_OPERATOR || (node.value && node.value.TOKEN_TYPE === TokenType.BINARY_OPERATOR)) {
-        return '(' + upper(node.value.LABEL) + ' ' + left + ' ' + right + ')'
-    } else if (node.type === TokenType.UNARY_OPERATOR || (node.value && node.value.TOKEN_TYPE === TokenType.UNARY_OPERATOR)) {
-        return '(' + upper(node.value.LABEL) + ' ' + left + ')'
+    if (_.contains(AST.TerminalTypes, node.type)) {
+        return node.value
+    } else if (node.type === AST.Type.RelationalExpression) {
+        return '(' + (<AST.RelationalExpression>node).value.value + ' ' + left + ' ' + right + ')'
+    } else if (_.contains(AST.BinaryExpressionTypes, node.type)) {
+        return '(' + upper((<AST.BinaryExpression>node).value.value) + ' ' + left + ' ' + right + ')'
+    } else if (_.contains(AST.UnaryExpressionTypes, node.type)) {
+        return '(' + upper((<AST.UnaryExpression>node).value.value) + ' ' + left + ')'
     } else {
         return left
     }
@@ -67,7 +62,7 @@ export function toAPIString (node, bmaModel: BMA.ModelFile) {
  * The result can be used within a BMA model file. New state names are guaranteed to not
  * collide with names of the input model.
  */
-export function toStatesAndFormula (node, bmaModel: BMA.ModelFile): BMA.Ltl {
+export function toStatesAndFormula (node: AST.Node<any,any>, bmaModel: BMA.ModelFile): BMA.Ltl {
     let varName = id => _.find(bmaModel.Model.Variables, v => v.Id === id).Name
 
     // A-Z
@@ -76,36 +71,35 @@ export function toStatesAndFormula (node, bmaModel: BMA.ModelFile): BMA.Ltl {
     let states = bmaModel.ltl.states.slice()
     let unusedStateName = () => _.find(letters, letter => !states.some(state => state.name === letter))
 
-    function toCompactRelationalExpression (node): BMA.LtlCompactStateRelationalExpression {
+    function toCompactRelationalExpression (node: AST.RelationalExpression): BMA.LtlCompactStateRelationalExpression {
         return {
-            variableName: varName(node.left.id),
-            variableId: node.left.id,
+            variableName: varName(node.left.value),
+            variableId: node.left.value,
             operator: node.value.value,
-            value: node.right
+            value: node.right.value
         }
     }
 
     function walk (node, states: BMA.LtlState[]): BMA.LtlFormula  {
-        if (node.type === 'relationalExpression') {
+        if (node.type === AST.Type.RelationalExpression) {
             let stateName = unusedStateName()
             let relationalExpression = toCompactRelationalExpression(node)
             states.push(new BMA.LtlStateImpl(stateName, [relationalExpression]))
             return new BMA.LtlNameStateReferenceImpl(stateName)
-        } else if (node.type === TokenType.BINARY_OPERATOR || (node.value && node.value.TOKEN_TYPE === TokenType.BINARY_OPERATOR)) {
+        } else if (_.contains(AST.BinaryExpressionTypes, node.type)) {
             // check for AND-nested relationalExpression tree
             // this becomes a state
             
-            // FIXME don't use LABEL for testing
-            if (node.value.LABEL == 'and' && node.left.type === 'relationalExpression') {
+            if (node.type === AST.Type.ConjunctionExpression && node.left.type === AST.Type.RelationalExpression) {
                 let relExprNodes = [node.left]
                 let curNode = node.right
-                while (curNode.value.LABEL == 'and' && curNode.left.type === 'relationalExpression') {
+                while (curNode.type === AST.Type.ConjunctionExpression && curNode.left.type === AST.Type.RelationalExpression) {
                     relExprNodes.push(curNode.left)
                     curNode = curNode.right
                 }
                 let stateName = unusedStateName()
 
-                if (curNode.type === 'relationalExpression') {
+                if (curNode.type === AST.Type.RelationalExpression) {
                     // no more nodes, we can collapse the tree of relational expressions to a single name state (see if-else below)
                     relExprNodes.push(curNode)
                 }
@@ -114,27 +108,25 @@ export function toStatesAndFormula (node, bmaModel: BMA.ModelFile): BMA.Ltl {
                 states.push(new BMA.LtlStateImpl(stateName, relationalExpressions))
                 let stateNameRef = new BMA.LtlNameStateReferenceImpl(stateName)
 
-                if (curNode.type === 'relationalExpression') {
+                if (curNode.type === AST.Type.RelationalExpression) {
                     // tree is collapsed to a single state name reference
                     return stateNameRef
                 } else {
                     // more nodes that are not relational expressions are coming
                     // we create a state and <rest>
-                    return new BMA.LtlOperationImpl(node.value.LABEL, [stateNameRef, walk(curNode, states)])
+                    return new BMA.LtlOperationImpl(node.value.value, [stateNameRef, walk(curNode, states)])
                 }
             } else {
-                return new BMA.LtlOperationImpl(node.value.LABEL, [walk(node.left, states), walk(node.right, states)])
+                return new BMA.LtlOperationImpl(node.value.value, [walk(node.left, states), walk(node.right, states)])
             }
-
-        } else if (node.type === TokenType.UNARY_OPERATOR || (node.value && node.value.TOKEN_TYPE === TokenType.UNARY_OPERATOR)) {
-            return new BMA.LtlOperationImpl(node.value.LABEL, [walk(node.left, states)])
+        } else if (_.contains(AST.UnaryExpressionTypes, node.type)) {
+            return new BMA.LtlOperationImpl(node.value.value, [walk(node.left, states)])
         } else {
-            return walk(node.left, states)
+            throw new Error('Unknown node type: ' + node.type)
         }
     }
 
-    let simplifiedAST = simplifyAST(node)
-    let formula = walk(simplifiedAST, states)
+    let formula = walk(node, states)
     
     // The following cast from LtlFormula to LtlOperation is a hack.
     // The BMA JSON format doesn't strictly allow it, but it still works in the tool (apart from some error messages and not being able to save).
@@ -145,20 +137,4 @@ export function toStatesAndFormula (node, bmaModel: BMA.ModelFile): BMA.Ltl {
         operations,
         states
     }
-}
-
-/** Removes all redundant nodes in the tree to make processing easier. */
-export function simplifyAST (node) {
-    if (typeof node === 'string' || typeof node === 'number') {
-    } else if ('id' in node) {
-    } else if (node.type === 'relationalExpression') {
-    } else if (node.type === TokenType.BINARY_OPERATOR || (node.value && node.value.TOKEN_TYPE === TokenType.BINARY_OPERATOR)) {
-        node.left = simplifyAST(node.left)
-        node.right = simplifyAST(node.right)
-    } else if (node.type === TokenType.UNARY_OPERATOR || (node.value && node.value.TOKEN_TYPE === TokenType.UNARY_OPERATOR)) {
-        node.left = simplifyAST(node.left)
-    } else {
-        node = simplifyAST(node.left)
-    }
-    return node
 }

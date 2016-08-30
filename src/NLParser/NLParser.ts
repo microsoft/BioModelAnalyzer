@@ -21,7 +21,7 @@ export interface ParserResponse {
     responseType: ParserResponseType
     humanReadableFormula?: string
     errors?: any
-    AST?: any
+    AST?: AST.Formula
 }
 /**
  *  Enumeration of the possible non-literal tokens in the grammar]
@@ -137,44 +137,51 @@ function generateStemmedTokenDefinition(id: string, label: string, synonyms: str
 export default class NLParser extends Parser {
 
     /** Base entry rule of the grammar */
-    private formula = this.RULE("formula", () => {
+    private formula = this.RULE<AST.InternalFormula>("formula", () => {
         let ltlFormula
         let tree = {
-            type: "ltlFormula",
             left: null
         }
         var subtree = tree
 
         /** Zero or one unary operators */
         this.MANY(() => {
-            subtree.left = this.SUBRULE(this.unaryOperator)
+            subtree.left = {
+                type: AST.Type.UnaryExpression,
+                value: this.SUBRULE(this.unaryOperator)
+            }
             subtree = subtree.left
         })
 
         /** First child production */
-        subtree.left = this.OR([{
+        subtree.left = this.OR<AST.ConditionalsExpression | AST.DisjunctionExpression | AST.DisjunctionExpressionChild>([{
             ALT: () => this.SUBRULE(this.conditionalsExpression)
         }, {
             ALT: () => this.SUBRULE(this.disjunctionExpression)
         }])
 
+        // get rid of the first empty node
+        tree = tree.left
+
         var trailingTree, lastTrailingNode
 
-        //TODO: MOVE TO ASTUTILS as this can be done more easily when parsing the AST instead of at construction time
         //handle trailing operators
         this.MANY2(() => {
             var subTrailingTree = trailingTree
-            var operator = this.SUBRULE2(this.unaryOperator)
+            var operatorExp = {
+                type: AST.Type.UnaryExpression,
+                value: this.SUBRULE2(this.unaryOperator)
+            }
             if (subTrailingTree) {
-                subTrailingTree.left = operator
+                subTrailingTree.left = operatorExp
                 subTrailingTree = subTrailingTree.left
                 lastTrailingNode = subTrailingTree
             } else {
-                trailingTree = operator
-                lastTrailingNode = operator
+                trailingTree = operatorExp
+                lastTrailingNode = operatorExp
             }
         })
-        var resultTree
+        let resultTree
         if (lastTrailingNode) {
             lastTrailingNode.left = tree
             resultTree = trailingTree
@@ -182,16 +189,14 @@ export default class NLParser extends Parser {
             resultTree = tree
         }
         return {
-            AST: {
-                type: "ltlFormula",
-                left: resultTree
-            }
+            AST: resultTree
         }
     }, {     /**
              *  Resync Root: This is invoked whenever an unexpected token is encountered, the parser returns a set of "resynched" tokens 
              *  that are possible tokens less error token encountered that could be successfully parsed
              */
-            resyncEnabled: true, recoveryValueFunc: () => {
+            resyncEnabled: true,
+            recoveryValueFunc: () => {
                 let error: any = _.first(this.errors)
                 return { resyncedToken: _.first(error.resyncedTokens), errorToken: error.token }
             }
@@ -200,7 +205,7 @@ export default class NLParser extends Parser {
     /**
      *  Conditional Expression example: if x=1 then z=2
      */
-    private conditionalsExpression = this.RULE<AST.ConditionalsExpression>("conditionalsExpression", () => {
+    private conditionalsExpression = this.RULE<AST.ConditionalsExpression>('conditionalsExpression', () => {
         let conditionClause, body
         this.CONSUME(If)
         conditionClause = this.SUBRULE(this.disjunctionExpression)
@@ -208,8 +213,8 @@ export default class NLParser extends Parser {
         body = this.SUBRULE2(this.disjunctionExpression)
 
         return {
-            type: "conditionalsExpression",
-            value: { type: 'impliesOperator', value: Implies.LABEL},
+            type: AST.Type.ConditionalsExpression,
+            value: { type: AST.Type.ImpliesOperator, value: Implies.LABEL as AST.ImpliesOperatorSymbol},
             left: conditionClause,
             right: body
         }
@@ -219,59 +224,56 @@ export default class NLParser extends Parser {
      *  E.g.: (a=1 and b=1) (this is still a disjunctionExpression with an implicit disjunction)
      *        (a=1 or (a=1 and a=2))
      */
-    private disjunctionExpression = this.RULE<AST.DisjunctionExpression>("disjunctionExpression", () => {
-        let rhs: AST.ConjunctionExpression[] = []
-        let operators = []
+    private disjunctionExpression = this.RULE<AST.DisjunctionExpression | AST.DisjunctionExpressionChild>("disjunctionExpression", () => {
+        let nodes: AST.DisjunctionExpressionChild[] = []
+        let values = []
 
-        let lhs = this.SUBRULE(this.conjunctionExpression)
+        nodes.push(this.SUBRULE(this.conjunctionExpression))
         this.MANY(() => {
             this.CONSUME(Or)
-            operators.push(Or)
-            rhs.push(this.SUBRULE2(this.conjunctionExpression))
+            values.push({
+                type: AST.Type.DisjunctionOperator,
+                value: Or.LABEL
+            })
+            nodes.push(this.SUBRULE2(this.conjunctionExpression))
         })
-        return NLParser.appendRHSOperatorTreeToExistingTree<AST.DisjunctionExpression>({
-            type: "disjunctionExpression",
-            left: lhs
-        }, rhs, operators, "conjunctionExpression")
+        return NLParser.asNestedTree<AST.DisjunctionExpression | AST.ConjunctionExpressionChild>("disjunctionExpression", nodes, values)
     })
 
     /**
      *  Conjunction expressions have higher precedence than disjunction expressions hence their order in the tree.
      *  These are of the form: (a=1 and b=2)
      */
-    private conjunctionExpression = this.RULE<AST.ConjunctionExpression>("conjunctionExpression", () => {
-        let rhs: AST.TemporalExpression[] = []
-        let operators = []
+    private conjunctionExpression = this.RULE<AST.ConjunctionExpression | AST.ConjunctionExpressionChild>("conjunctionExpression", () => {
+        let nodes: AST.ConjunctionExpressionChild[] = []
+        let values = []
 
-        let lhs = this.SUBRULE(this.temporalExpression)
+        nodes.push(this.SUBRULE(this.temporalExpression))
         this.MANY(() => {
             this.CONSUME(And)
-            operators.push(And)
-            rhs.push(this.SUBRULE2(this.temporalExpression))
+            values.push({
+                type: AST.Type.ConjunctionOperator,
+                value: And.LABEL
+            })
+            nodes.push(this.SUBRULE2(this.temporalExpression))
         })
-        return NLParser.appendRHSOperatorTreeToExistingTree<AST.ConjunctionExpression>({
-            type: "conjunctionExpression",
-            left: lhs
-        }, rhs, operators, "temporalExpression")
+        return NLParser.asNestedTree<AST.ConjunctionExpression | AST.ConjunctionExpressionChild>("conjunctionExpression", nodes, values)
     })
 
     /**
      *  Temporal expressions can be of the form: always(x=1), (always(x=1) until eventually(k=2)).
      *  Binary temporal operators have a higher precedence than logical binary operators.
      */
-    private temporalExpression = this.RULE<AST.TemporalExpression>("temporalExpression", () => {
-        let rhs: AST.AtomicExpression[] = []
-        let operators = []
+    private temporalExpression = this.RULE<AST.TemporalExpression | AST.AtomicExpression>("temporalExpression", () => {
+        let nodes: AST.AtomicExpression[] = []
+        let values = []
 
-        let lhs = this.SUBRULE(this.atomicExpression)
+        nodes.push(this.SUBRULE(this.atomicExpression))
         this.MANY(() => {
-            operators.push(this.SUBRULE(this.binaryTemporalOperator))
-            rhs.push(this.SUBRULE2(this.atomicExpression))
+            values.push(this.SUBRULE(this.binaryTemporalOperator))
+            nodes.push(this.SUBRULE2(this.atomicExpression))
         })
-        return NLParser.appendRHSOperatorTreeToExistingTree<AST.TemporalExpression>({
-            type: "temporalExpression",
-            left: lhs
-        }, rhs, operators, "atomicExpression")
+        return NLParser.asNestedTree<AST.TemporalExpression | AST.AtomicExpression>("temporalExpression", nodes, values)
     })
 
     /**
@@ -279,15 +281,16 @@ export default class NLParser extends Parser {
      */
     private atomicExpression = this.RULE<AST.AtomicExpression>("atomicExpression", () => {
         let lastNode
-        let tree: AST.AtomicExpression = {
-            type: "atomicExpression",
+        let tree = {
             left: null
         }
 
         this.MANY(() => {
-            let operator = this.SUBRULE(this.unaryOperator)
             let subTree = tree
-            subTree.left = operator
+            subTree.left = {
+                type: AST.Type.UnaryExpression,
+                value: this.SUBRULE(this.unaryOperator)
+            }
             subTree = subTree.left
             lastNode = subTree
         })
@@ -295,10 +298,10 @@ export default class NLParser extends Parser {
 
         if (lastNode) {
             lastNode.left = relationalExpression
+            return tree.left
         } else {
-            tree.left = relationalExpression
+            return relationalExpression
         }
-        return tree
     })
 
     /**
@@ -314,16 +317,16 @@ export default class NLParser extends Parser {
         let relationalOperator = this.SUBRULE(this.relationalOperator)
         let integerLiteral = parseInt(this.CONSUME(IntegerLiteral).image)
         return {
-            type: "relationalExpression",
+            type: AST.Type.RelationalExpression,
             value: relationalOperator,
-            left: { type: "modelVariable", value: modelVariableId },
-            right: { type: "integerLiteral", value: integerLiteral }
+            left: { type: AST.Type.ModelVariable, value: modelVariableId },
+            right: { type: AST.Type.IntegerLiteral, value: integerLiteral }
         }
     })
 
     private binaryTemporalOperator = this.RULE<AST.BinaryTemporalOperator>("binaryTemporalOperator", () => {
         return {
-            type: "binaryTemporalOperator",
+            type: AST.Type.BinaryTemporalOperator,
             value: this.OR([{
                 ALT: () => {
                     this.CONSUME(Until)
@@ -349,7 +352,7 @@ export default class NLParser extends Parser {
     });
     private relationalOperator = this.RULE<AST.RelationalOperator>("relationalOperator", () => {
         return {
-            type: "relationalOperator",
+            type: AST.Type.RelationalOperator,
             value: this.OR([{
                 ALT: () => {
                     this.CONSUME(GThan)
@@ -386,7 +389,7 @@ export default class NLParser extends Parser {
 
     private unaryOperator = this.RULE<AST.UnaryOperator>("unaryOperator", () => {
         return {
-            type: "unaryOperator",
+            type: AST.Type.UnaryOperator,
             value: this.OR([{
                 ALT: () => {
                     this.CONSUME(Not)
@@ -423,19 +426,33 @@ export default class NLParser extends Parser {
     /**
      * Helper fuction to traverse and append the RHS to the existing tree when constructing the expression trees
      */
-    private static appendRHSOperatorTreeToExistingTree<T extends AST.Node<any,any>> (tree: T, rhs: AST.Node<any,any>[], operators, childExpressionName: AST.NodeType): T {
-        if (!_.isEmpty(rhs)) {
-            let subtree = tree
-            for (let i = 0; i < rhs.length; i++) {
-                subtree.value = { value: operators[i].LABEL }
-                subtree.right = {
-                    type: childExpressionName,
-                    left: rhs[i]
-                }
-                subtree = subtree.right
-            }
+    private static asNestedTree<T extends AST.Node<any,any>> (nodeType, nodes: AST.Node<any,any>[], operators): T {
+        if (nodes.length === 1) {
+            return nodes[0] as T
         }
-        return tree
+
+        let tree = {
+            type: nodeType,
+            value: operators[0],
+            left: nodes[0],
+            right: null
+        }
+        let subtree = tree
+        for (let i = 1; i < nodes.length; i++) {
+            if (i === nodes.length - 1) {
+                subtree.right = nodes[i]
+            } else {
+                subtree.right = {
+                    type: nodeType,
+                    value: operators[i],
+                    left: nodes[i],
+                    right: null
+                }
+            }
+            subtree = subtree.right
+        }
+        
+        return tree as any
     }
 
     /**

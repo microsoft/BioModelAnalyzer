@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { default as NLParser, ParserResponseType } from '../src/NLParser/NLParser'
-import { toAPIString, toStatesAndFormula, simplifyAST } from '../src/NLParser/ASTUtils'
+import { toAPIString, toStatesAndFormula } from '../src/NLParser/ASTUtils'
 import { ModelFile, Ltl } from '../src/BMA'
 
 let testModel: ModelFile = require('./data/testmodel.json')
@@ -23,14 +23,6 @@ describe('ASTUtils', () => {
             var parserResponse = NLParser.parse(sentence, testModel)
             let ltl = toStatesAndFormula(parserResponse.AST, testModel)
             expect(ltl).to.deep.equal(ltlMultipleStates)
-
-            // debug output
-            /*
-            let newModel: ModelFile = JSON.parse(JSON.stringify(testModel))
-            newModel.ltl = ltl
-            console.log(JSON.stringify(newModel, null, 2))
-            process.exit()
-            */
         })
         it('generates states with multiple variables', () => {
             var sentence = "give me some simulation where it is always the case that x is 1 and y is 5"
