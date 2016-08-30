@@ -20,7 +20,7 @@ export let HERE_IS_YOUR_UPLOADED_MODEL = (url: string) => `Here is the model you
 export let NO_MODEL_FOUND = 'I do not have a model from you.'
 export let MODEL_REMOVED = 'I removed your model.'
 
-// simulation outcomes
+//Simulation outcomes
 export let SIMULATION_DUALITY = (steps: number) => `I ran a simulation with ${steps} steps. The formula is sometimes true and sometimes false.`
 export let SIMULATION_ALWAYS_TRUE = (steps: number) => `I ran a simulation with ${steps} steps. The formula is always true.`
 export let SIMULATION_ALWAYS_FALSE = (steps: number) => `I ran a simulation with ${steps} steps. The formula is always false.`
@@ -28,8 +28,7 @@ export let SIMULATION_PARTIAL_TRUE = (steps: number) => `I ran a partial simulat
 export let SIMULATION_PARTIAL_FALSE = (steps: number) => `I ran a partial simulation with ${steps} steps. The formula is either always or just sometimes false. Please check the full results yourself using the link above.`
 export let SIMULATION_CANCELLED = 'I tried to run a simulation but it took too long so I cancelled it. Please check the results yourself using the link above.'
 
-//Explaination for each operator 
-
+//Explanaiton for each operator 
 export let EXPLAIN_AND = 'The AND operator returns a true value if both the expressions are true, and returns false otherwise'
 export let EXPLAIN_OR = 'The OR operator returns a true value if either one of the expressions are true, otherwise false is returned'
 export let EXPLAIN_IMPLIES = 'When two expressions are used with the implies operator, e.g. A implies B, it means that if A is true B must also be true. The IMPLIES operator returns a true value in this scenario.'
@@ -44,7 +43,6 @@ export let EXPLAIN_UPTO = 'This explains the upto operator '
 export let EXPLAIN_WEAKUNTIL = 'Similar to the UNTIL operator, in the example A weakuntil B, A remains true until B holds a true value, however it does not require B to ever hold a true value, and therefore A always remains true' 
 
 //Operator examples
-
 export let EXAMPLE_AND = 'In the example where A and B are equal to a value of 1, A AND B returns true for all traces where both states are 1'
 export let EXAMPLE_OR = 'In the example where A and B are equal to a value of 2, A OR B returns true for all traces where either one of the states is equal to 2'
 export let EXAMPLE_IMPLIES = 'In the example where A is equal to 1 and state B is equal to 2, A implies B returns true for traces where A is 1, and subsequently B is 2'
@@ -57,3 +55,19 @@ export let EXAMPLE_RELEASE = 'In the example A RELEASE B, where A is 1 and B is 
 //TODO example UPTO
 export let EXAMPLE_UPTO = 'Example for upto operator'
 export let EXAMPLE_WEAKUNTIL = 'With states; A = 1 and B = 3, A WEAKUNTIL B implies that A holds a value of 1 up until B is equal to 3, but if B is never 3 then A will remain as 1'
+
+//Operator interactions
+export let ALWAYS_EVENTUALLY = 'Always Eventually implies that a state in the future will always remain true, essentially is returns the same output as the ALWAYS operator would'
+export let ALWAYS_NOT = 'Always Not implies that it is always the case that the states value within the future will not be true, an example can be seen in the Ecoli tutorial'
+export let ALWAYS_NEXT = 'Always Next implies that the immediate state after is always true, essentially it returns a similar output to ALWAYS'
+export let EVENTUALLY_ALWAYS = 'Eventually Always implies that in some future states, the state value will remain constant'
+export let EVENTUALLY_NOT = 'Eventually Not implies that in some future states, the defined state value will not be true'
+export let EVENTUALLY_NEXT = 'Eventually Next implies that in some future state, the following state will hold a true value. Essentially this returns a similar output to EVENTUALLY'
+export let NEXT_ALWAYS = 'Next Always implies after the succeeding state, the value will always remain true'
+export let NEXT_EVENTUALLY = 'Next Eventually implies that after the succeeding state, the state will eventually hold a true value in some future states'
+export let NEXT_NOT = 'Next Not implies that after the succeeding state, the state values do not return a true value'
+export let NOT_EVENTUALLY = 'Not Eventually implies that states in the future do not hold a true value'
+export let NOT_NEXT = 'Not Next returns all cases that do not satisfy the results of the NEXT operator(immediate state after holding a true value)'
+export let NOT_ALWAYS = 'Not Always returns all cases that do not satisfy the results of the ALWAYS operator(all states holding a true value)'
+
+//LTL Semantics 

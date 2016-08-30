@@ -63,10 +63,14 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     matches('ListTutorial', (session) => {
         session.beginDialog('/tutorials')
     })
+
+    matches ('OperatorInteractions', (session, args) => {
+        //TODO : @return explainInteraction
+        //TODO : deal with user requests that ask to differentiate between interactions
+    })
     
     matches('ExplainOp', (session, args) => {
-        let operator = builder.EntityRecognizer.findEntity(args.entities, 'Operator')
-        let operatorName = operator.entity
+        let operatorName = (builder.EntityRecognizer.findEntity(args.entities, 'Operator')).entity
         switch (operatorName)
         {
             case 'and':session.send(strings.EXPLAIN_AND)
