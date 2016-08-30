@@ -65,7 +65,34 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     })
 
     matches ('OperatorInteractions', (session, args) => {
-        //TODO : @return explainInteraction
+        let operatorInteraction = (builder.EntityRecognizer.findEntity(args.entities, 'interactions')).entity
+        switch (operatorInteraction)
+        {
+            case 'always eventually':session.send(strings.ALWAYS_EVENTUALLY)
+            break
+            case 'always not':session.send(strings.ALWAYS_NOT)
+            break
+            case 'always next':session.send(strings.ALWAYS_NEXT)
+            break
+            case 'eventually always':session.send(strings.EVENTUALLY_ALWAYS)
+            break
+            case 'eventually not':session.send(strings.EVENTUALLY_NOT)
+            break
+            case 'eventually next':session.send(strings.EVENTUALLY_NEXT)
+            break
+            case 'next always':session.send(strings.NEXT_ALWAYS)
+            break
+            case 'next eventually':session.send(strings.NEXT_EVENTUALLY)
+            break
+            case 'next not':session.send(strings.NEXT_NOT)
+            break
+            case 'not eventually':session.send(strings.NOT_EVENTUALLY)
+            break
+            case 'not next':session.send(strings.NOT_NEXT)
+            break
+            case 'not always':session.send(strings.NOT_ALWAYS)
+            break
+        }
         //TODO : deal with user requests that ask to differentiate between interactions
     })
     
@@ -99,8 +126,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     })
 
     matches('OperatorExample', (session, args) => {
-        let operator = builder.EntityRecognizer.findEntity(args.entities, 'Operator')
-        let operatorName = operator.entity
+        let operatorName = (builder.EntityRecognizer.findEntity(args.entities, 'Operator')).entity
         switch (operatorName)
         {
             case 'and':session.send(strings.EXAMPLE_AND)
