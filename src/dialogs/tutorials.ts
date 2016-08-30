@@ -98,8 +98,12 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
             tutorial.steps.map((step, i) => (session: builder.Session, results, next) => {
                 let message = new builder.Message(session)
                 if (step.text) {
-                    // TODO prefix text with [i/n] where i is the current step and n is the total number of steps
-                    message.text(step.text)
+                    // appending step number as a prefix for text 
+                    let totalSteps = tutorial.steps.length
+                    let currentStep = i + 1 
+                    let prefix = '[' + currentStep + '/' + totalSteps + ']' 
+                    let x = prefix + ' ' + step.text
+                    message.text(x)
                 }
                 if (step.image) {                    
                     message.addAttachment(getTutorialImageAttachment(step.image))

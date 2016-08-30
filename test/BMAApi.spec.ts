@@ -53,6 +53,8 @@ describe('BMAApi module', () => {
             })
         })
     })
+
+    /* // takes too long, run as separate integration test
     describe('#runThoroughSimulation', () => {
         it('should return the correct polarity response', () => {
             let formula = '(Eventually True)'
@@ -64,4 +66,5 @@ describe('BMAApi module', () => {
             })
         })
     })
+    */
 })
