@@ -158,17 +158,19 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         let lookupSemantics = (builder.EntityRecognizer.findEntity(args.entities, 'Lookup')).entity
         switch (lookupSemantics)
         {
+            case 'oscillation':
             case 'oscillations':session.send(strings.OSCILLATIONS)
             break
             case 'true state':session.send(strings.TRUE_STATE)
             break
-            case 'selfloop':session.send(strings.SELF_LOOP)
+            case 'selfloop':
+            case 'self loop':session.send(strings.SELF_LOOP)
             break
             case 'steps':session.send(strings.STEPS)
             break
-            case 'increase steps':session.send(strings.I_STEPS)
+            case 'increase':session.send(strings.I_STEPS)
             break
-            case 'decrease steps':session.send(strings.D_STEPS)
+            case 'decrease':session.send(strings.D_STEPS)
             break
         }   
     })

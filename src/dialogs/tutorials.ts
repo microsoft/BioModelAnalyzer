@@ -14,7 +14,8 @@ const TUTORIALS = [
     'boolean_operators',
     'temporal_operators',
     'advanced_temporal_operators',   
-    'ecoli'
+    'ecoli',
+    'phosphorylation_cascade'
 ]
 
 /** The object structure of a YAML tutorial file. */
