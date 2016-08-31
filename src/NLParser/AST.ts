@@ -88,7 +88,7 @@ export type ImpliesOperatorSymbol = 'implies'
 
 export interface ImpliesOperator extends Node<any,any> {
     type: typeof Type.ImpliesOperator
-    value: 'implies'
+    value: ImpliesOperatorSymbol
 }
 
 export type ConditionalsExpressionChild = DisjunctionExpression | DisjunctionExpressionChild
