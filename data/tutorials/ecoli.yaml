@@ -7,8 +7,8 @@ description: >-
   It takes around 10 minutes.
 steps:
     - text: >-
-        We will be using the ecoli model throughout this tutorial, please import the JSON into 
-        BMA or follow the link below. 
+        We will be using the ecoli model throughout this tutorial.
+        Open the model for ecoli now, using the link below.
 
       model: ecoli1.json
     
@@ -31,35 +31,35 @@ steps:
 
     - text: >-
         We are interested in showing that the motor in the model always returns to the unbiased 
-        state. We can do this with our existing state by dragging a “not” operator to the canvas,
-        dragging “A” from the always operator into the “not” operator, and finally by dragging 
-        the whole query into the always socket.
+        state. We can do this with our existing state by dragging a NOT operator to the canvas,
+        dragging 'A' from the ALWAYS operator into the NOT operator, and finally by dragging 
+        the whole query into the ALWAYS socket.
 
       image: always_not_a.png
 
     - text: >-
         Once your LTL query has been prepared on the canvas, click on the 'Test' button. This should
         result in the query going red, indicating that there are no traces where this is true, 
-        and suggesting that all simulations eventually satisfy A. 
+        and suggesting that all simulations eventually satisfy 'A'. 
 
       image: run_alwaysnota.png
 
     - text: >-
         Finally, we will test the endpoints of the model. We can start by using the eventually 
-        operator which confirms the previous result; all traces eventually result in A being satisfied
+        operator which confirms the previous result; all traces eventually result in 'A' being satisfied
         at some point. This is shown graphically by the query turning green. 
 
       image: run_eventuallya.png
 
     - text: >-
-        However, we are interested specifically if all simulations end in a self loop where A is true, 
-        or a loop where A is true. To test this we can nest an “and” operator within eventually and 
+        However, we are interested specifically if all simulations end in a self loop where 'A' is true, 
+        or a loop where 'A' is true. To test this we can nest an AND operator within EVENTUALLY and 
         select both self loops and oscillations in the different sockets.
 
     - text: >-
-        To speed this up, we can create one “Eventually ( (A) and ( ) )” query, and the left click and 
-        copy. Then have one as 'eventually A and (self loops)'' and the other as 'eventually A and 
-        (oscillations)
+        To speed this up, we can create one 'EVENTUALLY ( (A) AND ( ) )' query, and then left click and 
+        copy. Then have one as 'EVENTUALLY A AND (self loops)' and the other as 'EVENTUALLY A and 
+        (oscillates)'
 
       image: copying_query.png
 
@@ -70,6 +70,6 @@ steps:
       image: ecoli_result.png
 
     - text: >-
-        This is the end of this tutorial. You should have now successfuly learnt how to test the state
+        This is the end of this tutorial. You should have now successfully learnt how to test the state
         of a model using the loop and oscillation functions. 
 

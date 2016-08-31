@@ -4,18 +4,18 @@ description: >-
   This tutorial will give you a quick walkthrough of the basic boolean operators available
   in the Bio-Model Analyzer. 
   It will take around 10 minutes, and by the end of this you should know how to successfully
-  use AND, OR, NOT, IMPLIES
+  use AND, OR, NOT, IMPLIES.
 steps:
     - text: >-
         In order to practice using the operators, you need to import a model into the tool.
         For the purpose of this tutorial, you will be using the simple model 'toymodelstable' 
-        that can be downloaded from the link below. This model consists of a cell, containing 
+        that can be opened from the link below. This model consists of a cell, containing 
         three proteins each ranging from 0 to 4.
 
       model: ToyModelStable.json
 
     - text: >-
-        To start off with, we will be creating two states, that we can input into the boolean 
+        To start off with, we will be creating two states, that we can input into the Boolean 
         operators and examine the results. Open the Linear Temporal Logic tab from the right 
         hand side and click on the upper plus sign.
 
@@ -35,7 +35,7 @@ steps:
         states equal the defined value at the same time.
 
     - text: >-
-        Open the LTL editor again, but now click on the lower + sign to create a new temporal property
+        Open the LTL editor again, but now click on the lower + sign to create a new temporal property.
         Use the canvas and drag and drop the AND operator and put A and B into the sockets, and test it. 
         NOTE: A query will not run until all sockets have been occupied.
 
@@ -43,8 +43,8 @@ steps:
     
     - text: >- 
         In this case, there are traces where this is true and false (indicated by green/red stripes).
-        To examine the true cases, click open and the click examples with a green tick. You should 
-        now see this. 
+        To examine the true cases, click open and click the example button with a green tick. You should 
+        now see this.
 
       image: run_aandb.png
 
@@ -71,7 +71,7 @@ steps:
         to start from scratch or carry on here. 
 
     - text: >-
-        Download the model for ecoli now, using the link below. In this model we are interested
+        Open the model for ecoli now, using the link below. In this model we are interested
         in showing that the motor always returns to its unbiased state (in this case it has 
         to equal to 1). Rather than checking each case, we can easily reverse the idea and test to see 
         if there are any cases when it doesn't return to an unbiased state. 
@@ -92,4 +92,4 @@ steps:
 
     - text: >-
         This is the end of the 'How to use Boolean operators' tutorial, you should now be comfortable using 
-        and experimenting with operators; AND, OR, NOT and IMPLIES
+        and experimenting with operators; AND, OR, NOT and IMPLIES.
