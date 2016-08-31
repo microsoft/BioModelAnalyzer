@@ -11,15 +11,15 @@ steps:
 
     - text: >- 
         Experimentally we know that if a cell is in an environment with a low or high level of “I”, 
-        the level of phosphorylated “x” is low. We can interpret and test this behaviour in terms of 
-        stability; the model should be stable with x=0 if I is constant and equals either 0 or 1. 
+        the level of phosphorylated “X” is low. We can interpret and test this behaviour in terms of 
+        stability; the model should be stable with X=0 if I is constant and equals either 0 or 1. 
         However, if we increase add I to the environment and maintain a high level, we see a transient 
         increase in x. 
 
     - text: >-
         To test this using LTL we need to specify two parts of the query. The states describe what the 
         simulation should look like at different points of time. In this system we can define the following;
-        State A as x = 0, State B as x = 1. 
+        State A as X = 0, State B as X = 1. 
 
     - text: >- 
         A describes the initial and final states, whilst, B is the transient state. We define this using 
