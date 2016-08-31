@@ -187,7 +187,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         let clampingResult = clampVariables(ast, bmaModel)
         if (clampingResult.clampings.length) {
             ast = clampingResult.AST
-            let text = strings.VARIABLES_CLAMPED(clampingResult.clampings.map(c => `${c.variable.Name} -> ${c.clampedValue} (was: ${c.originalValue})`).join('  \n'))
+            let text = strings.VARIABLES_CLAMPED(clampingResult.clampings.map(c => `${c.variable.Name} -> ${c.clampedValue} (was ${c.originalValue})`).join(', '))
             session.send(text)
         }
 
