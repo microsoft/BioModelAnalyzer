@@ -84,6 +84,8 @@ export type BinaryExpression =
     ConditionalsExpression | DisjunctionExpression | ConjunctionExpression |
     TemporalExpression | RelationalExpression
 
+export type ImpliesOperatorSymbol = 'implies'
+
 export interface ImpliesOperator extends Node<any,any> {
     type: typeof Type.ImpliesOperator
     value: 'implies'
@@ -98,9 +100,11 @@ export interface ConditionalsExpression extends Node<ConditionalsExpressionChild
     right: ConditionalsExpressionChild
 }
 
+export type DisjunctionOperatorSymbol = 'or'
+
 export interface DisjunctionOperator extends Node<any,any> {
     type: typeof Type.DisjunctionOperator
-    value: 'or'
+    value: DisjunctionOperatorSymbol
 }
 
 export type DisjunctionExpressionChild = ConjunctionExpression | ConjunctionExpressionChild
@@ -112,9 +116,11 @@ export interface DisjunctionExpression extends Node<DisjunctionExpressionChild, 
     right: DisjunctionExpressionChild
 }
 
+export type ConjunctionOperatorSymbol = 'and'
+
 export interface ConjunctionOperator extends Node<any,any> {
     type: typeof Type.ConjunctionOperator,
-    value: 'and'
+    value: ConjunctionOperatorSymbol
 }
 
 export type ConjunctionExpressionChild = TemporalExpression | AtomicExpression
