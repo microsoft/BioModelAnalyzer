@@ -71,7 +71,7 @@ it('parse() should thandle variables with spances in them as well as keywords', 
     var expected = "((protein and molecules)=1 implies (active protein)=5)"
     expect(parserResponse.humanReadableFormula).to.equal(expected)
 })
-it('parse() should remove illegal intances of model variable usage', () => {
+it('parse() should remove illegal instances of model variable usage', () => {
     var model = { "Model": { "Name": "model 1", "Variables": [{ "Name": "a", "Id": 1, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }, { "Name": "b", "Id": 2, "RangeFrom": 0, "RangeTo": 1, "Formula": "" }] } }
     var sentence = "can you give me a simulation where a is 1 and next b is 2"
     var parserResponse = NLParser.parse(sentence, model)
