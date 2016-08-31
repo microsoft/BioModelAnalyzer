@@ -156,8 +156,8 @@ module BMA {
             Show();
             Hide();
             SetAuthorizationStatus(status: boolean);
-            SetOnSignInCallback(callback: Function);
-            SetOnSignOutCallback(callback: Function);
+            //SetOnSignInCallback(callback: Function);
+            //SetOnSignOutCallback(callback: Function);
         }
 
         export interface IFileLoader {

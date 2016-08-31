@@ -468,10 +468,10 @@ function loadScript(version) {
     });
 
     var localStorageWidget = $('<div></div>')
-        .appendTo('#drawingSurceContainer')
+        //.appendTo('#drawingSurceContainer')
         .localstoragewidget();
     var oneDriveStorageWidget = $("<div></div>")
-        .appendTo('#drawingSurceContainer').onedrivestoragewidget();
+        /*.appendTo('#drawingSurceContainer')*/.onedrivestoragewidget();
     var modelStorageWidget = $('<div></div>')
         .addClass('window')
         .appendTo('#drawingSurceContainer')

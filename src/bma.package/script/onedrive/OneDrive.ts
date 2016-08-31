@@ -194,9 +194,11 @@ module BMA.OneDrive {
             WL.ui({
                 name: this.settings.SignInElementId,
                 element: "signin",
-                brand: "skydrive",
+                brand: "none",
                 theme: "white",
-                type: "connect"
+                type: "custom",
+                sign_in_text: "Sign in with OneDrive",
+                sign_out_text: "Sign out",
             });
         }
     }

@@ -48,34 +48,37 @@
                             { title: "Email", cmd: "Email" },
                         ]*/
                     },
-                    { title: "Open BMA link", cmd: "OpenBMALink" },
-                    { title: "Active Shares", cmd: "ActiveShares", /*children:[],*/isVisible: false/*that.options.activeShare.length !== 0*/ },
+                    { title: "Open BMA link", cmd: "OpenBMALink"},
+                    { title: "Active Shares", cmd: "ActiveShares"},
                 ],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);
                     if (that.options.activeShare.length === 0) $(this).contextmenu("showEntry", "ActiveShares", false);
-                    if ($(ui.target.context.parentElement).hasClass("table-tags"))
-                        return false;
+                    $(this).contextmenu("enableEntry", "Share", false);
+                    $(this).contextmenu("enableEntry", "OpenBMALink", false);
                 },
                 select: function (event, ui) {
                     var args: any = {};
-                    var idx = $(ui.target.context).parent().index();
+                    var idx = $(ui.target.context).index();
 
-                    if ($(ui.item.context).text() == "Share") {
+                    if (ui.cmd == "Share") {
                         that.menuPopup("Share '" + $(ui.target.context).text() + "'", [
                             { name: "BMA link", callback: function () { console.log("bma link"); } },
                             { name: "Web link", callback: function () { console.log("web link"); } },
                             { name: "Email", callback: function () { console.log("email"); } }
                         ]);
-                    } else if ($(ui.item.context).text() == "Open BMA link") {
-                    } else if ($(ui.item.context).text() == "Active Shares") {
+                    } else if (ui.cmd == "OpenBMALink") {
+                    } else if (ui.cmd == "ActiveShares") {
                     } else {
-                        if (that.options.setoncopytolocal !== undefined)
-                            that.options.setoncopytolocal("user." + that.options.items[idx]);
+                        if (that.options.setoncopytolocal !== undefined) {
+                            that.options.setoncopytolocal(that.options.items[idx]).done(function () {
+                                if (ui.cmd == "MoveToLocal") {
+                                    if (that.options.onremovemodel !== undefined)
+                                        that.options.onremovemodel(that.options.items[idx].id);
+                                }
+                            });
 
-                        if ($(ui.item.context).text() == "Move to OneDrive") {
-                            if (that.options.onremovemodel !== undefined)
-                                that.options.onremovemodel("user." + that.options.items[idx]);
+                            
                         }
                     }
 
@@ -90,13 +93,13 @@
             this.ol = $('<ol></ol>').appendTo(this.repo);
 
             for (var i = 0; i < items.length; i++) {
-                var li = $('<li></li>').text(items[i]).appendTo(this.ol);
+                var li = $('<li></li>').text(items[i].name).appendTo(this.ol);
                 //var a = $('<a></a>').addClass('delete').appendTo(li);
                 var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);// $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//
                 removeBtn.bind("click", function (event) {
                     event.stopPropagation();
                     if (that.options.onremovemodel !== undefined)
-                        that.options.onremovemodel("user." + items[$(this).parent().index()]);
+                        that.options.onremovemodel(items[$(this).parent().index()].id);
                     //window.Commands.Execute("LocalStorageRemoveModel", "user." + items[$(this).parent().index()]);
                 })
             }
@@ -105,7 +108,7 @@
                 stop: function () {
                     var ind = that.repo.find(".ui-selected").index();
                     if (that.options.onloadmodel !== undefined)
-                        that.options.onloadmodel("user." + items[ind]);
+                        that.options.onloadmodel(items[ind].id);
                     //window.Commands.Execute("LocalStorageLoadModel", "user." + items[ind]);
                 }
             });

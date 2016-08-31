@@ -560,7 +560,7 @@ module BMA {
                 this.widget.onedrivestoragewidget("AddItem", key);
             }
 
-            public SetItems(keys) {
+            public SetItems(keys) { //keys = { id, name }
                 this.widget.onedrivestoragewidget({ items: keys });
             }
 
@@ -639,17 +639,17 @@ module BMA {
                 this.widget.modelstoragewidget({ isAuthorized: status });
             }
 
-            public SetOnSignInCallback(callback: Function) {
-                this.widget.modelstoragewidget({
-                    onsigninonedrive: callback
-                });
-            }
+            //public SetOnSignInCallback(callback: Function) {
+            //    this.widget.modelstoragewidget({
+            //        onsigninonedrive: callback
+            //    });
+            //}
 
-            public SetOnSignOutCallback(callback: Function) {
-                this.widget.modelstoragewidget({
-                    onsignoutonedrive: callback
-                });
-            }
+            //public SetOnSignOutCallback(callback: Function) {
+            //    this.widget.modelstoragewidget({
+            //        onsignoutonedrive: callback
+            //    });
+            //}
 
         }
 

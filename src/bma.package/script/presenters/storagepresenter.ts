@@ -53,10 +53,18 @@
 
 
                     that.localStoragePresenter.SetOnCopyCallback(function (key, item) {
+                        oneDriveRepository.SaveModel(key, item).done(function () {
+                            window.Commands.Execute("OneDriveStorageChanged", {});
+                        }).fail(function () {
+                            that.messagebox.Show("Failed to save model on OneDrive");
+                        });
+                        //that.oneDriveStorageDriver.AddItem(key, item);
                         // set copied model to oneDrivePresenter
                     });
 
                     that.oneDrivePresenter.SetOnCopyCallback(function (key, item) {
+                        that.localRepository.SaveModel(key, item);
+                        window.Commands.Execute("LocalStorageChanged", {});
                         // set copied to localpresenter
                     });
                 };
@@ -66,16 +74,17 @@
                 };
                 
                 var onLogout = function (logout) {
+                    that.driver.SetAuthorizationStatus(false);
                     console.log("Logout");
                 };
 
                 connector.Enable(onLogin, onLoginFailed, onLogout);
+                
+                //that.driver.SetOnSignInCallback(function () {
+                //});
 
-                that.driver.SetOnSignInCallback(function () {
-                });
-
-                that.driver.SetOnSignOutCallback(function () {
-                });
+                //that.driver.SetOnSignOutCallback(function () {
+                //});
 
                 window.Commands.On("ModelStorageRequested", function () {
                     that.driver.Show();

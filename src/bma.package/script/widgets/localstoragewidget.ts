@@ -78,17 +78,22 @@
                     { title: "Move to OneDrive", cmd: "MoveToOneDrive" },
                     { title: "Copy to OneDrive", cmd: "CopyToOneDrive" },
                 ],
+                beforeOpen: function (event, ui) {
+                    ui.menu.zIndex(50);
+                },
                 select: function (event, ui) {
                     var args: any = {};
-                    var idx = $(ui.target.context).parent().index();
+                    var idx = $(ui.target.context).index();
 
-                    if (that.options.setoncopytoonedrive !== undefined) 
-                        that.options.setoncopytoonedrive("user." + that.options.items[idx]);
+                    if (that.options.setoncopytoonedrive !== undefined) {
+                        that.options.setoncopytoonedrive("user." + that.options.items[idx]).done(function () {
 
-                    if ($(ui.item.context).text() == "Move to OneDrive") {
-                        if (that.options.onremovemodel !== undefined)
-                            that.options.onremovemodel("user." + that.options.items[idx]);
-                        //window.Commands.Execute("LocalStorageRemoveModel", "user." + that.options.items[idx]);
+                            if (ui.cmd == "MoveToOneDrive") {
+                                if (that.options.onremovemodel !== undefined)
+                                    that.options.onremovemodel("user." + that.options.items[idx]);
+                                //window.Commands.Execute("LocalStorageRemoveModel", "user." + that.options.items[idx]);
+                            }
+                        });
                     }
                 }
             });

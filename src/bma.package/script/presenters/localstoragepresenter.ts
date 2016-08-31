@@ -72,18 +72,34 @@
                 });
 
                 that.driver.SetOnCopyToOneDriveCallback(function (key) {
+                    var deffered = $.Deferred();
                     if (that.tool.IsInRepo(key)) {
                         that.tool.LoadModel(key).done(function (result) {
-                            if (that.setOnCopy !== undefined)
-                                that.setOnCopy(key, result);
-                        }).fail(function (result) {
-                            that.messagebox.Show(JSON.stringify(result));
+                            if (that.setOnCopy !== undefined) {
+                                var sp = key.split('.');
+                                if (sp[0] === "user") {
+                                    var q = sp[1];
+                                    for (var i = 2; i < sp.length; i++) {
+                                        q = q.concat('.');
+                                        q = q.concat(sp[i]);
+                                    }
+                                    that.setOnCopy(q, result);
+                                    deffered.resolve();
+                                }
+                            }
+                            deffered.reject();
+                        }).fail(function (error) {
+                            var res = JSON.parse(JSON.stringify(error));
+                            that.messagebox.Show(res.statusText);
+                            deffered.reject();
                         });
                     }
                     else {
                         that.messagebox.Show("The model was removed from outside");
                         window.Commands.Execute("OneDriveStorageChanged", {});
+                        deffered.reject();
                     }
+                    return deffered.promise();
                 });
 
                 that.driver.SetOnLoadModel(function (key) {

@@ -107,7 +107,7 @@
             //        "param1=value1,param2=value2", "row3");
             //}
 
-            this.singinOneDriveBtn = $("<div>Sign in with OneDrive</div>").attr("id", "signin").addClass("signin").appendTo(this.element).click(function () {
+            this.singinOneDriveBtn = $("<div></div>").attr("id", "signin").addClass("signin").appendTo(this.element);/*.click(function () {
                 if ($(this).text() == "Sign in with OneDrive") {
                     if (that.options.onsigninonedrive !== undefined) {
                         that.options.onsigninonedrive();
@@ -117,7 +117,7 @@
                         that.options.onsignoutonedrive();
                     }
                 }
-            }); 
+            }); */
 
             this.refresh();
         },
@@ -165,16 +165,16 @@
                 //    this.oneDriveStorage.onedrivestoragewidget({ items: that.options.oneDriveItems});
                 //    this.refresh();
                 //    break;
-                case "onsigninonedrive":
-                    that.options.onsigninonedrive = value;
-                    break;
-                case "onsignoutonedrive":
-                    that.options.onsignoutonedrive = value;
-                    break;
+                //case "onsigninonedrive":
+                //    that.options.onsigninonedrive = value;
+                //    break;
+                //case "onsignoutonedrive":
+                //    that.options.onsignoutonedrive = value;
+                //    break;
                 case "isAuthorized":
                     that.options.isAuthorized = value;
                     if (that.options.isAuthorized) {
-                        that.singinOneDriveBtn.text("Sign out OneDrive");
+                        //that.singinOneDriveBtn.text("Sign out OneDrive");
                         that.switcher.show();
                     } else {
                         that.localStorageBtn.addClass("active");
@@ -182,7 +182,7 @@
                         that.localStorage.show();
                         that.oneDriveStorage.hide();
 
-                        that.singinOneDriveBtn.text("Sign in with OneDrive");
+                        //that.singinOneDriveBtn.text("Sign in with OneDrive");
                         that.switcher.hide();
                     }
                     break;

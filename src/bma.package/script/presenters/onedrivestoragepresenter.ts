@@ -24,15 +24,27 @@
                 this.messagebox = messagebox;
                 this.checker = checker;
 
-                that.tool.GetModelList().done(function (keys) {
-                    that.driver.SetItems(keys);
+                that.tool.GetModelList().done(function (modelsInfo) {
+                    if (modelsInfo === undefined || modelsInfo.length == 0)
+                        that.driver.Message("The model repository is empty");
+                    else that.driver.Message('');
+                    that.driver.SetItems(modelsInfo);
+                    
+                    //that.driver.SetItems(items);
                     //that.driver.Hide();
                 }).fail(function (errorThrown) {
-                    alert(errorThrown);
+                    var res = JSON.parse(JSON.stringify(errorThrown));
+                    that.messagebox.Show(res.statusText);
+                    //alert("Failed to load models");
                     });
 
                 that.driver.SetOnRemoveModel(function (key) {
-                    that.tool.RemoveModel(key);
+                    that.tool.RemoveModel(key).done(function (result) {
+                        if (result)
+                            window.Commands.Execute("OneDriveStorageChanged", {});
+                    }).fail(function () {
+                        that.messagebox.Show("Failed to remove model");
+                    });
                 });
 
                 that.driver.SetOnShareCallback(function (key) { });
@@ -41,29 +53,43 @@
 
                 that.driver.SetOnOpenBMALink(function (key) { });
 
-                that.driver.SetOnCopyToLocalCallback(function (key) {
-                    if (that.tool.IsInRepo(key)) {
-                        that.tool.LoadModel(key).done(function (result) {
-                            if (that.setOnCopy !== undefined)
-                                that.setOnCopy(key, result);
-                        }).fail(function (result) {
-                            that.messagebox.Show(JSON.stringify(result));
+                that.driver.SetOnCopyToLocalCallback(function (modelInfo) {
+                    var deffered = $.Deferred();
+                    if (that.tool.IsInRepo(modelInfo.id)) {
+                        that.tool.LoadModel(modelInfo.id).done(function (result) {
+                            if (that.setOnCopy !== undefined) {
+                                that.setOnCopy(modelInfo.name, result);
+                                deffered.resolve();
+                            } else deffered.reject();
+                        }).fail(function (errorThrown) {
+                            var res = JSON.parse(JSON.stringify(errorThrown));
+                            that.messagebox.Show(res.statusText);
+                            deffered.reject();
                         });
                     }
                     else {
                         that.messagebox.Show("The model was removed from outside");
                         window.Commands.Execute("OneDriveStorageChanged", {});
+                        deffered.reject();
                     }
+                    return deffered.promise();
                 });
 
-                window.Commands.On("OnedriveStorageChanged", function () {
-                    that.tool.GetModelList().done(function (keys) {
-                        if (keys === undefined || keys.length == 0)
+                window.Commands.On("OneDriveStorageChanged", function () {
+                    that.tool.GetModelList().done(function (modelsInfo) {
+                        if (modelsInfo === undefined || modelsInfo.length == 0)
                             that.driver.Message("The model repository is empty");
                         else that.driver.Message('');
-                        that.driver.SetItems(keys);
+                        //var items = [];
+                        //for (var i = 0; i < modelsInfo.length; i++) {
+                        //    that.tool.IsInRepo(modelsInfo[i].id).done(function (exists) {
+                        //        if (exists) items.push(modelsInfo[i]);
+                        //    })
+                        //}
+                        that.driver.SetItems(modelsInfo);
                     }).fail(function (errorThrown) {
-                        alert(errorThrown);
+                        var res = JSON.parse(JSON.stringify(errorThrown));
+                        that.messagebox.Show(res.statusText);
                     });
                 });
 
@@ -108,7 +134,8 @@
                                 appModel.Deserialize(JSON.stringify(result));
                                 that.checker.Snapshot(that.appModel);
                             }).fail(function (result) {
-                                that.messagebox.Show(JSON.stringify(result));
+                                var res = JSON.parse(JSON.stringify(result));
+                                that.messagebox.Show(res.statusText);
                             });
                         }
                         else {
