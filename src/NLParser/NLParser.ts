@@ -97,7 +97,7 @@ let TEMPORAL_OPERATORS = [Eventually, Always, Next, Upto, Until, WUntil, Release
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
-let ALLOWED_TOKENS = (<typeof Token[]> IGNORE)
+let ALLOWED_TOKENS = (<typeof Token[]>IGNORE)
     .concat(LITERALS)
     .concat(CONSTRUCTS)
     .concat(ARITHMETIC_OPERATORS)
@@ -127,7 +127,7 @@ function generateStemmedTokenDefinition(id: string, label: string, synonyms: str
         static TOKEN_TYPE = tokenType
         static NON_STEMMED_SYNONYMS = synonyms
     }
-    Object.defineProperty(tokenClass.prototype.constructor, 'name', {value: id})
+    Object.defineProperty(tokenClass.prototype.constructor, 'name', { value: id })
     return tokenClass
 }
 /**
@@ -214,7 +214,7 @@ export default class NLParser extends Parser {
 
         return {
             type: AST.Type.ConditionalsExpression,
-            value: { type: AST.Type.ImpliesOperator, value: Implies.LABEL as AST.ImpliesOperatorSymbol},
+            value: { type: AST.Type.ImpliesOperator, value: Implies.LABEL as AST.ImpliesOperatorSymbol },
             left: conditionClause,
             right: body
         }
@@ -426,7 +426,7 @@ export default class NLParser extends Parser {
     /**
      * Helper fuction to traverse and append the RHS to the existing tree when constructing the expression trees
      */
-    private static asNestedTree<T extends AST.Node<any,any>> (nodeType, nodes: AST.Node<any,any>[], operators): T {
+    private static asNestedTree<T extends AST.Node<any, any>>(nodeType, nodes: AST.Node<any, any>[], operators): T {
         if (nodes.length === 1) {
             return nodes[0] as T
         }
@@ -451,7 +451,7 @@ export default class NLParser extends Parser {
             }
             subtree = subtree.right
         }
-        
+
         return tree as any
     }
 
@@ -463,7 +463,7 @@ export default class NLParser extends Parser {
     private static applyPreprocessing(sentence: string, bmaModel): string {
         var modelVariables = bmaModel.Model.Variables
         var modelVariableRelationOpRegex = new RegExp(
-            "(" + _.pluck(modelVariables, "Name").join("|") + 
+            "(" + _.pluck(modelVariables, "Name").join("|") +
             ")(\\s*)(" + ARITHMETIC_OPERATORS.map((op) => op.NON_STEMMED_SYNONYMS.join("|")).join("|") +
             ")(\\s*\\d+)", "ig")
         var matchedGroups, variableTokens = [];
@@ -471,7 +471,25 @@ export default class NLParser extends Parser {
             //The variable will always on the 1st index as the 0th index is the entire group and the variable is matched in the 1st group of the regex expression
             variableTokens.push({ offset: matchedGroups.index, name: matchedGroups[1], id: _.find(bmaModel.Model.Variables, (v: any) => v.Name === matchedGroups[1]).Id })
         }
-        variableTokens.forEach(t => sentence = sentence.replace(new RegExp("\\b" + t.name + "\\b", "ig"), "MODELVAR(" + t.id + ")"))
+        //use the generated offsets to replace instances of variable usage with MODELVAR(k), where k is the model variable
+        //variableTokens can be empty when processing a resynched token stream
+        if (!_.isEmpty(variableTokens)) {
+            var processedSentence
+            for (var i = 0; i < variableTokens.length; i++) {
+                let token = variableTokens[i]
+                let encodedToken = "MODELVAR(" + token.id + ")"
+                if (i == 0) {
+                    processedSentence = sentence.substring(0, token.offset) + encodedToken
+                } else {
+                    let prevToken = variableTokens[i - 1]
+                    processedSentence += sentence.substring(prevToken.offset + prevToken.name.length, token.offset) + encodedToken
+                }
+            }
+            //append the tail of the original sentence to the processed sentence
+            let lastVariableToken = _.last(variableTokens)
+            processedSentence += sentence.substring(lastVariableToken.offset + lastVariableToken.name.length, sentence.length)
+            sentence = processedSentence
+        }
         //stem the sentence
         return sentence.split(" ").map((t) => ModelVariable.PATTERN.test(t) ? t : natural.PorterStemmer.stem(t)).join(" ")
     }

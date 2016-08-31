@@ -22,12 +22,12 @@ export let NO_MODEL_FOUND = 'I do not have a model from you.'
 export let MODEL_REMOVED = 'I removed your model.'
 
 //Simulation outcomes
-export let SIMULATION_DUALITY = (steps: number) => `I ran a simulation with ${steps} steps. The formula is sometimes true and sometimes false.`
-export let SIMULATION_ALWAYS_TRUE = (steps: number) => `I ran a simulation with ${steps} steps. The formula is always true.`
-export let SIMULATION_ALWAYS_FALSE = (steps: number) => `I ran a simulation with ${steps} steps. The formula is always false.`
-export let SIMULATION_PARTIAL_TRUE = (steps: number) => `I ran a partial simulation with ${steps} steps. The formula is either always or just sometimes true. Please check the full results yourself using the link above.`
-export let SIMULATION_PARTIAL_FALSE = (steps: number) => `I ran a partial simulation with ${steps} steps. The formula is either always or just sometimes false. Please check the full results yourself using the link above.`
-export let SIMULATION_CANCELLED = 'I tried to run a simulation but it took too long so I cancelled it. Please check the results yourself using the link above.'
+export let SIMULATION_DUALITY = (steps: number) => `I tested the formula with ${steps} steps. The formula is sometimes true and sometimes false.`
+export let SIMULATION_ALWAYS_TRUE = (steps: number) => `I tested the formula with ${steps} steps. The formula is always true.`
+export let SIMULATION_ALWAYS_FALSE = (steps: number) => `I tested the formula with ${steps} steps. The formula is always false.`
+export let SIMULATION_PARTIAL_TRUE = (steps: number) => `I partially tested the formula with ${steps} steps. The formula is either always or just sometimes true. Please check the full results yourself using the link above.`
+export let SIMULATION_PARTIAL_FALSE = (steps: number) => `I partially tested the formula with ${steps} steps. The formula is either always or just sometimes false. Please check the full results yourself using the link above.`
+export let SIMULATION_CANCELLED = 'I tried to test the formula but it took too long so I cancelled it. Please check the results yourself using the link above.'
 
 //Explanaiton for each operator 
 export let EXPLAIN_AND = 'The AND operator returns a true value if both the expressions are true, and returns false otherwise.'
@@ -75,6 +75,12 @@ export let NOT_ALWAYS = 'Not Always returns all cases that do not satisfy the re
 export let OSCILLATIONS = 'An oscillation refers to a fluctuation between two things, this can occur between two states or values of a state.'
 export let TRUE_STATE = ''
 export let SELF_LOOP = ''
+<<<<<<< HEAD
 export let STEPS = 'The  number of steps determines how long your query runs for, and a state value is given for each step with a simulation graph.'
 export let D_STEPS = 'Decreasing the number of steps a query runs for can limit your results, as you only see a subsection of results which may or may not satisfy your query. The default of 10 steps is recommended.'
 export let I_STEPS = 'Increasing the number of steps will give you a broader view of how the state values fluctuate over time, and may reveal several traces of your query being true.'
+=======
+export let STEPS = 'The number of steps determines how long your query runs for, and a state value is given for each step with a simulation graph'
+export let D_STEPS = 'Decreasing the number of steps a query runs for can limit your results, as you only see a subsection of results which may or may not satisfy your query. The default of 10 steps is recommended'
+export let I_STEPS = 'Increasing the number of steps will give you a broader view of how the state values fluctuate over time, and may reveal several traces of your query being true'
+>>>>>>> dc1835021f87f1173cf8e0d2bfb434f8ed150540
