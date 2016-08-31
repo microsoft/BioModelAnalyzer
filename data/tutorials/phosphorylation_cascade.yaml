@@ -1,8 +1,8 @@
 id: phosphorylation_cascade
 title: Using the NEXT operator - Phosphorylation Cascade
 description: >-
-The purpose of this tutorial is to practice using the NEXT operator with other 
-operators and we will be doing this by experimenting with a Boolean network model 
+  The purpose of this tutorial is to practice using the NEXT operator with other 
+  operators and we will be doing this by experimenting with a Boolean network model 
 steps:
     - text: >-
         To complete this tutorial please use the model below
