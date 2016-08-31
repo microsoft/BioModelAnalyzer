@@ -85,6 +85,10 @@ steps:
         that all simultations eventually satisfy A. 
 
       image: run_alwaysnota.png 
+      
+    - text: >-
+        NOTE: Checking false examples after testing a simulation is the equivalent to prefixing it 
+        with NOT. 
 
     - text: >-
         This is the end of the 'How to use Boolean operators' tutorial, you should now be comfortable using 
