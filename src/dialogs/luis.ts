@@ -154,6 +154,25 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         }   
     })
 
+    matches('Semantics', (session, args) => {
+        let lookupSemantics = (builder.EntityRecognizer.findEntity(args.entities, 'Lookup')).entity
+        switch (lookupSemantics)
+        {
+            case 'oscillations':session.send(strings.OSCILLATIONS)
+            break
+            case 'true state':session.send(strings.TRUE_STATE)
+            break
+            case 'selfloop':session.send(strings.SELF_LOOP)
+            break
+            case 'steps':session.send(strings.STEPS)
+            break
+            case 'increase steps':session.send(strings.I_STEPS)
+            break
+            case 'decrease steps':session.send(strings.D_STEPS)
+            break
+        }   
+    })
+
     function handleLTLQuery (session: builder.Session, text: string) {
         let bmaModel = session.conversationData.bmaModel
         let result = NLParser.parse(text, bmaModel)
