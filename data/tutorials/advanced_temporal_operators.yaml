@@ -25,14 +25,14 @@ steps:
         Here we will be creating two states: state A which refers to x = 0 and state B which refers
         to b = to 1. See image below to check if you have created the states correctly
 
-        image: ATO states
+        image: ato_states.png
 
     - text: >-
         Now, open the LTL editor and create a new temporal property using the lower plus sign.
         Once opened, plug in A UNTIL B and run the query. As shown below, this should result in some
         true and some false results.
 
-        image: RUN A UNTIL B
+        image: a_until_b.png
 
     - text: >- 
         By examining the results we can see that the first three stepts hold the value for X, and then 
@@ -40,7 +40,7 @@ steps:
         NOTE: When using UPTO, until the second state is not satisfied,both states cannot be true within 
         the same step. Also, after B becomes true the value of A can fluctuate.
 
-        image: results highlight columns 
+        image: run_auntilb.png 
 
     - text: >-
         Now moving onto the WEAKUNTIL operator. This is similar to UNTIL explained above, however does 
