@@ -5,7 +5,7 @@ import * as qs from 'querystring'
 import {v4 as uuid} from 'node-uuid'
 import * as strings from './strings'
 import {default as NLParser, ParserResponseType } from '../NLParser/NLParser'
-import {toStatesAndFormula} from '../NLParser/ASTUtils'
+import {toStatesAndFormula, toHumanReadableString, clampVariables} from '../NLParser/ASTUtils'
 import {downloadAttachments} from '../attachments'
 import {ModelStorage} from '../ModelStorage'
 import * as BMA from '../BMA'
@@ -161,10 +161,21 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             session.send(strings.UNKNOWN_LTL_QUERY)
             return
         }
-        session.send(strings.TRY_THIS_FORMULA(result.humanReadableFormula))
+
+        let ast = result.AST
+
+        // check if variable values in range and clamp if necessary
+        let clampingResult = clampVariables(ast, bmaModel)
+        if (clampingResult.clampings.length) {
+            ast = clampingResult.AST
+            let text = strings.VARIABLES_CLAMPED(clampingResult.clampings.map(c => `${c.variable.Name} -> ${c.clampedValue} (was: ${c.originalValue})`).join('  \n'))
+            session.send(text)
+        }
+
+        session.send(strings.TRY_THIS_FORMULA(toHumanReadableString(ast, bmaModel)))
 
         // merge formula into model copy and offer to user via URL
-        let ltl = toStatesAndFormula(result.AST, bmaModel)
+        let ltl = toStatesAndFormula(ast, bmaModel)
         let newBmaModel: BMA.ModelFile = JSON.parse(JSON.stringify(bmaModel))
         newBmaModel.ltl = ltl
 

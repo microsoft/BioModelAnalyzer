@@ -1,6 +1,7 @@
 export let LTL_DESCRIPTION = 'LTL means linear temporal logic'
 export let UNKNOWN_INTENT = 'I did not understand you'
 export let UNKNOWN_LTL_QUERY = 'I did not understand your query'
+export let VARIABLES_CLAMPED = (text: string) => `Some of your variable values were out of range, so I adjusted them:  \n${text}` 
 export let TRY_THIS_FORMULA = (formula: string) => `Try this: ${formula}`
 export let OPEN_BMA_MODEL_LINK = (url: string) => `Open directly: ${url}`
 export let MODEL_SEND_PROMPT = 'Please send me your model as a JSON file'
