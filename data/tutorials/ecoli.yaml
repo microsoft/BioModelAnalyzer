@@ -52,14 +52,14 @@ steps:
       image: run_eventuallya.png
 
     - text: >-
-        However, we are interested specifically if all simulations end in a self loop where 'A' is true, 
+        However, we are interested specifically if all simulations end in a self loop  where 'A' is true, 
         or a loop where 'A' is true. To test this we can nest an AND operator within EVENTUALLY and 
-        select both self loops and oscillations in the different sockets.
+        select both self loops (fixed point in network) and oscillations(unstable loop) in the different sockets.
 
     - text: >-
         To speed this up, we can create one 'EVENTUALLY ( (A) AND ( ) )' query, and then left click and 
-        copy. Then have one as 'EVENTUALLY A AND (self loops)' and the other as 'EVENTUALLY A and 
-        (oscillates)'
+        copy. Then have one as 'EVENTUALLY A AND (fixed point in network)' and the other as 'EVENTUALLY A and 
+        (unstable loop)'.
 
       image: copying_query.png
 
@@ -71,5 +71,5 @@ steps:
 
     - text: >-
         This is the end of this tutorial. You should have now successfully learnt how to test the state
-        of a model using the loop and oscillation functions. 
+        of a model using the fixed point and unstable loop states provided by the user interface. 
 

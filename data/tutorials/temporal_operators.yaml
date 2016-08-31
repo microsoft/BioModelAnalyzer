@@ -38,7 +38,7 @@ steps:
         stays constant within all traces. Using the same ecoli model and motor state defined, run 
         'ALWAYS A'.
         NOTE: EVENTUALLY is sometimes mistaken for ALWAYS, however it is important to note that the 
-        true value of 'A' holds with ALWAYS, but is percebtible to change with EVENTUALLY
+        true value of 'A' holds with ALWAYS, but is percebtible to change with EVENTUALLY.
 
       image: run_alwaysa.png  
 

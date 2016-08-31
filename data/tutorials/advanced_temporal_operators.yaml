@@ -22,8 +22,8 @@ steps:
         true.
 
     - text: >-
-        Here we will be creating two states: state A which refers to x = 0 and state B which refers
-        to b = 1. See image below to check if you have created the states correctly
+        Here we will be creating two states: state A which refers to X = 0 and state B which refers
+        to Y = 1. See the image below to check if you have created the states correctly.
 
       image: ato_states.png
 
