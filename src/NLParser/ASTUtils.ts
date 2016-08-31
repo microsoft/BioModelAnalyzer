@@ -53,7 +53,57 @@ export function toAPIString (node: AST.Node<any,any>, bmaModel: BMA.ModelFile) {
     } else if (_.contains(AST.UnaryExpressionTypes, node.type)) {
         return '(' + upper((<AST.UnaryExpression>node).value.value) + ' ' + left + ')'
     } else {
-        return left
+        throw new Error('Unknown node type: ' + node.type)
+    }
+}
+
+export interface Clamping {
+    variable: BMA.Variable
+    originalValue: number
+    clampedValue: number
+}
+
+export function clampVariables (node: AST.Node<any,any>, bmaModel: BMA.ModelFile) {
+    let getVariable = id => _.find(bmaModel.Model.Variables, v => v.Id === id)
+
+    let clampings: Clamping[] = []
+
+    /** clamps in-place */
+    function doClamp (node) {
+        if (node.type === AST.Type.RelationalExpression) {
+            let variable = getVariable(node.left.value)
+            let value = node.right.value
+            if (value < variable.RangeFrom) {
+                node.right.value = variable.RangeFrom
+                clampings.push({
+                    variable,
+                    originalValue: value,
+                    clampedValue: variable.RangeFrom
+                })
+            } else if (value > variable.RangeTo) {
+                node.right.value = variable.RangeTo
+                clampings.push({
+                    variable,
+                    originalValue: value,
+                    clampedValue: variable.RangeTo
+                })
+            }
+        } else {
+            if (node.left) {
+                doClamp(node.left)
+            }
+            if (node.right) {
+                doClamp(node.right)
+            }            
+        }
+    }
+
+    let nodeCopy = JSON.parse(JSON.stringify(node))
+    doClamp(nodeCopy)
+
+    return {
+        AST: nodeCopy,
+        clampings
     }
 }
 
