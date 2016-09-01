@@ -2,22 +2,22 @@ export let LTL_DESCRIPTION = 'LTL means linear temporal logic.'
 export let UNKNOWN_INTENT = 'I did not understand you.'
 export let UNKNOWN_LTL_QUERY = 'I did not understand your query.'
 export let VARIABLES_CLAMPED = (text: string) => `Some of your variables were out of range, so I adjusted them. ${text}.` 
-export let TRY_THIS_FORMULA = (formula: string) => `Try this: ${formula}.`
-export let OPEN_BMA_MODEL_LINK = (url: string) => `Open directly: ${url}.`
+export let TRY_THIS_FORMULA = (formula: string) => `Try this: ${formula}`
+export let OPEN_BMA_MODEL_LINK = (url: string) => `Open directly: ${url}`
 export let MODEL_SEND_PROMPT = 'Please send me your model as a JSON file.'
 export let INVALID_JSON = (msg: string) => `Your uploaded file is not valid JSON (Error: ${msg}).`
 export let HTTP_ERROR = (msg: string) => `HTTP Error: ${msg}.`
 export let TOO_MANY_FILES = 'Please upload exactly one JSON file.'
 export let MODEL_RECEIVED = (name: string) => `I received your model titled ${name} and will use it from now on.`
-export let TUTORIAL_SELECT_PROMPT = 'Which tutorial would you like to do?.'
-export let TUTORIAL_START_PROMPT = 'Would you like to start the tutorial?.'
+export let TUTORIAL_SELECT_PROMPT = 'Which tutorial would you like to do?'
+export let TUTORIAL_START_PROMPT = 'Would you like to start the tutorial?'
 export let TUTORIAL_SELECT_CANCELLED = 'Tutorial selection cancelled.'
 export let TUTORIAL_UNKNOWN_SELECT = 'Please input a tutorial number, or anything else to cancel.'
 export let ABOUT_BOT = 'Hello, I am the BMA Bot and I will assist you in creating LTL formulas to query your model. To help you along the way, I will provide you with tutorials and examples. Ask me any questions you have about using LTL within the BMA and I will try to help you.'
 export let ABOUT_SIMULATIONS = 'LTL queries are used to find simulations of a given length that end in a loop (a fix point or cycle).'
 export let SPELLCHECK_ASSUMPTION = (corrected: string) => `I assume you meant: "${corrected}".`
-export let OPEN_BMA_URL = (url: string) => `Open in browser: ${url}.`
-export let HERE_IS_YOUR_UPLOADED_MODEL = (url: string) => `Here is the model you sent me: ${url}.`
+export let OPEN_BMA_URL = (url: string) => `Open in browser: ${url}`
+export let HERE_IS_YOUR_UPLOADED_MODEL = (url: string) => `Here is the model you sent me: ${url}`
 export let NO_MODEL_FOUND = 'I do not have a model from you.'
 export let MODEL_REMOVED = 'I removed your model.'
 
@@ -75,12 +75,7 @@ export let NOT_ALWAYS = 'Not Always returns all cases that do not satisfy the re
 export let OSCILLATIONS = 'An oscillation refers to a fluctuation between two things, this can occur between two states or values of a state.'
 export let TRUE_STATE = ''
 export let SELF_LOOP = ''
-<<<<<<< HEAD
-export let STEPS = 'The  number of steps determines how long your query runs for, and a state value is given for each step with a simulation graph.'
+export let STEPS = 'The number of steps determines how long your query runs for, and a state value is given for each step with a simulation graph.'
 export let D_STEPS = 'Decreasing the number of steps a query runs for can limit your results, as you only see a subsection of results which may or may not satisfy your query. The default of 10 steps is recommended.'
 export let I_STEPS = 'Increasing the number of steps will give you a broader view of how the state values fluctuate over time, and may reveal several traces of your query being true.'
-=======
-export let STEPS = 'The number of steps determines how long your query runs for, and a state value is given for each step with a simulation graph'
-export let D_STEPS = 'Decreasing the number of steps a query runs for can limit your results, as you only see a subsection of results which may or may not satisfy your query. The default of 10 steps is recommended'
-export let I_STEPS = 'Increasing the number of steps will give you a broader view of how the state values fluctuate over time, and may reveal several traces of your query being true'
->>>>>>> dc1835021f87f1173cf8e0d2bfb434f8ed150540
+
