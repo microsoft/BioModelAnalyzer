@@ -9,9 +9,9 @@ export const Type = {
     DisjunctionOperator: <'disjunctionOperator'>'disjunctionOperator',
     ConjunctionOperator: <'conjunctionOperator'>'conjunctionOperator',
     UnaryOperator: <'unaryOperator'>'unaryOperator',
-    CompositeOperator: <'compositeOperator'>'compositeOperator',
     BinaryTemporalOperator: <'binaryTemporalOperator'>'binaryTemporalOperator',
     RelationalOperator: <'relationalOperator'>'relationalOperator',
+    FormulaPointer: <'formulaPointer'>'formulaPointer',
     ModelVariable: <'modelVariable'>'modelVariable',
     IntegerLiteral: <'integerLiteral'>'integerLiteral'
 }
@@ -29,10 +29,10 @@ export const TerminalTypes = [
     Type.ImpliesOperator,
     Type.DisjunctionOperator,
     Type.ConjunctionOperator,
-    Type.CompositeOperator,
     Type.UnaryOperator,
     Type.BinaryTemporalOperator,
     Type.RelationalOperator,
+    Type.FormulaPointer,
     Type.ModelVariable,
     Type.IntegerLiteral
 ]
@@ -59,16 +59,16 @@ export type TypeName =
     typeof Type.TemporalExpression |
     typeof Type.UnaryExpression |
     typeof Type.UnaryOperator |
-    typeof Type.CompositeOperator |
     typeof Type.BinaryTemporalOperator |
     typeof Type.RelationalExpression |
     typeof Type.RelationalOperator |
     typeof Type.ModelVariable |
-    typeof Type.IntegerLiteral
+    typeof Type.IntegerLiteral |
+    typeof Type.FormulaPointer
 
 export interface Node<L extends Node<any, any>, R extends Node<any, any>> {
     type: TypeName
-    value?: Node<any, any> | string|  string[] | number
+    value?: Node<any, any> | string | string[] | number
     left?: L
     right?: R
 }
@@ -142,15 +142,10 @@ export interface TemporalExpression extends Node<AtomicExpression, AtomicExpress
     right: AtomicExpression
 }
 
-export type AtomicExpression = RelationalExpression | UnaryExpression
+export type AtomicExpression = RelationalExpression | UnaryExpression | FormulaPointer
 
 export type UnaryOperatorSymbol =
     'not' | 'next' | 'always' | 'eventually'
-
-export interface CompositeOperator extends Node<any, any> {
-    type: typeof Type.CompositeOperator
-    value: UnaryOperatorSymbol[]
-}
 
 export interface UnaryOperator extends Node<any, any> {
     type: typeof Type.UnaryOperator
@@ -193,5 +188,10 @@ export interface ModelVariable extends Node<any, any> {
 
 export interface IntegerLiteral extends Node<any, any> {
     type: typeof Type.IntegerLiteral
+    value: number
+}
+
+export interface FormulaPointer extends Node<any, any> {
+    type: typeof Type.FormulaPointer
     value: number
 }
