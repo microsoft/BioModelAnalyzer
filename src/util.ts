@@ -2,6 +2,12 @@ import * as config from 'config'
 import * as mime from 'mime'
 import * as builder from 'botbuilder'
 
+/** A-Z */
+export const LETTERS: string[] = Array.apply(0, Array(26)).map((x, y) => String.fromCharCode(65 + y))
+
+/** AA-ZZ */
+export const LETTERS2: string[] = [].concat(...LETTERS.map(a => LETTERS.map(b => a + b)))
+
 const STATIC_URL_PREFIX = 'static/'
 
 /**

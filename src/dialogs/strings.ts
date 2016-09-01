@@ -20,6 +20,14 @@ export let OPEN_BMA_URL = (url: string) => `Open in browser: ${url}`
 export let HERE_IS_YOUR_UPLOADED_MODEL = (url: string) => `Here is the model you sent me: ${url}`
 export let NO_MODEL_FOUND = 'I do not have a model from you.'
 export let MODEL_REMOVED = 'I removed your model.'
+export let FORMULA_HISTORY = (formulas: string) => `I have the following formulas on record: \n\n ${formulas}`
+export let FORMULA_HISTORY_EMPTY = 'I do not have any formulas on record.'
+export let FORMULA_HISTORY_CLEARED = 'I forgot all previous formulas.'
+export let FORMULA_REMOVED_FROM_HISTORY = (formula: string) => `I removed the following formula from my history: ${formula}`
+export let FORMULA_RENAMED = (from: string, to: string) => `I renamed the "${from}" formula to "${to}".`
+export let FORMULA_REFERENCE_INVALID = (formulas: string) => `I could not find the formula you referenced. Here is a list of all formulas I know: \n\n ${formulas}`
+export let FORMULA_HISTORY_INFO = 'I just remembered your first formula! You can recall and combine previous formulas. Try to ask me for all the formulas I remember.'
+export let FORMULA_HISTORY_FULL = 'I already remembered too many formulas. Let me forget old ones if you want me to keep remembering new formulas.'
 
 //Simulation outcomes
 export let SIMULATION_DUALITY = (steps: number) => `I tested the formula with ${steps} steps. The formula is sometimes true and sometimes false.`
