@@ -6,14 +6,13 @@ import * as _ from 'underscore'
 import {v4 as uuid} from 'node-uuid'
 import * as strings from './strings'
 import {default as NLParser, ParserResponseType } from '../NLParser/NLParser'
-import {toStatesAndFormula, toHumanReadableString, clampVariables} from '../NLParser/ASTUtils'
+import {NamedFormula, embedNamedFormulas, toStatesAndFormula, toHumanReadableString, clampVariables} from '../NLParser/ASTUtils'
 import {downloadAttachments} from '../attachments'
-import {MemorizedFormula} from './misc' 
 import {ModelStorage} from '../ModelStorage'
 import * as BMA from '../BMA'
 import * as BMAApi from '../BMAApi'
 import * as AST from '../NLParser/AST'
-import {getBMAModelUrl, LETTERS, LETTERS2} from '../util'
+import {getBMAModelUrl, LETTERS, LETTERS_F} from '../util'
 
 /**
  * Registers the LUIS dialog as root dialog. 
@@ -179,14 +178,30 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     })
 
     function handleLTLQuery (session: builder.Session, text: string) {
+        // fetch some session state
+        let bmaModel: BMA.ModelFile = session.conversationData.bmaModel
+
+        let showFormulaHistoryInfo = false
+        if (!session.conversationData.formulas) {
+            session.conversationData.formulas = []
+            showFormulaHistoryInfo = true
+        }
+        let namedFormulas: NamedFormula[] = session.conversationData.formulas
+
         // parse formula
-        let bmaModel = session.conversationData.bmaModel
-        let result = NLParser.parse(text, bmaModel)
+        let result = NLParser.parse(text, bmaModel, namedFormulas)
         if (result.responseType !== ParserResponseType.SUCCESS) {
             session.send(strings.UNKNOWN_LTL_QUERY)
             return
         }
         let ast = result.AST
+
+        if (showFormulaHistoryInfo) {
+            session.send(strings.FORMULA_HISTORY_INFO)
+        }
+
+        // embed all named formulas
+        ast = embedNamedFormulas(ast, bmaModel, namedFormulas)
 
         // check if variable values are in range and clamp if necessary
         let clampingResult = clampVariables(ast, bmaModel)
@@ -197,23 +212,16 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         }
 
         // store formula in history for later composition if not in history yet
-        if (!session.conversationData.formulas) {
-            session.conversationData.formulas = []
-            session.send(strings.FORMULA_HISTORY_INFO)
-        }
-        let formulas: MemorizedFormula[] = session.conversationData.formulas
         let astStr = JSON.stringify(ast)
-        let isInHistory = formulas.some(historyAst => JSON.stringify(historyAst.ast) === astStr)
+        let isInHistory = namedFormulas.some(historyAst => JSON.stringify(historyAst.ast) === astStr)
         if (!isInHistory) {
-            let unused = (list: string[]) => _.find(list, letter => !formulas.some(f => f.name.toLowerCase() === letter.toLowerCase()))
-            let unusedFormulaName = unused(LETTERS)
-            if (!unusedFormulaName) {
-                unusedFormulaName = unused(LETTERS2)
-            }
+            let unusedId = _.isEmpty(namedFormulas) ? 0 : namedFormulas[namedFormulas.length - 1].id + 1
+            let unusedFormulaName = _.find(LETTERS_F, letter => !namedFormulas.some(f => f.name.toLowerCase() === letter.toLowerCase()))
             if (!unusedFormulaName) {
                 session.send(strings.FORMULA_HISTORY_FULL)
             } else {
-                formulas.push({
+                namedFormulas.push({
+                    id: unusedId,
                     name: unusedFormulaName,
                     ast
                 })

@@ -3,13 +3,8 @@ import * as _ from 'underscore'
 import {ModelStorage} from '../ModelStorage'
 import {getBMAModelUrl, LETTERS} from '../util'
 import * as AST from '../NLParser/AST'
-import {toHumanReadableString} from '../NLParser/ASTUtils'
+import {toHumanReadableString, NamedFormula} from '../NLParser/ASTUtils'
 import * as strings from './strings'
-
-export interface MemorizedFormula {
-    name: string
-    ast: AST.Formula
-}
 
 /**
  * Registers dialogs that are not grouped into a specific theme yet.
@@ -41,7 +36,7 @@ export function registerOtherDialogs (bot: builder.UniversalBot, modelStorage: M
     })
     bot.dialog('/formulaHistory', (session, args, next) => {
         let model = session.conversationData.bmaModel
-        let formulas: MemorizedFormula[] = session.conversationData.formulas
+        let formulas: NamedFormula[] = session.conversationData.formulas
         if (!formulas) {
             session.send(strings.FORMULA_HISTORY_EMPTY)
             next()
@@ -53,7 +48,7 @@ export function registerOtherDialogs (bot: builder.UniversalBot, modelStorage: M
         next()
     })
     bot.dialog('/removeFormulas', (session, args, next) => {
-        let formulas: MemorizedFormula[] = session.conversationData.formulas
+        let formulas: NamedFormula[] = session.conversationData.formulas
         if (!formulas || !formulas.length) {
             session.send(strings.FORMULA_HISTORY_EMPTY)
             next()
@@ -65,7 +60,7 @@ export function registerOtherDialogs (bot: builder.UniversalBot, modelStorage: M
     })
     bot.dialog('/removeFormula', (session, args: string | number, next) => {
         let model = session.conversationData.bmaModel
-        let formulas: MemorizedFormula[] = session.conversationData.formulas
+        let formulas: NamedFormula[] = session.conversationData.formulas
 
         let formulaNumber: number
         if (typeof args === 'number') {
@@ -82,18 +77,24 @@ export function registerOtherDialogs (bot: builder.UniversalBot, modelStorage: M
             next()
             return
         }
-        let formula: MemorizedFormula = formulas[formulaNumber - 1]
+        let formula: NamedFormula = formulas[formulaNumber - 1]
         formulas.splice(formulaNumber - 1, 1)
         session.send(strings.FORMULA_REMOVED_FROM_HISTORY(toHumanReadableString(formula.ast, model)))
         next()
     })
     bot.dialog('/renameFormula', (session, args: {from: string, to: string}, next) => {
-        let formulas: MemorizedFormula[] = session.conversationData.formulas
+        let formulas: NamedFormula[] = session.conversationData.formulas
         let formula = _.find(formulas, f => f.name.toLowerCase() === args.from.toLowerCase())
         let oldName = formula.name
         if (!formula) {
             let model = session.conversationData.bmaModel
             session.send(strings.FORMULA_REFERENCE_INVALID(getFormattedFormulas(formulas, model)))
+            next()
+            return
+        }
+        let to = args.to.trim()
+        if (!to) {
+            session.send(strings.FORMULA_RENAME_NAME_EMPTY)
             next()
             return
         }
@@ -103,6 +104,6 @@ export function registerOtherDialogs (bot: builder.UniversalBot, modelStorage: M
     })
 }
 
-function getFormattedFormulas (formulas: MemorizedFormula[], model) {
-    return formulas.map(formula => `[${formula.name}] ${toHumanReadableString(formula.ast, model)}`).join(' \n\n ')
+function getFormattedFormulas (formulas: NamedFormula[], model) {
+    return formulas.map(formula => `[${formula.name}; ${formula.id}] ${toHumanReadableString(formula.ast, model)}`).join(' \n\n ')
 }

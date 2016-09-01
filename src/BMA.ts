@@ -148,6 +148,11 @@ export type LtlOperatorName =
     'NEXT' | 'ALWAYS' | 'EVENTUALLY' | 'UPTO' |
     'WEAKUNTIL' | 'UNTIL' | 'RELEASE'
 
+export type LtlOperatorNameLowerCase =
+    'and' | 'or' | 'implies' | 'not' |
+    'next' | 'always' | 'eventually' | 'upto' |
+    'weakuntil' | 'weak until' | 'until' | 'release'
+
 export interface LtlOperationOperator {
     name: LtlOperatorName
 
@@ -202,7 +207,10 @@ export class LtlOperationImpl implements LtlOperation {
     operator: LtlOperationOperator
     operands: LtlFormula[]
 
-    constructor (operator: LtlOperatorName, operands: LtlFormula[]) {
+    constructor (operator: LtlOperatorName | LtlOperatorNameLowerCase, operands: LtlFormula[]) {
+        if (operator === 'weak until') {
+            operator = 'weakuntil'
+        }
         this.operator = {
             name: operator.toUpperCase() as LtlOperatorName,
             operandsCount: operands.length
