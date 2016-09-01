@@ -36,8 +36,47 @@ export enum TokenType {
     /** operators comparing values eg: a > 1 */
     ARITHMETIC_OPERATOR,
     /** grammar specefic tokens eg: if/then  */
-    GRAMMAR_CONSTRUCT
+    GRAMMAR_CONSTRUCT,
+    /** composite operator keyword eg: never => not(always(..))*/
+    COMPOSITE_OPERATOR
 }
+/** Token class extended to support NLParser specefic properties */
+class BaseToken extends Token {
+    static PATTERN
+    static LABEL
+    // custom properties
+    static TOKEN_TYPE
+    static NON_STEMMED_SYNONYMS
+}
+
+class CompositeToken extends BaseToken {
+    static REPLACEMENT_TOKENS
+    static replacementTokensAsSubtrees = (tokenClass: typeof CompositeToken) => tokenClass.REPLACEMENT_TOKENS.map(rtokenClass => {
+        return {
+            type: AST.Type.UnaryOperator,
+            value: rtokenClass.LABEL
+        }
+    })
+}
+
+/**  literals (no stemming required) */
+class IntegerLiteral extends Token {
+    static PATTERN = /\d+/
+}
+
+/**  Model variable token: in the form MODELVAR(varId) (no stemming required) */
+class ModelVariable extends Token {
+    static PATTERN = /(MODELVAR)(\()(\d+)(\))/
+    static TokenType = TokenType.MODELVAR
+}
+
+/**  Ignored tokens : We ignore whitespaces as token boundaries are defined using the token set and can be processed by the lexer accordingly */
+class WhiteSpace extends Token {
+    static PATTERN = /\s+/
+    static GROUP = Lexer.SKIPPED
+}
+
+
 /*
  *  GRAMMAR TOKENS: The set of tokens that are accepted by the grammar of our language,
  *  where each terminal token is augmented with a set of synonyms that can also be matched in the input token stream
@@ -62,28 +101,14 @@ let Not = generateStemmedTokenDefinition("Not", "not", ["not"], TokenType.UNARY_
 // Temporal operator tokens
 let Eventually = generateStemmedTokenDefinition("Eventually", "eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "some point", "in the long run", "in a while", "soon", "at the end", "sometime"], TokenType.UNARY_OPERATOR)
 let Always = generateStemmedTokenDefinition("Always", "always", ["always", "invariably", "perpetually", "forever", "constantly"], TokenType.UNARY_OPERATOR)
-let Next = generateStemmedTokenDefinition("Next", "next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this"], TokenType.UNARY_OPERATOR)
+let Next = generateStemmedTokenDefinition("Next", "next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this", "later"], TokenType.UNARY_OPERATOR)
 let Upto = generateStemmedTokenDefinition("Upto", "upto", ["upto"], TokenType.BINARY_OPERATOR)
 let Until = generateStemmedTokenDefinition("Until", "until", ["until"], TokenType.BINARY_OPERATOR)
 let WUntil = generateStemmedTokenDefinition("WUntil", "weak until", ["weak until"], TokenType.BINARY_OPERATOR)
 let Release = generateStemmedTokenDefinition("Release", "release", ["release"], TokenType.BINARY_OPERATOR)
 
-/**  literals (no stemming required) */
-class IntegerLiteral extends Token {
-    static PATTERN = /\d+/
-}
-
-/**  Model variable token: in the form MODELVAR(varId) (no stemming required) */
-class ModelVariable extends Token {
-    static PATTERN = /(MODELVAR)(\()(\d+)(\))/
-    static TokenType = TokenType.MODELVAR
-}
-
-/**  Ignored tokens : We ignore whitespaces as token boundaries are defined using the token set and can be processed by the lexer accordingly */
-class WhiteSpace extends Token {
-    static PATTERN = /\s+/
-    static GROUP = Lexer.SKIPPED
-}
+//Composite tokens - these are replaced when parsing with the replacement array (where replacement is done based on the order of the items in the replacement array ie: Never => not(eventually(..)))
+let Never = generateCompositeTokenDefinition("Never", "never", ["never"], TokenType.COMPOSITE_OPERATOR, [Not, Eventually])
 
 /**
  *  Token groups for accessibility
@@ -93,7 +118,7 @@ let LITERALS = [ModelVariable, IntegerLiteral]
 let CONSTRUCTS = [If, Then]
 let ARITHMETIC_OPERATORS = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
 let BOOLEAN_OPERATORS = [And, Or, Implies, Not]
-let TEMPORAL_OPERATORS = [Eventually, Always, Next, Upto, Until, WUntil, Release]
+let TEMPORAL_OPERATORS = [Eventually, Always, Never, Next, Upto, Until, WUntil, Release]
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
@@ -103,6 +128,20 @@ let ALLOWED_TOKENS = (<typeof Token[]>IGNORE)
     .concat(ARITHMETIC_OPERATORS)
     .concat(BOOLEAN_OPERATORS)
     .concat(TEMPORAL_OPERATORS)
+
+function generateCompositeTokenDefinition(id: string, label: string, synonyms: string[], tokenType: TokenType, replacementTokens?: typeof Token[]) {
+    if (tokenType == TokenType.COMPOSITE_OPERATOR && (!replacementTokens || _.isEmpty(replacementTokens))) {
+        throw Error("No replacement tokens found for composite token type")
+    } else {
+        let tokenClass = generateStemmedTokenDefinition(id, label, synonyms, tokenType)
+        let compositeTokenClass = class extends CompositeToken {
+            static REPLACEMENT_TOKENS = replacementTokens
+        }
+        for (var k in tokenClass) compositeTokenClass[k] = tokenClass[k];
+        Object.defineProperty(compositeTokenClass.prototype.constructor, 'name', { value: id })
+        return compositeTokenClass
+    }
+}
 
 /**
  *  Token Stemming: As part of initialisation, each token is stemmed as we perform stemming on the input sentence. 
@@ -114,15 +153,15 @@ let ALLOWED_TOKENS = (<typeof Token[]>IGNORE)
  *  3) we use the chevrotain function extendToken to generate a TokenConstructor
  *  4) we augment the generated TokenConstructor with static properties that are used in later processing
  */
-function generateStemmedTokenDefinition(id: string, label: string, synonyms: string[], tokenType: TokenType): typeof Token {
+
+function generateStemmedTokenDefinition(id: string, label: string, synonyms: string[], tokenType): typeof BaseToken {
     let stemmedSynonyms = synonyms.map(s => s.split(" ").map(natural.PorterStemmer.stem).join(" "))
     //We require explicit token boundaries on binary tokens to ensure input strings do not get match with tokens that are substrings eg: notch and not
     let pattern = RegExp(tokenType == TokenType.BINARY_OPERATOR ? "(\\b)(" + stemmedSynonyms.join('|') + ")(\\b)" : stemmedSynonyms.join('|'), "i")
 
-    let tokenClass = class extends Token {
+    let tokenClass = class extends BaseToken {
         static PATTERN = pattern
         static LABEL = label
-
         // custom properties
         static TOKEN_TYPE = tokenType
         static NON_STEMMED_SYNONYMS = synonyms
@@ -130,31 +169,28 @@ function generateStemmedTokenDefinition(id: string, label: string, synonyms: str
     Object.defineProperty(tokenClass.prototype.constructor, 'name', { value: id })
     return tokenClass
 }
+
 /**
  *  NLParser: This class implicitly defines the grammar of the language based on the structure of the RULE,MANY,OR,SUBRULE and CONSUME operations.
  *  The operator precedence is explicitly defined by the level at which the assosiated rule is defined in the hierarchy
  */
 export default class NLParser extends Parser {
 
-    /** Base entry rule of the grammar */
+    /** Base entry rule of the graar */
     private formula = this.RULE<AST.InternalFormula>("formula", () => {
         let ltlFormula
         let tree = {
             left: null
         }
-        var subtree = tree
-
+        var subTree = tree
         /** Zero or one unary operators */
         this.MANY(() => {
-            subtree.left = {
-                type: AST.Type.UnaryExpression,
-                value: this.SUBRULE(this.unaryOperator)
-            }
-            subtree = subtree.left
+            let unaryOperatorTree = NLParser.asUnaryExpressionNode(this.SUBRULE(this.compositeOperator))
+            subTree.left = unaryOperatorTree.tree
+            subTree = unaryOperatorTree.lastNode
         })
-
         /** First child production */
-        subtree.left = this.OR<AST.ConditionalsExpression | AST.DisjunctionExpression | AST.DisjunctionExpressionChild>([{
+        subTree.left = this.OR<AST.ConditionalsExpression | AST.DisjunctionExpression | AST.DisjunctionExpressionChild>([{
             ALT: () => this.SUBRULE(this.conditionalsExpression)
         }, {
             ALT: () => this.SUBRULE(this.disjunctionExpression)
@@ -168,17 +204,14 @@ export default class NLParser extends Parser {
         //handle trailing operators
         this.MANY2(() => {
             var subTrailingTree = trailingTree
-            var operatorExp = {
-                type: AST.Type.UnaryExpression,
-                value: this.SUBRULE2(this.unaryOperator)
-            }
+            let unaryOperatorTree = NLParser.asUnaryExpressionNode(this.SUBRULE2(this.compositeOperator))
             if (subTrailingTree) {
-                subTrailingTree.left = operatorExp
-                subTrailingTree = subTrailingTree.left
+                subTrailingTree.left = unaryOperatorTree.tree
+                subTrailingTree = unaryOperatorTree.lastNode
                 lastTrailingNode = subTrailingTree
             } else {
-                trailingTree = operatorExp
-                lastTrailingNode = operatorExp
+                trailingTree = unaryOperatorTree.tree
+                lastTrailingNode = unaryOperatorTree.lastNode
             }
         })
         let resultTree
@@ -284,14 +317,11 @@ export default class NLParser extends Parser {
         let tree = {
             left: null
         }
-
+        let subTree = tree
         this.MANY(() => {
-            let subTree = tree
-            subTree.left = {
-                type: AST.Type.UnaryExpression,
-                value: this.SUBRULE(this.unaryOperator)
-            }
-            subTree = subTree.left
+            let unaryOperatorTree = NLParser.asUnaryExpressionNode(this.SUBRULE(this.compositeOperator))
+            subTree.left = unaryOperatorTree.tree
+            subTree = unaryOperatorTree.lastNode
             lastNode = subTree
         })
         let relationalExpression = this.SUBRULE(this.relationalExpression)
@@ -387,30 +417,44 @@ export default class NLParser extends Parser {
         }
     });
 
+    private compositeOperator = this.RULE<AST.CompositeOperator>("compositeOperator", () => {
+        return {
+            type: AST.Type.CompositeOperator,
+            value: this.OR([{
+                ALT: () => [this.SUBRULE(this.unaryOperator)]
+            }, {
+                ALT: () => {
+                    this.CONSUME(Never)
+                    return CompositeToken.replacementTokensAsSubtrees(Never)
+                }
+            }])
+        }
+    });
+
     private unaryOperator = this.RULE<AST.UnaryOperator>("unaryOperator", () => {
         return {
             type: AST.Type.UnaryOperator,
             value: this.OR([{
                 ALT: () => {
                     this.CONSUME(Not)
-                    return Not.LABEL
+                    return Not
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Next)
-                    return Next.LABEL
+                    return Next
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Always)
-                    return Always.LABEL
+                    return Always
                 }
             }, {
                 ALT: () => {
                     this.CONSUME(Eventually)
-                    return Eventually.LABEL
+                    return Eventually
                 }
-            }]) as AST.UnaryOperatorSymbol
+            }]).LABEL as AST.UnaryOperatorSymbol
         }
     });
 
@@ -421,6 +465,24 @@ export default class NLParser extends Parser {
         // otherwise the parser may not work correctly as it will lack information
         // derived during the self analysis phase.
         Parser.performSelfAnalysis(this);
+    }
+
+    private static asUnaryExpressionNode(unaryOperators) {
+        let tree = {
+            left: null
+        }
+        var lastNode = null
+        var subtree = tree
+        unaryOperators.value.forEach(op => {
+            subtree.left = {
+                type: AST.Type.UnaryExpression,
+                value: op
+            }
+            subtree = subtree.left
+            lastNode = subtree
+        });
+        //get rid of the first empty left node
+        return { tree: tree.left, lastNode: lastNode }
     }
 
     /**
@@ -460,7 +522,7 @@ export default class NLParser extends Parser {
      *  and encodes the variables as MODELVAR(k) where k is the id of the variable a
      *  and then performs stemming on the remaining tokens.
      */
-    private static applyPreprocessing(sentence: string, bmaModel): string {
+    private static applySentencePreprocessing(sentence: string, bmaModel): string {
         var modelVariables = bmaModel.Model.Variables
         var modelVariableRelationOpRegex = new RegExp(
             "(" + _.pluck(modelVariables, "Name").join("|") +
@@ -498,7 +560,7 @@ export default class NLParser extends Parser {
      *  Main Parse routine: 
      */
     static parse(sentence: string, bmaModel, didResynchedBefore?: boolean): ParserResponse {
-        sentence = NLParser.applyPreprocessing(sentence, bmaModel)
+        sentence = NLParser.applySentencePreprocessing(sentence, bmaModel)
         //lex the sentence to get token stream where illegal tokens are ignored and returns a token stream
         let lexedTokens = (new Lexer(ALLOWED_TOKENS, true)).tokenize(sentence).tokens
         var parser = new NLParser(lexedTokens)

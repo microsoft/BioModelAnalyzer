@@ -1,18 +1,19 @@
 export const Type = {
-    ConditionalsExpression: <'conditionalsExpression'> 'conditionalsExpression',
-    DisjunctionExpression: <'disjunctionExpression'> 'disjunctionExpression',
-    ConjunctionExpression: <'conjunctionExpression'> 'conjunctionExpression',
-    TemporalExpression: <'temporalExpression'> 'temporalExpression',
-    UnaryExpression: <'unaryExpression'> 'unaryExpression',
-    RelationalExpression: <'relationalExpression'> 'relationalExpression',
-    ImpliesOperator: <'impliesOperator'> 'impliesOperator',
-    DisjunctionOperator: <'disjunctionOperator'> 'disjunctionOperator',
-    ConjunctionOperator: <'conjunctionOperator'> 'conjunctionOperator',
-    UnaryOperator: <'unaryOperator'> 'unaryOperator',
-    BinaryTemporalOperator: <'binaryTemporalOperator'> 'binaryTemporalOperator',
-    RelationalOperator: <'relationalOperator'> 'relationalOperator',
-    ModelVariable: <'modelVariable'> 'modelVariable',
-    IntegerLiteral: <'integerLiteral'> 'integerLiteral'
+    ConditionalsExpression: <'conditionalsExpression'>'conditionalsExpression',
+    DisjunctionExpression: <'disjunctionExpression'>'disjunctionExpression',
+    ConjunctionExpression: <'conjunctionExpression'>'conjunctionExpression',
+    TemporalExpression: <'temporalExpression'>'temporalExpression',
+    UnaryExpression: <'unaryExpression'>'unaryExpression',
+    RelationalExpression: <'relationalExpression'>'relationalExpression',
+    ImpliesOperator: <'impliesOperator'>'impliesOperator',
+    DisjunctionOperator: <'disjunctionOperator'>'disjunctionOperator',
+    ConjunctionOperator: <'conjunctionOperator'>'conjunctionOperator',
+    UnaryOperator: <'unaryOperator'>'unaryOperator',
+    CompositeOperator: <'compositeOperator'>'compositeOperator',
+    BinaryTemporalOperator: <'binaryTemporalOperator'>'binaryTemporalOperator',
+    RelationalOperator: <'relationalOperator'>'relationalOperator',
+    ModelVariable: <'modelVariable'>'modelVariable',
+    IntegerLiteral: <'integerLiteral'>'integerLiteral'
 }
 
 export const NonTerminalTypes = [
@@ -28,6 +29,7 @@ export const TerminalTypes = [
     Type.ImpliesOperator,
     Type.DisjunctionOperator,
     Type.ConjunctionOperator,
+    Type.CompositeOperator,
     Type.UnaryOperator,
     Type.BinaryTemporalOperator,
     Type.RelationalOperator,
@@ -47,7 +49,7 @@ export const UnaryExpressionTypes = [
     Type.UnaryExpression
 ]
 
-export type TypeName = 
+export type TypeName =
     typeof Type.ConditionalsExpression |
     typeof Type.ImpliesOperator |
     typeof Type.DisjunctionOperator |
@@ -57,15 +59,16 @@ export type TypeName =
     typeof Type.TemporalExpression |
     typeof Type.UnaryExpression |
     typeof Type.UnaryOperator |
+    typeof Type.CompositeOperator |
     typeof Type.BinaryTemporalOperator |
     typeof Type.RelationalExpression |
     typeof Type.RelationalOperator |
     typeof Type.ModelVariable |
     typeof Type.IntegerLiteral
 
-export interface Node<L extends Node<any,any>, R extends Node<any,any>> {
+export interface Node<L extends Node<any, any>, R extends Node<any, any>> {
     type: TypeName
-    value?: Node<any,any> | string | number
+    value?: Node<any, any> | string|  string[] | number
     left?: L
     right?: R
 }
@@ -80,13 +83,13 @@ export type Formula = UnaryExpression |
     ConditionalsExpression | ConditionalsExpressionChild |
     DisjunctionExpression | DisjunctionExpressionChild
 
-export type BinaryExpression = 
+export type BinaryExpression =
     ConditionalsExpression | DisjunctionExpression | ConjunctionExpression |
     TemporalExpression | RelationalExpression
 
 export type ImpliesOperatorSymbol = 'implies'
 
-export interface ImpliesOperator extends Node<any,any> {
+export interface ImpliesOperator extends Node<any, any> {
     type: typeof Type.ImpliesOperator
     value: ImpliesOperatorSymbol
 }
@@ -102,7 +105,7 @@ export interface ConditionalsExpression extends Node<ConditionalsExpressionChild
 
 export type DisjunctionOperatorSymbol = 'or'
 
-export interface DisjunctionOperator extends Node<any,any> {
+export interface DisjunctionOperator extends Node<any, any> {
     type: typeof Type.DisjunctionOperator
     value: DisjunctionOperatorSymbol
 }
@@ -118,7 +121,7 @@ export interface DisjunctionExpression extends Node<DisjunctionExpressionChild, 
 
 export type ConjunctionOperatorSymbol = 'and'
 
-export interface ConjunctionOperator extends Node<any,any> {
+export interface ConjunctionOperator extends Node<any, any> {
     type: typeof Type.ConjunctionOperator,
     value: ConjunctionOperatorSymbol
 }
@@ -132,7 +135,7 @@ export interface ConjunctionExpression extends Node<ConjunctionExpressionChild, 
     right: ConjunctionExpressionChild
 }
 
-export interface TemporalExpression extends Node<AtomicExpression,AtomicExpression> {
+export interface TemporalExpression extends Node<AtomicExpression, AtomicExpression> {
     type: typeof Type.TemporalExpression
     value: BinaryTemporalOperator
     left: AtomicExpression
@@ -144,15 +147,20 @@ export type AtomicExpression = RelationalExpression | UnaryExpression
 export type UnaryOperatorSymbol =
     'not' | 'next' | 'always' | 'eventually'
 
-export interface UnaryOperator extends Node<any,any> {
+export interface CompositeOperator extends Node<any, any> {
+    type: typeof Type.CompositeOperator
+    value: UnaryOperatorSymbol[]
+}
+
+export interface UnaryOperator extends Node<any, any> {
     type: typeof Type.UnaryOperator
     value: UnaryOperatorSymbol
 }
 
-export interface UnaryExpression extends Node<Node<any,any>,any> {
+export interface UnaryExpression extends Node<Node<any, any>, any> {
     type: typeof Type.UnaryExpression
     value: UnaryOperator
-    left: Node<any,any>
+    left: Node<any, any>
 }
 
 export interface RelationalExpression extends Node<ModelVariable, IntegerLiteral> {
@@ -165,15 +173,15 @@ export interface RelationalExpression extends Node<ModelVariable, IntegerLiteral
 export type BinaryTemporalOperatorSymbol =
     'until' | 'weak until' | 'release' | 'upto'
 
-export interface BinaryTemporalOperator extends Node<any,any> {
+export interface BinaryTemporalOperator extends Node<any, any> {
     type: typeof Type.BinaryTemporalOperator
     value: BinaryTemporalOperatorSymbol
 }
 
-export type RelationalOperatorSymbol = 
+export type RelationalOperatorSymbol =
     '=' | '>' | '<' | '<=' | '>=' | '!='
 
-export interface RelationalOperator extends Node<any,any> {
+export interface RelationalOperator extends Node<any, any> {
     type: typeof Type.RelationalOperator
     value: RelationalOperatorSymbol
 }
