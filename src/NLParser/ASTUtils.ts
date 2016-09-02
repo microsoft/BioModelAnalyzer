@@ -85,7 +85,7 @@ export interface Clamping {
 /**
  * Returns a new AST where all variable values are clamped to the range defined in the given model.
  */
-export function clampVariables (node: AST.Node<any,any>, bmaModel: BMA.ModelFile) {
+export function clampVariables<T extends AST.Node<any,any>> (node: T, bmaModel: BMA.ModelFile) {
     let getVariable = id => _.find(bmaModel.Model.Variables, v => v.Id === id)
 
     let clampings: Clamping[] = []
@@ -120,7 +120,7 @@ export function clampVariables (node: AST.Node<any,any>, bmaModel: BMA.ModelFile
         }
     }
 
-    let nodeCopy: AST.Node<any,any> = JSON.parse(JSON.stringify(node))
+    let nodeCopy: T = JSON.parse(JSON.stringify(node))
     doClamp(nodeCopy)
 
     return {
@@ -138,14 +138,14 @@ export function embedNamedFormulas (node: AST.Node<any,any>, bmaModel: BMA.Model
         if (node.left) {
             if (node.left.type === AST.Type.FormulaPointer) {
                 let formula = _.find(namedFormulas, f => f.id === node.left.value)
-                node.left = formula
+                node.left = formula.ast
             }
             doEmbed(node.left)
         }
         if (node.right) {
             if (node.right.type === AST.Type.FormulaPointer) {
                 let formula = _.find(namedFormulas, f => f.id === node.right.value)
-                node.right = formula
+                node.right = formula.ast
             }
             doEmbed(node.right)
         }
