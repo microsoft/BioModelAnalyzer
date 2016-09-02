@@ -173,10 +173,25 @@ describe('parse() should handle composite operator usage', () => {
         expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
     })
 })
-
 it('parse() should handle boolean literals', () => {
     var sentence = "can you give me a simulation where false and b=1 or true"
     var parserResponse = NLParser.parse(sentence, testModel)
     var expected = "((not(true) and b=1) or true)"
     expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+})
+
+describe('parse() should handle developmental end states', () => {
+
+    it('parse() should handle "SelfLoop"', () => {
+        var sentence = "show me a simulation that ends in a self loop and a is 1"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "(SelfLoop and a=1)"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
+    it('parse() should handle "Oscillation"', () => {
+        var sentence = "show me a simulation that ends in an oscillation  and a is 1"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "(Oscillation and a=1)"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
 })

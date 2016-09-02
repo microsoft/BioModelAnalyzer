@@ -1,5 +1,7 @@
 /// <reference path="../../node_modules/chevrotain/lib/chevrotain.d.ts" />
 
+//1) handle error tokens in the rsynching logic
+
 /**
  *  Please read ./NLParserDocumentation.md for a high level explaination of the parser
  */
@@ -44,7 +46,9 @@ export enum TokenType {
     /** grammar specefic tokens eg: if/then  */
     GRAMMAR_CONSTRUCT,
     /** composite operator keyword eg: never => not(always(..))*/
-    COMPOSITE_OPERATOR
+    COMPOSITE_OPERATOR,
+    /** developmental end state eg: self loop,oscillation*/
+    DEVELOPMENTAL_END_STATE
 }
 /** Token class extended to support NLParser specefic properties */
 class BaseToken extends Token {
@@ -72,6 +76,7 @@ class IntegerLiteral extends Token {
 
 class TrueLiteral extends Token {
     static PATTERN = /true/
+    static LABEL = "true"
 }
 
 class FalseLiteral extends Token {
@@ -126,16 +131,20 @@ let Until = generateStemmedTokenDefinition("Until", "until", ["until"], TokenTyp
 let WUntil = generateStemmedTokenDefinition("WUntil", "weak until", ["weak until"], TokenType.BINARY_OPERATOR)
 let Release = generateStemmedTokenDefinition("Release", "release", ["release"], TokenType.BINARY_OPERATOR)
 
+// Developmental end state tokens
+let SelfLoop = generateStemmedTokenDefinition("SelfLoop", "SelfLoop", ["self loop", "stable loop", "fixed point", "fixpoint", "stable recursion"], TokenType.DEVELOPMENTAL_END_STATE)
+let Oscillation = generateStemmedTokenDefinition("Oscillation", "Oscillation", ["loop", "oscillation", "unstable loop", "unstable recursion"], TokenType.DEVELOPMENTAL_END_STATE)
+
 //Composite tokens - these are replaced when parsing with the replacement array (where replacement is done based on the order of the items in the replacement array ie: Never => not(eventually(..)))
 let Never = generateCompositeTokenDefinition("Never", "never", ["never", "impossible", "at no time"], TokenType.COMPOSITE_OPERATOR, [Always, Not])
 let Later = generateCompositeTokenDefinition("Later", "later", ["later", "sometime in the future", "in the future", "sometime later", "after a while", "in the long run", "in a while", "thereafter"], TokenType.COMPOSITE_OPERATOR, [Next, Eventually])
-let False = generateCompositeTokenDefinition("False", "false", ["false"], TokenType.COMPOSITE_OPERATOR, [Not, TrueLiteral])
 
 /**
  *  Token groups for accessibility
  */
 let IGNORE = [WhiteSpace]
 let LITERALS = [FalseLiteral, TrueLiteral, ModelVariable, FormulaPointerToken, IntegerLiteral]
+let DEVELOPMENTAL_END_STATES = [SelfLoop, Oscillation]
 let CONSTRUCTS = [If, Then]
 let ARITHMETIC_OPERATORS = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
 let BOOLEAN_OPERATORS = [And, Or, Implies, Not]
@@ -146,6 +155,7 @@ let TEMPORAL_OPERATORS = [Never, Later, Eventually, Always, Next, Upto, Until, W
 let ALLOWED_TOKENS = (<typeof Token[]>IGNORE)
     .concat(LITERALS)
     .concat(CONSTRUCTS)
+    .concat(DEVELOPMENTAL_END_STATES)
     .concat(ARITHMETIC_OPERATORS)
     .concat(BOOLEAN_OPERATORS)
     .concat(TEMPORAL_OPERATORS)
@@ -345,12 +355,14 @@ export default class NLParser extends Parser {
             subTree = unaryOperatorTree.lastNode
             lastNode = subTree
         })
-        let rhs = this.OR<AST.RelationalExpression | AST.FormulaPointer | AST.TrueLiteral | AST.UnaryExpression>([{
+        let rhs = this.OR<AST.RelationalExpression | AST.FormulaPointer | AST.TrueLiteral | AST.UnaryExpression | AST.DevelopmentalEndState>([{
             ALT: () => this.SUBRULE(this.relationalExpression)
         }, {
             ALT: () => this.SUBRULE(this.formulaPointer)
         }, {
             ALT: () => this.SUBRULE(this.booleanLiteral)
+        }, {
+            ALT: () => this.SUBRULE(this.developmentalEndState)
         }])
 
         if (lastNode) {
@@ -393,10 +405,11 @@ export default class NLParser extends Parser {
         }
     })
 
+
     private booleanLiteral = this.RULE<AST.TrueLiteral | AST.UnaryExpression>("booleanLiteral", () => {
         let trueLiteralSubtree: AST.TrueLiteral = {
             type: AST.Type.TrueLiteral,
-            value: 'true'
+            value: TrueLiteral.LABEL as AST.TrueLiteralSymbol
         }
         let tokenClass = this.OR([{
             ALT: () => {
@@ -420,6 +433,25 @@ export default class NLParser extends Parser {
                 },
                 left: trueLiteralSubtree
             }
+        }
+    })
+
+    private developmentalEndState = this.RULE<AST.DevelopmentalEndState>("developmentalEndState", () => {
+        let developmentalEndStateLabel = this.OR([{
+            ALT: () => {
+                this.CONSUME(SelfLoop)
+                return SelfLoop
+            }
+        }, {
+            ALT: () => {
+                this.CONSUME(Oscillation)
+                return Oscillation
+            }
+        }]).LABEL
+
+        return {
+            type: AST.Type.DevelopmentalEndState,
+            value: developmentalEndStateLabel
         }
     })
 
@@ -665,8 +697,8 @@ export default class NLParser extends Parser {
         }
 
         /**
-         *  We continue parsing the resynched tokens until we find a good parse, no tokens are left or no new resynched tokens are generated
-         */
+          *  We continue parsing the resynched tokens until we find a good parse, no tokens are left or no new resynched tokens are generated
+          */
         function handleResynchedTokens(resyncedTokens: string, formulaPointers?: FormulaPointer[], didResynchedBefore?: boolean): ParserResponse {
             //extract the part of the sentance starting from the first resynched token
             var currentResynched = sentence.substring(parserResponse.resyncedToken.offset, sentence.length);

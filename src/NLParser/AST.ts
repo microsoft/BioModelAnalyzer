@@ -14,7 +14,8 @@ export const Type = {
     FormulaPointer: <'formulaPointer'>'formulaPointer',
     ModelVariable: <'modelVariable'>'modelVariable',
     IntegerLiteral: <'integerLiteral'>'integerLiteral',
-    TrueLiteral: <'trueLiteral'>'trueLiteral'
+    TrueLiteral: <'trueLiteral'>'trueLiteral',
+    DevelopmentalEndState: <'developmentalEndState'>'developmentalEndState'
 }
 
 export const NonTerminalTypes = [
@@ -36,7 +37,8 @@ export const TerminalTypes = [
     Type.FormulaPointer,
     Type.ModelVariable,
     Type.IntegerLiteral,
-    Type.TrueLiteral
+    Type.TrueLiteral,
+    Type.DevelopmentalEndState
 ]
 
 export const BinaryExpressionTypes = [
@@ -67,7 +69,8 @@ export type TypeName =
     typeof Type.ModelVariable |
     typeof Type.IntegerLiteral |
     typeof Type.FormulaPointer |
-    typeof Type.TrueLiteral
+    typeof Type.TrueLiteral |
+    typeof Type.DevelopmentalEndState
 
 export interface Node<L extends Node<any, any>, R extends Node<any, any>> {
     type: TypeName
@@ -145,7 +148,7 @@ export interface TemporalExpression extends Node<AtomicExpression, AtomicExpress
     right: AtomicExpression
 }
 
-export type AtomicExpression = RelationalExpression | UnaryExpression | FormulaPointer
+export type AtomicExpression = RelationalExpression | UnaryExpression | FormulaPointer | DevelopmentalEndState
 
 export type UnaryOperatorSymbol =
     'not' | 'next' | 'always' | 'eventually'
@@ -182,6 +185,9 @@ export type TrueLiteralSymbol =
 export type RelationalOperatorSymbol =
     '=' | '>' | '<' | '<=' | '>=' | '!='
 
+export type DevelopmentalEndStateSymbol =
+    'self loop' | 'oscillation'
+
 export interface RelationalOperator extends Node<any, any> {
     type: typeof Type.RelationalOperator
     value: RelationalOperatorSymbol
@@ -205,4 +211,9 @@ export interface FormulaPointer extends Node<any, any> {
 export interface TrueLiteral extends Node<any, any> {
     type: typeof Type.TrueLiteral
     value: TrueLiteralSymbol
+}
+
+export interface DevelopmentalEndState extends Node<any, any> {
+    type: typeof Type.DevelopmentalEndState
+    value: DevelopmentalEndStateSymbol
 }
