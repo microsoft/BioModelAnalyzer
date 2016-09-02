@@ -197,7 +197,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         let ast = result.AST
 
         if (showFormulaHistoryInfo) {
-            session.send(strings.FORMULA_HISTORY_INFO)
+            session.send(strings.FORMULA_HISTORY_FIRST_NOTICE)
         }
 
         // embed all named formulas

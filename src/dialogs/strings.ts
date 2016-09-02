@@ -29,7 +29,7 @@ export let FORMULA_REMOVED_FROM_HISTORY = (formula: string) => `I removed the fo
 export let FORMULA_RENAMED = (from: string, to: string) => `I renamed the "${from}" formula to "${to}".`
 export let FORMULA_RENAME_NAME_EMPTY = 'Formulas can only be renamed to non-empty names.'
 export let FORMULA_REFERENCE_INVALID = (formulas: string) => `I could not find the formula you referenced. Here is a list of all formulas I know: \n\n ${formulas}`
-export let FORMULA_HISTORY_INFO = 'I just remembered your first formula! You can recall and combine previous formulas. Try to ask me for all the formulas I remember.'
+export let FORMULA_HISTORY_FIRST_NOTICE = 'I just remembered your first formula! You can recall and combine previous formulas. Try to ask me for all the formulas I remember.'
 export let FORMULA_HISTORY_FULL = 'I already remembered too many formulas. Let me forget old ones if you want me to keep remembering new formulas.'
 
 //Simulation outcomes

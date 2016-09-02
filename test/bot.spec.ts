@@ -47,6 +47,7 @@ describe ('bot conversations', () => {
             { bot: strings.MODEL_SEND_PROMPT }, 
             { user: asAttachment('testmodel.json') },
             { bot: strings.MODEL_RECEIVED('model 1') },
+            { bot: strings.FORMULA_HISTORY_FIRST_NOTICE },
             { bot: 'Try this: x=1'}
         ])
     })
