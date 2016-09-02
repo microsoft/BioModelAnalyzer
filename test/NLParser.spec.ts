@@ -7,6 +7,14 @@ let testModel: ModelFile = require('./data/testmodel.json')
 let ltlMultipleStates: Ltl = require('./data/ltl-multiple-states.json')
 let ltlMultipleVariables: Ltl = require('./data/ltl-multiple-variables.json')
 
+var formulaPointers = [{
+    name: "FMA",
+    id: 1
+}, {
+    name: "FMB",
+    id: 2
+}]
+
 it('parse() should handle single variables', () => {
     var sentence = "can you give me a simulation where x is 1"
     var parserResponse = NLParser.parse(sentence, testModel)
@@ -74,6 +82,71 @@ it('parse() should remove illegal instances of model variable usage', () => {
     var expected = "(a=1 and next(b=2))"
     expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
 })
+describe('parse() should handle formulae with formula pointers', () => {
+    it('parse() should handle formulae with only formula pointers', () => {
+        var sentence = "can you give me a simulation where FMA and FMB"
+        var parserResponse = NLParser.parse(sentence, testModel, formulaPointers)
+        var expected = JSON.stringify({
+            "type": "conjunctionExpression",
+            "value": {
+                "type": "conjunctionOperator",
+                "value": "and"
+            },
+            "left": {
+                "type": "formulaPointer",
+                "value": 1
+            },
+            "right": {
+                "type": "formulaPointer",
+                "value": 2
+            }
+        })
+        expect(JSON.stringify(parserResponse.AST)).to.equal(expected)
+    })
+    it('parse() should handle formulae with formula pointers and variables', () => {
+        var sentence = "can you give me a simulation where FMA and FMB and x is 2"
+        var parserResponse = NLParser.parse(sentence, testModel, formulaPointers)
+        var expected = JSON.stringify({
+            "type": "conjunctionExpression",
+            "value": {
+                "type": "conjunctionOperator",
+                "value": "and"
+            },
+            "left": {
+                "type": "formulaPointer",
+                "value": 1
+            },
+            "right": {
+                "type": "conjunctionExpression",
+                "value": {
+                    "type": "conjunctionOperator",
+                    "value": "and"
+                },
+                "left": {
+                    "type": "formulaPointer",
+                    "value": 2
+                },
+                "right": {
+                    "type": "relationalExpression",
+                    "value": {
+                        "type": "relationalOperator",
+                        "value": "="
+                    },
+                    "left": {
+                        "type": "modelVariable",
+                        "value": 3
+                    },
+                    "right": {
+                        "type": "integerLiteral",
+                        "value": 2
+                    }
+                }
+            }
+        })
+        expect(JSON.stringify(parserResponse.AST)).to.equal(expected)
+    })
+})
+
 describe('parse() should handle composite operator usage', () => {
     it('parse() should handle "never" keywords usage', () => {
         var sentence = "can you give me a simulation where it is never the case that a is 1 and b is 2"
