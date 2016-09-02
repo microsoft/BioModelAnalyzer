@@ -2,6 +2,7 @@ import * as builder from 'botbuilder'
 import * as _ from 'underscore'
 import {ModelStorage} from '../ModelStorage'
 import {getBMAModelUrl, LETTERS} from '../util'
+import * as BMA from '../BMA'
 import * as AST from '../NLParser/AST'
 import {toHumanReadableString, NamedFormula} from '../NLParser/ASTUtils'
 import * as strings from './strings'
@@ -35,7 +36,7 @@ export function registerOtherDialogs (bot: builder.UniversalBot, modelStorage: M
         next()
     })
     bot.dialog('/formulaHistory', (session, args, next) => {
-        let model = session.conversationData.bmaModel
+        let model: BMA.ModelFile = session.conversationData.bmaModel
         let formulas: NamedFormula[] = session.conversationData.formulas
         if (!formulas) {
             session.send(strings.FORMULA_HISTORY_EMPTY)
@@ -59,11 +60,13 @@ export function registerOtherDialogs (bot: builder.UniversalBot, modelStorage: M
         next()
     })
     bot.dialog('/removeFormula', (session, args: string | number, next) => {
-        let model = session.conversationData.bmaModel
+        let model: BMA.ModelFile = session.conversationData.bmaModel
         let formulas: NamedFormula[] = session.conversationData.formulas
 
         let formulaNumber: number
-        if (typeof args === 'number') {
+        if (!args) {
+            formulaNumber = -1
+        } else if (typeof args === 'number') {
             formulaNumber = args
         } else if (typeof args === 'string') {
             formulaNumber = _.findIndex(formulas, f => f.name.toLowerCase() === (<string>args).toLowerCase())
@@ -84,26 +87,35 @@ export function registerOtherDialogs (bot: builder.UniversalBot, modelStorage: M
     })
     bot.dialog('/renameFormula', (session, args: {from: string, to: string}, next) => {
         let formulas: NamedFormula[] = session.conversationData.formulas
-        let formula = _.find(formulas, f => f.name.toLowerCase() === args.from.toLowerCase())
-        let oldName = formula.name
+        let from = args.from || ''
+        let formula = _.find(formulas, f => f.name.toLowerCase() === from.toLowerCase())
         if (!formula) {
-            let model = session.conversationData.bmaModel
+            let model: BMA.ModelFile = session.conversationData.bmaModel
             session.send(strings.FORMULA_REFERENCE_INVALID(getFormattedFormulas(formulas, model)))
             next()
             return
         }
-        let to = args.to.trim()
+        let oldName = formula.name
+        let to = args.to ? args.to.trim().replace(' ', '') : null
         if (!to) {
             session.send(strings.FORMULA_RENAME_NAME_EMPTY)
             next()
             return
         }
-        formula.name = args.to
-        session.send(strings.FORMULA_RENAMED(oldName, args.to))
+        
+        // check if name already exists
+        if (formulas.some(f => f.name.toLowerCase() === to.toLowerCase())) {
+            session.send(strings.FORMULA_RENAME_TO_EXISTS(to))
+            next()
+            return
+        }
+
+        formula.name = to
+        session.send(strings.FORMULA_RENAMED(oldName, to))
         next()
     })
 }
 
-function getFormattedFormulas (formulas: NamedFormula[], model) {
-    return formulas.map(formula => `[${formula.name}; ${formula.id}] ${toHumanReadableString(formula.ast, model)}`).join(' \n\n ')
+export function getFormattedFormulas (formulas: NamedFormula[], model: BMA.ModelFile) {
+    return formulas.map(formula => `[${formula.name}] ${toHumanReadableString(formula.ast, model)}`).join(' \n\n ')
 }

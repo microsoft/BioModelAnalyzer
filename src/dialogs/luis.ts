@@ -13,6 +13,7 @@ import * as BMA from '../BMA'
 import * as BMAApi from '../BMAApi'
 import * as AST from '../NLParser/AST'
 import {getBMAModelUrl, LETTERS, LETTERS_F} from '../util'
+import {getFormattedFormulas} from './misc'
 
 /**
  * Registers the LUIS dialog as root dialog. 
@@ -61,6 +62,79 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     matches('RemoveModel', (session, args) => {
         session.beginDialog('/removeUploadedModel')
     })
+
+    matches('ShowFormulaHistory', (session, args) => {
+        session.beginDialog('/formulaHistory')
+    })
+
+    matches('ClearFormulaHistory', (session, args) => {
+        session.beginDialog('/removeFormulas')
+    })
+
+    matches('RemoveFormulaFromHistory', (session, args) => {
+        let entity = builder.EntityRecognizer.findEntity(args.entities, 'FormulaName')
+        let name
+        if (entity) {
+            name = entity.entity
+        } else {
+            // name not recognized by LUIS, try to match it manually
+            let text = session.message.text
+            let formulas: NamedFormula[] = session.conversationData.formulas
+            let match = _.find(formulas, f => text.indexOf(f.name) !== -1)
+            if (match) {
+                name = match.name
+            }
+        }
+        session.beginDialog('/removeFormula', name)
+    })
+
+    matches('RenameFormulaInHistory', [(session, args) => {
+        let text = session.message.text
+        let formulas: NamedFormula[] = session.conversationData.formulas
+        let from = builder.EntityRecognizer.findEntity(args.entities, 'FormulaRename::From')
+        let to = builder.EntityRecognizer.findEntity(args.entities, 'FormulaRename::To')
+        let fromName
+        let toName
+        if (from) {
+            // can't use from.entity as the string gets lower-cased by LUIS...
+            fromName = text.substring(from.startIndex, from.endIndex + 1)
+        }
+        if (to) {
+            toName = text.substring(to.startIndex, to.endIndex + 1)
+        }
+        
+        if (!from) {
+            // LUIS failed... let's figure it out ourselves with some heuristics
+            // find the formula with the longest name that appears in the text
+            let matches = formulas
+                .filter(f => text.indexOf(f.name) !== -1)
+                .map(f => f.name)
+                .sort((a,b) => a.length > b.length ? -1 : 1) // pick the longest matching name
+            
+            fromName = matches.length ? matches[0] : null // null condition is handled in /renameFormula
+        }
+        if (fromName && !to) {
+            // LUIS failed... let's figure it out ourselves with some heuristics
+            let regex = /\b(let|use|to|as)\s+(\w+)\b/i
+            let matches = regex.exec(text)
+            if (matches) {
+                toName = matches[2]
+            } else {
+                // no luck, ask the user
+                session.conversationData.renameFormulaFromName = fromName
+                session.save()
+                builder.Prompts.text(session, strings.FORMULA_RENAME_TO_PROMPT(fromName))
+                return
+            }
+        }
+        
+        session.replaceDialog('/renameFormula', {from: fromName, to: toName})
+
+    }, (session, args: builder.IPromptTextResult) => {
+        let fromName = session.conversationData.renameFormulaFromName
+        let toName = args.response
+        session.beginDialog('/renameFormula', {from: fromName, to: toName})
+    }])
 
     matches('ListTutorial', (session) => {
         session.beginDialog('/tutorials')
