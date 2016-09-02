@@ -22,6 +22,48 @@
         "RangeFrom": 0,
         "RangeTo": 1,
         "Formula": ""
+      },
+      {
+        "Name": "eventualkanize",
+        "Id": 6,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "notch",
+        "Id": 7,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "a",
+        "Id": 8,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "b",
+        "Id": 9,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "protein and molecules",
+        "Id": 10,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "active protein",
+        "Id": 11,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
       }
     ],
     "Relationships": [
@@ -86,11 +128,7 @@
     ]
   },
   "ltl": {
-    "states": [
-      
-    ],
-    "operations": [
-      
-    ]
+    "states": [],
+    "operations": []
   }
 }

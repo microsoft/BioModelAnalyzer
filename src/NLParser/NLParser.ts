@@ -20,7 +20,6 @@ export enum ParserResponseType {
 
 export interface ParserResponse {
     responseType: ParserResponseType
-    humanReadableFormula?: string
     errors?: any
     AST?: AST.Formula
 }
