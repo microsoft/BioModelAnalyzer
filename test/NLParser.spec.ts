@@ -151,13 +151,13 @@ describe('parse() should handle composite operator usage', () => {
     it('parse() should handle "never" keywords usage', () => {
         var sentence = "can you give me a simulation where it is never the case that a is 1 and b is 2"
         var parserResponse = NLParser.parse(sentence, testModel)
-        var expected = "not(eventually((a=1 and b=2)))"
+        var expected = "always(not((a=1 and b=2)))"
         expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
     })
     it('parse() should handle "never" keywords usage as trailing operator', () => {
         var sentence = "can you give me a simulation such that a is 1 and b is 2 never happens"
         var parserResponse = NLParser.parse(sentence, testModel)
-        var expected = "not(eventually((a=1 and b=2)))"
+        var expected = "always(not((a=1 and b=2)))"
         expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
     })
     it('parse() should handle "later" keywords usage', () => {
