@@ -17,7 +17,6 @@ export enum ParserResponseType {
     UNKNOWN_VARIABLES_FOUND
 }
 
-
 export interface ParserResponse {
     responseType: ParserResponseType
     errors?: any
@@ -111,7 +110,7 @@ let Implies = generateStemmedTokenDefinition("Implies", "implies", ["implies"], 
 let Not = generateStemmedTokenDefinition("Not", "not", ["not"], TokenType.UNARY_OPERATOR)
 
 // Temporal operator tokens
-let Eventually = generateStemmedTokenDefinition("Eventually", "eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "some point", "in the long run", "in a while", "soon", "at the end", "sometime"], TokenType.UNARY_OPERATOR)
+let Eventually = generateStemmedTokenDefinition("Eventually", "eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "at some point", "soon", "at the end", "sometime"], TokenType.UNARY_OPERATOR)
 let Always = generateStemmedTokenDefinition("Always", "always", ["always", "invariably", "perpetually", "forever", "constantly"], TokenType.UNARY_OPERATOR)
 let Next = generateStemmedTokenDefinition("Next", "next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this", "later"], TokenType.UNARY_OPERATOR)
 let Upto = generateStemmedTokenDefinition("Upto", "upto", ["upto"], TokenType.BINARY_OPERATOR)
@@ -121,6 +120,7 @@ let Release = generateStemmedTokenDefinition("Release", "release", ["release"], 
 
 //Composite tokens - these are replaced when parsing with the replacement array (where replacement is done based on the order of the items in the replacement array ie: Never => not(eventually(..)))
 let Never = generateCompositeTokenDefinition("Never", "never", ["never"], TokenType.COMPOSITE_OPERATOR, [Not, Eventually])
+let Later = generateCompositeTokenDefinition("Later", "later", ["later", "sometime in the future", "in the future", "sometime later", "after a while", "in the long run", "in a while"], TokenType.COMPOSITE_OPERATOR, [Next, Eventually])
 
 /**
  *  Token groups for accessibility
@@ -130,7 +130,7 @@ let LITERALS = [ModelVariable, FormulaPointerToken, IntegerLiteral]
 let CONSTRUCTS = [If, Then]
 let ARITHMETIC_OPERATORS = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
 let BOOLEAN_OPERATORS = [And, Or, Implies, Not]
-let TEMPORAL_OPERATORS = [Eventually, Always, Never, Next, Upto, Until, WUntil, Release]
+let TEMPORAL_OPERATORS = [Never,Later,Eventually, Always, Next, Upto, Until, WUntil, Release]
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
@@ -452,6 +452,11 @@ export default class NLParser extends Parser {
             ALT: () => {
                 this.CONSUME(Never)
                 return CompositeToken.replacementTokensAsSubtrees(Never)
+            }
+        }, {
+            ALT: () => {
+                this.CONSUME(Later)
+                return CompositeToken.replacementTokensAsSubtrees(Later)
             }
         }])
     });
