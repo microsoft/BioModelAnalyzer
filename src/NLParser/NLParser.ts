@@ -70,6 +70,10 @@ class IntegerLiteral extends Token {
     static PATTERN = /\d+/
 }
 
+class BooleanLiteral extends Token {
+    static PATTERN = /true|false/
+}
+
 /**  Model variable token: in the form MODELVAR(varId) (no stemming required) */
 class ModelVariable extends Token {
     static PATTERN = /(MODELVAR)(\()(\d+)(\))/
@@ -110,27 +114,27 @@ let Implies = generateStemmedTokenDefinition("Implies", "implies", ["implies"], 
 let Not = generateStemmedTokenDefinition("Not", "not", ["not"], TokenType.UNARY_OPERATOR)
 
 // Temporal operator tokens
-let Eventually = generateStemmedTokenDefinition("Eventually", "eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "at some point", "soon", "at the end", "sometime"], TokenType.UNARY_OPERATOR)
+let Eventually = generateStemmedTokenDefinition("Eventually", "eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "at some point", "soon", "at the end", "sometime", "possible"], TokenType.UNARY_OPERATOR)
 let Always = generateStemmedTokenDefinition("Always", "always", ["always", "invariably", "perpetually", "forever", "constantly"], TokenType.UNARY_OPERATOR)
-let Next = generateStemmedTokenDefinition("Next", "next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this", "later"], TokenType.UNARY_OPERATOR)
+let Next = generateStemmedTokenDefinition("Next", "next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this", "later", "thereafter", "directly after"], TokenType.UNARY_OPERATOR)
 let Upto = generateStemmedTokenDefinition("Upto", "upto", ["upto"], TokenType.BINARY_OPERATOR)
 let Until = generateStemmedTokenDefinition("Until", "until", ["until"], TokenType.BINARY_OPERATOR)
 let WUntil = generateStemmedTokenDefinition("WUntil", "weak until", ["weak until"], TokenType.BINARY_OPERATOR)
 let Release = generateStemmedTokenDefinition("Release", "release", ["release"], TokenType.BINARY_OPERATOR)
 
 //Composite tokens - these are replaced when parsing with the replacement array (where replacement is done based on the order of the items in the replacement array ie: Never => not(eventually(..)))
-let Never = generateCompositeTokenDefinition("Never", "never", ["never"], TokenType.COMPOSITE_OPERATOR, [Always, Not])
-let Later = generateCompositeTokenDefinition("Later", "later", ["later", "sometime in the future", "in the future", "sometime later", "after a while", "in the long run", "in a while"], TokenType.COMPOSITE_OPERATOR, [Next, Eventually])
+let Never = generateCompositeTokenDefinition("Never", "never", ["never", "impossible", "at no time"], TokenType.COMPOSITE_OPERATOR, [Always, Not])
+let Later = generateCompositeTokenDefinition("Later", "later", ["later", "sometime in the future", "in the future", "sometime later", "after a while", "in the long run", "in a while", "thereafter"], TokenType.COMPOSITE_OPERATOR, [Next, Eventually])
 
 /**
  *  Token groups for accessibility
  */
 let IGNORE = [WhiteSpace]
-let LITERALS = [ModelVariable, FormulaPointerToken, IntegerLiteral]
+let LITERALS = [BooleanLiteral, ModelVariable, FormulaPointerToken, IntegerLiteral]
 let CONSTRUCTS = [If, Then]
 let ARITHMETIC_OPERATORS = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
 let BOOLEAN_OPERATORS = [And, Or, Implies, Not]
-let TEMPORAL_OPERATORS = [Never,Later,Eventually, Always, Next, Upto, Until, WUntil, Release]
+let TEMPORAL_OPERATORS = [Never, Later, Eventually, Always, Next, Upto, Until, WUntil, Release]
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
@@ -336,10 +340,12 @@ export default class NLParser extends Parser {
             subTree = unaryOperatorTree.lastNode
             lastNode = subTree
         })
-        let rhs = this.OR<AST.RelationalExpression | AST.FormulaPointer>([{
+        let rhs = this.OR<AST.RelationalExpression | AST.FormulaPointer | AST.BooleanLiteral>([{
             ALT: () => this.SUBRULE(this.relationalExpression)
         }, {
             ALT: () => this.SUBRULE(this.formulaPointer)
+        }, {
+            ALT: () => this.SUBRULE(this.booleanLiteral)
         }])
 
         if (lastNode) {
@@ -379,6 +385,13 @@ export default class NLParser extends Parser {
         return {
             type: AST.Type.FormulaPointer,
             value: formulaPointerId
+        }
+    })
+
+    private booleanLiteral = this.RULE<AST.BooleanLiteral>("booleanLiteral", () => {
+        return {
+            type: AST.Type.BooleanLiteral,
+            value: this.CONSUME(BooleanLiteral).image === 'true'
         }
     })
 
@@ -590,7 +603,7 @@ export default class NLParser extends Parser {
             sentence = processedSentence
         }
         //stem the sentence
-        return sentence.split(" ").map((t) => ModelVariable.PATTERN.test(t) || FormulaPointerToken.PATTERN.test(t) ? t : natural.PorterStemmer.stem(t)).join(" ")
+        return sentence.split(" ").map((t) => ModelVariable.PATTERN.test(t) || FormulaPointerToken.PATTERN.test(t) || BooleanLiteral.PATTERN.test(t) ? t : natural.PorterStemmer.stem(t)).join(" ")
     }
 
     /**

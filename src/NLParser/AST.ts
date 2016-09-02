@@ -13,7 +13,8 @@ export const Type = {
     RelationalOperator: <'relationalOperator'>'relationalOperator',
     FormulaPointer: <'formulaPointer'>'formulaPointer',
     ModelVariable: <'modelVariable'>'modelVariable',
-    IntegerLiteral: <'integerLiteral'>'integerLiteral'
+    IntegerLiteral: <'integerLiteral'>'integerLiteral',
+    BooleanLiteral: <'booleanLiteral'>'booleanLiteral'
 }
 
 export const NonTerminalTypes = [
@@ -34,7 +35,8 @@ export const TerminalTypes = [
     Type.RelationalOperator,
     Type.FormulaPointer,
     Type.ModelVariable,
-    Type.IntegerLiteral
+    Type.IntegerLiteral,
+    Type.BooleanLiteral
 ]
 
 export const BinaryExpressionTypes = [
@@ -64,11 +66,12 @@ export type TypeName =
     typeof Type.RelationalOperator |
     typeof Type.ModelVariable |
     typeof Type.IntegerLiteral |
-    typeof Type.FormulaPointer
+    typeof Type.FormulaPointer |
+    typeof Type.BooleanLiteral
 
 export interface Node<L extends Node<any, any>, R extends Node<any, any>> {
     type: TypeName
-    value?: Node<any, any> | string | string[] | number
+    value?: Node<any, any> | string | string[] | number | boolean
     left?: L
     right?: R
 }
@@ -142,7 +145,7 @@ export interface TemporalExpression extends Node<AtomicExpression, AtomicExpress
     right: AtomicExpression
 }
 
-export type AtomicExpression = RelationalExpression | UnaryExpression | FormulaPointer
+export type AtomicExpression = RelationalExpression | UnaryExpression | FormulaPointer | BooleanLiteral
 
 export type UnaryOperatorSymbol =
     'not' | 'next' | 'always' | 'eventually'
@@ -189,6 +192,11 @@ export interface ModelVariable extends Node<any, any> {
 export interface IntegerLiteral extends Node<any, any> {
     type: typeof Type.IntegerLiteral
     value: number
+}
+
+export interface BooleanLiteral extends Node<any, any> {
+    type: typeof Type.BooleanLiteral
+    value: boolean
 }
 
 export interface FormulaPointer extends Node<any, any> {

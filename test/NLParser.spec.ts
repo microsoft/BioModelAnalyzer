@@ -166,10 +166,17 @@ describe('parse() should handle composite operator usage', () => {
         var expected = "(a=1 and next(eventually(b=2)))"
         expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
     })
-        it('parse() should handle distinction between "eventually" and "later" keywords usage', () => {
+    it('parse() should handle distinction between "eventually" and "later" keywords usage', () => {
         var sentence = "can you give me a simulation such that a is 1 and sometime b is 2"
         var parserResponse = NLParser.parse(sentence, testModel)
         var expected = "(a=1 and eventually(b=2))"
         expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
     })
+})
+
+it('parse() should handle boolean literals', () => {
+    var sentence = "can you give me a simulation where false and b=1 or true"
+    var parserResponse = NLParser.parse(sentence, testModel)
+    var expected = "((false and b=1) or true)"
+    expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
 })
