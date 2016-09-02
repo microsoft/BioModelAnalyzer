@@ -14,7 +14,7 @@ export const Type = {
     FormulaPointer: <'formulaPointer'>'formulaPointer',
     ModelVariable: <'modelVariable'>'modelVariable',
     IntegerLiteral: <'integerLiteral'>'integerLiteral',
-    BooleanLiteral: <'booleanLiteral'>'booleanLiteral'
+    TrueLiteral: <'trueLiteral'>'trueLiteral'
 }
 
 export const NonTerminalTypes = [
@@ -36,7 +36,7 @@ export const TerminalTypes = [
     Type.FormulaPointer,
     Type.ModelVariable,
     Type.IntegerLiteral,
-    Type.BooleanLiteral
+    Type.TrueLiteral
 ]
 
 export const BinaryExpressionTypes = [
@@ -67,11 +67,11 @@ export type TypeName =
     typeof Type.ModelVariable |
     typeof Type.IntegerLiteral |
     typeof Type.FormulaPointer |
-    typeof Type.BooleanLiteral
+    typeof Type.TrueLiteral
 
 export interface Node<L extends Node<any, any>, R extends Node<any, any>> {
     type: TypeName
-    value?: Node<any, any> | string | string[] | number | boolean
+    value?: Node<any, any> | string | string[] | number
     left?: L
     right?: R
 }
@@ -145,7 +145,7 @@ export interface TemporalExpression extends Node<AtomicExpression, AtomicExpress
     right: AtomicExpression
 }
 
-export type AtomicExpression = RelationalExpression | UnaryExpression | FormulaPointer | BooleanLiteral
+export type AtomicExpression = RelationalExpression | UnaryExpression | FormulaPointer
 
 export type UnaryOperatorSymbol =
     'not' | 'next' | 'always' | 'eventually'
@@ -176,6 +176,9 @@ export interface BinaryTemporalOperator extends Node<any, any> {
     value: BinaryTemporalOperatorSymbol
 }
 
+export type TrueLiteralSymbol =
+    'true'
+
 export type RelationalOperatorSymbol =
     '=' | '>' | '<' | '<=' | '>=' | '!='
 
@@ -194,12 +197,12 @@ export interface IntegerLiteral extends Node<any, any> {
     value: number
 }
 
-export interface BooleanLiteral extends Node<any, any> {
-    type: typeof Type.BooleanLiteral
-    value: boolean
-}
-
 export interface FormulaPointer extends Node<any, any> {
     type: typeof Type.FormulaPointer
     value: number
+}
+
+export interface TrueLiteral extends Node<any, any> {
+    type: typeof Type.TrueLiteral
+    value: TrueLiteralSymbol
 }

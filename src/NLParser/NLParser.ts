@@ -70,8 +70,12 @@ class IntegerLiteral extends Token {
     static PATTERN = /\d+/
 }
 
-class BooleanLiteral extends Token {
-    static PATTERN = /true|false/
+class TrueLiteral extends Token {
+    static PATTERN = /true/
+}
+
+class FalseLiteral extends Token {
+    static PATTERN = /false/
 }
 
 /**  Model variable token: in the form MODELVAR(varId) (no stemming required) */
@@ -125,12 +129,13 @@ let Release = generateStemmedTokenDefinition("Release", "release", ["release"], 
 //Composite tokens - these are replaced when parsing with the replacement array (where replacement is done based on the order of the items in the replacement array ie: Never => not(eventually(..)))
 let Never = generateCompositeTokenDefinition("Never", "never", ["never", "impossible", "at no time"], TokenType.COMPOSITE_OPERATOR, [Always, Not])
 let Later = generateCompositeTokenDefinition("Later", "later", ["later", "sometime in the future", "in the future", "sometime later", "after a while", "in the long run", "in a while", "thereafter"], TokenType.COMPOSITE_OPERATOR, [Next, Eventually])
+let False = generateCompositeTokenDefinition("False", "false", ["false"], TokenType.COMPOSITE_OPERATOR, [Not, TrueLiteral])
 
 /**
  *  Token groups for accessibility
  */
 let IGNORE = [WhiteSpace]
-let LITERALS = [BooleanLiteral, ModelVariable, FormulaPointerToken, IntegerLiteral]
+let LITERALS = [FalseLiteral, TrueLiteral, ModelVariable, FormulaPointerToken, IntegerLiteral]
 let CONSTRUCTS = [If, Then]
 let ARITHMETIC_OPERATORS = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
 let BOOLEAN_OPERATORS = [And, Or, Implies, Not]
@@ -340,7 +345,7 @@ export default class NLParser extends Parser {
             subTree = unaryOperatorTree.lastNode
             lastNode = subTree
         })
-        let rhs = this.OR<AST.RelationalExpression | AST.FormulaPointer | AST.BooleanLiteral>([{
+        let rhs = this.OR<AST.RelationalExpression | AST.FormulaPointer | AST.TrueLiteral | AST.UnaryExpression>([{
             ALT: () => this.SUBRULE(this.relationalExpression)
         }, {
             ALT: () => this.SUBRULE(this.formulaPointer)
@@ -388,10 +393,33 @@ export default class NLParser extends Parser {
         }
     })
 
-    private booleanLiteral = this.RULE<AST.BooleanLiteral>("booleanLiteral", () => {
-        return {
-            type: AST.Type.BooleanLiteral,
-            value: this.CONSUME(BooleanLiteral).image === 'true'
+    private booleanLiteral = this.RULE<AST.TrueLiteral | AST.UnaryExpression>("booleanLiteral", () => {
+        let trueLiteralSubtree: AST.TrueLiteral = {
+            type: AST.Type.TrueLiteral,
+            value: 'true'
+        }
+        let tokenClass = this.OR([{
+            ALT: () => {
+                this.CONSUME(TrueLiteral)
+                return TrueLiteral
+            }
+        }, {
+            ALT: () => {
+                this.CONSUME(FalseLiteral)
+                return FalseLiteral
+            }
+        }])
+        if (tokenClass == TrueLiteral) {
+            return trueLiteralSubtree
+        } else {
+            return {
+                type: AST.Type.UnaryExpression,
+                value: {
+                    type: AST.Type.UnaryOperator,
+                    value: Not.LABEL
+                },
+                left: trueLiteralSubtree
+            }
         }
     })
 
@@ -603,7 +631,7 @@ export default class NLParser extends Parser {
             sentence = processedSentence
         }
         //stem the sentence
-        return sentence.split(" ").map((t) => ModelVariable.PATTERN.test(t) || FormulaPointerToken.PATTERN.test(t) || BooleanLiteral.PATTERN.test(t) ? t : natural.PorterStemmer.stem(t)).join(" ")
+        return sentence.split(" ").map((t) => ModelVariable.PATTERN.test(t) || FormulaPointerToken.PATTERN.test(t) || TrueLiteral.PATTERN.test(t) || FalseLiteral.PATTERN.test(t) ? t : natural.PorterStemmer.stem(t)).join(" ")
     }
 
     /**
