@@ -64,6 +64,12 @@ steps:
         Running this test should return true for all cases, and essentialy means that for every trace
         of A being 1, B is also 1. 
 
+    - text: >-
+        If you faced difficulty following the tutorial so far, access the complete model using the link 
+        below:
+
+        model: boolean_toymodel.json
+
     - text: >- 
         The NOT operator allows you to test for all instances except those that satisfy the 
         condition. This operator is normally used when the expression is better described in a 
@@ -89,6 +95,12 @@ steps:
     - text: >-
         NOTE: Checking false examples after testing a simulation is the equivalent to prefixing it 
         with NOT. 
+
+    - text: >-
+        If you faced difficulty creating the NOT operator, access the complete model using the link 
+        below:
+
+      model: boolean_ecoli.json
 
     - text: >-
         This is the end of the 'How to use Boolean operators' tutorial, you should now be comfortable using 
