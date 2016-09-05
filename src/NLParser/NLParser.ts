@@ -132,8 +132,8 @@ let WUntil = generateStemmedTokenDefinition("WUntil", "weak until", ["weak until
 let Release = generateStemmedTokenDefinition("Release", "release", ["release"], TokenType.BINARY_OPERATOR)
 
 // Developmental end state tokens
-let SelfLoop = generateStemmedTokenDefinition("SelfLoop", "SelfLoop", ["self loop", "stable loop", "fixed point", "fixpoint", "stable recursion"], TokenType.DEVELOPMENTAL_END_STATE)
-let Oscillation = generateStemmedTokenDefinition("Oscillation", "Oscillation", ["loop", "oscillation", "unstable loop", "unstable recursion"], TokenType.DEVELOPMENTAL_END_STATE)
+let SelfLoop = generateStemmedTokenDefinition("SelfLoop", "SelfLoop", ["self loop", "stable loop", "fixed point", "fixpoint", "stable recursion", "end state", "stabilises"], TokenType.DEVELOPMENTAL_END_STATE)
+let Oscillation = generateStemmedTokenDefinition("Oscillation", "Oscillation", ["loop", "oscillation", "unstable loop", "unstable recursion", "cycle"], TokenType.DEVELOPMENTAL_END_STATE)
 
 //Composite tokens - these are replaced when parsing with the replacement array (where replacement is done based on the order of the items in the replacement array ie: Never => not(eventually(..)))
 let Never = generateCompositeTokenDefinition("Never", "never", ["never", "impossible", "at no time"], TokenType.COMPOSITE_OPERATOR, [Always, Not])
@@ -545,6 +545,12 @@ export default class NLParser extends Parser {
             }, {
                 ALT: () => {
                     this.CONSUME(Next)
+                    return Next
+                }
+            }, {
+                /** To handle the case where "then" is used as a unary operator eg: a=1 and then b=1 */
+                ALT: () => {
+                    this.CONSUME(Then)
                     return Next
                 }
             }, {

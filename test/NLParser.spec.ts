@@ -195,3 +195,10 @@ describe('parse() should handle developmental end states', () => {
         expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
     })
 })
+
+it('parse() handles usage of "then" as a unary operator', () => {
+    var sentence = "can you give me a simulation where a=1 and then b=1"
+    var parserResponse = NLParser.parse(sentence, testModel)
+    var expected = "(a=1 and next(b=1))"
+    expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+})

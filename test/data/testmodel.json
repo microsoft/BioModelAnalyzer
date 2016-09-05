@@ -64,6 +64,27 @@
         "RangeFrom": 0,
         "RangeTo": 1,
         "Formula": ""
+      },
+      {
+        "Name": "cellcycle",
+        "Id": 12,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "fertilisation",
+        "Id": 13,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "FOG1",
+        "Id": 14,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
       }
     ],
     "Relationships": [
