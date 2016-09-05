@@ -77,5 +77,4 @@ steps:
 
     - text: >-
         This is the end of this tutorial. You should have now successfully learnt how to test the state
-        of a model using the fixed point and unstable loop states provided by the user interface. 
-
+        of a model using the fixed point and unstable loop states provided by the user interface.

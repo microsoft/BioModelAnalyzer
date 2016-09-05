@@ -58,7 +58,7 @@ steps:
         NOTE: You can modify the length of simulation you are searching for. This can change your results 
         so you may wish to explore this parameter when testing real systems.
 
-     - text: >-
+    - text: >-
         If you faced difficulty following the tutorial, access the complete model using the link 
         below:
 
