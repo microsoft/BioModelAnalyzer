@@ -587,7 +587,7 @@ function loadScript(version) {
     var ltlDriver = new BMA.UIDrivers.LTLViewer($("#analytics"), $('#tabs-3'));
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
 
-    var localSettings = new BMA.OneDrive.OneDriveSettings("09bbffb5-d7c4-48aa-acbc-eff955bc0487", "http://localhost/callback.html", "signin");
+    var localSettings = new BMA.OneDrive.OneDriveSettings("000000004C12BD9C", "http://bmanew.cloudapp.net/html/callback.html", "signin");
     var connector = new BMA.OneDrive.OneDriveConnector(localSettings);
     
     var oneDriveRepositoryTool = new BMA.LocalRepositoryTool(messagebox);//new BMA.OneDrive.OneDriveRepository;
