@@ -189,16 +189,78 @@ describe('parse() should handle developmental end states', () => {
         expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
     })
     it('parse() should handle "Oscillation"', () => {
-        var sentence = "show me a simulation that ends in an oscillation  and a is 1"
+        var sentence = "show me a simulation that ends in an oscillation and a is 1"
         var parserResponse = NLParser.parse(sentence, testModel)
         var expected = "(Oscillation and a=1)"
         expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
     })
 })
 
-it('parse() handles usage of "then" as a unary operator', () => {
-    var sentence = "can you give me a simulation where a=1 and then b=1"
-    var parserResponse = NLParser.parse(sentence, testModel)
-    var expected = "(a=1 and next(b=1))"
-    expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+describe('parse() should handle activity classes', () => {
+
+    it('parse() should handle "max activity"', () => {
+        var sentence = "show me a simulation where a is maximally active"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = JSON.stringify({
+            "type": "activityExpression",
+            "value": "MaximumActivity",
+            "left": {
+                "type": "modelVariable",
+                "value": 8
+            }
+        })
+        expect(JSON.stringify(parserResponse.AST)).to.equal(expected)
+    })
+    it('parse() should handle "min activity"', () => {
+        var sentence = "show me a simulation where a is minimally active"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = JSON.stringify({
+            "type": "activityExpression",
+            "value": "MinimumActivity",
+            "left": {
+                "type": "modelVariable",
+                "value": 8
+            }
+        })
+        expect(JSON.stringify(parserResponse.AST)).to.equal(expected)
+    })
+    it('parse() should handle "active"', () => {
+        var sentence = "show me a simulation where a is on"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = JSON.stringify({
+            "type": "activityExpression",
+            "value": "Active",
+            "left": {
+                "type": "modelVariable",
+                "value": 8
+            }
+        })
+        expect(JSON.stringify(parserResponse.AST)).to.equal(expected)
+    })
+    it('parse() should handle "inactive"', () => {
+        var sentence = "show me a simulation where a is off"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = JSON.stringify({
+            "type": "activityExpression",
+            "value": "InActive",
+            "left": {
+                "type": "modelVariable",
+                "value": 8
+            }
+        })
+        expect(JSON.stringify(parserResponse.AST)).to.equal(expected)
+    })
+    it('parse() should handle "high activity"', () => {
+        var sentence = "show me a simulation where a is highly active"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = JSON.stringify({
+            "type": "activityExpression",
+            "value": "HighActivity",
+            "left": {
+                "type": "modelVariable",
+                "value": 8
+            }
+        })
+        expect(JSON.stringify(parserResponse.AST)).to.equal(expected)
+    })
 })

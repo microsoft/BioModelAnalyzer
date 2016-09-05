@@ -48,8 +48,11 @@ export enum TokenType {
     /** composite operator keyword eg: never => not(always(..))*/
     COMPOSITE_OPERATOR,
     /** developmental end state eg: self loop,oscillation*/
-    DEVELOPMENTAL_END_STATE
+    DEVELOPMENTAL_END_STATE,
+    /** activity state ie: active,on,off,high,low,maximum,minimum*/
+    ACTIVITY_CLASS
 }
+
 /** Token class extended to support NLParser specefic properties */
 class BaseToken extends Token {
     static PATTERN
@@ -139,6 +142,15 @@ let Oscillation = generateStemmedTokenDefinition("Oscillation", "Oscillation", [
 let Never = generateCompositeTokenDefinition("Never", "never", ["never", "impossible", "at no time"], TokenType.COMPOSITE_OPERATOR, [Always, Not])
 let Later = generateCompositeTokenDefinition("Later", "later", ["later", "sometime in the future", "in the future", "sometime later", "after a while", "in the long run", "in a while", "thereafter"], TokenType.COMPOSITE_OPERATOR, [Next, Eventually])
 
+//Activity classes
+let Active = generateStemmedTokenDefinition("Active", "Active", ["active", "on"], TokenType.ACTIVITY_CLASS)
+let InActive = generateStemmedTokenDefinition("InActive", "InActive", ["inactive", "off", "idle"], TokenType.ACTIVITY_CLASS)
+let MaximumActivity = generateStemmedTokenDefinition("MaximumActivity", "MaximumActivity", ["most active", "most intense", "maximum activity", "maximally active", "extremely active", "most active", "most possible", "maximum", "max", "highest"], TokenType.ACTIVITY_CLASS)
+let MinimumActivity = generateStemmedTokenDefinition("MinimumActivity", "MinimumActivity", ["least active", "least intense", "minimum activity", "minimally active", "least possible", "minimum", "min", "lowest"], TokenType.ACTIVITY_CLASS)
+let HighActivity = generateStemmedTokenDefinition("HighActivity", "HighActivity", ["high activity", "highly active"], TokenType.ACTIVITY_CLASS)
+let LowActivity = generateStemmedTokenDefinition("LowActivity", "LowActivity", ["low activity"], TokenType.ACTIVITY_CLASS)
+
+
 /**
  *  Token groups for accessibility
  */
@@ -149,11 +161,13 @@ let CONSTRUCTS = [If, Then]
 let ARITHMETIC_OPERATORS = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
 let BOOLEAN_OPERATORS = [And, Or, Implies, Not]
 let TEMPORAL_OPERATORS = [Never, Later, Eventually, Always, Next, Upto, Until, WUntil, Release]
+let ACTIVITY_CLASSES = [Active, InActive, HighActivity, LowActivity, MinimumActivity, MaximumActivity]
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
 let ALLOWED_TOKENS = (<typeof Token[]>IGNORE)
     .concat(LITERALS)
+    .concat(ACTIVITY_CLASSES)
     .concat(CONSTRUCTS)
     .concat(DEVELOPMENTAL_END_STATES)
     .concat(ARITHMETIC_OPERATORS)
@@ -355,7 +369,9 @@ export default class NLParser extends Parser {
             subTree = unaryOperatorTree.lastNode
             lastNode = subTree
         })
-        let rhs = this.OR<AST.RelationalExpression | AST.FormulaPointer | AST.TrueLiteral | AST.UnaryExpression | AST.DevelopmentalEndState>([{
+        let rhs = this.OR<AST.ActivityExpression | AST.RelationalExpression | AST.FormulaPointer | AST.TrueLiteral | AST.UnaryExpression | AST.DevelopmentalEndState>([{
+            ALT: () => this.SUBRULE(this.activityExpression)
+        }, {
             ALT: () => this.SUBRULE(this.relationalExpression)
         }, {
             ALT: () => this.SUBRULE(this.formulaPointer)
@@ -372,6 +388,7 @@ export default class NLParser extends Parser {
             return rhs
         }
     })
+
 
     /**
      *  A single unit eg:  MODELVAR(1) = 1 where MODELVAR(1) is the encoding of the actual variable with id=1
@@ -392,6 +409,60 @@ export default class NLParser extends Parser {
             right: { type: AST.Type.IntegerLiteral, value: integerLiteral }
         }
     })
+
+    /**
+    *  A single unit eg:  MODELVAR(1) = 1 where MODELVAR(1) is the encoding of the actual variable with id=1
+    */
+    private activityExpression = this.RULE<AST.ActivityExpression>("activityExpression", () => {
+        // consume the model variable token ie:  MODELVAR(variableId)
+        let image = this.CONSUME(ModelVariable).image
+        // The model variables are always encoded in the form MODELVAR(variableId), 
+        // which means the variable id will always be found at the 4th group in the RegExp.match results
+        let modelVariableId = parseInt(image.match(new RegExp(ModelVariable.PATTERN))[3])
+        //activity assignment ("only the 'is' makes sense, but support for the others is present nevertheless")
+        this.OPTION(() => {
+            this.CONSUME(Eq)
+        })
+        //activity classes
+        let activityClass = this.OR([{
+            ALT: () => {
+                this.CONSUME(Active)
+                return Active
+            }
+        }, {
+            ALT: () => {
+                this.CONSUME(InActive)
+                return InActive
+            }
+        }, {
+            ALT: () => {
+                this.CONSUME(MaximumActivity)
+                return MaximumActivity
+            }
+        }, {
+            ALT: () => {
+                this.CONSUME(MinimumActivity)
+                return MinimumActivity
+            }
+        }, {
+            ALT: () => {
+                this.CONSUME(HighActivity)
+                return HighActivity
+            }
+        }, {
+            ALT: () => {
+                this.CONSUME(LowActivity)
+                return LowActivity
+            }
+        }]).LABEL
+
+        return {
+            type: AST.Type.ActivityExpression,
+            value: activityClass,
+            left: { type: AST.Type.ModelVariable, value: modelVariableId }
+        }
+    })
+
 
     /**
     *  A single unit eg:  FORMULAPOINTER(1) = 1 where FORMULAPOINTER(1) is the encoding of the actual variable with id=1
@@ -636,7 +707,7 @@ export default class NLParser extends Parser {
         let modelVariables = bmaModel.Model.Variables
         let modelVariableRelationOpRegex = "(" + _.pluck(modelVariables, "Name").join("|") +
             ")(\\s*)(" + ARITHMETIC_OPERATORS.map((op) => op.NON_STEMMED_SYNONYMS.join("|")).join("|") +
-            ")(\\s*\\d+)"
+            ")(\\s*)"
         let modelVariableAndFormulaPointerRegex = new RegExp(hasFormulaPointers ? modelVariableRelationOpRegex + "|" + "\\b(" + _.pluck(formulaPointers, "name").join("|") + ")\\b" : modelVariableRelationOpRegex, "ig")
 
         var matchedGroups, variableTokens = [];
@@ -690,7 +761,7 @@ export default class NLParser extends Parser {
             }
         } else if (parserResponse.resyncedToken) {
             //the parser failed to parse a token and return the set of tokens less the error token that can possibly be parsed 
-            return handleResynchedTokens(parserResponse.resyncedToken, formulaPointers, didResynchedBefore)
+            return handleResynchedTokens(formulaPointers, didResynchedBefore)
         } else {
             return createParseError()
         }
@@ -705,7 +776,7 @@ export default class NLParser extends Parser {
         /**
           *  We continue parsing the resynched tokens until we find a good parse, no tokens are left or no new resynched tokens are generated
           */
-        function handleResynchedTokens(resyncedTokens: string, formulaPointers?: FormulaPointer[], didResynchedBefore?: boolean): ParserResponse {
+        function handleResynchedTokens(formulaPointers?: FormulaPointer[], didResynchedBefore?: boolean): ParserResponse {
             //extract the part of the sentance starting from the first resynched token
             var currentResynched = sentence.substring(parserResponse.resyncedToken.offset, sentence.length);
             //check the newly generated suffix with the previously generated suffix in order to prevent an infinite loop

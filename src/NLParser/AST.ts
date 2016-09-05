@@ -5,12 +5,14 @@ export const Type = {
     TemporalExpression: <'temporalExpression'>'temporalExpression',
     UnaryExpression: <'unaryExpression'>'unaryExpression',
     RelationalExpression: <'relationalExpression'>'relationalExpression',
+    ActivityExpression: <'activityExpression'>'activityExpression',
     ImpliesOperator: <'impliesOperator'>'impliesOperator',
     DisjunctionOperator: <'disjunctionOperator'>'disjunctionOperator',
     ConjunctionOperator: <'conjunctionOperator'>'conjunctionOperator',
     UnaryOperator: <'unaryOperator'>'unaryOperator',
     BinaryTemporalOperator: <'binaryTemporalOperator'>'binaryTemporalOperator',
     RelationalOperator: <'relationalOperator'>'relationalOperator',
+    ActivityClass: <'activityClass'>'activityClass',
     FormulaPointer: <'formulaPointer'>'formulaPointer',
     ModelVariable: <'modelVariable'>'modelVariable',
     IntegerLiteral: <'integerLiteral'>'integerLiteral',
@@ -24,7 +26,8 @@ export const NonTerminalTypes = [
     Type.ConjunctionExpression,
     Type.TemporalExpression,
     Type.UnaryExpression,
-    Type.RelationalExpression
+    Type.RelationalExpression,
+    Type.ActivityExpression
 ]
 
 export const TerminalTypes = [
@@ -65,12 +68,14 @@ export type TypeName =
     typeof Type.UnaryOperator |
     typeof Type.BinaryTemporalOperator |
     typeof Type.RelationalExpression |
+    typeof Type.ActivityExpression |
     typeof Type.RelationalOperator |
     typeof Type.ModelVariable |
     typeof Type.IntegerLiteral |
     typeof Type.FormulaPointer |
     typeof Type.TrueLiteral |
-    typeof Type.DevelopmentalEndState
+    typeof Type.DevelopmentalEndState |
+    typeof Type.ActivityClass
 
 export interface Node<L extends Node<any, any>, R extends Node<any, any>> {
     type: TypeName
@@ -148,7 +153,7 @@ export interface TemporalExpression extends Node<AtomicExpression, AtomicExpress
     right: AtomicExpression
 }
 
-export type AtomicExpression = RelationalExpression | UnaryExpression | FormulaPointer | DevelopmentalEndState
+export type AtomicExpression = ActivityExpression | RelationalExpression | UnaryExpression | FormulaPointer | DevelopmentalEndState
 
 export type UnaryOperatorSymbol =
     'not' | 'next' | 'always' | 'eventually'
@@ -171,6 +176,15 @@ export interface RelationalExpression extends Node<ModelVariable, IntegerLiteral
     right: IntegerLiteral
 }
 
+export type ActivityClassSymbol =
+    'Active' | 'InActive' | 'MaximumActivity' | 'MinimumActivity' | 'HighActivity' | 'LowActivity'
+
+export interface ActivityExpression extends Node<Node<any, any>, any> {
+    type: typeof Type.ActivityExpression
+    value: ActivityClassSymbol
+    left: ModelVariable
+}
+
 export type BinaryTemporalOperatorSymbol =
     'until' | 'weak until' | 'release' | 'upto'
 
@@ -191,6 +205,11 @@ export type DevelopmentalEndStateSymbol =
 export interface RelationalOperator extends Node<any, any> {
     type: typeof Type.RelationalOperator
     value: RelationalOperatorSymbol
+}
+
+export interface ActivityClass extends Node<any, any> {
+    type: typeof Type.ActivityClass
+    value: ActivityClassSymbol
 }
 
 export interface ModelVariable extends Node<any, any> {
