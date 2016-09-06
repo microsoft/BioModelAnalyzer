@@ -51,6 +51,10 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
         session.send(strings.ABOUT_BOT)
     })
 
+    matches('AboutLTL', (session) => {
+        session.send(strings.LTL_DESCRIPTION)
+    })
+
     matches('AboutSimulations', (session) => {
         session.send(strings.ABOUT_SIMULATIONS)
     })

@@ -1,4 +1,4 @@
-export let LTL_DESCRIPTION = 'LTL means linear temporal logic.'
+export let LTL_DESCRIPTION = 'Linear Temporal Logic (LTL) is a modal temporal logic, and it helps us define an infinite sequence of states. It is useful within the BMA as it allows us to query paths, and how current paths may change or be affected in the future.'
 export let UNKNOWN_INTENT = 'I did not understand you.'
 export let UNKNOWN_LTL_QUERY = 'I did not understand your query.'
 export let VARIABLES_CLAMPED = (text: string) => `Some of your variables were out of range, so I adjusted them. ${text}.` 
@@ -13,7 +13,7 @@ export let TUTORIAL_SELECT_PROMPT = 'Which tutorial would you like to do?'
 export let TUTORIAL_START_PROMPT = 'Would you like to start the tutorial?'
 export let TUTORIAL_SELECT_CANCELLED = 'Tutorial selection cancelled.'
 export let TUTORIAL_UNKNOWN_SELECT = 'Please input a tutorial number, or anything else to cancel.'
-export let ABOUT_BOT = 'Hello, I am the BMA Bot and I will assist you in creating LTL formulas to query your model. To help you along the way, I will provide you with tutorials and examples. Ask me any questions you have about using LTL within the BMA and I will try to help you.'
+export let ABOUT_BOT = 'Hello, I am the BMA Bot and I will assist you in creating LTL formulas to query your model. To help you along the way, I will provide you with tutorials and examples. Ask me any questions you have about using LTL within the BMA and I will try to help you. Here are some example queries to get you started: ‘Show me the tutorials’, ‘Explain the implies operator’, ‘Show me an example for the until operator’, ‘Give me a simulation where x = 1 and y = 1’'
 export let ABOUT_SIMULATIONS = 'LTL queries are used to find simulations of a given length that end in a loop (a fix point or cycle).'
 export let SPELLCHECK_ASSUMPTION = (corrected: string) => `I assume you meant: "${corrected}".`
 export let OPEN_BMA_URL = (url: string) => `Open in browser: ${url}`
