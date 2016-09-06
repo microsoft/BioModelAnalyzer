@@ -70,6 +70,11 @@ steps:
       image: ecoli_result.png
 
     - text: >-
-        This is the end of this tutorial. You should have now successfully learnt how to test the state
-        of a model using the fixed point and unstable loop states provided by the user interface. 
+        If you faced difficulty following the tutorial, access the complete model using the link 
+        below:
 
+      model: ecoli_final.json
+
+    - text: >-
+        This is the end of this tutorial. You should have now successfully learnt how to test the state
+        of a model using the fixed point and unstable loop states provided by the user interface.

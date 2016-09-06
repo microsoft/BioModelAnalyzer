@@ -103,8 +103,8 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
                     let totalSteps = tutorial.steps.length
                     let currentStep = i + 1 
                     let prefix = '[' + currentStep + '/' + totalSteps + ']' 
-                    let x = prefix + ' ' + step.text
-                    message.text(x)
+                    let prefixedText = prefix + ' ' + step.text
+                    message.text(prefixedText)
                 }
                 if (step.image) {                    
                     message.addAttachment(getTutorialImageAttachment(step.image))

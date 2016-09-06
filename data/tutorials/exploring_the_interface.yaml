@@ -92,8 +92,13 @@ steps:
         NOTE: Figures highlighted in yellow indicate a stable state.
 
     - text: >-
+        If you faced difficulty following the tutorial, access the complete model using the link 
+        below:
+
+        model: exploring_interface.json
+        
+    - text: >-
         You have now come to the end of the 'Exploring the interface' tutorial, and you should be 
         comfortable with using the different features provided by the interface. To learn how LTL may 
         be useful in querying your model please visit the 3 tutorials How to use; Boolean, temporal 
         and advanced temporal operators. 
-        

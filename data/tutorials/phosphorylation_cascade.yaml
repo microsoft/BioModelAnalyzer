@@ -18,7 +18,7 @@ steps:
     - text: >-
         To test this using LTL we need to specify two parts of the query. The states describe what the 
         simulation should look like at different points in time. In this system we can define the following;
-        State 'A' as 'x = 0', state 'B' as 'x = 1'. 
+        State 'A' as 'X = 0', state 'B' as 'X = 1'. 
 
     - text: >- 
         'A' describes the initial and final states, whilst 'B' is the transient state. We define this using 
@@ -57,6 +57,12 @@ steps:
     - text: >-
         NOTE: You can modify the length of simulation you are searching for. This can change your results 
         so you may wish to explore this parameter when testing real systems.
+
+    - text: >-
+        If you faced difficulty following the tutorial, access the complete model using the link 
+        below:
+
+        model: phoscas_final.json
 
     - text: >-
         You have now reached the end of this tutorial. You should be familiar with cases the NEXT operator 

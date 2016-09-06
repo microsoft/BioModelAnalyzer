@@ -89,5 +89,11 @@ steps:
       image: results_auntilb.png
 
     - text: >-
+        If you faced difficulty following the tutorial, access the complete model using the link 
+        below:
+
+      model: temporal_ecoli.json
+
+    - text: >-
         This is the end of the 'How to use temporal operators' tutorial, you should now be comfortable using 
         and experimenting with operators; EVENTUALLY, ALWAYS, NEXT, and UNTIL.
