@@ -141,7 +141,12 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     })
 
     matches ('OperatorInteractions', (session, args) => {
-        let operatorInteraction = (builder.EntityRecognizer.findEntity(args.entities, 'interactions')).entity
+        let operatorInteractionEntity = (builder.EntityRecognizer.findEntity(args.entities, 'interactions'))
+        if (!operatorInteractionEntity) {
+            session.send(strings.UNKNOWN_INTENT)
+            return
+        }
+        let operatorInteraction = operatorInteractionEntity.entity
         switch (operatorInteraction)
         {
             case 'always eventually':session.send(strings.ALWAYS_EVENTUALLY)
@@ -173,7 +178,12 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     })
     
     matches('ExplainOp', (session, args) => {
-        let operatorName = (builder.EntityRecognizer.findEntity(args.entities, 'Operator')).entity
+        let operatorNameEntity = (builder.EntityRecognizer.findEntity(args.entities, 'Operator'))
+        if (!operatorNameEntity) {
+            session.send(strings.UNKNOWN_INTENT)
+            return
+        }
+        let operatorName = operatorNameEntity.entity
         switch (operatorName)
         {
             case 'and':session.send(strings.EXPLAIN_AND)
@@ -202,7 +212,12 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     })
 
     matches('OperatorExample', (session, args) => {
-        let operatorName = (builder.EntityRecognizer.findEntity(args.entities, 'Operator')).entity
+        let operatorNameEntity = (builder.EntityRecognizer.findEntity(args.entities, 'Operator'))
+        if (!operatorNameEntity) {
+            session.send(strings.UNKNOWN_INTENT)
+            return
+        }
+        let operatorName = operatorNameEntity.entity
         switch (operatorName)
         {
             case 'and':session.send(strings.EXAMPLE_AND)
@@ -231,7 +246,12 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     })
 
     matches('Semantics', (session, args) => {
-        let lookupSemantics = (builder.EntityRecognizer.findEntity(args.entities, 'Lookup')).entity
+        let lookupSemanticsEntity = (builder.EntityRecognizer.findEntity(args.entities, 'Lookup'))
+        if (!lookupSemanticsEntity) {
+            session.send(strings.UNKNOWN_INTENT)
+            return
+        }
+        let lookupSemantics = lookupSemanticsEntity.entity
         switch (lookupSemantics)
         {
             case 'oscillation':
