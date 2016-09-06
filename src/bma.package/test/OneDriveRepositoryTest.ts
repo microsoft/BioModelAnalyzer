@@ -109,18 +109,37 @@ describe("OneDrive repository", function () {
                 expect(true).toBeFalsy();
             })
             .fail(function (err) {
+                expect(true).toBeTruthy();
                 done();
             });;
     });
 
-    //xit("saves a model and gets the model information", function (done) {
-    //    repo.SaveModel("my model", model)
-    //        .fail(function (err) {
-    //            expect(true).toBeFalsy();
-    //        })
-    //        .done(function (info: BMA.UIDrivers.ModelInfo) {
-    //            expect(info.name).toEqual("my model");
-    //            expect(info.id).toEqual("my model");
-    //        });
-    //});
+    it("saves a model and gets the model information", function (done) {
+        repo.SaveModel("my model", model)
+            .fail(function (err) {
+                expect(true).toBeFalsy();
+            })
+            .done(function (info: BMA.UIDrivers.ModelInfo) {
+                expect(info.name).toEqual("my model");
+                done();
+            });
+    });
+
+
+    it("loads an existing model", function (done) {
+        repo.SaveModel("my model", model)
+            .fail(function (err) {
+                expect(true).toBeFalsy();
+            })
+            .done(function (info: BMA.UIDrivers.ModelInfo) {
+                repo.LoadModel(info.id)
+                    .fail(function (err) {
+                        expect(true).toBeFalsy();
+                    })
+                    .done(function (content: JSON) {
+                        expect(content["name"]).toEqual(model.name);
+                        done();
+                    });
+            });
+    });
 });
