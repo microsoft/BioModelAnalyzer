@@ -59,6 +59,11 @@ module BMA {
         }
 
         export class LocalStorageTestDriver implements BMA.UIDrivers.ILocalStorageDriver {
+            private widget;
+
+            constructor(widget: JQuery) {
+                this.widget = widget;
+            }
 
             public Message(msg: string) { }
 
@@ -72,15 +77,22 @@ module BMA {
             }
 
             public SetItems(keys) {
+                this.widget.localstoragewidget({ items: keys });
             }
 
             public SetOnLoadModel(callback: Function) {
             }
 
             public SetOnRemoveModel(callback: Function) {
+                this.widget.localstoragewidget({
+                    onremovemodel: callback
+                });
             }
 
             public SetOnCopyToOneDriveCallback(callback: Function) {
+            }
+
+            public SetOnEnableContextMenu(enable: boolean) {
             }
         }
 

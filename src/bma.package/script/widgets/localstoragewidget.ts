@@ -9,6 +9,7 @@
             items: [],
             onremovemodel: undefined,
             onloadmodel: undefined,
+            enableContextMenu: false,
         },
 
         _create: function () {
@@ -79,7 +80,9 @@
                     { title: "Copy to OneDrive", cmd: "CopyToOneDrive" },
                 ],
                 beforeOpen: function (event, ui) {
-                    ui.menu.zIndex(50);
+                    if (that.options.enableContextMenu) {
+                        ui.menu.zIndex(50);
+                    } else return false;
                 },
                 select: function (event, ui) {
                     var args: any = {};
@@ -116,6 +119,9 @@
                     break;
                 case "onmessagechanged":
                     this.options.onmessagechanged = value;
+                    break;
+                case "enableContextMenu":
+                    this.options.enableContextMenu = value;
                     break;
             }
             this._super(key, value);

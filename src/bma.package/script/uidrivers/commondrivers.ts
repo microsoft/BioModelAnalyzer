@@ -514,6 +514,12 @@ module BMA {
                 this.widget.localstoragewidget("AddItem", key);
             }
 
+            public SetOnEnableContextMenu(enable: boolean) {
+                this.widget.localstoragewidget({
+                    enableContextMenu: enable
+                });
+            }
+
             public SetItems(keys) {
                 this.widget.localstoragewidget({ items: keys });
             }
