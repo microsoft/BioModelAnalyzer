@@ -112,12 +112,12 @@ let If = generateStemmedTokenDefinition("If", "if", ["if"], TokenType.GRAMMAR_CO
 let Then = generateStemmedTokenDefinition("Then", "then", ["then"], TokenType.GRAMMAR_CONSTRUCT)
 
 //Arithmetic operator tokens
-let GThan = generateStemmedTokenDefinition("GThan", ">", [">", "greater than", "bigger than"], TokenType.ARITHMETIC_OPERATOR)
-let LThan = generateStemmedTokenDefinition("LThan", "<", ["<", "less than", "smaller than"], TokenType.ARITHMETIC_OPERATOR)
-let GThanEq = generateStemmedTokenDefinition("GThanEq", ">=", [">=", "greater than or equal to", "bigger than or equal to"], TokenType.ARITHMETIC_OPERATOR)
-let LThanEq = generateStemmedTokenDefinition("LThanEq", "<=", ["<=", "less than or equal to", "smaller than or equal to"], TokenType.ARITHMETIC_OPERATOR)
+let GThan = generateStemmedTokenDefinition("GThan", ">", [">", "is greater than", "is bigger than"], TokenType.ARITHMETIC_OPERATOR)
+let LThan = generateStemmedTokenDefinition("LThan", "<", ["<", "is less than", "is smaller than"], TokenType.ARITHMETIC_OPERATOR)
+let GThanEq = generateStemmedTokenDefinition("GThanEq", ">=", [">=", "is greater than or equal to", "is bigger than or equal to"], TokenType.ARITHMETIC_OPERATOR)
+let LThanEq = generateStemmedTokenDefinition("LThanEq", "<=", ["<=", "is less than or equal to", "is smaller than or equal to"], TokenType.ARITHMETIC_OPERATOR)
 let Eq = generateStemmedTokenDefinition("Eq", "=", ["=", "is equal to", "is same as", "equal", "is"], TokenType.ARITHMETIC_OPERATOR)
-let NotEq = generateStemmedTokenDefinition("NotEq", "!=", ["!=", "is not equal to", "is not same as", "not equal", "is not"], TokenType.ARITHMETIC_OPERATOR)
+let NotEq = generateStemmedTokenDefinition("NotEq", "!=", ["!=", "is not equal", "is not same as", "not equal", "is not"], TokenType.ARITHMETIC_OPERATOR)
 
 //Boolean operator tokens
 let And = generateStemmedTokenDefinition("And", "and", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"], TokenType.BINARY_OPERATOR)
@@ -158,10 +158,10 @@ let IGNORE = [WhiteSpace]
 let LITERALS = [FalseLiteral, TrueLiteral, ModelVariable, FormulaPointerToken, IntegerLiteral]
 let DEVELOPMENTAL_END_STATES = [SelfLoop, Oscillation]
 let CONSTRUCTS = [If, Then]
-let ARITHMETIC_OPERATORS = [Eq, NotEq, LThanEq, GThanEq, GThan, LThan]
+let ARITHMETIC_OPERATORS = [LThanEq, GThanEq, GThan, LThan,NotEq,Eq]
 let BOOLEAN_OPERATORS = [And, Or, Implies, Not]
 let TEMPORAL_OPERATORS = [Never, Later, Eventually, Always, Next, Upto, Until, WUntil, Release]
-let ACTIVITY_CLASSES = [Active, InActive, HighActivity, LowActivity, MinimumActivity, MaximumActivity]
+let ACTIVITY_CLASSES = [HighActivity, LowActivity, MinimumActivity, MaximumActivity,InActive,Active]
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */

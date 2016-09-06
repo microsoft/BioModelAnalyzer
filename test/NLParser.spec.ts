@@ -179,7 +179,6 @@ it('parse() should handle boolean literals', () => {
     var expected = "((not(true) and b=1) or true)"
     expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
 })
-
 describe('parse() should handle developmental end states', () => {
 
     it('parse() should handle "SelfLoop"', () => {
@@ -262,5 +261,43 @@ describe('parse() should handle activity classes', () => {
             }
         })
         expect(JSON.stringify(parserResponse.AST)).to.equal(expected)
+    })
+})
+describe('parse() should handle relational operators', () => {
+    it('parse() should handle "equals"', () => {
+        var sentence = "show me a simulation where a is equal to 1"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "a=1"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
+    it('parse() should handle "greater than"', () => {
+        var sentence = "show me a simulation where a is greater than 1"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "a>1"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
+    it('parse() should handle "less than"', () => {
+        var sentence = "show me a simulation where a is less than 1"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "a<1"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
+    it('parse() should handle "greater than or equal to"', () => {
+        var sentence = "show me a simulation where a is greater than or equal to 1"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "a>=1"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
+    it('parse() should handle "less than or equal to"', () => {
+        var sentence = "show me a simulation where a is less than or equal to 1"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "a<=1"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
+    it('parse() should handle "not equal to"', () => {
+        var sentence = "show me a simulation where a is not equal to 1"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "a!=1"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
     })
 })
