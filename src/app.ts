@@ -5,14 +5,6 @@ import * as config from 'config'
 import { BlobModelStorage } from './ModelStorage'
 import { setup as setupBot } from './bot'
 import { default as NLParser, ParserResponseType, FormulaPointer } from './NLParser/NLParser'
-import { ModelFile, Ltl } from './BMA'
-import * as ASTUtils from './NLParser/ASTUtils'
-let testModel: ModelFile = require('../test/data/testmodel.json')
-
-var sentence = "show me a simulation where a is maximally active"
-var parserResponse = NLParser.parse(sentence, testModel)
-var expected = ""
-ASTUtils.toHumanReadableString(parserResponse.AST, testModel)
 
 let port = config.get('PORT')
 console.log('starting server on port:', port)
