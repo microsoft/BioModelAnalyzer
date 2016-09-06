@@ -6,6 +6,7 @@
     "compile": "tsc & exit 0",
     "postinstall": "npm run compile",
     "test": "mocha --timeout 5000 --require ./test/helpers/init.js test/**/*.ts",
+    "coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --timeout 5000 --require ./test/helpers/init.js test/**/*.ts",
     "diagram": "browserify lib/NLParser/diagram.js --ignore-missing -o lib/parser-diagram.bundle.js && http-server . -c-1 -o docs/parser-diagram.html",
     "watch": "tsc --watch",
     "start": "node lib/app.js"
@@ -46,6 +47,7 @@
     "browserify": "^13.1.0",
     "chai": "^3.5.0",
     "http-server": "^0.9.0",
+    "istanbul": "^1.1.0-alpha.1",
     "mocha": "^3.0.1",
     "ts-node": "^1.2.2"
   }
