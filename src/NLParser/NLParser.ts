@@ -140,7 +140,7 @@ let Oscillation = generateStemmedTokenDefinition("Oscillation", "Oscillation", [
 
 //Composite tokens - these are replaced when parsing with the replacement array (where replacement is done based on the order of the items in the replacement array ie: Never => not(eventually(..)))
 let Never = generateCompositeTokenDefinition("Never", "never", ["never", "impossible", "at no time"], TokenType.COMPOSITE_OPERATOR, [Always, Not])
-let Later = generateCompositeTokenDefinition("Later", "later", ["later", "sometime in the future", "in the future", "sometime later", "after a while", "in the long run", "in a while", "thereafter"], TokenType.COMPOSITE_OPERATOR, [Next, Eventually])
+let Later = generateCompositeTokenDefinition("Later", "later", ["later", "sometime in the future", "in the future", "sometime later", "after a while", "in the long run", "in a while"], TokenType.COMPOSITE_OPERATOR, [Next, Eventually])
 
 //Activity classes
 let Active = generateStemmedTokenDefinition("Active", "Active", ["active", "on"], TokenType.ACTIVITY_CLASS)
