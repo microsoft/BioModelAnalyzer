@@ -7,7 +7,8 @@ The following describes how to set up your local development environment.
 
 - Install [Node.js](https://nodejs.org/en/download/).
 - Install [Azure Storage Emulator](https://azure.microsoft.com/en-us/documentation/articles/storage-use-emulator/).
-- (Optional) Install [Visual Studio Code](https://code.visualstudio.com/) for TypeScript IDE support. 
+- (Optional) Install [Visual Studio Code](https://code.visualstudio.com/) for TypeScript IDE support.
+- (Optional) Install the [TSLint plugin](https://marketplace.visualstudio.com/items?itemName=eg2.tslint) for Visual Studio Code (checks code style).
 
 ## Project set up
 
