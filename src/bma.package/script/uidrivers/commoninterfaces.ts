@@ -133,6 +133,7 @@ module BMA {
             //Show();
             //Hide();
             Message(msg: string);
+            SetOnEnableContextMenu(enable: boolean);
             SetOnLoadModel(callback: Function);
             SetOnRemoveModel(callback: Function);
             SetOnCopyToOneDriveCallback(callback: Function);

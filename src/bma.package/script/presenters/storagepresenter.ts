@@ -38,6 +38,8 @@
                 this.localRepository = localRepository;
                 this.oneDrivePresenter = undefined;
 
+                var oneDriveRepository = undefined;
+
                 that.driver.Hide();
 
                 this.localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(that.appModel, that.localStorageDriver,
@@ -45,8 +47,9 @@
 
                 var onLogin = function (oneDrive) {
                     that.driver.SetAuthorizationStatus(true);
+                    that.localStorageDriver.SetOnEnableContextMenu(true);
 
-                    var oneDriveRepository = new BMA.OneDrive.OneDriveRepository(oneDrive);
+                    oneDriveRepository = new BMA.OneDrive.OneDriveRepository(oneDrive);
 
                     that.oneDrivePresenter = new BMA.Presenters.OneDriveStoragePresenter(that.appModel, that.oneDriveStorageDriver, oneDriveRepository,
                         that.messagebox, that.checker, logService, waitScreen);
@@ -75,6 +78,12 @@
                 
                 var onLogout = function (logout) {
                     that.driver.SetAuthorizationStatus(false);
+                    that.localStorageDriver.SetOnEnableContextMenu(false);
+                    if (that.oneDrivePresenter) {
+                        that.oneDrivePresenter.Destroy();
+                        that.oneDrivePresenter = undefined;
+                        oneDriveRepository = undefined;
+                    }
                     console.log("Logout");
                 };
 

@@ -96,7 +96,7 @@
                     }
                     else {
                         that.messagebox.Show("The model was removed from outside");
-                        window.Commands.Execute("OneDriveStorageChanged", {});
+                        window.Commands.Execute("LocalStorageChanged", {});
                         deffered.reject();
                     }
                     return deffered.promise();

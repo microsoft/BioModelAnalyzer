@@ -8,6 +8,8 @@
             private checker: BMA.UIDrivers.ICheckChanges;
             private setOnCopy: Function;
 
+            private commandsIds: any[] = [];
+
             constructor(
                 appModel: BMA.Model.AppModel,
                 editor: BMA.UIDrivers.IOneDriveDriver,
@@ -23,20 +25,9 @@
                 this.tool = tool;
                 this.messagebox = messagebox;
                 this.checker = checker;
+                //this.commandsIds = [];
 
-                that.tool.GetModelList().done(function (modelsInfo) {
-                    if (modelsInfo === undefined || modelsInfo.length == 0)
-                        that.driver.Message("The model repository is empty");
-                    else that.driver.Message('');
-                    that.driver.SetItems(modelsInfo);
-                    
-                    //that.driver.SetItems(items);
-                    //that.driver.Hide();
-                }).fail(function (errorThrown) {
-                    var res = JSON.parse(JSON.stringify(errorThrown));
-                    that.messagebox.Show(res.statusText);
-                    //alert("Failed to load models");
-                    });
+                that.UpdateModelsList();
 
                 that.driver.SetOnRemoveModel(function (key) {
                     that.tool.RemoveModel(key).done(function (result) {
@@ -75,24 +66,8 @@
                     return deffered.promise();
                 });
 
-                window.Commands.On("OneDriveStorageChanged", function () {
-                    that.tool.GetModelList().done(function (modelsInfo) {
-                        if (modelsInfo === undefined || modelsInfo.length == 0)
-                            that.driver.Message("The model repository is empty");
-                        else that.driver.Message('');
-                        //var items = [];
-                        //for (var i = 0; i < modelsInfo.length; i++) {
-                        //    that.tool.IsInRepo(modelsInfo[i].id).done(function (exists) {
-                        //        if (exists) items.push(modelsInfo[i]);
-                        //    })
-                        //}
-                        that.driver.SetItems(modelsInfo);
-                    }).fail(function (errorThrown) {
-                        var res = JSON.parse(JSON.stringify(errorThrown));
-                        that.messagebox.Show(res.statusText);
-                    });
-                });
-
+                that.commandsIds.push({ commandName: "OneDriveStorageChanged", id: window.Commands.On("OneDriveStorageChanged", () => that.UpdateModelsList()) });
+                
                 that.driver.SetOnLoadModel(function (key) {
                     try {
                         if (that.checker.IsChanged(that.appModel)) {
@@ -146,30 +121,47 @@
                     }
                 });
 
-                window.Commands.On("OneDriveStorageRequested", function () {
-                    that.tool.GetModelList().done(function (keys) {
-                        that.driver.SetItems(keys);
-                        //that.driver.Show();
-                    }).fail(function (errorThrown) {
-                        alert(errorThrown);
-                    });
-                });
+                that.commandsIds.push({ commandName: "OneDriveStorageRequested", id: window.Commands.On("OneDriveStorageRequested", () => that.UpdateModelsList()) });
 
-                window.Commands.On("OneDriveStorageSaveModel", function () {
-                    try {
-                        logService.LogSaveModel();
-                        var key = appModel.BioModel.Name;
-                        that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
-                        that.checker.Snapshot(that.appModel);
-                    }
-                    catch (ex) {
-                        alert("Couldn't save model: " + ex);
-                    }
+                that.commandsIds.push({
+                    commandName: "OneDriveStorageSaveModel", id: window.Commands.On("OneDriveStorageSaveModel", function () {
+                        try {
+                            logService.LogSaveModel();
+                            var key = appModel.BioModel.Name;
+                            that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
+                            that.checker.Snapshot(that.appModel);
+                        }
+                        catch (ex) {
+                            alert("Couldn't save model: " + ex);
+                        }
+                    })
                 });
             }
 
             public SetOnCopyCallback(callback: Function) {
                 this.setOnCopy = callback;
+            }
+
+            public UpdateModelsList() {
+                var that = this;
+                that.tool.GetModelList().done(function (modelsInfo) {
+                    if (modelsInfo === undefined || modelsInfo.length == 0)
+                        that.driver.Message("The model repository is empty");
+                    else that.driver.Message('');
+                    that.driver.SetItems(modelsInfo);
+                }).fail(function (errorThrown) {
+                    var res = JSON.parse(JSON.stringify(errorThrown));
+                    that.messagebox.Show(res.statusText);
+                    that.driver.SetItems([]);
+                });
+            }
+
+
+            
+            public Destroy() {
+                var that = this;
+                for (var i = 0; i < that.commandsIds.length; i++) 
+                    window.Commands.OffById(that.commandsIds[i].commandName, that.commandsIds[i].id);
             }
         }
     }
