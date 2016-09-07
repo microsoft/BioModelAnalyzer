@@ -1,9 +1,8 @@
 import * as builder from 'botbuilder'
 import * as _ from 'underscore'
 import {ModelStorage} from '../ModelStorage'
-import {getBMAModelUrl, LETTERS} from '../util'
+import {getBMAModelUrl} from '../util'
 import * as BMA from '../BMA'
-import * as AST from '../NLParser/AST'
 import {toHumanReadableString, NamedFormula} from '../NLParser/ASTUtils'
 import * as strings from './strings'
 

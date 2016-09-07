@@ -52,7 +52,6 @@ export function toHumanReadableString (node: AST.Node<any,any>, bmaModel: BMA.Mo
  * @param bmaModel The BMA model.
  */
 export function toAPIString (node: AST.Node<any,any>, bmaModel: BMA.ModelFile) {
-    let varName = id => _.find(bmaModel.Model.Variables, v => v.Id === id).Name
     let upper = (s: string) => s[0].toUpperCase() + s.substr(1)
 
     let left = node.left ? toAPIString(node.left, bmaModel) : null

@@ -11,9 +11,7 @@ import {downloadAttachments} from '../attachments'
 import {ModelStorage} from '../ModelStorage'
 import * as BMA from '../BMA'
 import * as BMAApi from '../BMAApi'
-import * as AST from '../NLParser/AST'
-import {getBMAModelUrl, LETTERS, LETTERS_F} from '../util'
-import {getFormattedFormulas} from './misc'
+import {getBMAModelUrl, LETTERS_F} from '../util'
 
 /**
  * Registers the LUIS dialog as root dialog. 
@@ -178,7 +176,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             case 'not always':session.send(strings.NOT_ALWAYS)
             break
         }
-        //TODO : deal with user requests that ask to differentiate between interactions
+        // TODO deal with user requests that ask to differentiate between interactions
     })
     
     matches('ExplainOp', (session, args) => {
