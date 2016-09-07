@@ -154,10 +154,10 @@
             });
 
             //Adding clipboard panel
-            var clipboardPanel = $("<div></div>").width("100%").height(150).addClass("temporal-dropzones").css("display", "flex").css("flex-direcition", "row").appendTo(root);
+            var clipboardPanel = $("<div></div>").width("100%").height(200).addClass("temporal-dropzones").css("display", "flex").css("flex-direcition", "row").appendTo(root);
 
             //Adding copy zone
-            var tpViewer = $("<div></div>").css("top", 0).css("left", 0).width("70%").height("100%").appendTo(clipboardPanel);
+            var tpViewer = $("<div></div>").css("top", 0).css("left", 0).width("70%").height("100%").css("background-color", "white").appendTo(clipboardPanel);
 
             /*
             var defaultCopyZoneIcon = $("<div></div>").css("position", "absolute").width("100%").height("95%").css("text-align", "center");
@@ -170,7 +170,7 @@
             });
             */
 
-            $("<div>Templates</div>").appendTo(tpViewer);
+            $("<div>Templates</div>").addClass("bma-formulaeditor-header").appendTo(tpViewer);
             var template1 = $("<div></div>").width("100%").formulatemplate().appendTo(tpViewer);
             var template2 = $("<div></div>").width("100%").formulatemplate().appendTo(tpViewer);
             var template3 = $("<div></div>").width("100%").formulatemplate().appendTo(tpViewer);
