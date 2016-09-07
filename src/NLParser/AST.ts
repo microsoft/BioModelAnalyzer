@@ -153,7 +153,7 @@ export interface TemporalExpression extends Node<AtomicExpression, AtomicExpress
     right: AtomicExpression
 }
 
-export type AtomicExpression = ActivityExpression | RelationalExpression | UnaryExpression | FormulaPointer | DevelopmentalEndState
+export type AtomicExpression = ActivityExpression | RelationalExpression | UnaryExpression | FormulaPointer | DevelopmentalEndState | TrueLiteral
 
 export type UnaryOperatorSymbol =
     'not' | 'next' | 'always' | 'eventually'

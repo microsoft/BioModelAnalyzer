@@ -232,6 +232,8 @@ export function toStatesAndFormula (node: AST.Node<any,any>, bmaModel: BMA.Model
             } else {
                 throw new Error('Unknown developmental end state: ' + node.value)
             }
+        } else if (node.type === AST.Type.TrueLiteral) {
+            return new BMA.LtlTrueStateImpl()
         } else {
             throw new Error('Unknown node type: ' + node.type)
         }
