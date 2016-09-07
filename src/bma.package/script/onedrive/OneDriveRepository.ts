@@ -141,7 +141,7 @@ module BMA.OneDrive {
                 .then<SharedOneDriveFile[]>(function (files) {
                     var jsonFiles = [];
                     for (var i = 0; i < files.length; i++) {
-                        if (files[i]["file"]["mimeType"] == "application/json") {
+                        if (files[i]["file"]["mimeType"].indexOf("application/json") === 0) {
                             jsonFiles.push(OneDriveRepository.UpdateName(files[i]));
                         }
                     }
