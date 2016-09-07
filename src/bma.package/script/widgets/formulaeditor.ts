@@ -15,9 +15,9 @@
             var that = this;
             var root = this.element;
 
-            root.css("display", "flex").css("flex-direcition", "row");
+            //root.css("display", "flex").css("flex-direcition", "row");
 
-            var leftContainer = $("<div></div>").width("80%").appendTo(root);
+            var leftContainer = $("<div></div>").width("100%").appendTo(root);
             //var title = $("<div></div>").addClass("window-title").text("Temporal Properties").appendTo(root);
             var widthStr = "calc(100% - 20px)";
             var toolbar = $("<div></div>").addClass("temporal-toolbar").css("margin-top", 0).width(widthStr).appendTo(leftContainer);
@@ -154,11 +154,12 @@
             });
 
             //Adding clipboard panel
-            var clipboardPanel = $("<div></div>").width("20%").height(301).addClass("temporal-dropzones").appendTo(root);
+            var clipboardPanel = $("<div></div>").width("100%").height(150).addClass("temporal-dropzones").css("display", "flex").css("flex-direcition", "row").appendTo(root);
 
             //Adding copy zone
-            var tpViewer = $("<div></div>").addClass("dropzone copy").css("top", 0).css("left", 0).width("100%").height("calc(80% - 2px)").appendTo(clipboardPanel);
+            var tpViewer = $("<div></div>").css("top", 0).css("left", 0).width("70%").height("100%").appendTo(clipboardPanel);
 
+            /*
             var defaultCopyZoneIcon = $("<div></div>").css("position", "absolute").width("100%").height("95%").css("text-align", "center");
             $("<span></span>").css("display", "inline-block").css("vertical-align", "middle").height("100%").appendTo(defaultCopyZoneIcon);
             $('<img>').attr('src', "images/LTL-copy.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultCopyZoneIcon);
@@ -167,9 +168,15 @@
                 rightOffset: 15,
                 defaultIcon: defaultCopyZoneIcon
             });
+            */
+
+            $("<div>Templates</div>").appendTo(tpViewer);
+            var template1 = $("<div></div>").width("100%").formulatemplate().appendTo(tpViewer);
+            var template2 = $("<div></div>").width("100%").formulatemplate().appendTo(tpViewer);
+            var template3 = $("<div></div>").width("100%").formulatemplate().appendTo(tpViewer);
 
             //Adding delete zone
-            var deleteZone = $("<div></div>").addClass("dropzone delete").css("left", 0).css("bottom", 0).css("right", 0).width("100%").height("calc(20% - 2px)").appendTo(clipboardPanel);
+            var deleteZone = $("<div></div>").addClass("dropzone delete").css("right", 0).css("top", 0).css("right", 0).width("30%").height("100%").appendTo(clipboardPanel);
             var defaultDeleteZoneIcon = $("<div></div>").width("100%").height("95%").css("text-align", "center").appendTo(deleteZone);
             $("<span></span>").css("display", "inline-block").css("vertical-align", "middle").height("100%").appendTo(defaultDeleteZoneIcon);
             $('<img>').attr('src', "images/LTL-delete.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultDeleteZoneIcon);
@@ -736,11 +743,57 @@
             this.element.empty();
         }
 
-    })
+    });
+
+    $.widget("BMA.formulatemplate", {
+        options: {
+            operation: undefined,
+        },
+
+        _create: function () {
+            var that = this;
+            var root = this.element;
+
+            root.css("display", "flex").css("flex-direcition", "row").css("background-color", "white");
+
+            var cont = $("<div></div>").addClass("bma-formulaeditor-template").appendTo(root);
+            var canvas = $("<canvas></canvas>").addClass("bma-formulaeditor-template-canvas").appendTo(cont);
+            canvas.hide();
+            var clearBtn = $("<div></div>").addClass("bma-formulaeditor-template-clear").appendTo(root);
+        },
+
+        _setOption: function (key, value) {
+            var that = this;
+            var needRefreshStates = false;
+            switch (key) {
+                case "operation":
+                    that.options.operation = value;
+                    break;
+                default:
+                    break;
+            }
+
+            that._refresh();
+        },
+
+        _refresh: function () {
+        },
+
+        destroy: function () {
+            this.element.empty();
+        }
+
+    });
+
 } (jQuery));
+
+
 
 interface JQuery {
     formulaeditor(): any;
     formulaeditor(settings: Object): any;
     formulaeditor(methodName: string, arg: any): any;
+    formulatemplate(): any;
+    formulatemplate(settings: Object): any;
+    formulatemplate(methodName: string, arg: any): any;
 }
