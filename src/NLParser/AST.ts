@@ -200,7 +200,7 @@ export type RelationalOperatorSymbol =
     '=' | '>' | '<' | '<=' | '>=' | '!='
 
 export type DevelopmentalEndStateSymbol =
-    'self loop' | 'oscillation'
+    'SelfLoop' | 'Oscillation'
 
 export interface RelationalOperator extends Node<any, any> {
     type: typeof Type.RelationalOperator

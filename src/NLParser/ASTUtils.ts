@@ -222,6 +222,16 @@ export function toStatesAndFormula (node: AST.Node<any,any>, bmaModel: BMA.Model
             }
         } else if (_.contains(AST.UnaryExpressionTypes, node.type)) {
             return new BMA.LtlOperationImpl((<AST.UnaryExpression>node).value.value, [walk(node.left, states)])
+        } else if (node.type === AST.Type.DevelopmentalEndState) {
+            let endStateNode = <AST.DevelopmentalEndState> node
+            // TODO how can this be fully typed as in pattern matching?
+            if (endStateNode.value === 'SelfLoop') {
+                return new BMA.LtlSelfLoopStateImpl()
+            } else if (endStateNode.value === 'Oscillation') {
+                return new BMA.LtlOscillationStateImpl()
+            } else {
+                throw new Error('Unknown developmental end state: ' + node.value)
+            }
         } else {
             throw new Error('Unknown node type: ' + node.type)
         }
