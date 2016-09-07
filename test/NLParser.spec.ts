@@ -1,11 +1,9 @@
 import { expect } from 'chai'
 import { default as NLParser, ParserResponseType } from '../src/NLParser/NLParser'
 import * as ASTUtils from '../src/NLParser/ASTUtils'
-import { ModelFile, Ltl } from '../src/BMA'
+import { ModelFile } from '../src/BMA'
 
 let testModel: ModelFile = require('./data/testmodel.json')
-let ltlMultipleStates: Ltl = require('./data/ltl-multiple-states.json')
-let ltlMultipleVariables: Ltl = require('./data/ltl-multiple-variables.json')
 
 var formulaPointers = [{
     name: "FMA",
