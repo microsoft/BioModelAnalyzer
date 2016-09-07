@@ -11,6 +11,10 @@ module BMA.OneDrive {
     export interface OneDriveFile extends BMA.UIDrivers.ModelInfo {
     }
 
+    /// Represents a OneDrive file which is shared with the user by someone else.
+    export interface SharedOneDriveFile extends BMA.UIDrivers.ModelInfo {        
+    }
+
     export class LoginFailure {
         public error: any;
         public error_description: any;
@@ -28,6 +32,7 @@ module BMA.OneDrive {
         FindFolder(name: string): JQueryPromise<string>;
 
         EnumerateFiles(folderId: string): JQueryPromise<OneDriveFile[]>;
+        EnumerateSharedWithMeFiles(): JQueryPromise<SharedOneDriveFile[]>;
 
         /// Creates or replaces a file in the given folder. 
         /// Returns the saved file information.
@@ -122,7 +127,7 @@ module BMA.OneDrive {
 
         public GetModelList(): JQueryPromise<BMA.UIDrivers.ModelInfo[]> {
             var that = this;
-            return this.UseBmaFolder(false)
+            var myModels = this.UseBmaFolder(false)
                 .then<OneDriveFile[]>(function (folderId) {
                     if (folderId) {
                         return that.EnumerateModels(folderId);
@@ -131,6 +136,20 @@ module BMA.OneDrive {
                         d.resolve(new Array<OneDriveFile>(0));
                         return d;
                     }
+                });
+            var sharedModels = that.oneDrive.EnumerateSharedWithMeFiles()
+                .then<SharedOneDriveFile[]>(function (files) {
+                    var jsonFiles = [];
+                    for (var i = 0; i < files.length; i++) {
+                        if (files[i]["file"]["mimeType"] == "application/json") {
+                            jsonFiles.push(OneDriveRepository.UpdateName(files[i]));
+                        }
+                    }
+                    return jsonFiles;                  
+                });
+            return $.when(myModels, sharedModels)
+                .then(function (myFiles: OneDriveFile[], sharedFiles: OneDriveFile[]) {
+                    return myFiles.concat(sharedFiles);
                 });
         }
 

@@ -130,6 +130,21 @@ module BMA.OneDrive {
                 });
         }
 
+        public EnumerateSharedWithMeFiles(): JQueryPromise<SharedOneDriveFile[]> {
+            return this.oneDriveApi("GET", "/drive/view.sharedWithMe")
+                .then(function (r) {
+                    // TODO: Check for @odata.next if there are more than 200 items!!!
+                    var files = r.value;
+                    var selection = [];
+                    for (var i = 0, j = 0; i < files.length; i++) {
+                        if (files[i].remoteItem.file) {
+                            selection[j++] = files[i]["remoteItem"];
+                        }
+                    }
+                    return selection;
+                });
+        }
+
         public SaveFile(folderId: string, name: string, content: JSON): JQueryPromise<OneDriveFile> {
             // Replaces if exists
             return this.oneDriveApi("PUT", "/drive/items/" + folderId + "/children/" + name + "/content", content);
