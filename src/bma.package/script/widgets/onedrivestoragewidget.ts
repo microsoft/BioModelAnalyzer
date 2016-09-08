@@ -41,21 +41,21 @@
                 menu: [
                     { title: "Move to local", cmd: "MoveToLocal" },
                     { title: "Copy to local", cmd: "CopyToLocal" },
-                    {
-                        title: "Share", cmd: "Share"/*, children: [
-                            { title: "BMA link", cmd: "BMALink" },
-                            { title: "Web link", cmd: "WebLink" },
-                            { title: "Email", cmd: "Email" },
-                        ]*/
-                    },
-                    { title: "Open BMA link", cmd: "OpenBMALink"},
-                    { title: "Active Shares", cmd: "ActiveShares"},
+                    //{
+                    //    title: "Share", cmd: "Share"/*, children: [
+                    //        { title: "BMA link", cmd: "BMALink" },
+                    //        { title: "Web link", cmd: "WebLink" },
+                    //        { title: "Email", cmd: "Email" },
+                    //    ]*/
+                    //},
+                    //{ title: "Open BMA link", cmd: "OpenBMALink"},
+                    //{ title: "Active Shares", cmd: "ActiveShares"},
                 ],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);
-                    if (that.options.activeShare.length === 0) $(this).contextmenu("showEntry", "ActiveShares", false);
-                    $(this).contextmenu("enableEntry", "Share", false);
-                    $(this).contextmenu("enableEntry", "OpenBMALink", false);
+                    //if (that.options.activeShare.length === 0) $(this).contextmenu("showEntry", "ActiveShares", false);
+                    //$(this).contextmenu("enableEntry", "Share", false);
+                    //$(this).contextmenu("enableEntry", "OpenBMALink", false);
                 },
                 select: function (event, ui) {
                     var args: any = {};
@@ -96,6 +96,27 @@
                 var li = $('<li></li>').text(items[i].name).appendTo(this.ol);
                 //var a = $('<a></a>').addClass('delete').appendTo(li);
                 var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);// $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//
+                if (items[i].shared) {
+                    var ownerName = items[i].shared.owner && items[i].shared.owner.user && items[i].shared.owner.user.displayName ?
+                        items[i].shared.owner.user.displayName : "Unknown";
+                    var sharedIcon = $("<div>S</div>").addClass("share-icon").appendTo(li);
+                    sharedIcon.tooltip({
+                        //tooltipClass: "share-icon",
+                        //position: {
+                        //    at: "left-48px bottom",
+                        //    collision: 'none',
+                        //},
+                        content: function () {
+                            return ownerName;
+                        },
+                        show: null,
+                        hide: false,
+                        items: "div.share-icon",
+                        close: function (event, ui) {
+                            that.element.data("ui-tooltip").liveRegion.children().remove();
+                        },
+                    });
+                }
                 removeBtn.bind("click", function (event) {
                     event.stopPropagation();
                     if (that.options.onremovemodel !== undefined)
