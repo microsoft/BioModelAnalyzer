@@ -27,21 +27,4 @@
         }
     });
 
-    //it("should execute 'LocalStorageRemoveModel' command on removing item after click on appropriate button", () => {
-    //    spyOn(window.Commands, "Execute");
-    //    var list = widget.find("ol").children("li");
-    //    list.eq(1).children("button").click();
-    //    expect(window.Commands.Execute).toHaveBeenCalledWith("LocalStorageRemoveModel", "user."+items[1]);
-    //});
-
-    //it("should execute 'LocalStorageLoadModel' command when item from list was selected", () => {
-
-    //    spyOn(window.Commands, "Execute");
-    //    var ol = widget.find("ol").eq(0);
-    //    ol.children().eq(0).addClass("ui-selected");
-    //    var st = ol.selectable("option", "stop");
-    //    st();
-    //    expect(window.Commands.Execute).toHaveBeenCalledWith("LocalStorageLoadModel", 'user.' + items[0]);
-    //});
-
 }) 
