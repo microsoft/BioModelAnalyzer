@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<link rel="stylesheet" data-name="vs/editor/editor.main" href="../node_modules/monaco-editor/min/vs/editor/editor.main.css">
+</head>
+<body>
+
+<h2>Monaco-based target function editor</h2>
+
+<div id="container" style="width:600px;height:300px;border:1px solid lightgrey"></div>
+
+<script>var require = { paths: { 'vs': '../node_modules/monaco-editor/min/vs' } };</script>
+<script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
+<script src="../node_modules/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+<script src="../node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
+<script src="mylang.js"></script>
+
+<script>
+    // https://microsoft.github.io/monaco-editor/monarch.html
+    // https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-custom-languages
+
+    monaco.languages.register({id:"targetfunc"});
+    monaco.languages.setMonarchTokensProvider("targetfunc", targetfunc);
+    monaco.languages.registerCompletionItemProvider('targetfunc', {
+            provideCompletionItems: () => {
+                return [
+                    {
+                        label: 'max',
+                        kind: monaco.languages.CompletionItemKind.Function,
+                        insertText:'max({{A}},{{B}})'
+                    },
+                    {
+                        label: 'min',
+                        kind: monaco.languages.CompletionItemKind.Function,
+                        insertText:'min({{A}},{{B}})'
+                    },
+                    {
+                        label: 'avg',
+                        kind: monaco.languages.CompletionItemKind.Function,
+                        insertText:'avg({{A}},{{B}})'
+                    },
+                    {
+                        label: 'ceil',
+                        kind: monaco.languages.CompletionItemKind.Function,
+                        insertText:'ceil({{A}})'
+                    },
+                    {
+                        label: 'floor',
+                        kind: monaco.languages.CompletionItemKind.Function,
+                        insertText:'floor({{A}})'
+                    },
+
+                    {
+                        label: 'var',
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText:'var({{A}})'
+                    },
+                    {
+                        label: 'const',
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText:'const({{A}})'
+                    },
+
+                    {
+                        label: 'lin-3',
+                        kind: monaco.languages.CompletionItemKind.Variable,
+                        insertText:'var(lin-3)'
+                    },
+                    {
+                        label: 'LET-23',
+                        kind: monaco.languages.CompletionItemKind.Variable,
+                        insertText:'var(LET-23)'
+                    }
+                ]
+            }
+        });
+
+	var editor = monaco.editor.create(document.getElementById('container'), {
+		value: [
+			'max(var(LET-23), var(lin-3), const(3))'
+		].join('\n'),
+		language: 'targetfunc',
+        lineNumbers: false,
+        scrollBeyondLastLine: false,
+        autoClosingBrackets: true
+	});
+</script>
+
+</body>
+</html>
