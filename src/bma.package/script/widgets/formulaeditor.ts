@@ -154,7 +154,7 @@
             });
 
             //Adding clipboard panel
-            var clipboardPanel = $("<div></div>").width("100%").height(200).addClass("temporal-dropzones").css("display", "flex").css("flex-direcition", "row").appendTo(root);
+            var clipboardPanel = $("<div></div>").width("100%").css("background-color", "white").height(200).addClass("temporal-dropzones").css("display", "flex").css("flex-direcition", "row").appendTo(root);
 
             //Adding copy zone
             var tpViewer = $("<div></div>").css("top", 0).css("left", 0).width("70%").height("100%").css("background-color", "white").appendTo(clipboardPanel);
@@ -176,7 +176,8 @@
             var template3 = $("<div></div>").width("100%").formulatemplate().appendTo(tpViewer);
 
             //Adding delete zone
-            var deleteZone = $("<div></div>").addClass("dropzone delete").css("right", 0).css("top", 0).css("right", 0).width("30%").height("100%").appendTo(clipboardPanel);
+            //var deleteZonePlaceholer = $("<div></div>").width("30%").height("100%").appendTo(clipboardPanel);
+            var deleteZone = $("<div></div>").addClass("dropzone delete").css("right", 10).css("top", 10).css("bottom", 10).width('calc(30% - 20px)').height('calc(100% - 20px)').appendTo(clipboardPanel);
             var defaultDeleteZoneIcon = $("<div></div>").width("100%").height("95%").css("text-align", "center").appendTo(deleteZone);
             $("<span></span>").css("display", "inline-block").css("vertical-align", "middle").height("100%").appendTo(defaultDeleteZoneIcon);
             $('<img>').attr('src', "images/LTL-delete.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultDeleteZoneIcon);
@@ -363,6 +364,36 @@
                 }
             });
 
+            template1.droppable({
+                tolerance: "pointer",
+                drop: function(arg, ui) {
+                    if (ui.draggable.attr("data-dragsource") === "clipboard")
+                        return;
+
+                    if (opToDrag !== undefined) {
+                        //that._clipboardOps.push({ operation: opToDrag.operation.Clone(), status: "nottested" });
+                        //that._tpViewer.temporalpropertiesviewer({ "operations": that._clipboardOps });
+                        template1.formulatemplate({
+                            "operation": that._getNoOperandsOperation(opToDrag.operation)
+                        });
+
+                        var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = opToDrag.operation;
+                            that._refresh();
+                        } else {
+                            opToDrag.parentoperation.Operands[opToDrag.parentoperationindex] = opToDrag.operation;
+                        }
+                    }
+
+                    opToDrag = undefined;
+                    draggableDiv.attr("data-dragsource", undefined);
+                    that._switchMode("compact");
+
+                }
+            });
+
+            /*
             tpViewer.droppable({
                 tolerance: "pointer",
                 drop: function (arg, ui) {
@@ -455,6 +486,8 @@
                     that._switchMode("compact");
                 }
             });
+            */
+
 
             deleteZone.droppable({
                 tolerance: "pointer",
@@ -556,6 +589,29 @@
                 }
             });
             */
+        },
+
+        _getNoOperandsOperation: function (operation) {
+            var that = this;
+
+            var result = (<BMA.LTLOperations.Operation>operation).Clone();
+
+            var operands = result.Operands;
+            var newOperands = [];
+            for (var i = 0; i < operands.length; i++) {
+                if (operands[i] !== undefined) {
+                    if (operands[i] instanceof BMA.LTLOperations.Operation) {
+                        newOperands.push(that._getNoOperandsOperation(operands[i]));
+                    } else {
+                        newOperands.push(undefined);
+                    }
+                } else {
+                    newOperands.push(undefined);
+                }
+            }
+            result.Operands = newOperands;
+
+            return result;
         },
 
         _switchMode: function (mode) {
@@ -746,6 +802,9 @@
     });
 
     $.widget("BMA.formulatemplate", {
+        canvas: undefined,
+        img: undefined,
+
         options: {
             operation: undefined,
         },
@@ -757,9 +816,15 @@
             root.css("display", "flex").css("flex-direcition", "row").css("background-color", "white");
 
             var cont = $("<div></div>").addClass("bma-formulaeditor-template").appendTo(root);
-            var canvas = $("<canvas></canvas>").addClass("bma-formulaeditor-template-canvas").appendTo(cont);
-            canvas.hide();
+
+            that.img = $("<div></div>").addClass("bma-formulaeditor-template-img").appendTo(cont);
+
+            that.canvas = $("<canvas></canvas>").addClass("bma-formulaeditor-template-canvas").appendTo(cont);
+            that.canvas.hide();
+
             var clearBtn = $("<div></div>").addClass("bma-formulaeditor-template-clear").appendTo(root);
+
+            that._refresh();
         },
 
         _setOption: function (key, value) {
@@ -768,6 +833,13 @@
             switch (key) {
                 case "operation":
                     that.options.operation = value;
+                    if (value !== undefined) {
+                        that.canvas.show();
+                        that.img.hide();
+                    } else {
+                        that.canvas.hide();
+                        that.img.show();
+                    }
                     break;
                 default:
                     break;
@@ -777,6 +849,49 @@
         },
 
         _refresh: function () {
+            var that = this;
+            var canvas = that.canvas[0];
+
+            //clear canvas
+            canvas.height = canvas.height;
+
+            if (that.options.operation !== undefined) {
+                var op = that.options.operation;
+                var keyFrameSize = 26;
+                var padding = { x: 5, y: 10 };
+                var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, op, padding, keyFrameSize);
+                var scale = { x: 1, y: 1 };
+                var offset = 0;
+                var w = opSize.width + offset;
+                var h = opSize.height;
+                var canvasW = canvas.width;
+                var canvasH = canvas.height;
+                
+                if (w > canvasW || h > canvasH) {
+                    var scaleCoef = Math.min(canvasW / w, canvasH / h);
+
+                    scale = {
+                        x: scaleCoef,
+                        y: scaleCoef
+                    };
+                }
+                
+
+                canvas.width = scale.x * opSize.width + 2 * padding.x;
+                canvas.height = scale.y * opSize.height + 2 * padding.y;
+
+                var opPosition = { x: canvas.width / 2, y: canvas.height / 2 };
+
+                BMA.LTLOperations.RenderOperation(canvas, op, opPosition, scale, {
+                    padding: padding,
+                    keyFrameSize: keyFrameSize,
+                    stroke: "black",
+                    fill: "white",
+                    isRoot: true,
+                    strokeWidth: 1,
+                    borderThickness: 1
+                });
+            }
         },
 
         destroy: function () {
