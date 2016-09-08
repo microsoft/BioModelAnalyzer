@@ -22,7 +22,10 @@ module BMA {
                 var result = $.Deferred();
                 var list: string[] = [];
                 for (var attr in this.modelsList) {
-                    list.push(this.modelsList[attr]);
+                    var usrkey = this.IsUserKey(attr);
+                    if (usrkey !== undefined) {
+                        list.push(usrkey);//this.modelsList[attr]);
+                    }
                 }
                 result.resolve(list);
 
@@ -43,7 +46,7 @@ module BMA {
                 var newlist = [];
                 for (var i in this.modelsList) {
                     if (i !== id)
-                        newlist.push(this.modelsList[i]);
+                        newlist.push(i);//this.modelsList[i]);
                 }
                 this.modelsList = newlist;
             }
@@ -55,6 +58,19 @@ module BMA {
             IsInRepo(id: string) {
                 return this.modelsList[id] !== undefined;
             }
+
+            IsUserKey(key: string): string {
+                var sp = key.split('.');
+                if (sp[0] === "user") {
+                    var q = sp[1];
+                    for (var i = 2; i < sp.length; i++) {
+                        q = q.concat('.');
+                        q = q.concat(sp[i]);
+                    }
+                    return q;
+                }
+                else return undefined;
+            }
             //OnRepositoryUpdated();
         }
 
@@ -65,9 +81,12 @@ module BMA {
                 this.widget = widget;
             }
 
-            public Message(msg: string) { }
+            public Message(msg: string) {
+                this.widget.localstoragewidget("Message", msg);
+            }
 
             public AddItem(key, item) {
+                this.widget.localstoragewidget("AddItem", key);
             }
 
             public Show() {
@@ -81,6 +100,9 @@ module BMA {
             }
 
             public SetOnLoadModel(callback: Function) {
+                this.widget.localstoragewidget({
+                    onloadmodel: callback
+                });
             }
 
             public SetOnRemoveModel(callback: Function) {
@@ -90,9 +112,15 @@ module BMA {
             }
 
             public SetOnCopyToOneDriveCallback(callback: Function) {
+                this.widget.localstoragewidget({
+                    setoncopytoonedrive: callback
+                });
             }
 
             public SetOnEnableContextMenu(enable: boolean) {
+                this.widget.localstoragewidget({
+                    enableContextMenu: enable
+                });
             }
         }
 

@@ -80,27 +80,11 @@
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
         spyOn(appModel, "Deserialize");
         var ol = localStorageWidget.find("ol").eq(0);
+        var li = ol.children().eq(0);
         ol.children().eq(0).addClass("ui-selected");
         var st = ol.selectable("option", "stop");
         st();
         expect(appModel.Deserialize).toHaveBeenCalled();
     });
-
-    //
-    //it("should Reset appModel on 'LocalStorageLoadModel' command when id is correct", () => {
-    //    var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
-    //    spyOn(appModel, "Deserialize");
-    //    //var key = '4';
-    //    window.Commands.Execute("LocalStorageSaveModel", {});
-    //    window.Commands.Execute("LocalStorageLoadModel", "user." + name);
-    //    expect(appModel.Deserialize).toHaveBeenCalled();
-    //});
-
-    //it("shouldn't Reset appModel on 'LocalStorageLoadModel' command when id is not correct", () => {
-    //    var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
-    //    spyOn(appModel, "Deserialize");
-    //    var key = 'testkey';
-    //    window.Commands.Execute("LocalStorageLoadModel", key);
-    //    expect(appModel.Deserialize).not.toHaveBeenCalled();
-    //});
+    
 }); 
