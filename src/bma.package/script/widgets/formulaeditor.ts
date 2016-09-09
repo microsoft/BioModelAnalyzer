@@ -5,6 +5,10 @@
     $.widget("BMA.formulaeditor", {
         _tpViewer: undefined,
         _clipboardOps: [],
+        opToDrag: undefined,
+        draggableDiv: undefined,
+        draggableCanvas: undefined,
+        draggableWidth: undefined,
 
         options: {
             operation: undefined,
@@ -59,7 +63,7 @@
 
             //Adding operators
             var operators = $("<div></div>").addClass("temporal-operators").html("Operators<br>").appendTo(toolbar);
-            operators.width(350);
+            operators.width(320);
             var operatorsDiv = $("<div></div>").addClass("operators").appendTo(operators);
 
             var operatorsToUse = [
@@ -175,6 +179,10 @@
             var template2 = $("<div></div>").width("100%").formulatemplate().appendTo(tpViewer);
             var template3 = $("<div></div>").width("100%").formulatemplate().appendTo(tpViewer);
 
+            that._initTemplateZone(template1);
+            that._initTemplateZone(template2);
+            that._initTemplateZone(template3);
+
             //Adding delete zone
             //var deleteZonePlaceholer = $("<div></div>").width("30%").height("100%").appendTo(clipboardPanel);
             var deleteZone = $("<div></div>").addClass("dropzone delete").css("right", 10).css("top", 10).css("bottom", 10).width('calc(30% - 20px)').height('calc(100% - 20px)').appendTo(clipboardPanel);
@@ -183,20 +191,21 @@
             $('<img>').attr('src', "images/LTL-delete.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultDeleteZoneIcon);
 
             var draggableWidth = svgDiv.width();
+            that.draggableWidth = draggableWidth;
             var draggableHeight = svgDiv.height();
-            var draggableDiv = $("<div></div>").width(draggableWidth).height(draggableHeight).css("z-index", 100);
-            var canvas = $("<canvas></canvas>").attr("width", draggableWidth).attr("height", draggableHeight).appendTo(draggableDiv)[0];
-            var opToDrag = undefined;
+            that.draggableDiv = $("<div></div>").width(draggableWidth).height(draggableHeight).css("z-index", 100);
+            var canvas = $("<canvas></canvas>").attr("width", draggableWidth).attr("height", draggableHeight).appendTo(that.draggableDiv)[0];
+            that.draggableCanvas = canvas;
 
             svgDiv.draggable({
                 helper: function () {
-                    return draggableDiv;
+                    return that.draggableDiv;
                 },
                 cursorAt: { left: 0, top: 0 },
                 //opacity: 0.4,
                 cursor: "pointer",
                 start: function (arg, ui) {
-                    draggableDiv.attr("data-dragsource", "editor");
+                    that.draggableDiv.attr("data-dragsource", "editor");
                     canvas.height = canvas.height;
 
                     var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
@@ -205,18 +214,18 @@
                     var relX = arg.pageX - parentOffset.left;
                     var relY = arg.pageY - parentOffset.top;
                     var svgCoords = that._getSVGCoords(relX, relY);
-                    opToDrag = opL.UnpinOperation(svgCoords.x, svgCoords.y);
+                    that.opToDrag = opL.UnpinOperation(svgCoords.x, svgCoords.y);
 
-                    if (opToDrag !== undefined) {
+                    if (that.opToDrag !== undefined) {
 
-                        if (opToDrag.isRoot) {
+                        if (that.opToDrag.isRoot) {
                             that.options.operation = undefined;
                             that.operationLayout = undefined;
                         }
 
                         var keyFrameSize = 26;
                         var padding = { x: 5, y: 10 };
-                        var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, opToDrag.operation, padding, keyFrameSize);
+                        var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, that.opToDrag.operation, padding, keyFrameSize);
                         var scale = { x: 1, y: 1 };
                         var offset = 0;
                         var w = opSize.width + offset;
@@ -233,7 +242,7 @@
 
                         var opPosition = { x: scale.x * opSize.width / 2 + padding.x, y: padding.y + Math.floor(scale.y * opSize.height / 2) };
 
-                        BMA.LTLOperations.RenderOperation(canvas, opToDrag.operation, opPosition, scale, {
+                        BMA.LTLOperations.RenderOperation(canvas, that.opToDrag.operation, opPosition, scale, {
                             padding: padding,
                             keyFrameSize: keyFrameSize,
                             stroke: "black",
@@ -248,15 +257,15 @@
                     }
                 },
                 drag: function (arg, ui) {
-                    return opToDrag !== undefined;
+                    return that.opToDrag !== undefined;
                 },
                 stop: function (arg, ui) {
 
 
-                    if (opToDrag !== undefined) {
+                    if (that.opToDrag !== undefined) {
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                         if (opL === undefined) {
-                            that.options.operation = opToDrag.operation;
+                            that.options.operation = that.opToDrag.operation;
                             that._refresh();
                         } else {
                             var parentOffset = $(this).offset();
@@ -265,19 +274,19 @@
                             var svgCoords = that._getSVGCoords(relX, relY);
                             var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
                             if (emptyCell !== undefined) {
-                                emptyCell.operation.Operands[emptyCell.operandIndex] = opToDrag.operation;
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = that.opToDrag.operation;
                                 that._refresh();
                             } else {
-                                opToDrag.parentoperation.Operands[opToDrag.parentoperationindex] = opToDrag.operation;
+                                that.opToDrag.parentoperation.Operands[that.opToDrag.parentoperationindex] = that.opToDrag.operation;
                             }
                         }
 
-                        //opToDrag = undefined;
+                        //that.opToDrag = undefined;
                         that._refresh();
                     }
 
                     that._switchMode("compact");
-                    draggableDiv.attr("data-dragsource", undefined);
+                    that.draggableDiv.attr("data-dragsource", undefined);
 
                 }
             });
@@ -339,10 +348,10 @@
                                 that._refresh();
                             }
                         }
-                    } else if (draggableDiv.attr("data-dragsource") === "clipboard") {
+                    } else if (that.draggableDiv.attr("data-dragsource") === "clipboard") {
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                         if (opL === undefined) {
-                            that.options.operation = opToDrag.operation.Clone();
+                            that.options.operation = that.opToDrag.operation.Clone();
                             that._refresh();
                         } else {
                             var parentOffset = $(this).offset();
@@ -351,47 +360,20 @@
                             var svgCoords = that._getSVGCoords(relX, relY);
                             var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
                             if (emptyCell !== undefined) {
-                                emptyCell.operation.Operands[emptyCell.operandIndex] = opToDrag.operation.Clone();
+                                emptyCell.operation.Operands[emptyCell.operandIndex] = that.opToDrag.operation.Clone();
                                 that._refresh();
                             }
                         }
 
-                        opToDrag = undefined;
-                        draggableDiv.attr("data-dragsource", undefined);
+                        that.opToDrag = undefined;
+                        that.draggableDiv.attr("data-dragsource", undefined);
                     }
 
                     that._switchMode("compact");
                 }
             });
 
-            template1.droppable({
-                tolerance: "pointer",
-                drop: function(arg, ui) {
-                    if (ui.draggable.attr("data-dragsource") === "clipboard")
-                        return;
-
-                    if (opToDrag !== undefined) {
-                        //that._clipboardOps.push({ operation: opToDrag.operation.Clone(), status: "nottested" });
-                        //that._tpViewer.temporalpropertiesviewer({ "operations": that._clipboardOps });
-                        template1.formulatemplate({
-                            "operation": that._getNoOperandsOperation(opToDrag.operation)
-                        });
-
-                        var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
-                        if (opL === undefined) {
-                            that.options.operation = opToDrag.operation;
-                            that._refresh();
-                        } else {
-                            opToDrag.parentoperation.Operands[opToDrag.parentoperationindex] = opToDrag.operation;
-                        }
-                    }
-
-                    opToDrag = undefined;
-                    draggableDiv.attr("data-dragsource", undefined);
-                    that._switchMode("compact");
-
-                }
-            });
+            
 
             /*
             tpViewer.droppable({
@@ -492,8 +474,8 @@
             deleteZone.droppable({
                 tolerance: "pointer",
                 drop: function (arg, ui) {
-                    opToDrag = undefined;
-                    draggableDiv.attr("data-dragsource", undefined);
+                    that.opToDrag = undefined;
+                    that.draggableDiv.attr("data-dragsource", undefined);
                     that._switchMode("compact");
                 }
             });
@@ -535,60 +517,107 @@
                         .show();
                 }
             });
+        },
 
-            /*
-            //Context menu
-            var holdCords = {
-                holdX: 0,
-                holdY: 0
-            };
-            
-            $(document).on('vmousedown', function (event) {
-                holdCords.holdX = event.pageX;
-                holdCords.holdY = event.pageY;
-            });
+        _initTemplateZone: function (template) {
+            var that = this;
 
-            svgDiv.contextmenu({
-                addClass: "temporal-properties-contextmenu",
-                delegate: root,
-                autoFocus: true,
-                preventContextMenuForPopup: true,
-                preventSelect: true,
-                //taphold: true,
-                menu: [
-                    //{ title: "Cut", cmd: "Cut", uiIcon: "ui-icon-scissors" },
-                    //{ title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
-                    //{ title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
-                    { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
-                    //{ title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }] },
-                    //{ title: "Import", cmd: "Import", uiIcon: "ui-icon-import" }
-                ],
-                beforeOpen: function (event, ui) {
-                    ui.menu.zIndex(50);
-                    var x = event.pageX;
-                    var y = event.pageY;
-                    var left = x - svgDiv.offset().left;
-                    var top = y - svgDiv.offset().top;
-                    var svgCoords = that._getSVGCoords(left, top);
-                    if (that.operationLayout !== undefined) {
-                        that.contextElement = {
-                            x: svgCoords.x,
-                            y: svgCoords.y,
+            template.droppable({
+                tolerance: "pointer",
+                drop: function (arg, ui) {
+                    if (that.draggableDiv.attr("data-dragsource") === "clipboard")
+                        return;
+
+                    if (that.opToDrag !== undefined) {
+                        //that._clipboardOps.push({ operation: opToDrag.operation.Clone(), status: "nottested" });
+                        //that._tpViewer.temporalpropertiesviewer({ "operations": that._clipboardOps });
+                        template.formulatemplate({
+                            "operation": that._getNoOperandsOperation(that.opToDrag.operation)
+                        });
+
+                        var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+                        if (opL === undefined) {
+                            that.options.operation = that.opToDrag.operation;
+                            that._refresh();
+                        } else {
+                            that.opToDrag.parentoperation.Operands[that.opToDrag.parentoperationindex] = that.opToDrag.operation;
                         }
                     }
 
-                },
-                select: function (event, ui) {
-                    var args: any = {};
-                    var x = event.pageX;
-                    var y = event.pageY;
-                    args.left = x - svgDiv.offset().left;
-                    args.top = y - svgDiv.offset().top;
+                    that.opToDrag = undefined;
+                    that.draggableDiv.attr("data-dragsource", undefined);
+                    that._switchMode("compact");
 
-                    that._processContextMenuOption(ui.cmd);
                 }
             });
-            */
+
+
+            template.formulatemplate('getOperationSurface').draggable({
+                helper: function () {
+                    return that.draggableDiv;
+                },
+                cursorAt: { left: 0, top: 0 },
+                //opacity: 0.4,
+                cursor: "pointer",
+                start: function (arg, ui) {
+                    that.draggableDiv.attr("data-dragsource", "clipboard");
+                    that.draggableCanvas.height = that.draggableCanvas.height;
+
+                    var parentOffset = $(this).offset();
+                    var relX = arg.pageX - parentOffset.left;
+                    var relY = arg.pageY - parentOffset.top;
+
+                    var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+                    var dragOperation = template.formulatemplate('option', 'operation').Clone();
+
+                    if (dragOperation === undefined || dragOperation === null)
+                        return;
+
+                    that.opToDrag = { operation: dragOperation };
+                    that.opToDrag.IsVisible = false;
+
+                    if (that.opToDrag !== undefined) {
+                        var keyFrameSize = 26;
+                        var padding = { x: 5, y: 10 };
+                        var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(that.draggableCanvas, that.opToDrag.operation, padding, keyFrameSize);
+                        var scale = { x: 1, y: 1 };
+                        var offset = 0;
+                        var w = opSize.width + offset;
+
+                        if (w > that.draggableWidth) {
+                            scale = {
+                                x: that.draggableWidth / w,
+                                y: that.draggableWidth / w
+                            };
+                        }
+
+                        that.draggableCanvas.width = scale.x * opSize.width + 2 * padding.x;
+                        that.draggableCanvas.height = scale.y * opSize.height + 2 * padding.y;
+
+                        var opPosition = { x: scale.x * opSize.width / 2 + padding.x, y: padding.y + Math.floor(scale.y * opSize.height / 2) };
+
+                        BMA.LTLOperations.RenderOperation(that.draggableCanvas, that.opToDrag.operation, opPosition, scale, {
+                            padding: padding,
+                            keyFrameSize: keyFrameSize,
+                            stroke: "black",
+                            fill: "white",
+                            isRoot: true,
+                            strokeWidth: 1,
+                            borderThickness: 1
+                        });
+
+                        that._refresh();
+                        that._switchMode("extended");
+                    }
+                },
+                drag: function (arg, ui) {
+                    return that.opToDrag !== undefined;
+                },
+                stop: function () {
+                    that._switchMode("compact");
+                }
+            });
+
         },
 
         _getNoOperandsOperation: function (operation) {
@@ -804,6 +833,7 @@
     $.widget("BMA.formulatemplate", {
         canvas: undefined,
         img: undefined,
+        clearBtn: undefined,
 
         options: {
             operation: undefined,
@@ -822,7 +852,12 @@
             that.canvas = $("<canvas></canvas>").addClass("bma-formulaeditor-template-canvas").appendTo(cont);
             that.canvas.hide();
 
-            var clearBtn = $("<div></div>").addClass("bma-formulaeditor-template-clear").appendTo(root);
+            that.clearBtn = $("<div></div>").addClass("bma-formulaeditor-template-clear").appendTo(root);
+
+            that.clearBtn.click(function () {
+                that.options.operation = undefined;
+                that._refresh();
+            });
 
             that._refresh();
         },
@@ -833,13 +868,6 @@
             switch (key) {
                 case "operation":
                     that.options.operation = value;
-                    if (value !== undefined) {
-                        that.canvas.show();
-                        that.img.hide();
-                    } else {
-                        that.canvas.hide();
-                        that.img.show();
-                    }
                     break;
                 default:
                     break;
@@ -853,9 +881,14 @@
             var canvas = that.canvas[0];
 
             //clear canvas
-            canvas.height = canvas.height;
+            canvas.height = that.img.height();
+            canvas.width = that.img.width();
 
             if (that.options.operation !== undefined) {
+                that.canvas.show();
+                that.img.hide();
+                that.clearBtn.show();
+
                 var op = that.options.operation;
                 var keyFrameSize = 26;
                 var padding = { x: 5, y: 10 };
@@ -864,9 +897,9 @@
                 var offset = 0;
                 var w = opSize.width + offset;
                 var h = opSize.height;
-                var canvasW = canvas.width;
-                var canvasH = canvas.height;
-                
+                var canvasW = canvas.width - 2 * padding.x;
+                var canvasH = canvas.height - 2 * padding.y;
+
                 if (w > canvasW || h > canvasH) {
                     var scaleCoef = Math.min(canvasW / w, canvasH / h);
 
@@ -875,10 +908,10 @@
                         y: scaleCoef
                     };
                 }
-                
 
-                canvas.width = scale.x * opSize.width + 2 * padding.x;
-                canvas.height = scale.y * opSize.height + 2 * padding.y;
+
+                //canvas.width = scale.x * opSize.width + 2 * padding.x;
+                //canvas.height = scale.y * opSize.height + 2 * padding.y;
 
                 var opPosition = { x: canvas.width / 2, y: canvas.height / 2 };
 
@@ -891,11 +924,19 @@
                     strokeWidth: 1,
                     borderThickness: 1
                 });
+            } else {
+                that.canvas.hide();
+                that.img.show();
+                that.clearBtn.hide();
             }
         },
 
         destroy: function () {
             this.element.empty();
+        },
+
+        getOperationSurface: function () {
+            return this.canvas;
         }
 
     });
