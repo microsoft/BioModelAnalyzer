@@ -128,12 +128,12 @@
             var formulaContainer = $("<div></div>").css("background-color", "white").css("position", "relative").height(200).width("100%").appendTo(leftContainer);
 
             //Adding text editor
-            var textEditorDiv = $("<div></div>").height("100%").height("100%").width("calc(100% - 40px)").css("position", "absolute").css("top", 0).css("left", 0).appendTo(formulaContainer);
-            textEditorDiv.formulatexteditor();
+            var textEditorDiv = $("<div></div>").width("calc(100% - 10px)").width("calc(100% - 50px)").css("padding-top", 10).css("padding-left", 10).appendTo(formulaContainer);
+            textEditorDiv.formulatexteditor({ formula: "2 + 3", isvalid: false, errormessage: "test Error message" });
             textEditorDiv.hide();
 
             //Adding drawing surface
-            var svgDiv = $("<div></div>").height("100%").width("calc(100% - 40px)").css("position", "absolute").css("top", 0).css("left", 0).appendTo(formulaContainer);
+            var svgDiv = $("<div></div>").height("100%").width("calc(100% - 40px)").appendTo(formulaContainer);
             that.svgDiv = svgDiv;
 
             var pixofs = 0;
@@ -866,33 +866,39 @@
 
 
     $.widget("BMA.formulatexteditor", {
-        texteditor: undefined,
-        validationicon: undefined,
-        errormessage: undefined,
 
         options: {
             formula: undefined,
             isvalid: true,
-            errormessage: undefined
+            errormessage: undefined,
+            onformulachanged: undefined
         },
 
         _create: function () {
             var that = this;
-            var root = this.element;
+            var root = this.element.addClass("variable-editor");
 
             var formulaDiv = $('<div></div>')
                 .addClass('target-function')
+                .css("margin-top", 0)
                 .appendTo(root);
             this.formulaTextArea = $('<textarea></textarea>')
                 .attr("spellcheck", "false")
                 .addClass("formula-text-area")
+                .css("margin-top", 0)
+                .height(140)
                 .appendTo(formulaDiv);
             this.prooficon = $('<div></div>')
                 .addClass("validation-icon")
+                .css("vertical-align", "top")
                 .appendTo(formulaDiv);
             this.errorMessage = $('<div></div>')
                 .addClass("formula-validation-message")
                 .appendTo(formulaDiv);
+
+            this.formulaTextArea.text(that.options.formula);
+            that.errorMessage.text(that.options.errormessage);
+            that._setisvalid();
         },
 
         _setOption: function (key, value) {
@@ -901,9 +907,44 @@
             switch (key) {
                 case "formula":
                     that.options.formula = value;
+                    this.formulaTextArea.text(value);
+                    break;
+                case "isvalid":
+                    that.options.isvalid = value;
+                    that._setisvalid();
+                    break;
+                case "errormessage":
+                    that.options.errormessage = value;
+                    that.errorMessage.text(value);
                     break;
                 default:
                     break;
+            }
+        },
+
+        _setisvalid: function () {
+            var that = this;
+            var value = that.options.isvalid;
+
+            if (value === undefined) {
+                that.prooficon.removeClass("formula-failed-icon");
+                that.prooficon.removeClass("formula-validated-icon");
+                this.formulaTextArea.removeClass("formula-failed-textarea");
+                this.formulaTextArea.removeClass("formula-validated-textarea");
+                that.errorMessage.hide();
+            }
+            else {
+
+                if (value === true) {
+                    that.prooficon.removeClass("formula-failed-icon").addClass("formula-validated-icon");
+                    this.formulaTextArea.removeClass("formula-failed-textarea").addClass("formula-validated-textarea");
+                    that.errorMessage.hide();
+                }
+                else if (value === false) {
+                    that.prooficon.removeClass("formula-validated-icon").addClass("formula-failed-icon");
+                    this.formulaTextArea.removeClass("formula-validated-textarea").addClass("formula-failed-textarea");
+                    that.errorMessage.show();
+                }
             }
         },
 
