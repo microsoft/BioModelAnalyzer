@@ -10,8 +10,10 @@
         draggableCanvas: undefined,
         draggableWidth: undefined,
 
+        operation: undefined,
+
         options: {
-            operation: undefined,
+            formula: "",
             variables: []
         },
 
@@ -129,6 +131,7 @@
 
             //Adding text editor
             var textEditorDiv = $("<div></div>").width("calc(100% - 10px)").width("calc(100% - 50px)").css("padding-top", 10).css("padding-left", 10).appendTo(formulaContainer);
+            that.textEditor = textEditorDiv;
             textEditorDiv.formulatexteditor({ formula: "2 + 3", isvalid: false, errormessage: "test Error message" });
             textEditorDiv.hide();
 
@@ -165,39 +168,27 @@
             });
 
             //Adding switch mode button
-            var switchEditorBtn = $("<div></div>").addClass("bma-formulaeditor-switch").addClass("bma-formulaeditor-switch-graphical").appendTo(formulaContainer);
-            switchEditorBtn.click(function () {
-                if (switchEditorBtn.hasClass("bma-formulaeditor-switch-graphical")) {
+            that.switchEditorBtn = $("<div></div>").addClass("bma-formulaeditor-switch").addClass("bma-formulaeditor-switch-graphical").appendTo(formulaContainer);
+            that.switchEditorBtn.click(function () {
+                if (that.switchEditorBtn.hasClass("bma-formulaeditor-switch-graphical")) {
                     try {
-                        var formula = BMA.ModelHelper.ConvertTFOperationToString(that.options.operation);
+                        var formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
+                        that.options.formula = formula;
                         textEditorDiv.formulatexteditor({ formula: formula, isvalid: true, errormessage: "" });
                     } catch (ex) {
                         console.log(ex);
                     }
 
-                    switchEditorBtn.addClass("bma-formulaeditor-switch-text").removeClass("bma-formulaeditor-switch-graphical");
+                    that.switchEditorBtn.addClass("bma-formulaeditor-switch-text").removeClass("bma-formulaeditor-switch-graphical");
                     svgDiv.hide();
                     textEditorDiv.show();
                 } else {
-
-                    try {
-                        var operation = BMA.ModelHelper.ConvertTargetFunctionToOperation(textEditorDiv.formulatexteditor('option', 'formula'), that.options.variables);
-                        textEditorDiv.formulatexteditor({ isvalid: true, errormessage: "" });
-
-                        that.options.operation = operation;
-                        svgDiv.show();
-                        that._refresh();
-
-                        switchEditorBtn.removeClass("bma-formulaeditor-switch-text").addClass("bma-formulaeditor-switch-graphical");
-                        textEditorDiv.hide();
-
-                    } catch (ex) {
-                        textEditorDiv.formulatexteditor({ isvalid: false, errormessage: that._parseErrorMessage(ex) });
-                    }
-
-
-
-                    
+                    that.options.formula = textEditorDiv.formulatexteditor('option', 'formula');
+                    that.operation = undefined;
+                    that.switchEditorBtn.removeClass("bma-formulaeditor-switch-text").addClass("bma-formulaeditor-switch-graphical");
+                    svgDiv.show();
+                    textEditorDiv.hide();
+                    that._refresh(true);
                 }
             });
 
@@ -206,18 +197,7 @@
 
             //Adding copy zone
             var tpViewer = $("<div></div>").css("top", 0).css("left", 0).width("70%").height("100%").css("background-color", "white").appendTo(clipboardPanel);
-
-            /*
-            var defaultCopyZoneIcon = $("<div></div>").css("position", "absolute").width("100%").height("95%").css("text-align", "center");
-            $("<span></span>").css("display", "inline-block").css("vertical-align", "middle").height("100%").appendTo(defaultCopyZoneIcon);
-            $('<img>').attr('src', "images/LTL-copy.svg").css("display", "inline-block").css("vertical-align", "middle").appendTo(defaultCopyZoneIcon);
-
-            that._tpViewer = tpViewer.temporalpropertiesviewer({
-                rightOffset: 15,
-                defaultIcon: defaultCopyZoneIcon
-            });
-            */
-
+            
             $("<div>Templates</div>").addClass("bma-formulaeditor-header").appendTo(tpViewer);
             var template1 = $("<div></div>").width("100%").formulatemplate().appendTo(tpViewer);
             var template2 = $("<div></div>").width("100%").formulatemplate().appendTo(tpViewer);
@@ -228,7 +208,6 @@
             that._initTemplateZone(template3);
 
             //Adding delete zone
-            //var deleteZonePlaceholer = $("<div></div>").width("30%").height("100%").appendTo(clipboardPanel);
             var deleteZone = $("<div></div>").addClass("dropzone delete").css("right", 10).css("top", 10).css("bottom", 10).width('calc(30% - 20px)').height('calc(100% - 20px)').appendTo(clipboardPanel);
             var defaultDeleteZoneIcon = $("<div></div>").width("100%").height("95%").css("text-align", "center").appendTo(deleteZone);
             $("<span></span>").css("display", "inline-block").css("vertical-align", "middle").height("100%").appendTo(defaultDeleteZoneIcon);
@@ -263,7 +242,7 @@
                     if (that.opToDrag !== undefined) {
 
                         if (that.opToDrag.isRoot) {
-                            that.options.operation = undefined;
+                            that.operation = undefined;
                             that.operationLayout = undefined;
                         }
 
@@ -309,7 +288,8 @@
                     if (that.opToDrag !== undefined) {
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                         if (opL === undefined) {
-                            that.options.operation = that.opToDrag.operation;
+                            that.operation = that.opToDrag.operation;
+                            that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
                             that._refresh();
                         } else {
                             var parentOffset = $(this).offset();
@@ -358,7 +338,8 @@
                         }
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                         if (opL === undefined) {
-                            that.options.operation = op;
+                            that.operation = op;
+                            that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
                             that._refresh();
                         } else {
                             var parentOffset = $(this).offset();
@@ -368,6 +349,7 @@
                             var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
                             if (emptyCell !== undefined) {
                                 emptyCell.operation.Operands[emptyCell.operandIndex] = op;
+                                that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
                                 that._refresh();
                             }
                         }
@@ -395,7 +377,8 @@
                     } else if (that.draggableDiv.attr("data-dragsource") === "clipboard") {
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                         if (opL === undefined) {
-                            that.options.operation = that.opToDrag.operation.Clone();
+                            that.operation = that.opToDrag.operation.Clone();
+                            that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
                             that._refresh();
                         } else {
                             var parentOffset = $(this).offset();
@@ -405,6 +388,7 @@
                             var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
                             if (emptyCell !== undefined) {
                                 emptyCell.operation.Operands[emptyCell.operandIndex] = that.opToDrag.operation.Clone();
+                                that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
                                 that._refresh();
                             }
                         }
@@ -501,7 +485,8 @@
 
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                         if (opL === undefined) {
-                            that.options.operation = that.opToDrag.operation;
+                            that.operation = that.opToDrag.operation;
+                            that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
                             that._refresh();
                         } else {
                             that.opToDrag.parentoperation.Operands[that.opToDrag.parentoperationindex] = that.opToDrag.operation;
@@ -664,30 +649,6 @@
             }
         },
 
-        _processContextMenuOption(option) {
-            var that = this;
-            switch (option) {
-                case "Delete":
-                    if (that.contextElement !== undefined) {
-                        var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
-                        var op = opL.UnpinOperation(this.contextElement.x, this.contextElement.y);
-                        if (op.isRoot) {
-                            that.operationLayout.IsVisible = false;
-                            that.operationLayout = undefined;
-                            that.options.operation = undefined;
-                        } else {
-                            that.options.operation = opL.Operation;
-                        }
-                        that.contextElement = undefined;
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            this._refresh();
-        },
-
         _getSVGCoords: function (x, y) {
             if (this.operationLayout !== undefined) {
                 var bbox = this.operationLayout.BoundingBox;
@@ -728,8 +689,26 @@
             };
         },
 
-        _refresh: function () {
+        _refresh: function (shouldConvert = false) {
             var that = this;
+
+            that.textEditor.formulatexteditor({ "formula": that.options.formula, isvalid: true, errormessage: "" });
+            if (shouldConvert) {
+                try {
+                    that.operation = BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.variables);
+                }
+                catch (ex) {
+                    //Switch to text mode with current value
+                    that.switchEditorBtn.addClass("bma-formulaeditor-switch-text").removeClass("bma-formulaeditor-switch-graphical");
+                    that.textEditor.formulatexteditor({ isvalid: false, errormessage: ex });
+                    that.textEditor.show();
+                    that.svgDiv.hide();
+                    if (that.operationLayout !== undefined) {
+                        that.operationLayout.IsVisible = false;
+                        that.operationLayout = undefined;
+                    }
+                }
+            }
 
             if (that._svg === undefined)
                 return;
@@ -740,8 +719,8 @@
                 height: that.svgDiv.height(),
             }, true);
 
-            if (that.options.operation !== undefined) {
-                this.operationLayout = new BMA.LTLOperations.OperationLayout(that._svg, that.options.operation, { x: 0, y: 0 });
+            if (that.operation !== undefined) {
+                this.operationLayout = new BMA.LTLOperations.OperationLayout(that._svg, that.operation, { x: 0, y: 0 });
                 this.operationLayout.Padding = { x: 7, y: 14 };
                 var bbox = this.operationLayout.BoundingBox;
                 var aspect = that.svgDiv.width() / that.svgDiv.height();
@@ -772,20 +751,22 @@
 
         _setOption: function (key, value) {
             var that = this;
-            var needRefreshStates = false;
+            var shouldConvert = false;
             switch (key) {
-                case "operation":
-                    that.options.operation = value;
-                    break;
                 case "variables":
                     that.options.variables = value;
                     that._refreshStates();
+                    break;
+                case "formula":
+                    that.options.formula = value;
+                    that.operation = undefined;
+                    shouldConvert = true;
                     break;
                 default:
                     break;
             }
 
-            that._refresh();
+            that._refresh(shouldConvert);
         },
 
         destroy: function () {
