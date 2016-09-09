@@ -126,7 +126,18 @@
             }
 
             //Adding drawing surface
-            var svgDiv = $("<div></div>").css("background-color", "white").css("position", "relative").height(200).width("100%").appendTo(leftContainer);
+            var formulaContainer = $("<div></div>").css("background-color", "white").css("position", "relative").height(200).width("100%").appendTo(leftContainer);
+            var switchEditorBtn = $("<div></div>").addClass("bma-formulaeditor-switch").addClass("bma-formulaeditor-switch-graphical").appendTo(formulaContainer);
+            switchEditorBtn.click(function () {
+                if (switchEditorBtn.hasClass("bma-formulaeditor-switch-graphical")) {
+                    switchEditorBtn.addClass("bma-formulaeditor-switch-text").removeClass("bma-formulaeditor-switch-graphical");
+                } else {
+                    switchEditorBtn.removeClass("bma-formulaeditor-switch-text").addClass("bma-formulaeditor-switch-graphical");
+                }
+            });
+
+
+            var svgDiv = $("<div></div>").height("100%").width("calc(100% - 40px)").appendTo(formulaContainer);
             that.svgDiv = svgDiv;
 
             var pixofs = 0;
@@ -373,7 +384,7 @@
                 }
             });
 
-            
+
 
             /*
             tpViewer.droppable({

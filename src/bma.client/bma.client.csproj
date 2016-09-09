@@ -270,6 +270,8 @@
     <Content Include="images\succeeded.png" />
     <Content Include="images\succeeded.svg" />
     <Content Include="images\svgtest.txt" />
+    <Content Include="images\switchToGraphic.png" />
+    <Content Include="images\switchToText.png" />
     <Content Include="images\tabicon-LTL.svg" />
     <Content Include="images\template.png" />
     <Content Include="images\tick-128.png" />
