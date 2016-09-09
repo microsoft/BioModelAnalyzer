@@ -514,6 +514,14 @@ module BMA {
                 this.widget.localstoragewidget("AddItem", key);
             }
 
+            public SetActiveModel(modelName) {
+                this.widget.localstoragewidget("SetActiveModel", modelName);
+            }
+
+            public SetOnUnselect() {
+                this.widget.localstoragewidget("CancelSelection");
+            }
+
             public SetOnEnableContextMenu(enable: boolean) {
                 this.widget.localstoragewidget({
                     enableContextMenu: enable
@@ -568,6 +576,14 @@ module BMA {
 
             public SetItems(keys) { //keys = { id, name }
                 this.widget.onedrivestoragewidget({ items: keys });
+            }
+
+            public SetActiveModel(modelName) {
+                this.widget.onedrivestoragewidget("SetActiveModel", modelName);
+            }
+
+            public SetOnUnselect() {
+                this.widget.onedrivestoragewidget("CancelSelection");
             }
 
             public SetOnLoadModel(callback: Function) {
@@ -658,111 +674,6 @@ module BMA {
             //}
 
         }
-
-        //export class LocalStorageDriver extends ModelStorageDriver implements ILocalStorageDriver {
-
-        //    constructor(widget: JQuery) {
-        //        super(widget);
-        //    }
-
-        //    public AddItem(key, item) {
-        //        this.widget.modelstoragewidget("AddItem", key);
-        //    }
-            
-        //    public SetItems(keys) {
-        //        this.widget.modelstoragewidget({ items: keys });
-        //    }
-            
-        //}
-
-        //export class OneDriveStorageDriver extends ModelStorageDriver implements ILocalStorageDriver{
-
-        //    constructor(widget: JQuery) {
-        //        super(widget);
-        //    }
-
-        //    public AddItem(key, item) {
-        //        this.widget.modelstoragewidget("AddOneDriveItem", key);
-        //    }
-
-        //    public SetItems(keys) {
-        //        this.widget.modelstoragewidget({ oneDriveItems: keys });
-        //    }
-            
-        //    public SetOnCopyToLocalCallback(callback: Function) {
-        //        this.widget.modelstoragewidget({
-        //            setoncopycallback: callback
-        //        });
-        //    }
-
-        //    public SetOnMoveToLocalCallback(callback: Function) {
-        //        this.widget.modelstoragewidget({
-        //            setonmovecallback: callback
-        //        });
-        //    }
-
-        //    public SetOnShareCallback(callback: Function) {
-        //        this.widget.modelstoragewidget({
-        //            setonsharecallback: callback
-        //        });
-        //    }
-        //}
-
-        //export class ModelStorageDriver implements ILocalStorageDriver {
-        //    private localStorageDriver: BMA.UIDrivers.LocalStorageDriver;
-        //    private oneDriveStorageDriver: BMA.UIDrivers.OneDriveStorageDriver;
-        //    protected widget: JQuery;
-        //    private mode = "local";
-
-        //    constructor(widget: JQuery) {
-        //        this.widget = widget;
-
-        //        this.localStorageDriver = new LocalStorageDriver(this.widget);
-        //        this.oneDriveStorageDriver = new OneDriveStorageDriver(this.widget);
-        //    }
-
-        //    public SetAuthorizationStatus(status: boolean) {
-        //        this.widget.modelstoragewidget({ isAuthorized: status });
-        //    }
-
-        //    public AddItem(key, item) {
-        //        if (this.mode == "local")
-        //            this.localStorageDriver.AddItem(key, item);
-        //        else this.oneDriveStorageDriver.AddItem(key, item);
-        //    }
-
-        //    public Show() {
-        //        this.widget.show();
-        //    }
-
-        //    public Hide() {
-        //        this.widget.hide();
-        //    }
-
-        //    public SetItems(keys) {
-        //        if (this.mode == "local")
-        //            this.localStorageDriver.SetItems(keys);
-        //        else this.oneDriveStorageDriver.SetItems(keys);
-        //    }
-
-        //    public Message(msg: string) {
-        //        this.widget.modelstoragewidget("Message", msg);
-        //    }
-
-        //    public SetOnModeChangedCallback() {
-        //        var that = this;
-        //        var onmodechanged = function () {
-        //            if (that.mode == "local") 
-        //                that.mode = "oneDrive";
-        //            else that.mode = "local";
-        //        };
-
-        //        this.widget.modelstoragewidget({
-        //            onmodechangedcallback: onmodechanged
-        //        });
-        //    }
-
-        //}
 
         export class ModelFileLoader implements IFileLoader {
             private fileInput: JQuery;

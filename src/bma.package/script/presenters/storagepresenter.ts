@@ -11,6 +11,7 @@
             private localRepository: BMA.UIDrivers.IModelRepository;
             private messagebox: BMA.UIDrivers.IMessageServiсe;
             private checker: BMA.UIDrivers.ICheckChanges;
+            private activePresenter: string = "local";
 
             constructor(
                 appModel: BMA.Model.AppModel,
@@ -45,6 +46,11 @@
                 this.localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(that.appModel, that.localStorageDriver,
                     localRepository, messagebox, checker, logService, waitScreen);
 
+                this.localStoragePresenter.SetOnIsActive(function () {
+                    if (that.activePresenter == "local") return true;
+                    return false;
+                });
+
                 var onLogin = function (oneDrive) {
                     that.driver.SetAuthorizationStatus(true);
                     that.localStorageDriver.SetOnEnableContextMenu(true);
@@ -65,11 +71,25 @@
                         // set copied model to oneDrivePresenter
                     });
 
+                    that.localStoragePresenter.SetOnActiveCallback(function () {
+                        that.activePresenter = "local";
+                        that.oneDriveStorageDriver.SetOnUnselect();
+                    });
+
                     that.oneDrivePresenter.SetOnCopyCallback(function (key, item) {
                         that.localRepository.SaveModel(key, item);
                         window.Commands.Execute("LocalStorageChanged", {});
                         // set copied to localpresenter
                     });
+
+                    that.oneDrivePresenter.SetOnActiveCallback(function () {
+                        that.activePresenter = "oneDrive";
+                        that.localStorageDriver.SetOnUnselect();
+                    });
+
+                    that.oneDrivePresenter.SetOnIsActive(function () {
+                        if (that.activePresenter == "oneDrive") return true;
+                        return false;
                 };
 
                 var onLoginFailed = function (failure) {
@@ -77,6 +97,7 @@
                 };
                 
                 var onLogout = function (logout) {
+                    that.activePresenter = "local";
                     that.driver.SetAuthorizationStatus(false);
                     that.localStorageDriver.SetOnEnableContextMenu(false);
                     if (that.oneDrivePresenter) {
@@ -100,6 +121,11 @@
                     window.Commands.Execute("LocalStorageRequested", undefined);
                 });
 
+                window.Commands.On("SaveModel", function () {
+                    if (that.activePresenter == "local")
+                        window.Commands.Execute("LocalStorageSaveModel", undefined);
+                    else window.Commands.Execute("OneDriveStorageSaveModel", undefined);
+                });
             }
         }
     }

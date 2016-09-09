@@ -40,7 +40,17 @@
             this.ol = $('<ol></ol>').appendTo(this.repo); 
             
             for (var i = 0; i < items.length; i++) {
-                var li = $('<li></li>').text(items[i]).appendTo(this.ol);
+                var li = $('<li></li>').text(items[i]).appendTo(this.ol).click(function () {
+                    var ind = $(this).index();
+                    if (that.options.onloadmodel !== undefined) {
+                        that.options.onloadmodel("user." + items[ind]);//.done(function () {
+                        //    that.repo.find(".ui-selected").removeClass("ui-selected");
+                        //    $(that.options.selectedLi).addClass("ui-selected");
+                        //    if (that.options.oncancelselection !== undefined)
+                        //        that.options.oncancelselection();
+                        //});
+                    }
+                });
                 //var a = $('<a></a>').addClass('delete').appendTo(li);
                 var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);// $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//
                 removeBtn.bind("click", function (event) {
@@ -50,22 +60,43 @@
                     //window.Commands.Execute("LocalStorageRemoveModel", "user."+items[$(this).parent().index()]);
                 })
             }
-
-            this.ol.selectable({
-                stop: function () {
-                    var ind = that.repo.find(".ui-selected").index();
-                    if (that.options.onloadmodel !== undefined)
-                        that.options.onloadmodel("user." + items[ind]);
-                    //window.Commands.Execute("LocalStorageLoadModel", "user."+items[ind]);
-                }
-            });
+            //this.ol.selectable({
+            //    stop: function () {
+            //        var ind = that.repo.find(".ui-selected").index();
+            //        if (that.options.onloadmodel !== undefined) {
+            //            that.options.onloadmodel("user." + items[ind]);
+            //            if (that.options.oncancelselection !== undefined)
+            //                that.options.oncancelselection();
+            //        }
+            //        //window.Commands.Execute("LocalStorageLoadModel", "user."+items[ind]);
+            //    }
+            //});
 
             this.createContextMenu();
+        },
+
+        CancelSelection: function () {
+            this.repo.find(".ui-selected").removeClass("ui-selected");
         },
 
         Message: function (msg) {
             if (this.onmessagechanged !== undefined)
                 this.onmessagechanged(msg);
+        },
+
+        SetActiveModel: function (modelName) {
+            var that = this;
+            var idx;
+            for (var i = 0; i < that.options.items.length; i++) {
+                if (that.options.items[i] == modelName) {
+                    idx = i;
+                    break;
+                }
+            }
+            if (idx) {
+                this.repo.find(".ui-selected").removeClass("ui-selected");
+                this.ol.children().eq(idx).addClass("ui-selected");
+            }
         },
 
         createContextMenu: function () {
@@ -122,6 +153,9 @@
                     break;
                 case "enableContextMenu":
                     this.options.enableContextMenu = value;
+                    break;
+                case "oncancelselection":
+                    this.options.oncancelselection = value;
                     break;
             }
             this._super(key, value);

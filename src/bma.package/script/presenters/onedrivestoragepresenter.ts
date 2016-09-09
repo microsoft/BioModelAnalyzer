@@ -7,6 +7,8 @@
             private messagebox: BMA.UIDrivers.IMessageServiсe;
             private checker: BMA.UIDrivers.ICheckChanges;
             private setOnCopy: Function;
+            private setOnActive: Function;
+            private setOnIsActive: Function;
 
             private commandsIds: any[] = [];
 
@@ -79,6 +81,7 @@
                                         callback: function () {
                                             userDialog.detach();
                                             window.Commands.Execute("OneDriveStorageSaveModel", {});
+                                            load();
                                         }
                                     },
                                     {
@@ -90,12 +93,16 @@
                                     },
                                     {
                                         button: 'Cancel',
-                                        callback: function () { userDialog.detach(); }
+                                        callback: function () {
+                                            userDialog.detach();
+                                        }
                                     }
                                 ]
                             });
                         }
-                        else load();
+                        else {
+                            load();
+                        }
                     }
                     catch (ex) {
                         alert(ex);
@@ -108,6 +115,9 @@
                             that.tool.LoadModel(key).done(function (result) {
                                 appModel.Deserialize(JSON.stringify(result));
                                 that.checker.Snapshot(that.appModel);
+                                that.driver.SetActiveModel(that.appModel.BioModel.Name);
+                                if (that.setOnActive !== undefined)
+                                    that.setOnActive();
                             }).fail(function (result) {
                                 var res = JSON.parse(JSON.stringify(result));
                                 that.messagebox.Show(res.statusText);
@@ -128,8 +138,10 @@
                         try {
                             logService.LogSaveModel();
                             var key = appModel.BioModel.Name;
-                            that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
-                            that.checker.Snapshot(that.appModel);
+                            that.tool.SaveModel(key, JSON.parse(appModel.Serialize())).done(function () {
+                                window.Commands.Execute("OneDriveStorageChanged", {});
+                                that.checker.Snapshot(that.appModel);
+                            });
                         }
                         catch (ex) {
                             alert("Couldn't save model: " + ex);
@@ -149,6 +161,8 @@
                         that.driver.Message("The model repository is empty");
                     else that.driver.Message('');
                     that.driver.SetItems(modelsInfo);
+                    if (that.setOnIsActive !== undefined && that.setOnIsActive())
+                        that.driver.SetActiveModel(that.appModel.BioModel.Name);
                 }).fail(function (errorThrown) {
                     var res = JSON.parse(JSON.stringify(errorThrown));
                     that.messagebox.Show(res.statusText);
@@ -156,7 +170,13 @@
                 });
             }
 
+            public SetOnActiveCallback(callback: Function) {
+                this.setOnActive = callback;
+            }
 
+            public SetOnIsActive(callback: Function) {
+                this.setOnIsActive = callback;
+            }
             
             public Destroy() {
                 var that = this;

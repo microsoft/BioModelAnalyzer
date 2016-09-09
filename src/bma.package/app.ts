@@ -451,7 +451,7 @@ function loadScript(version) {
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
 
     $("#btn-local-save").click(function (args) {
-        window.Commands.Execute("LocalStorageSaveModel", undefined);
+        window.Commands.Execute("SaveModel", undefined);
     });
     $("#btn-new-model").click(function (args) {
         window.Commands.Execute("NewModel", undefined);
