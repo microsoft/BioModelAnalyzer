@@ -125,19 +125,15 @@
 
             }
 
-            //Adding drawing surface
             var formulaContainer = $("<div></div>").css("background-color", "white").css("position", "relative").height(200).width("100%").appendTo(leftContainer);
-            var switchEditorBtn = $("<div></div>").addClass("bma-formulaeditor-switch").addClass("bma-formulaeditor-switch-graphical").appendTo(formulaContainer);
-            switchEditorBtn.click(function () {
-                if (switchEditorBtn.hasClass("bma-formulaeditor-switch-graphical")) {
-                    switchEditorBtn.addClass("bma-formulaeditor-switch-text").removeClass("bma-formulaeditor-switch-graphical");
-                } else {
-                    switchEditorBtn.removeClass("bma-formulaeditor-switch-text").addClass("bma-formulaeditor-switch-graphical");
-                }
-            });
 
+            //Adding text editor
+            var textEditorDiv = $("<div></div>").height("100%").height("100%").width("calc(100% - 40px)").css("position", "absolute").css("top", 0).css("left", 0).appendTo(formulaContainer);
+            textEditorDiv.formulatexteditor();
+            textEditorDiv.hide();
 
-            var svgDiv = $("<div></div>").height("100%").width("calc(100% - 40px)").appendTo(formulaContainer);
+            //Adding drawing surface
+            var svgDiv = $("<div></div>").height("100%").width("calc(100% - 40px)").css("position", "absolute").css("top", 0).css("left", 0).appendTo(formulaContainer);
             that.svgDiv = svgDiv;
 
             var pixofs = 0;
@@ -165,6 +161,20 @@
                     var relY = arg.pageY - parentOffset.top;
                     var svgCoords = that._getSVGCoords(relX, relY);
                     opL.HighlightAtPosition(svgCoords.x, svgCoords.y);
+                }
+            });
+
+            //Adding switch mode button
+            var switchEditorBtn = $("<div></div>").addClass("bma-formulaeditor-switch").addClass("bma-formulaeditor-switch-graphical").appendTo(formulaContainer);
+            switchEditorBtn.click(function () {
+                if (switchEditorBtn.hasClass("bma-formulaeditor-switch-graphical")) {
+                    switchEditorBtn.addClass("bma-formulaeditor-switch-text").removeClass("bma-formulaeditor-switch-graphical");
+                    svgDiv.hide();
+                    textEditorDiv.show();
+                } else {
+                    switchEditorBtn.removeClass("bma-formulaeditor-switch-text").addClass("bma-formulaeditor-switch-graphical");
+                    svgDiv.show();
+                    textEditorDiv.hide();
                 }
             });
 
@@ -383,104 +393,6 @@
                     that._switchMode("compact");
                 }
             });
-
-
-
-            /*
-            tpViewer.droppable({
-                tolerance: "pointer",
-                drop: function (arg, ui) {
-                    if (ui.draggable.attr("data-dragsource") === "clipboard")
-                        return;
-
-                    if (opToDrag !== undefined) {
-                        that._clipboardOps.push({ operation: opToDrag.operation.Clone(), status: "nottested" });
-                        that._tpViewer.temporalpropertiesviewer({ "operations": that._clipboardOps });
-
-                        var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
-                        if (opL === undefined) {
-                            that.options.operation = opToDrag.operation;
-                            that._refresh();
-                        } else {
-                            opToDrag.parentoperation.Operands[opToDrag.parentoperationindex] = opToDrag.operation;
-                        }
-                    }
-
-                    opToDrag = undefined;
-                    draggableDiv.attr("data-dragsource", undefined);
-                    that._switchMode("compact");
-                }
-            });
-
-            tpViewer.draggable({
-                helper: function () {
-                    return draggableDiv;
-                },
-                cursorAt: { left: 0, top: 0 },
-                //opacity: 0.4,
-                cursor: "pointer",
-                start: function (arg, ui) {
-                    draggableDiv.attr("data-dragsource", "clipboard");
-                    canvas.height = canvas.height;
-
-                    var parentOffset = $(this).offset();
-                    var relX = arg.pageX - parentOffset.left;
-                    var relY = arg.pageY - parentOffset.top;
-
-                    var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
-                    var parentOffset = $(this).offset();
-                    var relY = arg.pageY - parentOffset.top;
-                    var dragOperation = tpViewer.temporalpropertiesviewer("getOperationByY", relY);
-
-                    if (dragOperation === undefined || dragOperation === null)
-                        return;
-
-                    opToDrag = { operation: dragOperation };
-                    opToDrag.IsVisible = false;
-
-                    if (opToDrag !== undefined) {
-                        var keyFrameSize = 26;
-                        var padding = { x: 5, y: 10 };
-                        var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, opToDrag.operation, padding, keyFrameSize);
-                        var scale = { x: 1, y: 1 };
-                        var offset = 0;
-                        var w = opSize.width + offset;
-
-                        if (w > draggableWidth) {
-                            scale = {
-                                x: draggableWidth / w,
-                                y: draggableWidth / w
-                            };
-                        }
-
-                        canvas.width = scale.x * opSize.width + 2 * padding.x;
-                        canvas.height = scale.y * opSize.height + 2 * padding.y;
-
-                        var opPosition = { x: scale.x * opSize.width / 2 + padding.x, y: padding.y + Math.floor(scale.y * opSize.height / 2) };
-
-                        BMA.LTLOperations.RenderOperation(canvas, opToDrag.operation, opPosition, scale, {
-                            padding: padding,
-                            keyFrameSize: keyFrameSize,
-                            stroke: "black",
-                            fill: "white",
-                            isRoot: true,
-                            strokeWidth: 1,
-                            borderThickness: 1
-                        });
-
-                        that._refresh();
-                        that._switchMode("extended");
-                    }
-                },
-                drag: function (arg, ui) {
-                    return opToDrag !== undefined;
-                },
-                stop: function () {
-                    that._switchMode("compact");
-                }
-            });
-            */
-
 
             deleteZone.droppable({
                 tolerance: "pointer",
@@ -952,6 +864,54 @@
 
     });
 
+
+    $.widget("BMA.formulatexteditor", {
+        texteditor: undefined,
+        validationicon: undefined,
+        errormessage: undefined,
+
+        options: {
+            formula: undefined,
+            isvalid: true,
+            errormessage: undefined
+        },
+
+        _create: function () {
+            var that = this;
+            var root = this.element;
+
+            var formulaDiv = $('<div></div>')
+                .addClass('target-function')
+                .appendTo(root);
+            this.formulaTextArea = $('<textarea></textarea>')
+                .attr("spellcheck", "false")
+                .addClass("formula-text-area")
+                .appendTo(formulaDiv);
+            this.prooficon = $('<div></div>')
+                .addClass("validation-icon")
+                .appendTo(formulaDiv);
+            this.errorMessage = $('<div></div>')
+                .addClass("formula-validation-message")
+                .appendTo(formulaDiv);
+        },
+
+        _setOption: function (key, value) {
+            var that = this;
+            var needRefreshStates = false;
+            switch (key) {
+                case "formula":
+                    that.options.formula = value;
+                    break;
+                default:
+                    break;
+            }
+        },
+
+        destroy: function () {
+            this.element.empty();
+        },
+    });
+
 } (jQuery));
 
 
@@ -963,4 +923,8 @@ interface JQuery {
     formulatemplate(): any;
     formulatemplate(settings: Object): any;
     formulatemplate(methodName: string, arg: any): any;
+    formulatexteditor(): any;
+    formulatexteditor(settings: Object): any;
+    formulatexteditor(methodName: string, arg: any): any;
+
 }
