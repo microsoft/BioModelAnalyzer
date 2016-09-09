@@ -168,13 +168,36 @@
             var switchEditorBtn = $("<div></div>").addClass("bma-formulaeditor-switch").addClass("bma-formulaeditor-switch-graphical").appendTo(formulaContainer);
             switchEditorBtn.click(function () {
                 if (switchEditorBtn.hasClass("bma-formulaeditor-switch-graphical")) {
+                    try {
+                        var formula = BMA.ModelHelper.ConvertTFOperationToString(that.options.operation);
+                        textEditorDiv.formulatexteditor({ formula: formula, isvalid: true, errormessage: "" });
+                    } catch (ex) {
+                        console.log(ex);
+                    }
+
                     switchEditorBtn.addClass("bma-formulaeditor-switch-text").removeClass("bma-formulaeditor-switch-graphical");
                     svgDiv.hide();
                     textEditorDiv.show();
                 } else {
-                    switchEditorBtn.removeClass("bma-formulaeditor-switch-text").addClass("bma-formulaeditor-switch-graphical");
-                    svgDiv.show();
-                    textEditorDiv.hide();
+
+                    try {
+                        var operation = BMA.ModelHelper.ConvertTargetFunctionToOperation(textEditorDiv.formulatexteditor('option', 'formula'), that.options.variables);
+                        textEditorDiv.formulatexteditor({ isvalid: true, errormessage: "" });
+
+                        that.options.operation = operation;
+                        svgDiv.show();
+                        that._refresh();
+
+                        switchEditorBtn.removeClass("bma-formulaeditor-switch-text").addClass("bma-formulaeditor-switch-graphical");
+                        textEditorDiv.hide();
+
+                    } catch (ex) {
+                        textEditorDiv.formulatexteditor({ isvalid: false, errormessage: that._parseErrorMessage(ex) });
+                    }
+
+
+
+                    
                 }
             });
 
@@ -440,6 +463,24 @@
                         .show();
                 }
             });
+        },
+
+        _parseErrorMessage: function (message) {
+            var newmessage = "";
+            if (!message) return newmessage;
+            if (message.stack) {
+                var splitedMessage = message.stack.split("Expecting");
+                var errorPlace = splitedMessage[0];
+                var missingPart = splitedMessage[1];
+                if (missingPart === undefined) {
+                    splitedMessage = message.stack.split("Unexpected");
+                } else {
+                    missingPart = missingPart.split(" got")[0].toLowerCase().replace(/'eof',/g, "");
+                    if (missingPart.endsWith(",")) missingPart = missingPart.slice(0, missingPart.length - 1);
+                    newmessage += "Expecting: " + missingPart;
+                }
+            } else newmessage = message;
+            return newmessage;
         },
 
         _initTemplateZone: function (template) {
@@ -871,7 +912,7 @@
             formula: undefined,
             isvalid: true,
             errormessage: undefined,
-            onformulachanged: undefined
+            onformulachangedcallback: undefined
         },
 
         _create: function () {
@@ -899,6 +940,16 @@
             this.formulaTextArea.text(that.options.formula);
             that.errorMessage.text(that.options.errormessage);
             that._setisvalid();
+
+            this.formulaTextArea.bind("input change propertychange", function () {
+                if (that.options.formula === that.formulaTextArea.val())
+                    return;
+
+                that.options.formula = that.formulaTextArea.val();
+                if (that.options.onformulachangedcallback !== undefined) {
+                    that.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
+                }
+            });
         },
 
         _setOption: function (key, value) {

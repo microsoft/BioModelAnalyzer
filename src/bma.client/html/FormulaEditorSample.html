@@ -17,8 +17,10 @@
     <script src="../tool.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
+
             $("#formulaeditor").formulaeditor();
-            $("#formulaeditor").formulaeditor({ variables: [{ Name: "Apoptosis" }, { Name: "Bifurcating" }, { Name: "var_1" }, { Name: "A" }] });
+            $("#formulaeditor").formulaeditor({ variables: [{ Name: "Apoptosis", Id: "1" }, { Name: "Bifurcating", Id: "2" }, { Name: "var_1", Id: "3" }, { Name: "A", Id: "4" }] });
 
         });
     </script>
