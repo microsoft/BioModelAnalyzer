@@ -7,6 +7,7 @@ The following describes how to set up your local development environment.
 
 - Install [Node.js](https://nodejs.org/en/download/).
 - Install [Azure Storage Emulator](https://azure.microsoft.com/en-us/documentation/articles/storage-use-emulator/).
+- (Optional) [Bot Framework Emulator](https://docs.botframework.com/en-us/tools/bot-framework-emulator/).
 - (Optional) Install [Visual Studio Code](https://code.visualstudio.com/) for TypeScript IDE support.
 - (Optional) Install the [TSLint extension](https://marketplace.visualstudio.com/items?itemName=eg2.tslint) for Visual Studio Code (checks code style).
 - (Optional) Install the [CodeMetrics extension](https://marketplace.visualstudio.com/items?itemName=kisstkondoros.vscode-codemetrics) for Visual Studio Code (checks code complexity).
@@ -32,7 +33,7 @@ The final step is to create a local configuration file `config/local.json` with 
 ```
 
 By default, in development mode the bot is run as a local server without authentication
-and works out of the box with the Azure Storage Emulator.
+and works out of the box with the Bot Framework Emulator and Azure Storage Emulator.
 
 To run the bot inside a console without server, add `"USE_CONSOLE": "1"` to `config/local.json`.
 Note that this mode has limited features (e.g. no attachment support).
@@ -54,6 +55,9 @@ To start the bot server, run the following command in a new terminal:
 ```sh
 $ npm start
 ```
+
+If you don't use the console mode (see previous section), start the Bot Framework Emulator and talk to the bot,
+otherwise talk to the bot directly in your console.
 
 Whenever you change source code, you have to restart the server. Use Ctrl-C to stop the server.
 
