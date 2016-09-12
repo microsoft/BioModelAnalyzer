@@ -17,3 +17,7 @@ This document lists some future development paths that could be followed for eac
 - Provide the chat bot within the browser, so user does not have to jump between Skype and BMA UI
 - Real-time synchronization of model changes on the UI with the bot
 - Provide user with best possible changes within a model to satisfy a formula
+
+## Storage
+
+- Storage (conversation state and uploaded/generated models) currently does not expire, which should be implemented before going into production

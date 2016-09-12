@@ -31,16 +31,47 @@ Bing Spell Check API and BMA Backend are soft dependencies which, if not availab
 
 ## Storage
 
-TODO
+### Conversation state
 
-- session state
-- uploaded & generated models
+When deployed, then all conversation data is stored by the Bot Framework automatically.
+
+Quoting from the [Technical FAQ](https://docs.botframework.com/en-us/technical-faq/#where-is-conversation-state-stored):
+
+> The Bot Framework Connector provides a cloud service that implements this interface and stores data in Azure.
+  This data is encrypted at rest and does not intentionally expire.
+
+Conversation storage is associated to the Microsoft APP ID and password of the bot.
+
+Currently, stored data is not explicitly removed in any way.
+All data is stored per-conversation, not per-user.
+Note that for regular Skype (not "for Business") an old conversation is automatically reused,
+except if the user explicitly clears the conversation.
+Therefore, in most cases, storage does not "explode", but this should be re-evaluated.
+
+The following information is currently stored in the conversation state (`session.conversationData`):
+
+- Formula history (`.formulas`)
+- Uploaded BMA model (`.bmaModel`)
+- Azure Blob Storage key (randomly generated uuid) for uploaded BMA model (`.bmaModelId`) 
+- Whether spell checking was already performed (`.hasSpellChecked`)
+- Last message text when the bot queries for the user's BMA model, in order to process it again after model uploading (`.lastMessageText`)
+
+### Uploaded/generated BMA models
+
+When the user sends the bot a BMA model file, or when the bot generates such file,
+then it is stored in Azure Blob Storage. This is done so that a URL can be generated for the model
+which in turn can be used as `?Model=https://...` parameter for the BMA web tool.
+The URLs currently do not have any access or other restrictions and are fully public for anyone knowing the URL.
+Since the URL includes a UUID of the form `109156be-c4fb-41ea-b1b4-efe1671c5836` it is hard to guess the URL just by random trying.
+
+Note that currently, stored BMA models do not expire and are never removed.
+This should be implemented when going into production.
 
 ## Dialogs
 
 When a user starts to chat with the bot, the message is first processed by the [trained LUIS model](luis.md)
 to understand the *intent* of the message. Based on the intent, either a simple response is returned,
-or a more complex dialog is started, e.g. when asking for tutorials.
+or a more complex dialog is started, e.g. when asking for [tutorials](tutorials.md).
 Complex dialogs are kept to a minimum to reduce complexity in implementation.
 See also the "Dialogs" slide of the [final traineeship presentation][trainee-final-ppt].
 
