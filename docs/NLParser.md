@@ -16,34 +16,46 @@ We first describe the grammar that is used in our parser and then move onto desc
 The following is the grammar for our language:
 
 formula
-   : (unaryoperators)* conditionalsExpression (unaryoperators)* | (unaryoperators)* disjunctionExpression (unaryoperators)*
+    : (unaryoperators)* conditionalsExpression (unaryoperators)* | (unaryoperators)* disjunctionExpression (unaryoperators)*
 
 conditionalsExpression
-   : "If" disjunctionExpression "Then" disjunctionExpression
+    : "If" disjunctionExpression "Then" disjunctionExpression
 
 disjunctionExpression
-   : conjunctionExpression ("Or" conjunctionExpression)*
+    : conjunctionExpression ("Or" conjunctionExpression)*
 
 conjunctionExpression
-   : temporalExpression ("And" temporalExpression)*
+    : temporalExpression ("And" temporalExpression)*
 
 temporalExpression
-   : atomicExpression (binaryTemporalOperators atomicExpression)*
+    : atomicExpression (binaryTemporalOperators atomicExpression)*
 
 atomicExpression
-   : (unaryoperators)* relationalExpression
+    : (unaryoperators)* activityExpression | (unaryoperators)* relationalExpression | (unaryoperators)* FormulaPointerToken | (unaryoperators)* booleanLiteral | (unaryoperators)* developmentalEndState
+
+activityExpression
+    : ModelVariable (=)? activityClass
 
 relationalExpression
-   : ModelVariable relationalOperator IntegerLiteral
+    : ModelVariable relationalOperator IntegerLiteral
+
+booleanLiteral
+    :  "true" | "false"
+
+developmentalEndState
+    :   SelfLoop | Oscillation
 
 binaryTemporalOperators
     : "until" | "weak until" | "release" | "upto"
+
+activityClass
+    : Active | InActive | MaximumActivity | MinimumActivity | HighActivity | LowActivity
 
 relationalOperator
     : ">" | "<" | ">=" | "=" | "<=" | "!="
 
 unaryOperator
-    : "not" | "next" | "always" | "eventually"
+    : "not" | "next" | "always" | "eventually" | "then"
 
 ### Operator Precedence
 
@@ -55,7 +67,7 @@ unaryOperator
 
 In the preprocessing step we:
 
-- use the supplied model to encode instances of model variables as MODELVAR(X) to make sure they are not matched with operators that are substrings as well as not stemmed
+- use the supplied model to encode instances of model variables as MODELVAR(X) and formula FMLPTR (X) pointers as to make sure they are not matched with operators that are substrings as well as not stemmed
 - we perform stemming on the imput sentence as well as each of the tokens in our grammar
 
 Stemming is a NLP process that normalises tokens by transforming words into their gramatical stems to allow matching of the resulting stem with a host of possible words that mean the same thing eg: "eventual" and "eventually" can all be mapped by the stem "eventu"
@@ -99,5 +111,4 @@ The result is then a valid sentence, that can be parsed using our grammar making
 
 ## Postprocessing
 
-The postprocessing step consists of parsing the generated AST into a sentence that can be returned to the user. This is currently done in ./NLParser/ASTUtils.ts by traversing the AST in post order to generate a formula in RPN (Reverse Polish Notation
-which is then converted to an infix formula
+The postprocessing step consists of parsing the generated AST into a sentence that can be returned to the user. This is currently done in ./NLParser/ASTUtils.ts by traversing the AST. ./NLParser/ASTUtils.ts Also handles inlining of formula pointers.

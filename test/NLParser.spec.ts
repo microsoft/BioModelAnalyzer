@@ -13,24 +13,31 @@ var formulaPointers = [{
     id: 2
 }]
 
-it('parse() should handle single variables', () => {
-    var sentence = "can you give me a simulation where x is 1"
-    var parserResponse = NLParser.parse(sentence, testModel)
-    var expected = "x=1"
-    expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
-})
+describe('parse() should detect variables correctly', () => {
+    it('parse() should handle single variables', () => {
+        var sentence = "can you give me a simulation where x is 1"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "x=1"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
+    it('parse() should detect model variables literals regardless of the case', () => {
+        var sentence = "can you give me a simulation where Notch=1 and CELLCYCLE=2"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "(notch=1 and cellcycle=2)"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
+    it('parse() should handle variables with names that are substrings of operators eg: notch, eventualkanize', () => {
+        var sentence = "show me a simulation where notch is 1 and eventualkanize is 20"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "(notch=1 and eventualkanize=20)"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
 
+})
 it('parse() handles LTL operator precedence and assosiativeity correctly', () => {
     var sentence = "give me some simulation where it is always the case that if x is 1 then y is 5 and followed by z is 25"
     var parserResponse = NLParser.parse(sentence, testModel)
     var expected = "always((x=1 implies (y=5 and next(z=25))))"
-    expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
-})
-
-it('parse() should handle variables with names that are substrings of operators eg: notch, eventualkanize', () => {
-    var sentence = "show me a simulation where notch is 1 and eventualkanize is 20"
-    var parserResponse = NLParser.parse(sentence, testModel)
-    var expected = "(notch=1 and eventualkanize=20)"
     expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
 })
 

@@ -126,7 +126,7 @@ let Implies = generateStemmedTokenDefinition("Implies", "implies", ["implies"], 
 let Not = generateStemmedTokenDefinition("Not", "not", ["not"], TokenType.UNARY_OPERATOR)
 
 // Temporal operator tokens
-let Eventually = generateStemmedTokenDefinition("Eventually", "eventually", ["eventually", "finally", "in time", "ultimately", "after all", "at last", "at some point", "soon", "at the end", "sometime", "possible"], TokenType.UNARY_OPERATOR)
+let Eventually = generateStemmedTokenDefinition("Eventually", "eventually", ["eventually", "finally", "ultimately", "after all", "at last", "at some point", "soon", "at the end", "sometime", "possible"], TokenType.UNARY_OPERATOR)
 let Always = generateStemmedTokenDefinition("Always", "always", ["always", "invariably", "perpetually", "forever", "constantly"], TokenType.UNARY_OPERATOR)
 let Next = generateStemmedTokenDefinition("Next", "next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this", "later", "thereafter", "directly after"], TokenType.UNARY_OPERATOR)
 let Upto = generateStemmedTokenDefinition("Upto", "upto", ["upto"], TokenType.BINARY_OPERATOR)
@@ -158,10 +158,10 @@ let IGNORE = [WhiteSpace]
 let LITERALS = [FalseLiteral, TrueLiteral, ModelVariable, FormulaPointerToken, IntegerLiteral]
 let DEVELOPMENTAL_END_STATES = [SelfLoop, Oscillation]
 let CONSTRUCTS = [If, Then]
-let ARITHMETIC_OPERATORS = [LThanEq, GThanEq, GThan, LThan,NotEq,Eq]
+let ARITHMETIC_OPERATORS = [LThanEq, GThanEq, GThan, LThan, NotEq, Eq]
 let BOOLEAN_OPERATORS = [And, Or, Implies, Not]
 let TEMPORAL_OPERATORS = [Never, Later, Eventually, Always, Next, Upto, Until, WUntil, Release]
-let ACTIVITY_CLASSES = [HighActivity, LowActivity, MinimumActivity, MaximumActivity,InActive,Active]
+let ACTIVITY_CLASSES = [HighActivity, LowActivity, MinimumActivity, MaximumActivity, InActive, Active]
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
  */
@@ -717,7 +717,7 @@ export default class NLParser extends Parser {
                 let forumulaPointer = _.last(matchedGroups)
                 variableTokens.push({ offset: matchedGroups.index, name: forumulaPointer, id: _.find(formulaPointers, (v: any) => v.name === forumulaPointer).id, type: FormulaPointerToken })
             } else {
-                variableTokens.push({ offset: matchedGroups.index, name: matchedGroups[1], id: _.find(bmaModel.Model.Variables, (v: any) => v.Name === matchedGroups[1]).Id, type: ModelVariable })
+                variableTokens.push({ offset: matchedGroups.index, name: matchedGroups[1], id: _.find(bmaModel.Model.Variables, (v: any) => v.Name.toLowerCase() === matchedGroups[1].toLowerCase()).Id, type: ModelVariable })
             }
         }
         //use the generated offsets to replace instances of variable usage with MODELVAR(k), where k is the model variable
