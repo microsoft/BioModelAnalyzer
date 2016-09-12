@@ -793,7 +793,7 @@ export default class NLParser extends Parser {
 
         function createParseError() {
             return {
-                responseType: ParserResponseType.PARSE_ERROR,
+                responseType: unknownVariablesInOrignialSentence && !_.isEmpty(unknownVariablesInOrignialSentence) ? ParserResponseType.UNKNOWN_VARIABLES_FOUND : ParserResponseType.PARSE_ERROR,
                 errors: parser.errors,
                 unknownVariables: unknownVariablesInOrignialSentence
             }
