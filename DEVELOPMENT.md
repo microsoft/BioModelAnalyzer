@@ -1,3 +1,5 @@
+[onedrive]: https://microsoft-my.sharepoint.com/personal/t-mariec_microsoft_com/Documents/BMAChatBot%20shared
+
 # Development guide
 
 This project is developed as a Node.js package using TypeScript.
@@ -32,6 +34,9 @@ The final step is to create a local configuration file `config/local.json` with 
 }
 ```
 
+You can find all credentials in the [shared OneDrive folder][onedrive].
+For access permissions ask [mailto:matjoh@microsoft.com](Matthew Johnson).
+
 By default, in development mode the bot is run as a local server without authentication
 and works out of the box with the Bot Framework Emulator and Azure Storage Emulator.
 
@@ -61,6 +66,23 @@ otherwise talk to the bot directly in your console.
 
 Whenever you change source code, you have to restart the server. Use Ctrl-C to stop the server.
 
+### Running tests
+
+Run all tests:
+
+```sh
+$ npm test
+```
+
+To get code coverage for the tests, run:
+
+```sh
+$ npm run coverage
+```
+
+The project has automated testing (continuous integration) set up in Visual Studio Team Services on every git push.
+See [the VSTS project](https://msrcapt.visualstudio.com/BMAChatBot/_build) to view the test history.
+
 ### Adding dependencies
 
 To make TypeScript happy, you need to supply it with typing definitions of all package dependencies.
@@ -85,14 +107,27 @@ $ git push azure-dev master
 $ # or: git push azure-prod +0.1.0~0:master
 ```
 
+For git deployment, you need the deployment password which can be found in the [shared OneDrive folder][onedrive].
+
 Deployment logs can be found in the release logs of https://msrcapt.visualstudio.com/BMAChatBot.
 
 #### Debugging
 
-https://bmachatbot.scm.azurewebsites.net/
+If possible, debugging should be done locally, typically via logging or by attaching to the Node.js process in Visual Studio Code
+and setting breakpoints appropriately.
+
+If an error occurs only when deployed, then looking at live logs in the Azure Portal often helps,
+as exceptions are visible there and other log output. The following describes how to do that:
+
+1. Find the bmachatbot[dev] project on https://portal.azure.com/
+2. Go to the "Monitoring" -> "Diagnostics" tab and enable "Application Logging (Filesystem)"
+3. Go to the "Monitoring" -> "Log stream" tab and observe the live log output
+
+A different way to explore the deployed app service is via [Kudu](https://github.com/projectkudu/kudu/wiki):
+
+- https://bmachatbot.scm.azurewebsites.net/
+- https://bmachatbotdev.scm.azurewebsites.net/
 
 #### Articles
 
-https://github.com/woloski/nodeonazure-blog/blob/master/articles/startup-task-to-run-npm-in-azure.markdown
-https://azure.microsoft.com/en-us/documentation/articles/app-service-deploy-local-git/
-http://epikia.eu/2016/07/developing_nodejs_on_azure/
+- [Local Git Deployment to Azure App Service](https://azure.microsoft.com/en-us/documentation/articles/app-service-deploy-local-git/)

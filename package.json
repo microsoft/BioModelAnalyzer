@@ -2,6 +2,11 @@
   "name": "bmachatbot",
   "version": "0.1.0",
   "private": true,
+  "contributors": [
+    "Jay Nanavati",
+    "Maik Riechert",
+    "Zara Ahmed"
+  ],
   "scripts": {
     "compile": "tsc & exit 0",
     "postinstall": "npm run compile",

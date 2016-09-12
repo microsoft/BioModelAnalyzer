@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 /**
  * The JSON model format of the BMA tool.
  * Note that this is different to the JSON format used for API calls. 

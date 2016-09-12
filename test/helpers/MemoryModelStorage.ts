@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 import * as Promise from 'promise'
 import {ModelStorage} from '../../src/ModelStorage'
 

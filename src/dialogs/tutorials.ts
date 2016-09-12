@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 import * as builder from 'botbuilder'
 import * as yaml from 'js-yaml'
 import * as fs from 'fs'

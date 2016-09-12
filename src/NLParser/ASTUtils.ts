@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 import * as _ from 'underscore'
 import * as AST from './AST'
 import * as BMA from '../BMA'

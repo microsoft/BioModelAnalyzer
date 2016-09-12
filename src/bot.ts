@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 import * as builder from 'botbuilder'
 
 import {registerMiddleware} from './middleware'

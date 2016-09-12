@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 import * as config from 'config'
 import * as mime from 'mime'
 import * as builder from 'botbuilder'

@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 // from https://github.com/Microsoft/BotBuilder/issues/662#issuecomment-232223965
 
 import * as async from 'async'

@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 import * as Promise from 'promise'
 import * as azure from 'azure-storage'
 import * as config from 'config'

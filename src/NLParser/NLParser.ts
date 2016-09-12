@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 /// <reference path="../../node_modules/chevrotain/lib/chevrotain.d.ts" />
 /**
  *  Please read ./NLParserDocumentation.md for a high level explaination of the parser
