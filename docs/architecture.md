@@ -1,4 +1,4 @@
-[trainee-final-ppt](https://microsoft-my.sharepoint.com/personal/t-mariec_microsoft_com/Documents/BMAChatBot%20shared/2016-09-09%20BMAChatBot%20final%20presentation.pptx?d=w44cde67cfd8c4c64a73f231fde3199b4)
+[trainee-final-ppt]: https://microsoft-my.sharepoint.com/personal/t-mariec_microsoft_com/Documents/BMAChatBot%20shared/2016-09-09%20BMAChatBot%20final%20presentation.pptx?d=w44cde67cfd8c4c64a73f231fde3199b4
 
 # Architecture
 
