@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 import { expect } from 'chai'
 import { default as NLParser, ParserResponseType } from '../src/NLParser/NLParser'
 import * as ASTUtils from '../src/NLParser/ASTUtils'

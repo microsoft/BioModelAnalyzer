@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 export const Type = {
     ConditionalsExpression: <'conditionalsExpression'>'conditionalsExpression',
     DisjunctionExpression: <'disjunctionExpression'>'disjunctionExpression',

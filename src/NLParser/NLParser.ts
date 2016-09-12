@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 /// <reference path="../../node_modules/chevrotain/lib/chevrotain.d.ts" />
 
 //1) handle error tokens in the rsynching logic

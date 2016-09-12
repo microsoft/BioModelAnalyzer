@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 import * as assert from 'assert'
 import * as BMA from '../src/BMA'
 import * as BMAApi from '../src/BMAApi'

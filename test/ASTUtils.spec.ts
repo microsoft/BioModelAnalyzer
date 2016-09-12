@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Microsoft - All Rights Reserved
+
 import { expect } from 'chai'
 import NLParser from '../src/NLParser/NLParser'
 import { toAPIString, toStatesAndFormula } from '../src/NLParser/ASTUtils'
