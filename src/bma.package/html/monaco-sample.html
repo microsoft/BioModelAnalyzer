@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -11,6 +11,10 @@
 
 <div id="container" style="width:600px;height:300px;border:1px solid lightgrey"></div>
 
+<p>The editor's content:</p>
+
+<div id="text" style="width:600px;height:300px;border:1px solid lightgrey;white-space: pre-wrap;"></div>
+
 <script src="../Scripts/jquery-2.1.4.js"></script>
 <script src="../Scripts/jquery-ui-1.11.4.js"></script>
 
@@ -22,9 +26,13 @@
 <script src="../script/widgets/codeeditor.js"></script>
 
 <script>
-    var editor = $("#container").codeeditor({
+	var editor = $("#container").codeeditor({
 		text: 'max(var(LET-23), var(lin-3), const(3))',
 		language: 'bma.targetfunc'        
+	});
+	editor.bind("codeeditorchange", function () {
+	    var text = editor.codeeditor("text");
+	    $("#text").text(text);
 	});
 </script>
 

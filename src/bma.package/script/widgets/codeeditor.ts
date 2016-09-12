@@ -151,9 +151,14 @@ module BMA.CodeEditor {
                 scrollBeyondLastLine: false,
                 autoClosingBrackets: true
             });
+            this.editor = editor;
+            $.data(this.element, "editor", editor);
+            this.onContentChanged = editor.onDidChangeModelContent(e => {
+                that._trigger("change");
+            });
         },
 
-        _destroy: function () {
+        _destroy: function () {            
             this.element.empty();
         },
 
@@ -162,6 +167,11 @@ module BMA.CodeEditor {
         _setOptions: function() {
             this._superApply( arguments );
             this._refresh();
+        },
+
+        text: function() {
+            var editor = $.data(this.element, "editor");
+            return editor.getValue();
         }
     });
 } (jQuery));

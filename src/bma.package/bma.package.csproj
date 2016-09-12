@@ -58,6 +58,8 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="html\monaco-sample.html" />
+    <Content Include="html\mylang.js" />
     <Content Include="images\1x1.svg" />
     <Content Include="images\2.gif" />
     <Content Include="images\20x20.gif" />
