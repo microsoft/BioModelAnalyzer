@@ -66,6 +66,23 @@ otherwise talk to the bot directly in your console.
 
 Whenever you change source code, you have to restart the server. Use Ctrl-C to stop the server.
 
+### Running tests
+
+Run all tests:
+
+```sh
+$ npm test
+```
+
+To get code coverage for the tests, run:
+
+```sh
+$ npm run coverage
+```
+
+The project has automated testing (continuous integration) set up in Visual Studio Team Services on every git push.
+See [the VSTS project](https://msrcapt.visualstudio.com/BMAChatBot/_build) to view the test history.
+
 ### Adding dependencies
 
 To make TypeScript happy, you need to supply it with typing definitions of all package dependencies.
