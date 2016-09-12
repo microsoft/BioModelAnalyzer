@@ -3,9 +3,9 @@ import * as builder from 'botbuilder'
 /** 
  * Registers debug middleware for the given bot with the following functionality:
  * 
- * 1. Arbitrary dialogs can be started with the message syntax '/dialogId' while skipping
+ * 1. Arbitrary dialogs can be started with the message syntax '!dialogId' while skipping
  *    any intent recognizers like LUIS. Parameters can be passed in JSON syntax,
- *    e.g. '/dialogId {"foo": "bar"}'.
+ *    e.g. '!dialogId {"foo": "bar"}'.
  * 
  * 2. Any dialog can be cancelled with a message starting with 'cancel'.
  */
@@ -14,7 +14,7 @@ export function registerMiddleware (bot: builder.UniversalBot) {
         botbuilder: (session, next) => {
             let text = session.message.text
 
-            let dialogIdRegEx = /^\/\w+/
+            let dialogIdRegEx = /^!\w+/
 
             if (text.toLowerCase().indexOf('cancel') === 0) {
                 session.send('OK.')

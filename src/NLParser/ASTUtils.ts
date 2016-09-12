@@ -52,7 +52,6 @@ export function toHumanReadableString (node: AST.Node<any,any>, bmaModel: BMA.Mo
  * @param bmaModel The BMA model.
  */
 export function toAPIString (node: AST.Node<any,any>, bmaModel: BMA.ModelFile) {
-    let varName = id => _.find(bmaModel.Model.Variables, v => v.Id === id).Name
     let upper = (s: string) => s[0].toUpperCase() + s.substr(1)
 
     let left = node.left ? toAPIString(node.left, bmaModel) : null
@@ -223,6 +222,18 @@ export function toStatesAndFormula (node: AST.Node<any,any>, bmaModel: BMA.Model
             }
         } else if (_.contains(AST.UnaryExpressionTypes, node.type)) {
             return new BMA.LtlOperationImpl((<AST.UnaryExpression>node).value.value, [walk(node.left, states)])
+        } else if (node.type === AST.Type.DevelopmentalEndState) {
+            let endStateNode = <AST.DevelopmentalEndState> node
+            // TODO how can this be fully typed as in pattern matching?
+            if (endStateNode.value === 'SelfLoop') {
+                return new BMA.LtlSelfLoopStateImpl()
+            } else if (endStateNode.value === 'Oscillation') {
+                return new BMA.LtlOscillationStateImpl()
+            } else {
+                throw new Error('Unknown developmental end state: ' + node.value)
+            }
+        } else if (node.type === AST.Type.TrueLiteral) {
+            return new BMA.LtlTrueStateImpl()
         } else {
             throw new Error('Unknown node type: ' + node.type)
         }

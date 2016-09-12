@@ -5,54 +5,70 @@
   "culture": "en-us",
   "intents": [
     {
-      "name": "LTLQuery"
-    },
-    {
-      "name": "OperatorInteractions"
-    },
-    {
-      "name": "None"
-    },
-    {
-      "name": "UploadedModel"
-    },
-    {
-      "name": "ExplainOp"
-    },
-    {
-      "name": "Back"
-    },
-    {
-      "name": "Semantics"
-    },
-    {
       "name": "AboutBot"
     },
     {
-      "name": "SelectTutorial"
+      "name": "AboutLTL"
     },
     {
       "name": "AboutSimulations"
     },
     {
+      "name": "Back"
+    },
+    {
+      "name": "ClearFormulaHistory"
+    },
+    {
+      "name": "ExplainOp"
+    },
+    {
       "name": "ListTutorial"
+    },
+    {
+      "name": "LTLQuery"
+    },
+    {
+      "name": "None"
+    },
+    {
+      "name": "OperatorExample"
+    },
+    {
+      "name": "OperatorInteractions"
+    },
+    {
+      "name": "RemoveFormulaFromHistory"
     },
     {
       "name": "RemoveModel"
     },
     {
-      "name": "OperatorExample"
+      "name": "RenameFormulaInHistory"
+    },
+    {
+      "name": "SelectTutorial"
+    },
+    {
+      "name": "Semantics"
+    },
+    {
+      "name": "ShowFormulaHistory"
+    },
+    {
+      "name": "UploadedModel"
     }
   ],
   "entities": [
     {
-      "name": "Operator"
+      "name": "FormulaName"
     },
     {
-      "name": "Lookup"
-    },
-    {
-      "name": "Query"
+      "name": "FormulaRename",
+      "children": [
+        "From",
+        "To"
+      ]
     },
     {
       "name": "interactions",
@@ -60,6 +76,15 @@
         "first",
         "second "
       ]
+    },
+    {
+      "name": "Lookup"
+    },
+    {
+      "name": "Operator"
+    },
+    {
+      "name": "Query"
     }
   ],
   "composites": [],
@@ -128,494 +153,6 @@
   "regex_features": [],
   "utterances": [
     {
-      "text": "open the first tutorial",
-      "intent": "SelectTutorial",
-      "entities": []
-    },
-    {
-      "text": "show me all the tutorials that i can use",
-      "intent": "ListTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 4,
-          "endPos": 4
-        }
-      ]
-    },
-    {
-      "text": "show me a list of all available tutorials",
-      "intent": "ListTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 6,
-          "endPos": 6
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 7,
-          "endPos": 7
-        }
-      ]
-    },
-    {
-      "text": "can you open the 2nd tutorial",
-      "intent": "SelectTutorial",
-      "entities": []
-    },
-    {
-      "text": "what are the tutorials",
-      "intent": "ListTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 3,
-          "endPos": 3
-        }
-      ]
-    },
-    {
-      "text": "give me a list of the tutorials",
-      "intent": "ListTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 6,
-          "endPos": 6
-        }
-      ]
-    },
-    {
-      "text": "open tutorial x",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 1,
-          "endPos": 1
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 2,
-          "endPos": 2
-        }
-      ]
-    },
-    {
-      "text": "can i see the tutorial about protienx",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 4,
-          "endPos": 4
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 6,
-          "endPos": 6
-        }
-      ]
-    },
-    {
-      "text": "i need a tutorial to explore the interface",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 3,
-          "endPos": 3
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 7,
-          "endPos": 7
-        }
-      ]
-    },
-    {
-      "text": "i need a tutorial to help me find the end states of a model",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 9,
-          "endPos": 9
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 10,
-          "endPos": 10
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 13,
-          "endPos": 13
-        }
-      ]
-    },
-    {
-      "text": "i need a tutorial for stability",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 3,
-          "endPos": 3
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 5,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "is there a tutorial that can explain this",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 7,
-          "endPos": 7
-        }
-      ]
-    },
-    {
-      "text": "show me a tutorial for proteinx",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 5,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "can you explain the functionality of weakuntil",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 6,
-          "endPos": 6
-        }
-      ]
-    },
-    {
-      "text": "explaint the operator next",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 3,
-          "endPos": 3
-        }
-      ]
-    },
-    {
-      "text": "aeroplanes can fly",
-      "intent": "None",
-      "entities": []
-    },
-    {
-      "text": "centre for computing history",
-      "intent": "None",
-      "entities": []
-    },
-    {
-      "text": "what is the use of operator or",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 6,
-          "endPos": 6
-        }
-      ]
-    },
-    {
-      "text": "pokemon go",
-      "intent": "None",
-      "entities": []
-    },
-    {
-      "text": "what is the difference between weakuntil and until",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 5,
-          "endPos": 5
-        },
-        {
-          "entity": "Operator",
-          "startPos": 7,
-          "endPos": 7
-        }
-      ]
-    },
-    {
-      "text": "any tutorials that can explain stability",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 5,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "how can i use the release operator",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 5,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "tutorials",
-      "intent": "ListTutorial",
-      "entities": []
-    },
-    {
-      "text": "all the turorials",
-      "intent": "ListTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 2,
-          "endPos": 2
-        }
-      ]
-    },
-    {
-      "text": "how can i use the next operator in my query",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 5,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "show tutorials",
-      "intent": "ListTutorial",
-      "entities": []
-    },
-    {
-      "text": "i need to see a tutorial explaining how to use the and operator",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 11,
-          "endPos": 11
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 5,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "how is \"and\" different to \"or\"",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 3,
-          "endPos": 3
-        },
-        {
-          "entity": "Operator",
-          "startPos": 8,
-          "endPos": 8
-        }
-      ]
-    },
-    {
-      "text": "explain implies",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 1,
-          "endPos": 1
-        }
-      ]
-    },
-    {
-      "text": "open the ltl tutorial",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 2,
-          "endPos": 2
-        }
-      ]
-    },
-    {
-      "text": "what can the bot do",
-      "intent": "AboutBot",
-      "entities": []
-    },
-    {
-      "text": "what is upto",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 2,
-          "endPos": 2
-        }
-      ]
-    },
-    {
-      "text": "can you please show me a tutorial that will explain how to use ltl",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 13,
-          "endPos": 13
-        }
-      ]
-    },
-    {
-      "text": "explain what does implies do",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 3,
-          "endPos": 3
-        }
-      ]
-    },
-    {
-      "text": "explain what eventually does",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 2,
-          "endPos": 2
-        }
-      ]
-    },
-    {
-      "text": "how can i use upto",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 4,
-          "endPos": 4
-        }
-      ]
-    },
-    {
-      "text": "how can i use \"and\"",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 5,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "what can i do using this bot",
-      "intent": "AboutBot",
-      "entities": []
-    },
-    {
-      "text": "are there any tutorials for protienx",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 5,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "what is always",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 2,
-          "endPos": 2
-        }
-      ]
-    },
-    {
-      "text": "when should i use the not operator",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 5,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "what is the difference between release and until",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 5,
-          "endPos": 5
-        },
-        {
-          "entity": "Operator",
-          "startPos": 7,
-          "endPos": 7
-        }
-      ]
-    },
-    {
-      "text": "help",
-      "intent": "AboutBot",
-      "entities": []
-    },
-    {
-      "text": "what can you do",
-      "intent": "AboutBot",
-      "entities": []
-    },
-    {
-      "text": "what is the bot about",
-      "intent": "AboutBot",
-      "entities": []
-    },
-    {
-      "text": "how can you help me",
-      "intent": "AboutBot",
-      "entities": []
-    },
-    {
-      "text": "what can you help me with",
-      "intent": "AboutBot",
-      "entities": []
-    },
-    {
       "text": "show me an example of using always",
       "intent": "OperatorExample",
       "entities": [
@@ -632,25 +169,46 @@
       ]
     },
     {
-      "text": "how can i use the until operator in my model",
-      "intent": "ExplainOp",
+      "text": "hi bma",
+      "intent": "AboutBot",
+      "entities": []
+    },
+    {
+      "text": "explain always next",
+      "intent": "OperatorInteractions",
       "entities": [
         {
-          "entity": "Operator",
-          "startPos": 5,
-          "endPos": 5
+          "entity": "interactions",
+          "startPos": 1,
+          "endPos": 2
         }
       ]
     },
     {
-      "text": "can i see an example of the until operator",
-      "intent": "OperatorExample",
+      "text": "i want a simulation where ras is 1 and notch is 1 sometime later",
+      "intent": "LTLQuery",
       "entities": [
         {
-          "entity": "Operator",
-          "startPos": 7,
-          "endPos": 7
-        },
+          "entity": "Query",
+          "startPos": 5,
+          "endPos": 13
+        }
+      ]
+    },
+    {
+      "text": "remove my model",
+      "intent": "RemoveModel",
+      "entities": []
+    },
+    {
+      "text": "hello",
+      "intent": "AboutBot",
+      "entities": []
+    },
+    {
+      "text": "show me all the tutorials that i can use",
+      "intent": "ListTutorial",
+      "entities": [
         {
           "entity": "Lookup",
           "startPos": 4,
@@ -659,124 +217,34 @@
       ]
     },
     {
-      "text": "need example for always",
-      "intent": "OperatorExample",
+      "text": "explain always not",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 1,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "explain implies",
+      "intent": "ExplainOp",
       "entities": [
         {
           "entity": "Operator",
-          "startPos": 3,
-          "endPos": 3
-        },
-        {
-          "entity": "Lookup",
           "startPos": 1,
           "endPos": 1
         }
       ]
     },
     {
-      "text": "i need an example for weakuntil",
-      "intent": "OperatorExample",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 5,
-          "endPos": 5
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 3,
-          "endPos": 3
-        }
-      ]
-    },
-    {
-      "text": "example for always",
-      "intent": "OperatorExample",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 2,
-          "endPos": 2
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 0,
-          "endPos": 0
-        }
-      ]
-    },
-    {
-      "text": "show me how to use implies",
-      "intent": "ExplainOp",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 5,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "do you have an example that shows me how to use the implies operator",
-      "intent": "OperatorExample",
-      "entities": [
-        {
-          "entity": "Operator",
-          "startPos": 12,
-          "endPos": 12
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 4,
-          "endPos": 4
-        }
-      ]
-    },
-    {
-      "text": "toad",
-      "intent": "None",
-      "entities": []
-    },
-    {
-      "text": "help docs",
+      "text": "hello bma",
       "intent": "AboutBot",
       "entities": []
     },
     {
-      "text": "suggest",
-      "intent": "None",
-      "entities": []
-    },
-    {
-      "text": "go back one step",
-      "intent": "Back",
-      "entities": []
-    },
-    {
-      "text": "i need to see a tutorial that finds the end states of a model",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 9,
-          "endPos": 13
-        }
-      ]
-    },
-    {
-      "text": "is there a tutorial that explains stability",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 6,
-          "endPos": 6
-        }
-      ]
-    },
-    {
-      "text": "how can i use eventually always",
+      "text": "how can i use next not",
       "intent": "OperatorInteractions",
       "entities": [
         {
@@ -787,46 +255,121 @@
       ]
     },
     {
-      "text": "show me the funny tutorial",
-      "intent": "SelectTutorial",
+      "text": "what simulations can you find",
+      "intent": "AboutSimulations",
+      "entities": []
+    },
+    {
+      "text": "how can i use a self loop",
+      "intent": "Semantics",
       "entities": [
         {
           "entity": "Lookup",
-          "startPos": 3,
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "what is the bot about",
+      "intent": "AboutBot",
+      "entities": []
+    },
+    {
+      "text": "what is next not",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 2,
           "endPos": 3
         }
       ]
     },
     {
-      "text": "show me the introduction tutorial",
-      "intent": "SelectTutorial",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 3,
-          "endPos": 3
-        }
-      ]
-    },
-    {
-      "text": "what does always do",
+      "text": "what is the use of operator or",
       "intent": "ExplainOp",
       "entities": [
         {
           "entity": "Operator",
-          "startPos": 2,
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "give me a simulation where notch is always equal to 1",
+      "intent": "LTLQuery",
+      "entities": [
+        {
+          "entity": "Query",
+          "startPos": 5,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "what kinds of simulations can you find?",
+      "intent": "AboutSimulations",
+      "entities": []
+    },
+    {
+      "text": "what can the bot do",
+      "intent": "AboutBot",
+      "entities": []
+    },
+    {
+      "text": "what is an oscillation",
+      "intent": "Semantics",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "explain eventually always",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 1,
           "endPos": 2
         }
       ]
     },
     {
-      "text": "hello",
+      "text": "what can i do using this bot",
       "intent": "AboutBot",
       "entities": []
     },
     {
-      "text": "can i see the intoduction tutorial",
-      "intent": "SelectTutorial",
+      "text": "how can i use \"and\"",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "what is next eventually",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 2,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "what happens if i decrease the number of steps",
+      "intent": "Semantics",
       "entities": [
         {
           "entity": "Lookup",
@@ -834,6 +377,49 @@
           "endPos": 4
         }
       ]
+    },
+    {
+      "text": "tell me more about eventually always",
+      "intent": "Semantics",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "what are the tutorials",
+      "intent": "ListTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "what is a self loop",
+      "intent": "Semantics",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "give me a query when ras is 1 and then notch is 1",
+      "intent": "LTLQuery",
+      "entities": []
+    },
+    {
+      "text": "what kind of simulations can you find?",
+      "intent": "AboutSimulations",
+      "entities": []
     },
     {
       "text": "give me a formula where ras=1 and notch=1",
@@ -877,287 +463,47 @@
       ]
     },
     {
-      "text": "give me a query when ras is 1 and then notch is 1",
-      "intent": "LTLQuery",
-      "entities": []
-    },
-    {
-      "text": "give me a simulation where notch is always equal to 1",
-      "intent": "LTLQuery",
+      "text": "open the ltl tutorial",
+      "intent": "SelectTutorial",
       "entities": [
         {
-          "entity": "Query",
-          "startPos": 5,
-          "endPos": 9
+          "entity": "Lookup",
+          "startPos": 2,
+          "endPos": 2
         }
       ]
     },
     {
-      "text": "i want a simulation where ras is 1 and notch is 1 sometime later",
-      "intent": "LTLQuery",
+      "text": "explaint the operator next",
+      "intent": "ExplainOp",
       "entities": [
         {
-          "entity": "Query",
-          "startPos": 5,
-          "endPos": 13
+          "entity": "Operator",
+          "startPos": 3,
+          "endPos": 3
         }
       ]
     },
     {
-      "text": "i need a simulation where ras is 1 and notch is 1 too",
-      "intent": "LTLQuery",
-      "entities": [
-        {
-          "entity": "Query",
-          "startPos": 4,
-          "endPos": 12
-        }
-      ]
-    },
-    {
-      "text": "i need examples of when wnt is equal to 4",
-      "intent": "LTLQuery",
-      "entities": [
-        {
-          "entity": "Query",
-          "startPos": 5,
-          "endPos": 9
-        }
-      ]
-    },
-    {
-      "text": "is there a simulation hexakinase is never on",
-      "intent": "LTLQuery",
-      "entities": []
-    },
-    {
-      "text": "i need to see ras equal to 1 and notch equal to 1 sometime in the future",
-      "intent": "LTLQuery",
-      "entities": [
-        {
-          "entity": "Query",
-          "startPos": 4,
-          "endPos": 16
-        }
-      ]
-    },
-    {
-      "text": "i need notch to remain true until ras becomes true too",
-      "intent": "LTLQuery",
-      "entities": [
-        {
-          "entity": "Query",
-          "startPos": 1,
-          "endPos": 10
-        }
-      ]
-    },
-    {
-      "text": "show me a simulation where foo=1",
-      "intent": "LTLQuery",
-      "entities": [
-        {
-          "entity": "Query",
-          "startPos": 5,
-          "endPos": 7
-        }
-      ]
-    },
-    {
-      "text": "i need an example of a simulation where wnt is always active",
-      "intent": "LTLQuery",
-      "entities": [
-        {
-          "entity": "Query",
-          "startPos": 7,
-          "endPos": 11
-        }
-      ]
-    },
-    {
-      "text": "show me a simulation where wnt activity leads to a cycle",
-      "intent": "LTLQuery",
-      "entities": []
-    },
-    {
-      "text": "tutorial",
+      "text": "tutorials",
       "intent": "ListTutorial",
       "entities": []
     },
     {
-      "text": "can you check the model that was uploaded",
-      "intent": "UploadedModel",
-      "entities": []
-    },
-    {
-      "text": "model uploaded?",
-      "intent": "UploadedModel",
-      "entities": []
-    },
-    {
-      "text": "what was the last model used",
-      "intent": "UploadedModel",
-      "entities": []
-    },
-    {
-      "text": "last model uploaded",
-      "intent": "UploadedModel",
-      "entities": []
-    },
-    {
-      "text": "what model did i upload",
-      "intent": "UploadedModel",
-      "entities": []
-    },
-    {
-      "text": "check my models name",
-      "intent": "UploadedModel",
-      "entities": []
-    },
-    {
-      "text": "whats my models name",
-      "intent": "UploadedModel",
-      "entities": []
+      "text": "what is the true state",
+      "intent": "Semantics",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
     },
     {
       "text": "what is my model called",
       "intent": "UploadedModel",
       "entities": []
-    },
-    {
-      "text": "what kind of simulations can you find?",
-      "intent": "AboutSimulations",
-      "entities": []
-    },
-    {
-      "text": "what kinds of simulations can you find?",
-      "intent": "AboutSimulations",
-      "entities": []
-    },
-    {
-      "text": "what simulations can you find",
-      "intent": "AboutSimulations",
-      "entities": []
-    },
-    {
-      "text": "remove my model",
-      "intent": "RemoveModel",
-      "entities": []
-    },
-    {
-      "text": "please remove my model",
-      "intent": "RemoveModel",
-      "entities": []
-    },
-    {
-      "text": "can you please remove my model?",
-      "intent": "RemoveModel",
-      "entities": []
-    },
-    {
-      "text": "delete my model",
-      "intent": "RemoveModel",
-      "entities": []
-    },
-    {
-      "text": "remove my uploaded model",
-      "intent": "RemoveModel",
-      "entities": []
-    },
-    {
-      "text": "remove the model that i uploaded",
-      "intent": "RemoveModel",
-      "entities": []
-    },
-    {
-      "text": "delete the model i uploaded",
-      "intent": "RemoveModel",
-      "entities": []
-    },
-    {
-      "text": "delete model",
-      "intent": "RemoveModel",
-      "entities": []
-    },
-    {
-      "text": "remove model",
-      "intent": "RemoveModel",
-      "entities": []
-    },
-    {
-      "text": "remove the model i last uploaded",
-      "intent": "RemoveModel",
-      "entities": []
-    },
-    {
-      "text": "cancel the model i uploaded",
-      "intent": "RemoveModel",
-      "entities": []
-    },
-    {
-      "text": "how can i use always eventually",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 4,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "how is always eventually different from eventually always",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions::first",
-          "startPos": 2,
-          "endPos": 3
-        },
-        {
-          "entity": "interactions::second ",
-          "startPos": 6,
-          "endPos": 7
-        }
-      ]
-    },
-    {
-      "text": "how can i use eventually not",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 4,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "how is eventually not different from not eventually",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions::first",
-          "startPos": 2,
-          "endPos": 3
-        },
-        {
-          "entity": "interactions::second ",
-          "startPos": 6,
-          "endPos": 7
-        }
-      ]
-    },
-    {
-      "text": "explain always eventually",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 1,
-          "endPos": 2
-        }
-      ]
     },
     {
       "text": "what is always eventually",
@@ -1171,18 +517,89 @@
       ]
     },
     {
-      "text": "tell me more about eventually always",
-      "intent": "LTLQuery",
+      "text": "can i see the intoduction tutorial",
+      "intent": "SelectTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "what happens if i increase the number of steps",
+      "intent": "Semantics",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "what is next always",
+      "intent": "OperatorInteractions",
       "entities": [
         {
           "entity": "interactions",
-          "startPos": 4,
+          "startPos": 2,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "all the turorials",
+      "intent": "ListTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "what does always do",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "how can i use the release operator",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 5,
           "endPos": 5
         }
       ]
     },
     {
-      "text": "explain eventually always",
+      "text": "what are selfloops",
+      "intent": "Semantics",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "tutorial",
+      "intent": "ListTutorial",
+      "entities": []
+    },
+    {
+      "text": "explain always eventually",
       "intent": "OperatorInteractions",
       "entities": [
         {
@@ -1193,7 +610,23 @@
       ]
     },
     {
-      "text": "what is always not",
+      "text": "what are oscillations",
+      "intent": "Semantics",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "whats my models name",
+      "intent": "UploadedModel",
+      "entities": []
+    },
+    {
+      "text": "what is not eventually",
       "intent": "OperatorInteractions",
       "entities": [
         {
@@ -1204,128 +637,50 @@
       ]
     },
     {
-      "text": "how can i use next not",
-      "intent": "OperatorInteractions",
+      "text": "show me the introduction tutorial",
+      "intent": "SelectTutorial",
       "entities": [
         {
-          "entity": "interactions",
-          "startPos": 4,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "how can i use always not",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 4,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "how can i use always next",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 4,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "how can i use eventually next",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 4,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "how can i use not next",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 4,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "how can i use not eventually",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 4,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "how can i use not always",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 4,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "how can i use next eventually",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 4,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "how can i use next always",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 4,
-          "endPos": 5
-        }
-      ]
-    },
-    {
-      "text": "what is always next",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 2,
+          "entity": "Lookup",
+          "startPos": 3,
           "endPos": 3
         }
       ]
     },
     {
-      "text": "what is eventually always",
-      "intent": "OperatorInteractions",
+      "text": "show tutorials",
+      "intent": "ListTutorial",
+      "entities": []
+    },
+    {
+      "text": "how can i use the steps",
+      "intent": "Semantics",
       "entities": [
         {
-          "entity": "interactions",
-          "startPos": 2,
-          "endPos": 3
+          "entity": "Lookup",
+          "startPos": 5,
+          "endPos": 5
         }
       ]
     },
     {
-      "text": "what is eventually not",
+      "text": "explain next not",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 1,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "check my models name",
+      "intent": "UploadedModel",
+      "entities": []
+    },
+    {
+      "text": "what is not always",
       "intent": "OperatorInteractions",
       "entities": [
         {
@@ -1347,6 +702,473 @@
       ]
     },
     {
+      "text": "what is the difference between weakuntil and until",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "Operator",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "how is eventually not different from not eventually",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions::first",
+          "startPos": 2,
+          "endPos": 3
+        },
+        {
+          "entity": "interactions::second ",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "explain next eventually",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 1,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "what can you help me with",
+      "intent": "AboutBot",
+      "entities": []
+    },
+    {
+      "text": "last model uploaded",
+      "intent": "UploadedModel",
+      "entities": []
+    },
+    {
+      "text": "explain not eventually",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 1,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "how can i use eventually always",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "explain eventually not",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 1,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "how can you help me",
+      "intent": "AboutBot",
+      "entities": []
+    },
+    {
+      "text": "explain what eventually does",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "model uploaded?",
+      "intent": "UploadedModel",
+      "entities": []
+    },
+    {
+      "text": "what is eventually always",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 2,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "what is the difference between release and until",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "Operator",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "how is always eventually different from eventually always",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions::first",
+          "startPos": 2,
+          "endPos": 3
+        },
+        {
+          "entity": "interactions::second ",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "are there any tutorials for protienx",
+      "intent": "SelectTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "what can you do",
+      "intent": "AboutBot",
+      "entities": []
+    },
+    {
+      "text": "how can i use not always",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "how can i use next always",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "cancel the model i uploaded",
+      "intent": "RemoveModel",
+      "entities": []
+    },
+    {
+      "text": "show me a simulation where wnt activity leads to a cycle",
+      "intent": "LTLQuery",
+      "entities": [
+        {
+          "entity": "Query",
+          "startPos": 5,
+          "endPos": 10
+        }
+      ]
+    },
+    {
+      "text": "i need a tutorial to help me find the end states of a model",
+      "intent": "SelectTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 9,
+          "endPos": 9
+        },
+        {
+          "entity": "Lookup",
+          "startPos": 10,
+          "endPos": 10
+        },
+        {
+          "entity": "Lookup",
+          "startPos": 13,
+          "endPos": 13
+        }
+      ]
+    },
+    {
+      "text": "how can i use not next",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "explain what does implies do",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i need to see a tutorial that finds the end states of a model",
+      "intent": "SelectTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 9,
+          "endPos": 13
+        }
+      ]
+    },
+    {
+      "text": "toad",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "remove model",
+      "intent": "RemoveModel",
+      "entities": []
+    },
+    {
+      "text": "i need a tutorial for stability",
+      "intent": "SelectTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 3,
+          "endPos": 3
+        },
+        {
+          "entity": "Lookup",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "show me a simulation where foo=1",
+      "intent": "LTLQuery",
+      "entities": [
+        {
+          "entity": "Query",
+          "startPos": 5,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "remove my uploaded model",
+      "intent": "RemoveModel",
+      "entities": []
+    },
+    {
+      "text": "delete the model i uploaded",
+      "intent": "RemoveModel",
+      "entities": []
+    },
+    {
+      "text": "can you please remove my model?",
+      "intent": "RemoveModel",
+      "entities": []
+    },
+    {
+      "text": "i need an example for weakuntil",
+      "intent": "OperatorExample",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "Lookup",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "aeroplanes can fly",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "show me how to use implies",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "how can i use always next",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i need to see ras equal to 1 and notch equal to 1 sometime in the future",
+      "intent": "LTLQuery",
+      "entities": [
+        {
+          "entity": "Query",
+          "startPos": 4,
+          "endPos": 16
+        }
+      ]
+    },
+    {
+      "text": "show me a tutorial for proteinx",
+      "intent": "SelectTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i need examples of when wnt is equal to 4",
+      "intent": "LTLQuery",
+      "entities": [
+        {
+          "entity": "Query",
+          "startPos": 5,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "can i see an example of the until operator",
+      "intent": "OperatorExample",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 7,
+          "endPos": 7
+        },
+        {
+          "entity": "Lookup",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i need to see a tutorial explaining how to use the and operator",
+      "intent": "SelectTutorial",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 11,
+          "endPos": 11
+        },
+        {
+          "entity": "Lookup",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "show me the funny tutorial",
+      "intent": "SelectTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "what do the number of steps do",
+      "intent": "Semantics",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "explain next always",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 1,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "what model did i upload",
+      "intent": "UploadedModel",
+      "entities": []
+    },
+    {
+      "text": "can you explain the functionality of weakuntil",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
       "text": "what is not next",
       "intent": "OperatorInteractions",
       "entities": [
@@ -1358,7 +1180,18 @@
       ]
     },
     {
-      "text": "what is not always",
+      "text": "how can i use the next operator in my query",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "what is always not",
       "intent": "OperatorInteractions",
       "entities": [
         {
@@ -1369,51 +1202,12 @@
       ]
     },
     {
-      "text": "what is not eventually",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 2,
-          "endPos": 3
-        }
-      ]
+      "text": "go back one step",
+      "intent": "Back",
+      "entities": []
     },
     {
-      "text": "what is next always",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 2,
-          "endPos": 3
-        }
-      ]
-    },
-    {
-      "text": "what is next eventually",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 2,
-          "endPos": 3
-        }
-      ]
-    },
-    {
-      "text": "what is next not",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 2,
-          "endPos": 3
-        }
-      ]
-    },
-    {
-      "text": "explain always not",
+      "text": "explain not next",
       "intent": "OperatorInteractions",
       "entities": [
         {
@@ -1424,7 +1218,29 @@
       ]
     },
     {
-      "text": "explain always next",
+      "text": "is there a tutorial that explains stability",
+      "intent": "SelectTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "what is eventually not",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 2,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "explain not always",
       "intent": "OperatorInteractions",
       "entities": [
         {
@@ -1446,85 +1262,34 @@
       ]
     },
     {
-      "text": "explain eventually not",
+      "text": "suggest",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "what was the last model used",
+      "intent": "UploadedModel",
+      "entities": []
+    },
+    {
+      "text": "can you check the model that was uploaded",
+      "intent": "UploadedModel",
+      "entities": []
+    },
+    {
+      "text": "what is always next",
       "intent": "OperatorInteractions",
       "entities": [
         {
           "entity": "interactions",
-          "startPos": 1,
-          "endPos": 2
+          "startPos": 2,
+          "endPos": 3
         }
       ]
     },
     {
-      "text": "explain not always",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 1,
-          "endPos": 2
-        }
-      ]
-    },
-    {
-      "text": "explain not eventually",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 1,
-          "endPos": 2
-        }
-      ]
-    },
-    {
-      "text": "explain not next",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 1,
-          "endPos": 2
-        }
-      ]
-    },
-    {
-      "text": "explain next eventually",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 1,
-          "endPos": 2
-        }
-      ]
-    },
-    {
-      "text": "explain next always",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 1,
-          "endPos": 2
-        }
-      ]
-    },
-    {
-      "text": "explain next not",
-      "intent": "OperatorInteractions",
-      "entities": [
-        {
-          "entity": "interactions",
-          "startPos": 1,
-          "endPos": 2
-        }
-      ]
-    },
-    {
-      "text": "what do the number of steps do",
-      "intent": "Semantics",
+      "text": "any tutorials that can explain stability",
+      "intent": "SelectTutorial",
       "entities": [
         {
           "entity": "Lookup",
@@ -1534,113 +1299,699 @@
       ]
     },
     {
-      "text": "how can i use the steps",
-      "intent": "Semantics",
+      "text": "what is always",
+      "intent": "ExplainOp",
       "entities": [
         {
-          "entity": "Lookup",
-          "startPos": 5,
+          "entity": "Operator",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "how can i use always eventually",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 4,
           "endPos": 5
         }
       ]
     },
     {
-      "text": "what are oscillations",
-      "intent": "Semantics",
+      "text": "can you please show me a tutorial that will explain how to use ltl",
+      "intent": "SelectTutorial",
       "entities": [
         {
           "entity": "Lookup",
-          "startPos": 2,
-          "endPos": 2
+          "startPos": 13,
+          "endPos": 13
         }
       ]
     },
     {
-      "text": "what are selfloops",
-      "intent": "Semantics",
+      "text": "help",
+      "intent": "AboutBot",
+      "entities": []
+    },
+    {
+      "text": "how can i use not eventually",
+      "intent": "OperatorInteractions",
       "entities": [
         {
-          "entity": "Lookup",
-          "startPos": 2,
-          "endPos": 2
+          "entity": "interactions",
+          "startPos": 4,
+          "endPos": 5
         }
       ]
     },
     {
-      "text": "what is the true state",
-      "intent": "Semantics",
+      "text": "remove the model i last uploaded",
+      "intent": "RemoveModel",
+      "entities": []
+    },
+    {
+      "text": "how can i use next eventually",
+      "intent": "OperatorInteractions",
       "entities": [
         {
-          "entity": "Lookup",
-          "startPos": 3,
-          "endPos": 4
+          "entity": "interactions",
+          "startPos": 4,
+          "endPos": 5
         }
       ]
     },
     {
-      "text": "what happens if i increase the number of steps",
-      "intent": "Semantics",
+      "text": "help docs",
+      "intent": "AboutBot",
+      "entities": []
+    },
+    {
+      "text": "how can i use eventually next",
+      "intent": "OperatorInteractions",
       "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "do you have an example that shows me how to use the implies operator",
+      "intent": "OperatorExample",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 12,
+          "endPos": 12
+        },
         {
           "entity": "Lookup",
           "startPos": 4,
           "endPos": 4
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 8,
-          "endPos": 8
         }
       ]
     },
     {
-      "text": "what happens if i decrease the number of steps",
-      "intent": "Semantics",
+      "text": "i need an example of a simulation where wnt is always active",
+      "intent": "LTLQuery",
       "entities": [
         {
-          "entity": "Lookup",
-          "startPos": 4,
-          "endPos": 4
-        },
-        {
-          "entity": "Lookup",
-          "startPos": 8,
-          "endPos": 8
+          "entity": "Query",
+          "startPos": 7,
+          "endPos": 11
         }
       ]
     },
     {
-      "text": "what is a self loop",
-      "intent": "Semantics",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 3,
-          "endPos": 4
-        }
-      ]
-    },
-    {
-      "text": "how can i use a self loop",
-      "intent": "Semantics",
-      "entities": [
-        {
-          "entity": "Lookup",
-          "startPos": 5,
-          "endPos": 6
-        }
-      ]
-    },
-    {
-      "text": "what is an oscillation",
-      "intent": "Semantics",
+      "text": "i need a tutorial to explore the interface",
+      "intent": "SelectTutorial",
       "entities": [
         {
           "entity": "Lookup",
           "startPos": 3,
           "endPos": 3
+        },
+        {
+          "entity": "Lookup",
+          "startPos": 7,
+          "endPos": 7
         }
       ]
+    },
+    {
+      "text": "centre for computing history",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "i need notch to remain true until ras becomes true too",
+      "intent": "LTLQuery",
+      "entities": [
+        {
+          "entity": "Query",
+          "startPos": 2,
+          "endPos": 10
+        }
+      ]
+    },
+    {
+      "text": "is there a tutorial that can explain this",
+      "intent": "SelectTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "remove the model that i uploaded",
+      "intent": "RemoveModel",
+      "entities": []
+    },
+    {
+      "text": "delete model",
+      "intent": "RemoveModel",
+      "entities": []
+    },
+    {
+      "text": "please remove my model",
+      "intent": "RemoveModel",
+      "entities": []
+    },
+    {
+      "text": "delete my model",
+      "intent": "RemoveModel",
+      "entities": []
+    },
+    {
+      "text": "need example for always",
+      "intent": "OperatorExample",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 3,
+          "endPos": 3
+        },
+        {
+          "entity": "Lookup",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "example for always",
+      "intent": "OperatorExample",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "Lookup",
+          "startPos": 0,
+          "endPos": 0
+        }
+      ]
+    },
+    {
+      "text": "pokemon go",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "is there a simulation hexakinase is never on",
+      "intent": "LTLQuery",
+      "entities": []
+    },
+    {
+      "text": "open tutorial x",
+      "intent": "SelectTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "Lookup",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "can i see the tutorial about protienx",
+      "intent": "SelectTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
+          "entity": "Lookup",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "how can i use always not",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "how can i use the until operator in my model",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i need a simulation where ras is 1 and notch is 1 too",
+      "intent": "LTLQuery",
+      "entities": [
+        {
+          "entity": "Query",
+          "startPos": 4,
+          "endPos": 12
+        }
+      ]
+    },
+    {
+      "text": "open the first tutorial",
+      "intent": "SelectTutorial",
+      "entities": []
+    },
+    {
+      "text": "when should i use the not operator",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hi",
+      "intent": "AboutBot",
+      "entities": []
+    },
+    {
+      "text": "how is \"and\" different to \"or\"",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 3,
+          "endPos": 3
+        },
+        {
+          "entity": "Operator",
+          "startPos": 8,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "give me a list of the tutorials",
+      "intent": "ListTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "what is upto",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "can you open the 2nd tutorial",
+      "intent": "SelectTutorial",
+      "entities": []
+    },
+    {
+      "text": "show me a list of all available tutorials",
+      "intent": "ListTutorial",
+      "entities": [
+        {
+          "entity": "Lookup",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "Lookup",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "how can i use upto",
+      "intent": "ExplainOp",
+      "entities": [
+        {
+          "entity": "Operator",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "how can i use eventually not",
+      "intent": "OperatorInteractions",
+      "entities": [
+        {
+          "entity": "interactions",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "show me the formula history",
+      "intent": "ShowFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "which formulas have you remembered?",
+      "intent": "ShowFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "list all remembered formulas",
+      "intent": "ShowFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "please forget all my formulas",
+      "intent": "ClearFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "clear the formula history",
+      "intent": "ClearFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "remove all the formulas you remembered",
+      "intent": "ClearFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "delete all saved formulas",
+      "intent": "ClearFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "get rid of all saved formulas",
+      "intent": "ClearFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "forget all formulas",
+      "intent": "ClearFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "forget all my formulas",
+      "intent": "ClearFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "show me all formulas",
+      "intent": "ShowFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "list formulas",
+      "intent": "ShowFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "show formulas",
+      "intent": "ShowFormulaHistory",
+      "entities": []
+    },
+    {
+      "text": "remove the formula with name fa",
+      "intent": "RemoveFormulaFromHistory",
+      "entities": [
+        {
+          "entity": "FormulaName",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "forget the fa formula",
+      "intent": "RemoveFormulaFromHistory",
+      "entities": [
+        {
+          "entity": "FormulaName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "remove the fa formula",
+      "intent": "RemoveFormulaFromHistory",
+      "entities": [
+        {
+          "entity": "FormulaName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "delete the fa formula",
+      "intent": "RemoveFormulaFromHistory",
+      "entities": [
+        {
+          "entity": "FormulaName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "please forget the fb formula",
+      "intent": "RemoveFormulaFromHistory",
+      "entities": [
+        {
+          "entity": "FormulaName",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "forget the formula with name fb",
+      "intent": "RemoveFormulaFromHistory",
+      "entities": [
+        {
+          "entity": "FormulaName",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "forget the fb formula",
+      "intent": "RemoveFormulaFromHistory",
+      "entities": [
+        {
+          "entity": "FormulaName",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "rename the fb formula to fc",
+      "intent": "RenameFormulaInHistory",
+      "entities": [
+        {
+          "entity": "FormulaRename::From",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "FormulaRename::To",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "rename the formula fc to fa",
+      "intent": "RenameFormulaInHistory",
+      "entities": [
+        {
+          "entity": "FormulaRename::From",
+          "startPos": 3,
+          "endPos": 3
+        },
+        {
+          "entity": "FormulaRename::To",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "use fc as new name for the fa formula",
+      "intent": "RenameFormulaInHistory",
+      "entities": [
+        {
+          "entity": "FormulaRename::From",
+          "startPos": 7,
+          "endPos": 7
+        },
+        {
+          "entity": "FormulaRename::To",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "let fc be the new name for the fa formula",
+      "intent": "RenameFormulaInHistory",
+      "entities": [
+        {
+          "entity": "FormulaRename::From",
+          "startPos": 8,
+          "endPos": 8
+        },
+        {
+          "entity": "FormulaRename::To",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "let foo be the new name for the bar formula",
+      "intent": "RenameFormulaInHistory",
+      "entities": [
+        {
+          "entity": "FormulaRename::From",
+          "startPos": 8,
+          "endPos": 8
+        },
+        {
+          "entity": "FormulaRename::To",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "let formulasimple be the new name for the formula1 formula",
+      "intent": "RenameFormulaInHistory",
+      "entities": [
+        {
+          "entity": "FormulaRename::From",
+          "startPos": 8,
+          "endPos": 8
+        },
+        {
+          "entity": "FormulaRename::To",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "please rename fa to fb",
+      "intent": "RenameFormulaInHistory",
+      "entities": [
+        {
+          "entity": "FormulaRename::From",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "FormulaRename::To",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "from now on, the fa formula shall be named fb",
+      "intent": "RenameFormulaInHistory",
+      "entities": [
+        {
+          "entity": "FormulaRename::From",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "FormulaRename::To",
+          "startPos": 10,
+          "endPos": 10
+        }
+      ]
+    },
+    {
+      "text": "explain ltl",
+      "intent": "AboutLTL",
+      "entities": []
+    },
+    {
+      "text": "what is ltl",
+      "intent": "AboutLTL",
+      "entities": []
+    },
+    {
+      "text": "can you explain ltl",
+      "intent": "AboutLTL",
+      "entities": []
+    },
+    {
+      "text": "what is linear teporal logic",
+      "intent": "AboutLTL",
+      "entities": []
+    },
+    {
+      "text": "explain linear temporal logic",
+      "intent": "AboutLTL",
+      "entities": []
+    },
+    {
+      "text": "whats linear temporal logic",
+      "intent": "AboutLTL",
+      "entities": []
+    },
+    {
+      "text": "can you explain linear temporal logic",
+      "intent": "AboutLTL",
+      "entities": []
+    },
+    {
+      "text": "ltl?",
+      "intent": "AboutLTL",
+      "entities": []
+    },
+    {
+      "text": "linear temporal logic",
+      "intent": "AboutLTL",
+      "entities": []
     }
   ]
 }

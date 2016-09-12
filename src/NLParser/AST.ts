@@ -153,7 +153,7 @@ export interface TemporalExpression extends Node<AtomicExpression, AtomicExpress
     right: AtomicExpression
 }
 
-export type AtomicExpression = ActivityExpression | RelationalExpression | UnaryExpression | FormulaPointer | DevelopmentalEndState
+export type AtomicExpression = ActivityExpression | RelationalExpression | UnaryExpression | FormulaPointer | DevelopmentalEndState | TrueLiteral
 
 export type UnaryOperatorSymbol =
     'not' | 'next' | 'always' | 'eventually'
@@ -200,7 +200,7 @@ export type RelationalOperatorSymbol =
     '=' | '>' | '<' | '<=' | '>=' | '!='
 
 export type DevelopmentalEndStateSymbol =
-    'self loop' | 'oscillation'
+    'SelfLoop' | 'Oscillation'
 
 export interface RelationalOperator extends Node<any, any> {
     type: typeof Type.RelationalOperator

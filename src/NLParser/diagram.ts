@@ -4,5 +4,5 @@ import * as diagrams from 'chevrotain/diagrams/src/main'
 import NLParser from './NLParser'
 
 var parserInstanceToDraw = new NLParser([])
-var diagramsDiv = document.getElementById("diagrams")
+var diagramsDiv = document.getElementById('diagrams')
 diagrams.drawDiagramsFromParserInstance(parserInstanceToDraw, diagramsDiv)

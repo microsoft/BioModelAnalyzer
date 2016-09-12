@@ -4,7 +4,6 @@ import * as cors from 'cors'
 import * as config from 'config'
 import { BlobModelStorage } from './ModelStorage'
 import { setup as setupBot } from './bot'
-import { default as NLParser, ParserResponseType, FormulaPointer } from './NLParser/NLParser'
 
 let port = config.get('PORT')
 console.log('starting server on port:', port)
