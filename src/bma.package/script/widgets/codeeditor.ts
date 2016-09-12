@@ -4,61 +4,68 @@
 
 module BMA.CodeEditor {
     export type Options =
-    {
-        text : string;
-        language : string;
-        suggestVariables : string[];
-    }
+        {
+            text: string;
+            language: string;
+            suggestVariables: string[];
+        }
 
     var lang_targetfunc = {
-        tokensProvider : {
+        tokensProvider: {
             keywords: [
                 'min', 'max', 'avg', 'ceil', 'floor'
             ],
 
-            operators: [ '+', '-', '*', '/'
+            operators: ['+', '-', '*', '/'
             ],
 
             brackets: [
-                ['(', ')','delimiter.parenthesis'] 
+                ['(', ')', 'delimiter.parenthesis']
             ],
 
             // we include these common regular expressions
-            symbols:  /[=><!~?:&|+\-*\/\^%]+/,
+            symbols: /[=><!~?:&|+\-*\/\^%]+/,
 
             numbers: /(?:[+-])?(?:(?:(?:\d*\.)?\d+)(?:[eE][-+]?\d+)?)/,
 
             // The main tokenizer for our languages
             tokenizer: {
                 root: [
-                // identifiers and keywords
-                [/(var\s*)(\()([^)]+)(\))/, ['keyword','@brackets','identifier','@brackets']],
+                    // identifiers and keywords
+                    [/(var\s*)(\()([^)]+)(\))/, ['keyword', '@brackets', 'identifier', '@brackets']],
 
-                [/(const\s*)(\()(\s*@numbers\s*)(\))/, ['keyword','@brackets', 'number','@brackets']],
+                    [/(const\s*)(\()(\s*@numbers\s*)(\))/, ['keyword', '@brackets', 'number', '@brackets']],
 
-                [/[A-Za-z_$][\w$]*/, { cases: { 
-                                            '@keywords': 'keyword',
-                                            '@default': 'invalid' } }
-                ],
+                    [/[A-Za-z_$][\w$]*/, {
+                        cases: {
+                            '@keywords': 'keyword',
+                            '@default': 'invalid'
+                        }
+                    }
+                    ],
 
-                // whitespace
-                { include: '@whitespace' },
+                    // whitespace
+                    { include: '@whitespace' },
 
-                // delimiters and operators
-                [/[()]/, '@brackets'],
-                [/@symbols/, { cases: { '@operators': 'operator',
-                                        '@default'  : '' } } ],
+                    // delimiters and operators
+                    [/[()]/, '@brackets'],
+                    [/@symbols/, {
+                        cases: {
+                            '@operators': 'operator',
+                            '@default': ''
+                        }
+                    }],
 
-                // numbers
-                [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
-                [/\d+/, 'number'],
+                    // numbers
+                    [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
+                    [/\d+/, 'number'],
 
-                // delimiter: after number because of .\d floats
-                [/[,]/, 'delimiter'],
+                    // delimiter: after number because of .\d floats
+                    [/[,]/, 'delimiter'],
                 ],
 
                 whitespace: [
-                [/[ \t\r\n]+/, 'white']
+                    [/[ \t\r\n]+/, 'white']
                 ]
             }
         },
@@ -115,60 +122,80 @@ module BMA.CodeEditor {
     }
 
     export var languages = {
-        "bma.targetfunc" : lang_targetfunc
+        "bma.targetfunc": lang_targetfunc
     }
 }
 
 (function ($) {
     $.widget("BMA.codeeditor", {
-        options: <BMA.CodeEditor.Options> {
+        options: <BMA.CodeEditor.Options>{
             text: "",
             language: "",
-            suggestVariables: new Array<string>(0),            
+            suggestVariables: new Array<string>(0),
         },
 
-        _create: function () {            
+        _create: function () {
             this._refresh();
         },
 
         _refresh: function () {
             var that = this;
             var options = <BMA.CodeEditor.Options>this.options;
-            
-            var lang = BMA.CodeEditor.languages[options.language];
-            monaco.languages.register({id: options.language});
-            monaco.languages.setMonarchTokensProvider(options.language, lang.tokensProvider);
-            monaco.languages.registerCompletionItemProvider(options.language, { provideCompletionItems: lang.completionItemProvider(options.suggestVariables) });
 
-            this.element.empty();
-            this.element.addClass("bma.codeeditor");
+            var editor = $.data(this.element, "editor");
+            if (!editor) {
+                var lang = BMA.CodeEditor.languages[options.language];
+                monaco.languages.register({ id: options.language });
+                monaco.languages.setMonarchTokensProvider(options.language, lang.tokensProvider);
 
-            var editor = monaco.editor.create(this.element[0], {
-                value: options.text,
-                language: options.language,
-                lineNumbers: false,
-                scrollBeyondLastLine: false,
-                autoClosingBrackets: true
-            });
-            this.editor = editor;
-            $.data(this.element, "editor", editor);
-            this.onContentChanged = editor.onDidChangeModelContent(e => {
-                that._trigger("change");
-            });
+                if (lang._completionItemProvider) lang._completionItemProvider.dispose();
+                lang._completionItemProvider = monaco.languages.registerCompletionItemProvider(options.language, { provideCompletionItems: lang.completionItemProvider(options.suggestVariables) });
+
+                this.element.empty();
+                this.element.addClass("bma.codeeditor");
+
+                editor = monaco.editor.create(this.element[0], {
+                    value: options.text,
+                    language: options.language,
+                    lineNumbers: false,
+                    scrollBeyondLastLine: false,
+                    autoClosingBrackets: true
+                });
+                $.data(this.element, "editor", editor);
+                this.onContentChanged = editor.onDidChangeModelContent(e => {
+                    that._trigger("change");
+                });
+            }
+            else { // already initialized
+                var lang = BMA.CodeEditor.languages[options.language];
+
+                // Update completion item provider
+                if (lang._completionItemProvider) lang._completionItemProvider.dispose();
+                lang._completionItemProvider = monaco.languages.registerCompletionItemProvider(options.language, { provideCompletionItems: lang.completionItemProvider(options.suggestVariables) });
+
+                // If need, update editor text
+                if (editor.getValue() != options.text) {
+                    editor.setValue(options.text);
+                }
+            }
         },
 
-        _destroy: function () {            
+        _destroy: function () {
+            var editor = $.data(this.element, "editor");
+            if (editor) {
+                editor.dispose();
+            }
             this.element.empty();
         },
 
         // _setOptions is called with a hash of all options that are changing
         // always refresh when changing options
-        _setOptions: function() {
-            this._superApply( arguments );
+        _setOptions: function () {
+            this._superApply(arguments);
             this._refresh();
         },
 
-        text: function() {
+        text: function () {
             var editor = $.data(this.element, "editor");
             return editor.getValue();
         }
