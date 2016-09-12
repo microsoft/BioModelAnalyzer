@@ -57,6 +57,10 @@ relationalOperator
 unaryOperator
     : "not" | "next" | "always" | "eventually" | "then"
 
+### Grammar Visualisation 
+
+The grammar can also be visualised by running the following npm task form the root: "npm run grammarViz"
+
 ### Operator Precedence
 
 - unary operators have the highest precedence
