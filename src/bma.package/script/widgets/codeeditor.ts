@@ -74,38 +74,45 @@ module BMA.CodeEditor {
                 {
                     label: 'max',
                     kind: monaco.languages.CompletionItemKind.Function,
-                    insertText: 'max({{A}},{{B}})'
+                    insertText: 'max({{A}},{{B}})',
+                    documentation: "Returns the maximum of two or more expressions."
                 },
                 {
                     label: 'min',
                     kind: monaco.languages.CompletionItemKind.Function,
-                    insertText: 'min({{A}},{{B}})'
+                    insertText: 'min({{A}},{{B}})',
+                    documentation: "Returns the minimum of two or more expressions."
                 },
                 {
                     label: 'avg',
                     kind: monaco.languages.CompletionItemKind.Function,
-                    insertText: 'avg({{A}},{{B}})'
+                    insertText: 'avg({{A}},{{B}})',
+                    documentation: "Returns the average of two or more expressions."
                 },
                 {
                     label: 'ceil',
                     kind: monaco.languages.CompletionItemKind.Function,
-                    insertText: 'ceil({{A}})'
+                    insertText: 'ceil({{A}})',
+                    documentation: "Returns the ceiling of an expression."
                 },
                 {
                     label: 'floor',
                     kind: monaco.languages.CompletionItemKind.Function,
-                    insertText: 'floor({{A}})'
+                    insertText: 'floor({{A}})',
+                    documentation: "Returns the floor of an expression."
                 },
 
                 {
                     label: 'var',
                     kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: 'var({{A}})'
+                    insertText: 'var({{A}})',
+                    documentation: "Represents a variable with the give name."
                 },
                 {
                     label: 'const',
                     kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: 'const({{0}})'
+                    insertText: 'const({{0}})',
+                    documentation: "Represents a numeric value."
                 }
             ];
             if (variables) {
@@ -113,7 +120,8 @@ module BMA.CodeEditor {
                     items.push({
                         label: variables[i],
                         kind: monaco.languages.CompletionItemKind.Variable,
-                        insertText: 'var(' + variables[i] + ')'
+                        insertText: 'var(' + variables[i] + ')',
+                        documentation: undefined
                     });
                 }
             }
