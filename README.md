@@ -4,17 +4,14 @@
 
 A natural language bot for assisting BioModelAnalyzer users.
 
-[Add development bot to Skype](https://join.skype.com/bot/f5b4f777-06db-45d6-9e7d-8fe6dfcc8e47) (updated daily)
+[Add development bot to Skype](https://join.skype.com/bot/f5b4f777-06db-45d6-9e7d-8fe6dfcc8e47) (updated daily 8am)
 
 [Add production bot to Skype](https://join.skype.com/bot/aa7c74f2-f116-4ebe-a7b1-739490fe80f6)
 
-## Technologies
+Note that the bots above run on the free tier of Azure.
+If unused for a while, the bot app service is hibernated and has to be woken up again which might result in a delay
+of 1-2min before the user receives the first reply.
 
-- Node.js
-- TypeScript
-- [LUIS](https://www.luis.ai/)
-- [Bot Framework](https://dev.botframework.com/)
+## Documentation
 
-## Architecture
-
-![Architecture overview](docs/img/architecture.png)
+[Documentation](docs/README.md)
