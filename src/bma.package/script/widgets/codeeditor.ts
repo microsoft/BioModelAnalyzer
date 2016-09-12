@@ -155,6 +155,7 @@ module BMA.CodeEditor {
                 var lang = BMA.CodeEditor.languages[options.language];
                 monaco.languages.register({ id: options.language });
                 monaco.languages.setMonarchTokensProvider(options.language, lang.tokensProvider);
+                monaco.languages.setLanguageConfiguration(options.language, { brackets: [['(', ')']] });
 
                 if (lang._completionItemProvider) lang._completionItemProvider.dispose();
                 lang._completionItemProvider = monaco.languages.registerCompletionItemProvider(options.language, { provideCompletionItems: lang.completionItemProvider(options.suggestVariables) });
