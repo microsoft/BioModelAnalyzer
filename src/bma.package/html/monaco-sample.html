@@ -28,7 +28,8 @@
 <script>
 	var editor = $("#container").codeeditor({
 		text: 'max(var(LET-23), var(lin-3), const(3))',
-		language: 'bma.targetfunc'        
+		language: 'bma.targetfunc',
+	    suggestVariables: [ 'LET-23', 'lin-3' ]
 	});
 	editor.bind("codeeditorchange", function () {
 	    var text = editor.codeeditor("text");

@@ -62,56 +62,55 @@ module BMA.CodeEditor {
                 ]
             }
         },
-        completionItemProvider : () => {
-            return [
+        completionItemProvider: (variables: string[]) => {
+            var items = [
                 {
                     label: 'max',
                     kind: monaco.languages.CompletionItemKind.Function,
-                    insertText:'max({{A}},{{B}})'
+                    insertText: 'max({{A}},{{B}})'
                 },
                 {
                     label: 'min',
                     kind: monaco.languages.CompletionItemKind.Function,
-                    insertText:'min({{A}},{{B}})'
+                    insertText: 'min({{A}},{{B}})'
                 },
                 {
                     label: 'avg',
                     kind: monaco.languages.CompletionItemKind.Function,
-                    insertText:'avg({{A}},{{B}})'
+                    insertText: 'avg({{A}},{{B}})'
                 },
                 {
                     label: 'ceil',
                     kind: monaco.languages.CompletionItemKind.Function,
-                    insertText:'ceil({{A}})'
+                    insertText: 'ceil({{A}})'
                 },
                 {
                     label: 'floor',
                     kind: monaco.languages.CompletionItemKind.Function,
-                    insertText:'floor({{A}})'
+                    insertText: 'floor({{A}})'
                 },
 
                 {
                     label: 'var',
                     kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText:'var({{A}})'
+                    insertText: 'var({{A}})'
                 },
                 {
                     label: 'const',
                     kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText:'const({{0}})'
-                },
-
-                {
-                    label: 'lin-3',
-                    kind: monaco.languages.CompletionItemKind.Variable,
-                    insertText:'var(lin-3)'
-                },
-                {
-                    label: 'LET-23',
-                    kind: monaco.languages.CompletionItemKind.Variable,
-                    insertText:'var(LET-23)'
+                    insertText: 'const({{0}})'
                 }
-            ]
+            ];
+            if (variables) {
+                for (var i = 0; i < variables.length; i++) {
+                    items.push({
+                        label: variables[i],
+                        kind: monaco.languages.CompletionItemKind.Variable,
+                        insertText: 'var(' + variables[i] + ')'
+                    });
+                }
+            }
+            return () => items;
         }
     }
 
@@ -139,7 +138,7 @@ module BMA.CodeEditor {
             var lang = BMA.CodeEditor.languages[options.language];
             monaco.languages.register({id: options.language});
             monaco.languages.setMonarchTokensProvider(options.language, lang.tokensProvider);
-            monaco.languages.registerCompletionItemProvider(options.language, { provideCompletionItems: lang.completionItemProvider });
+            monaco.languages.registerCompletionItemProvider(options.language, { provideCompletionItems: lang.completionItemProvider(options.suggestVariables) });
 
             this.element.empty();
             this.element.addClass("bma.codeeditor");
