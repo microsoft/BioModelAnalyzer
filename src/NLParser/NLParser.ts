@@ -1,11 +1,8 @@
 /// <reference path="../../node_modules/chevrotain/lib/chevrotain.d.ts" />
-
-//1) handle error tokens in the rsynching logic
-
 /**
  *  Please read ./NLParserDocumentation.md for a high level explaination of the parser
  */
-import { Parser, Token, IParserConfig, Lexer, TokenConstructor, extendToken } from 'chevrotain'
+import { Parser, Token, IParserConfig, Lexer, TokenConstructor, extendToken, ILexingResult } from 'chevrotain'
 import * as _ from 'underscore'
 import * as natural from 'natural'
 import * as AST from './AST'
@@ -23,6 +20,7 @@ export interface ParserResponse {
     responseType: ParserResponseType
     errors?: any
     AST?: AST.Formula
+    unknownVariables?: string[]
 }
 
 export interface FormulaPointer {
@@ -711,6 +709,7 @@ export default class NLParser extends Parser {
         let modelVariableAndFormulaPointerRegex = new RegExp(hasFormulaPointers ? modelVariableRelationOpRegex + "|" + "\\b(" + _.pluck(formulaPointers, "name").join("|") + ")\\b" : modelVariableRelationOpRegex, "ig")
 
         var matchedGroups, variableTokens = [];
+        let unknownIdentifiers = { variables: [], formulaPointers: [] }
         while ((matchedGroups = modelVariableAndFormulaPointerRegex.exec(sentence)) !== null) {
             //The variable will always on the 1st index as the 0th index is the entire group and the variable is matched in the 1st group of the regex expression
             if (hasFormulaPointers && _.last(matchedGroups)) {
@@ -743,14 +742,38 @@ export default class NLParser extends Parser {
         return sentence.split(" ").map((t) => ModelVariable.PATTERN.test(t) || FormulaPointerToken.PATTERN.test(t) || TrueLiteral.PATTERN.test(t) || FalseLiteral.PATTERN.test(t) ? t : natural.PorterStemmer.stem(t)).join(" ")
     }
 
+    private static identifyUnknownVariablesFromLexedTokens(sentence: string) {
+        let unknownVariables = []
+        //we perform lexing again as the lexed output can be differnt than for the original sentence due to recursion in parse()
+        let lexerResult = (new Lexer(ALLOWED_TOKENS, true)).tokenize(sentence)
+        for (var i = 0; i < lexerResult.tokens.length; i++) {
+            if (lexerResult.tokens[i].constructor.TOKEN_TYPE == TokenType.ARITHMETIC_OPERATOR && ((!(lexerResult.tokens[i - 1] instanceof ModelVariable)) || i == 0)) {
+                let unknownVarToken = _.find(lexerResult.errors, et => et.column + et.length === lexerResult.tokens[i].startColumn)
+                if (unknownVarToken) {
+                    let unknownVarString = sentence.substring(unknownVarToken.column - 1, unknownVarToken.column + unknownVarToken.length - 1)
+                    unknownVariables.push(unknownVarString)
+                }
+            }
+        }
+        return unknownVariables
+    }
+
     /**
-     *  Main Parse routine: 
+     *  Main Parse routine:
      */
-    static parse(sentence: string, bmaModel, formulaPointers?: FormulaPointer[], didResynchedBefore?: boolean): ParserResponse {
+    static parse(sentence: string, bmaModel, formulaPointers?: FormulaPointer[], didResynchedBefore?: boolean, unknownVariablesInOrignialSentence?: string[]): ParserResponse {
         sentence = NLParser.applySentencePreprocessing(sentence, bmaModel, formulaPointers)
         //lex the sentence to get token stream where illegal tokens are ignored and returns a token stream
-        let lexedTokens = (new Lexer(ALLOWED_TOKENS, true)).tokenize(sentence).tokens
-        var parser = new NLParser(lexedTokens)
+        let lexerResult = (new Lexer(ALLOWED_TOKENS, true)).tokenize(sentence)
+
+        /*the parser could result in an error due to unknown tokens, hence look for such instances and return if found 
+        (NOTE:) we dont perform this routine as a check since, the user can use operators such as "is" in other places which can be handled by the error recovery mechanism, 
+         but is used as a way to check for unknown tokens, resulting in false positives*/
+
+        if (!unknownVariablesInOrignialSentence) {
+            unknownVariablesInOrignialSentence = NLParser.identifyUnknownVariablesFromLexedTokens(sentence)
+        }
+        var parser = new NLParser(lexerResult.tokens)
         //We perform parsing by execute the root rule
         var parserResponse = parser.formula()
         //handle parse response
@@ -770,6 +793,7 @@ export default class NLParser extends Parser {
             return {
                 responseType: ParserResponseType.PARSE_ERROR,
                 errors: parser.errors,
+                unknownVariables: unknownVariablesInOrignialSentence
             }
         }
 
@@ -781,9 +805,9 @@ export default class NLParser extends Parser {
             var currentResynched = sentence.substring(parserResponse.resyncedToken.offset, sentence.length);
             //check the newly generated suffix with the previously generated suffix in order to prevent an infinite loop
             if (didResynchedBefore) {
-                return NLParser.parse(sentence.substring(0, parserResponse.errorToken.offset) + currentResynched, bmaModel, formulaPointers, didResynchedBefore)
+                return NLParser.parse(sentence.substring(0, parserResponse.errorToken.offset) + currentResynched, bmaModel, formulaPointers, didResynchedBefore, unknownVariablesInOrignialSentence)
             } else {
-                return NLParser.parse(currentResynched, bmaModel, formulaPointers, true)
+                return NLParser.parse(currentResynched, bmaModel, formulaPointers, true, unknownVariablesInOrignialSentence)
             }
         }
     }

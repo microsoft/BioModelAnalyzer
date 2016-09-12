@@ -32,8 +32,16 @@ describe('parse() should detect variables correctly', () => {
         var expected = "(notch=1 and eventualkanize=20)"
         expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
     })
-
 })
+describe('parse() should detect unknown variable usage', () => {
+    it('parse() should handle single variables', () => {
+        var sentence = "show me a simulation where unknownvar=123 and a=2"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        expect(parserResponse.unknownVariables && parserResponse.unknownVariables.length == 1 && parserResponse.unknownVariables[0]==="unknownvar")
+    })
+})
+
+
 it('parse() handles LTL operator precedence and assosiativeity correctly', () => {
     var sentence = "give me some simulation where it is always the case that if x is 1 then y is 5 and followed by z is 25"
     var parserResponse = NLParser.parse(sentence, testModel)
