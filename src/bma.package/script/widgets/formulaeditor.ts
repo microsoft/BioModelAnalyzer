@@ -31,7 +31,6 @@
             //Adding states
             var states = $("<div></div>").addClass("state-buttons").width("calc(100% - 580px)").html("Variables<br>").appendTo(toolbar);
             this.statesbtns = $("<div></div>").addClass("btns").appendTo(states);
-            this._refreshStates();
 
             //Adding pre-defined states
             var conststates = $("<div></div>").addClass("state-buttons").width(70).html("&nbsp;<br>").appendTo(toolbar);
@@ -447,6 +446,9 @@
                         .show();
                 }
             });
+
+            //Adding variable options
+            this._refreshStates();
         },
 
         _parseErrorMessage: function (message) {
@@ -616,8 +618,11 @@
         _refreshStates: function () {
             var that = this;
             this.statesbtns.empty();
+
+            var suggestedVariables = [];
             for (var i = 0; i < this.options.variables.length; i++) {
                 var stateName = this.options.variables[i].Name;
+                suggestedVariables.push(stateName);
 
                 var stateDiv = $("<div></div>")
                     .addClass("variable-button")
@@ -647,6 +652,10 @@
                     }
                 });
             }
+
+            that.textEditor.formulatexteditor({
+                variables: suggestedVariables
+            });
         },
 
         _getSVGCoords: function (x, y) {
@@ -893,7 +902,8 @@
             formula: undefined,
             isvalid: true,
             errormessage: undefined,
-            onformulachangedcallback: undefined
+            onformulachangedcallback: undefined,
+            variables: []
         },
 
         _create: function () {
@@ -904,11 +914,18 @@
                 .addClass('target-function')
                 .css("margin-top", 0)
                 .appendTo(root);
+                /*
             this.formulaTextArea = $('<textarea></textarea>')
                 .attr("spellcheck", "false")
                 .addClass("formula-text-area")
                 .css("margin-top", 0)
                 .height(140)
+                .appendTo(formulaDiv);
+                */
+            this.formulaTextArea = $('<div></div>').width("calc(100% - 55px)")
+                .addClass("bma-formulaeditor-texteditor")
+                .css("margin-top", 0)
+                .css("margin-left", 0)
                 .appendTo(formulaDiv);
             this.prooficon = $('<div></div>')
                 .addClass("validation-icon")
@@ -918,17 +935,24 @@
                 .addClass("formula-validation-message")
                 .appendTo(formulaDiv);
 
-            this.formulaTextArea.text(that.options.formula);
+            this.formulaTextArea.codeeditor({
+                text: that.options.formula,
+                language: 'bma.targetfunc',
+                suggestVariables: that.options.variables
+            });
+
             that.errorMessage.text(that.options.errormessage);
             that._setisvalid();
 
-            this.formulaTextArea.bind("input change propertychange", function () {
-                if (that.options.formula === that.formulaTextArea.val())
+            this.formulaTextArea.bind("codeeditorchange", function () {
+                var text = that.formulaTextArea.codeeditor("text");
+
+                if (that.options.formula === text)
                     return;
 
-                that.options.formula = that.formulaTextArea.val();
+                that.options.formula = text;
                 if (that.options.onformulachangedcallback !== undefined) {
-                    that.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
+                    that.options.onformulachangedcallback({ formula: that.options.formula });
                 }
             });
         },
@@ -939,7 +963,7 @@
             switch (key) {
                 case "formula":
                     that.options.formula = value;
-                    this.formulaTextArea.text(value);
+                    this.formulaTextArea.codeeditor({ text: value });
                     break;
                 case "isvalid":
                     that.options.isvalid = value;
@@ -949,6 +973,9 @@
                     that.options.errormessage = value;
                     that.errorMessage.text(value);
                     break;
+                case "variables":
+                    that.options.variables = value;
+                    this.formulaTextArea.codeeditor({ suggestVariables: value });
                 default:
                     break;
             }
@@ -961,20 +988,20 @@
             if (value === undefined) {
                 that.prooficon.removeClass("formula-failed-icon");
                 that.prooficon.removeClass("formula-validated-icon");
-                this.formulaTextArea.removeClass("formula-failed-textarea");
-                this.formulaTextArea.removeClass("formula-validated-textarea");
+                this.formulaTextArea.removeClass("formulaeditor-failed");
+                this.formulaTextArea.removeClass("formulaeditor-validated");
                 that.errorMessage.hide();
             }
             else {
 
                 if (value === true) {
                     that.prooficon.removeClass("formula-failed-icon").addClass("formula-validated-icon");
-                    this.formulaTextArea.removeClass("formula-failed-textarea").addClass("formula-validated-textarea");
+                    this.formulaTextArea.removeClass("formulaeditor-failed").addClass("formulaeditor-validated");
                     that.errorMessage.hide();
                 }
                 else if (value === false) {
                     that.prooficon.removeClass("formula-validated-icon").addClass("formula-failed-icon");
-                    this.formulaTextArea.removeClass("formula-validated-textarea").addClass("formula-failed-textarea");
+                    this.formulaTextArea.removeClass("formulaeditor-validated").addClass("formulaeditor-failed");
                     that.errorMessage.show();
                 }
             }

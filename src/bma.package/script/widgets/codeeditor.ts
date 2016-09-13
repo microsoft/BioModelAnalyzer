@@ -168,7 +168,8 @@ module BMA.CodeEditor {
                     language: options.language,
                     lineNumbers: false,
                     scrollBeyondLastLine: false,
-                    autoClosingBrackets: true
+                    autoClosingBrackets: true,
+                    wordWrap: true
                 });
                 $.data(this.element, "editor", editor);
                 this.onContentChanged = editor.onDidChangeModelContent(e => {
