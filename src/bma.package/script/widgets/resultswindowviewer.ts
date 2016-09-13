@@ -12,28 +12,31 @@
             tabid: "",
             onresize: undefined,
             paddingOn: true,
+            iconOn: true,
         },
 
         reseticon: function () {
             var that = this;
             var options = this.options;
             this.buttondiv.empty();
-            var url = "";
-            if (this.options.icon === "max")
-                url = "../../images/maximize.png";
-            else
-                if (this.options.icon === "min")
-                    url = "../../images/minimize.png";
-                else url = this.options.icon;
-            
-            this.button = $('<img src=' + url + '>').addClass('expand-window-icon');
-            this.button.appendTo(this.buttondiv);
-            this.button.bind("click", function () {
-                if (options.icon === "max")
-                    window.Commands.Execute("Expand", that.options.tabid);
-                if (options.icon === "min")
-                    window.Commands.Execute("Collapse", that.options.tabid);
-            });
+            if (that.options.iconOn) {
+                var url = "";
+                if (this.options.icon === "max")
+                    url = "../../images/maximize.png";
+                else
+                    if (this.options.icon === "min")
+                        url = "../../images/minimize.png";
+                    else url = this.options.icon;
+
+                this.button = $('<img src=' + url + '>').addClass('expand-window-icon');
+                this.button.appendTo(this.buttondiv);
+                this.button.bind("click", function () {
+                    if (options.icon === "max")
+                        window.Commands.Execute("Expand", that.options.tabid);
+                    if (options.icon === "min")
+                        window.Commands.Execute("Collapse", that.options.tabid);
+                });
+            }
         },
 
         refresh: function () {

@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="../node_modules/monaco-editor/min/vs/editor/editor.main.css">
+</head>
+<body>
+
+    <h2>Monaco-based target function editor</h2>
+
+    <div id="container" style="width:600px;height:300px;border:1px solid lightgrey"></div>
+
+    <p>The editor's content:</p>
+
+    <div id="text" style="width:600px;height:300px;border:1px solid lightgrey;white-space: pre-wrap;"></div>
+
+    <div>
+        <button id="vars">Change variables</button>
+        <button id="updateText">Change text</button>
+    </div>
+
+    <script src="../Scripts/jquery-2.1.4.js"></script>
+    <script src="../Scripts/jquery-ui-1.11.4.js"></script>
+
+    <script>var require = { paths: { 'vs': '../node_modules/monaco-editor/min/vs' } };</script>
+    <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
+    <script src="../node_modules/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+    <script src="../node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
+
+    <script src="../script/widgets/codeeditor.js"></script>
+
+    <script>
+        var editor = $("#container").codeeditor({
+            text: 'max(var(LET-23), var(lin-3), const(3))',
+            language: 'bma.targetfunc',
+            suggestVariables: ['LET-23', 'lin-3']
+        });
+        editor.bind("codeeditorchange", function () {
+            var text = editor.codeeditor("text");
+            $("#text").text(text);
+        });
+
+        $("#vars").click(function () {
+            editor.codeeditor("option", "suggestVariables", ['LET-24', 'lin-4']);
+        });
+        $("#updateText").click(function () {
+            editor.codeeditor("option", "text", 'max(var(LET-24), var(lin-4),\n\tconst(3))');
+        });
+    </script>
+
+</body>
+</html>

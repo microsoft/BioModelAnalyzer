@@ -32,7 +32,7 @@
             var layout = CreateLayout(operation, (name, fontSize) => {
                 context.font = fontSize + "px Segoe-UI";
                 return context.measureText(name).width;
-            }, operationAppearance.padding, operationAppearance.keyFrameSize);
+            }, operationAppearance.padding, operationAppearance.keyFrameSize, { fontSize: 16 });
 
             var renderLayoutPart = (layoutPart, pos, options) => {
                 var paddingX = operationAppearance.padding.x;
@@ -48,12 +48,13 @@
                     context.fill();
                 } else {
                     var operator = layoutPart.operator;
+                    var halfWidth = layoutPart.width / 2;
+                    var height = operationAppearance.keyFrameSize + paddingY * layoutPart.layer;
+
                     if (operator !== undefined) {
                         var operation = layoutPart;
 
-                        var halfWidth = layoutPart.width / 2;
-                        var height = operationAppearance.keyFrameSize + paddingY * layoutPart.layer;
-
+                        
                         var fill = options && options.fill ? options.fill : "transparent";
                         var stroke = options && options.stroke ? options.stroke : "rgb(96,96,96)";
 
@@ -106,9 +107,10 @@
 
                         context.strokeStyle = "rgb(96,96,96)";
                         context.fillStyle = "rgb(238,238,238)";
-                        context.beginPath();
-                        context.arc(pos.x, pos.y, hks, 0, 2 * Math.PI, false);
-                        context.closePath();
+                        RoundRect(context, pos.x - halfWidth, pos.y - height / 2, halfWidth * 2, height, hks);
+                        //context.beginPath();
+                        //context.arc(pos.x, pos.y, hks, 0, 2 * Math.PI, false);
+                        //context.closePath();
                         context.fill();
                         context.stroke();
 
@@ -118,11 +120,11 @@
                             context.font = "16px Segoe-UI";
 
                             var width = context.measureText(name).width;
-                            if (width > hks) {
-                                fs = fs * hks / width;
-                                width = hks;
-                                context.font = fs + "px Segoe-UI";
-                            }
+                            //if (width > hks) {
+                            //    fs = fs * hks / width;
+                            //    width = hks;
+                            //    context.font = fs + "px Segoe-UI";
+                            //}
                             context.fillStyle = "rgb(96,96,96)";
                             context.fillText(name, pos.x - width / 2, pos.y);
                             //context.fill();
@@ -152,7 +154,7 @@
         }
 
         export function CalcOperationSize(operation: IOperand, getOperatorWidth: Function, padding: { x: number; y: number }, keyFrameSize: number): { width: number; height: number } {
-            var layout = CreateLayout(operation, getOperatorWidth, padding, keyFrameSize);
+            var layout = CreateLayout(operation, getOperatorWidth, padding, keyFrameSize, { fontSize: 16 });
             return { width: layout.width, height: keyFrameSize + padding.y * layout.layer };
         }
 
@@ -171,6 +173,10 @@
             layout.operation = operation;
 
             var paddingX = padding.x;
+            var fontSize = 10;
+            if (options !== undefined && options.fontSize !== undefined) {
+                fontSize = options.fontSize;
+            }
 
             var op = operation;
             var operator = (<any>op).Operator;
@@ -245,12 +251,15 @@
                 } else if (operation instanceof Keyframe) {
                     layout.type = "keyframe";
                     layout.name = (<Keyframe>operation).Name;
+                    layout.width = Math.max(w, getOperatorWidth(layout.name, fontSize) + 2 * paddingX);
                 } else if (operation instanceof ConstOperand) {
                     layout.type = "constant";
                     layout.name = (<ConstOperand>operation).Value + "";
+                    layout.width = Math.max(w, getOperatorWidth(layout.name, fontSize) + 2 * paddingX);
                 } else{
                     layout.type = "other";
                     layout.name = (<Keyframe>operation).Name;
+                    layout.width = Math.max(w, getOperatorWidth(layout.name, fontSize) + 2 * paddingX);
                 }
 
                 return layout;

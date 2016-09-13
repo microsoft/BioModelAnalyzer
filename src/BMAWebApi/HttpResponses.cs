@@ -10,9 +10,9 @@ namespace BMAWebApi
 {
     static class HttpResponses
     {
-        public static HttpResponseMessage Json(HttpRequestMessage request, string content)
+        public static HttpResponseMessage Json(HttpRequestMessage request, string content, HttpStatusCode status = HttpStatusCode.OK)
         {
-            var response = request.CreateResponse(HttpStatusCode.OK);
+            var response = request.CreateResponse(status);
             response.Content = new StringContent(content, System.Text.Encoding.UTF8, "application/json");
             return response;
         }

@@ -2,7 +2,7 @@ swagger: '2.0'
 
 # LTL Query Web API (long-running jobs)
 info:
-  version: "0.0.1"
+  version: "0.0.2"
   title: FairShareScheduler
   
 basePath: /api/lra
@@ -58,8 +58,26 @@ paths:
           description: Succeeded - the job is succeeded
         201:
           description: Queued - the job is queued and awaits to be chosen by a worker
+          schema:
+            description: |
+              Approximate position of the job in the queue. Starts with zero. 
+              Negative value indicates that the position couldn't be determined.
+            type: integer
+            format: int32
         202:
           description: Executing - the job is being executed
+          schema:
+            description: Additional information.
+            type: object
+            properties:
+              elapsed:
+                description: Time in milliseconds passed since the execution started (at the moment when this response is built).
+                type: integer
+                format: int32
+              started:
+                description: Time when the job started. See rfc 3339.
+                type: string
+                format: date-time
         203:
           description: Failed - the job is failed
           schema:

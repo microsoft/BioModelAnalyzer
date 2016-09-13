@@ -14,13 +14,19 @@ type Job =
     { AppId: AppId
       Body: Stream }
 
+type JobStatusWithInfo =
+    | Succeeded
+    | Queued of position:int
+    | Executing of started:DateTimeOffset
+    | Failed of message:string
+
 
 
 [<Interface>]
 type IScheduler =
     abstract AddJob : Job -> JobId
     abstract DeleteJob : AppId * JobId -> bool
-    abstract TryGetStatus : AppId * JobId -> (JobStatus * string) option
+    abstract TryGetStatus : AppId * JobId -> JobStatusWithInfo option
     abstract TryGetResult : AppId * JobId -> IO.Stream option
 
 type FairShareSchedulerSettings =
@@ -38,8 +44,35 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
     let container = blobClient.GetContainerReference (getBlobContainerName settings.Name)
 
        
+    /// Returns None, if the job isn't being executed at the moment
+    /// otherwise, returns Some of execution start time.
     let isExecuting (appId: AppId, jobId: JobId) = 
-        tableExec |> tryGetJobExecutionEntry (appId, jobId) |> Option.isSome
+        tableExec 
+        |> tryGetJobExecutionEntry (appId, jobId) 
+        |> Option.map(fun e -> e.Timestamp)
+
+    let getQueuePosition (job : JobEntity) =
+        try
+            let q_queued = 
+                TableQuery<JobEntity>()
+                    .Where(
+                        TableQuery.CombineFilters(
+                            TableQuery.CombineFilters(
+                                TableQuery.GenerateFilterCondition("Status", QueryComparisons.Equal, status JobStatus.Queued),
+                                TableOperators.And,
+                                TableQuery.GenerateFilterConditionForDate("Timestamp", QueryComparisons.LessThanOrEqual, job.Timestamp)),
+                                TableOperators.And,
+                                TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.NotEqual, job.RowKey)))
+                    .Select([| JobProperties.JobId |])
+            let queued = table.ExecuteQuery(q_queued) |> Seq.map(fun j -> j.JobId) |> Seq.toArray
+            if queued.Length = 0 then 0
+            else
+                let exec = tableExec.ExecuteQuery<JobExecutionEntity>(TableQuery<JobExecutionEntity>()) |> Seq.map(fun j -> Guid.Parse j.RowKey) |> Seq.toArray
+                Set.difference (Set.ofArray queued) (Set.ofArray exec) |> Set.count                        
+        with ex -> 
+            logInfo (sprintf "Failed to count message queue position: %A" ex)
+            -1
+
 
     do 
         table.CreateIfNotExists() |> ignore  
@@ -75,17 +108,22 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
             logInfo (sprintf "Job %O is queued" jobId)
             jobId
 
-        member x.TryGetStatus (appId: AppId, jobId: JobId) : (JobStatus * string) option =
+        member x.TryGetStatus (appId: AppId, jobId: JobId) : JobStatusWithInfo option =
             match tryGetJobEntry (appId, jobId) table with
             | None ->
                 logInfo (sprintf "Job %A not found" jobId)
                 None
             | Some job ->
                 match parseStatus job.Status with
-                | JobStatus.Succeeded -> JobStatus.Succeeded, job.StatusInformation
-                | JobStatus.Failed -> JobStatus.Failed, job.StatusInformation
-                | _ when isExecuting (appId, jobId) -> JobStatus.Executing, ""
-                | _ -> JobStatus.Queued, job.StatusInformation
+                | JobStatus.Succeeded -> JobStatusWithInfo.Succeeded
+                | JobStatus.Failed -> JobStatusWithInfo.Failed job.StatusInformation
+                | _ ->
+                    match isExecuting (appId, jobId) with 
+                    | Some time -> // EXECUTING
+                        JobStatusWithInfo.Executing time
+                    | None -> // QUEUED
+                        let queuePos = getQueuePosition job
+                        JobStatusWithInfo.Queued queuePos
                 |> Some
 
         member x.TryGetResult (appId: AppId, jobId: JobId) : IO.Stream option =

@@ -504,14 +504,133 @@ module BMA {
         }
 
         export class LocalStorageDriver implements ILocalStorageDriver {
-            private widget: JQuery;
+            private widget;
 
             constructor(widget: JQuery) {
                 this.widget = widget;
             }
 
-            public AddItem(key, item) {
+            public AddItem(key) {
                 this.widget.localstoragewidget("AddItem", key);
+            }
+
+            public SetOnEnableContextMenu(enable: boolean) {
+                this.widget.localstoragewidget({
+                    enableContextMenu: enable
+                });
+            }
+
+            public SetItems(keys) {
+                this.widget.localstoragewidget({ items: keys });
+            }
+
+            public SetOnLoadModel(callback: Function) {
+                this.widget.localstoragewidget({
+                    onloadmodel: callback
+                });
+            }
+
+            public SetOnRemoveModel(callback: Function) {
+                this.widget.localstoragewidget({
+                    onremovemodel: callback
+                });
+            }
+
+            public SetOnCopyToOneDriveCallback(callback: Function) {
+                this.widget.localstoragewidget({
+                    setoncopytoonedrive: callback
+                });
+            }
+
+            //public Show() {
+            //    this.widget.show();
+            //}
+
+            //public Hide() {
+            //    this.widget.hide();
+            //}
+
+            public Message(msg: string) {
+                this.widget.localstoragewidget("Message", msg);
+            }
+        }
+
+        export class OneDriveStorageDriver implements IOneDriveDriver {
+            private widget;
+
+            constructor(widget: JQuery) {
+                this.widget = widget;
+            }
+
+            public AddItem(key) {
+                this.widget.onedrivestoragewidget("AddItem", key);
+            }
+
+            public SetItems(keys) { //keys = { id, name }
+                this.widget.onedrivestoragewidget({ items: keys });
+            }
+
+            public SetOnLoadModel(callback: Function) {
+                this.widget.onedrivestoragewidget({
+                    onloadmodel: callback
+                });
+            }
+
+            public SetOnRemoveModel(callback: Function) {
+                this.widget.onedrivestoragewidget({
+                    onremovemodel: callback
+                });
+            }
+
+            //public Show() {
+            //    this.widget.show();
+            //}
+
+            //public Hide() {
+            //    this.widget.hide();
+            //}
+
+            public Message(msg: string) {
+                this.widget.onedrivestoragewidget("Message", msg);
+            }
+
+            public SetOnShareCallback(callback: Function) {
+                this.widget.onedrivestoragewidget({
+                    setonsharecallback: callback
+                });
+            }
+
+            public SetOnActiveShareCallback(callback: Function) {
+                this.widget.onedrivestoragewidget({
+                    setonactivesharecallback: callback
+                });
+            }
+
+            public SetOnOpenBMALink(callback: Function) {
+                this.widget.onedrivestoragewidget({
+                    setonopenbmalink: callback
+                });
+            }
+
+            public SetOnCopyToLocalCallback(callback: Function) {
+                this.widget.onedrivestoragewidget({
+                    setoncopytolocal: callback
+                });
+            }
+            
+        }
+
+        export class ModelStorageDriver implements IModelStorageDriver {
+            private ldriver: LocalStorageDriver;
+            private oddriver: OneDriveStorageDriver;
+            private widget;
+            private mode: string = "local";
+
+            constructor(widget: JQuery, ldriver: LocalStorageDriver, oddriver: OneDriveStorageDriver) {
+                this.widget = widget;
+
+                this.ldriver = ldriver;
+                this.oddriver = oddriver;
             }
 
             public Show() {
@@ -522,15 +641,128 @@ module BMA {
                 this.widget.hide();
             }
 
-            public SetItems(keys) {
-                this.widget.localstoragewidget({ items: keys });
+            public SetAuthorizationStatus(status: boolean) {
+                this.widget.modelstoragewidget({ isAuthorized: status });
             }
 
-            public Message(msg: string) {
-                this.widget.localstoragewidget("Message", msg);
-            }
+            //public SetOnSignInCallback(callback: Function) {
+            //    this.widget.modelstoragewidget({
+            //        onsigninonedrive: callback
+            //    });
+            //}
+
+            //public SetOnSignOutCallback(callback: Function) {
+            //    this.widget.modelstoragewidget({
+            //        onsignoutonedrive: callback
+            //    });
+            //}
+
         }
 
+        //export class LocalStorageDriver extends ModelStorageDriver implements ILocalStorageDriver {
+
+        //    constructor(widget: JQuery) {
+        //        super(widget);
+        //    }
+
+        //    public AddItem(key, item) {
+        //        this.widget.modelstoragewidget("AddItem", key);
+        //    }
+            
+        //    public SetItems(keys) {
+        //        this.widget.modelstoragewidget({ items: keys });
+        //    }
+            
+        //}
+
+        //export class OneDriveStorageDriver extends ModelStorageDriver implements ILocalStorageDriver{
+
+        //    constructor(widget: JQuery) {
+        //        super(widget);
+        //    }
+
+        //    public AddItem(key, item) {
+        //        this.widget.modelstoragewidget("AddOneDriveItem", key);
+        //    }
+
+        //    public SetItems(keys) {
+        //        this.widget.modelstoragewidget({ oneDriveItems: keys });
+        //    }
+            
+        //    public SetOnCopyToLocalCallback(callback: Function) {
+        //        this.widget.modelstoragewidget({
+        //            setoncopycallback: callback
+        //        });
+        //    }
+
+        //    public SetOnMoveToLocalCallback(callback: Function) {
+        //        this.widget.modelstoragewidget({
+        //            setonmovecallback: callback
+        //        });
+        //    }
+
+        //    public SetOnShareCallback(callback: Function) {
+        //        this.widget.modelstoragewidget({
+        //            setonsharecallback: callback
+        //        });
+        //    }
+        //}
+
+        //export class ModelStorageDriver implements ILocalStorageDriver {
+        //    private localStorageDriver: BMA.UIDrivers.LocalStorageDriver;
+        //    private oneDriveStorageDriver: BMA.UIDrivers.OneDriveStorageDriver;
+        //    protected widget: JQuery;
+        //    private mode = "local";
+
+        //    constructor(widget: JQuery) {
+        //        this.widget = widget;
+
+        //        this.localStorageDriver = new LocalStorageDriver(this.widget);
+        //        this.oneDriveStorageDriver = new OneDriveStorageDriver(this.widget);
+        //    }
+
+        //    public SetAuthorizationStatus(status: boolean) {
+        //        this.widget.modelstoragewidget({ isAuthorized: status });
+        //    }
+
+        //    public AddItem(key, item) {
+        //        if (this.mode == "local")
+        //            this.localStorageDriver.AddItem(key, item);
+        //        else this.oneDriveStorageDriver.AddItem(key, item);
+        //    }
+
+        //    public Show() {
+        //        this.widget.show();
+        //    }
+
+        //    public Hide() {
+        //        this.widget.hide();
+        //    }
+
+        //    public SetItems(keys) {
+        //        if (this.mode == "local")
+        //            this.localStorageDriver.SetItems(keys);
+        //        else this.oneDriveStorageDriver.SetItems(keys);
+        //    }
+
+        //    public Message(msg: string) {
+        //        this.widget.modelstoragewidget("Message", msg);
+        //    }
+
+        //    public SetOnModeChangedCallback() {
+        //        var that = this;
+        //        var onmodechanged = function () {
+        //            if (that.mode == "local") 
+        //                that.mode = "oneDrive";
+        //            else that.mode = "local";
+        //        };
+
+        //        this.widget.modelstoragewidget({
+        //            onmodechangedcallback: onmodechanged
+        //        });
+        //    }
+
+        //}
 
         export class ModelFileLoader implements IFileLoader {
             private fileInput: JQuery;
@@ -712,11 +944,32 @@ module BMA {
                                 });
                             },
                             201: function (res) {
-                                result.notify(res);
+                                var notification = "Number ";
+                                var number = parseFloat(res) + 1;
+                                if (number !== NaN && number > 0)
+                                    notification += number + " in queue";
+                                else notification = "Queued";
+                                result.notify(notification);
                                 setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
                             },
                             202: function (res) {
-                                result.notify(res);
+                                var notification = "Executing ";
+                                var timemls = parseFloat(res.elapsed);
+                                if (timemls < 0) throw "Server Error: Elapsed time cannot be negative";
+                                if (timemls) {
+                                    var executingTime = Math.floor(timemls / 1000);
+                                    if (executingTime < 60)
+                                        notification += "since " + executingTime + " second" + (Math.abs(executingTime) > 1 ? "s" : "");
+                                    else {
+                                        executingTime = Math.floor(executingTime / 60);
+                                        if (executingTime > 60) {
+                                            executingTime = Math.floor(executingTime / 60);
+                                            notification += "since " + executingTime + " hour" + (Math.abs(executingTime) > 1 ? "s": "");
+                                        } else
+                                            notification += "since " + executingTime + " min" + (Math.abs(executingTime) > 1 ? "s" : "");
+                                    }
+                                }
+                                result.notify(notification);
                                 setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
                             },
                             203: function (xhr, textStatus, errorThrown) {
@@ -725,6 +978,9 @@ module BMA {
                             404: function (xhr, textStatus, errorThrown) {
                                 result.reject(xhr, textStatus, errorThrown);
                             },
+                            501: function (res) {
+                                result.notify(res);
+                            }
                         }
                     });
                 }

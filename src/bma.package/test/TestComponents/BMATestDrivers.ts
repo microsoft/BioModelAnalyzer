@@ -18,27 +18,35 @@ module BMA {
             //constructor() {
             //    this.modelsList = [];
             //}
-            GetModelList(): string[]{
+            GetModelList(): JQueryPromise<string[]>{
+                var result = $.Deferred();
                 var list: string[] = [];
                 for (var attr in this.modelsList) {
-                    list.push(this.modelsList[attr]);
+                    var usrkey = this.IsUserKey(attr);
+                    if (usrkey !== undefined) {
+                        list.push(usrkey);//this.modelsList[attr]);
+                    }
                 }
-                return list;
+                result.resolve(list);
+
+                return result.promise();
             }
 
-            LoadModel(id: string): JSON {
+            LoadModel(id: string): JQueryPromise<JSON> {
                 //var i = parseInt(id);
                 //if (i < this.modelsList.length) {
                 //    return JSON.parse('{"test": ' + this.modelsList[i] + '}');
                 //}
-                return JSON.parse('{"test": ' + this.modelsList[id] + '}');
+                var result = $.Deferred();
+                result.resolve(JSON.parse('{"test": ' + this.modelsList[id] + '}'));
+                return result.promise();
             }
 
             RemoveModel(id: string) {
                 var newlist = [];
                 for (var i in this.modelsList) {
                     if (i !== id)
-                        newlist.push(this.modelsList[i]);
+                        newlist.push(i);//this.modelsList[i]);
                 }
                 this.modelsList = newlist;
             }
@@ -50,14 +58,35 @@ module BMA {
             IsInRepo(id: string) {
                 return this.modelsList[id] !== undefined;
             }
+
+            IsUserKey(key: string): string {
+                var sp = key.split('.');
+                if (sp[0] === "user") {
+                    var q = sp[1];
+                    for (var i = 2; i < sp.length; i++) {
+                        q = q.concat('.');
+                        q = q.concat(sp[i]);
+                    }
+                    return q;
+                }
+                else return undefined;
+            }
             //OnRepositoryUpdated();
         }
 
         export class LocalStorageTestDriver implements BMA.UIDrivers.ILocalStorageDriver {
+            private widget;
 
-            public Message(msg: string) { }
+            constructor(widget: JQuery) {
+                this.widget = widget;
+            }
+
+            public Message(msg: string) {
+                this.widget.localstoragewidget("Message", msg);
+            }
 
             public AddItem(key, item) {
+                this.widget.localstoragewidget("AddItem", key);
             }
 
             public Show() {
@@ -67,6 +96,31 @@ module BMA {
             }
 
             public SetItems(keys) {
+                this.widget.localstoragewidget({ items: keys });
+            }
+
+            public SetOnLoadModel(callback: Function) {
+                this.widget.localstoragewidget({
+                    onloadmodel: callback
+                });
+            }
+
+            public SetOnRemoveModel(callback: Function) {
+                this.widget.localstoragewidget({
+                    onremovemodel: callback
+                });
+            }
+
+            public SetOnCopyToOneDriveCallback(callback: Function) {
+                this.widget.localstoragewidget({
+                    setoncopytoonedrive: callback
+                });
+            }
+
+            public SetOnEnableContextMenu(enable: boolean) {
+                this.widget.localstoragewidget({
+                    enableContextMenu: enable
+                });
             }
         }
 

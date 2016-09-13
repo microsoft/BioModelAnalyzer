@@ -7,61 +7,20 @@
 
         options: {
             items: [],
+            onremovemodel: undefined,
+            onloadmodel: undefined,
+            enableContextMenu: false,
         },
 
         _create: function () {
             var that = this;
+            this.repo = this.element;
             var items = this.options.items;
-            this.element.addClass('model-repository');
+            //this.repo = $('<div></div>')
+            //    .addClass("localstorage-repo")
+            //    //.addClass('localstorage-widget')
+            //    .appendTo(this.element);   
 
-            var header = $('<span></span>')
-                .text("Repository")
-                .addClass('window-title')
-                .appendTo(that.element);
-            var closediv = $('<div></div>').addClass('close-icon').appendTo(that.element);
-            var closing = $('<img src="../../images/close.png">').appendTo(closediv);
-            closing.bind("click", function () {
-                that.element.hide();
-            });
-            that.element.draggable({ containment: "parent", scroll: false });
-            this.message = $('<div></div>')
-                //.addClass('localstorage-widget-message')
-                .appendTo(this.element);
-
-            this.repo = $('<div></div>')
-                .addClass("localstorage-repo")
-                //.addClass('localstorage-widget')
-                .appendTo(this.element);   
-
-            if (Silverlight.isInstalled()) {
-                var slWidget = $('<div></div>').appendTo(this.element);
-
-                var getSilverlightMethodCall =
-                    "javascript:Silverlight.getSilverlight(\"5.0.61118.0\");"
-                        var installImageUrl =
-                    "http://go.microsoft.com/fwlink/?LinkId=161376";
-                var imageAltText = "Get Microsoft Silverlight";
-                var altHtml =
-                    "<a href='{1}' style='text-decoration: none;'>" +
-                    "<img src='{2}' alt='{3}' " +
-                    "style='border-style: none'/></a>";
-                altHtml = altHtml.replace('{1}', getSilverlightMethodCall);
-                altHtml = altHtml.replace('{2}', installImageUrl);
-                altHtml = altHtml.replace('{3}', imageAltText);
-
-                Silverlight.createObject(
-                    "ClientBin/BioCheck.xap",
-                    slWidget[0], "slPlugin",
-                    {
-                        width: "250", height: "50",
-                        background: "white", alt: altHtml,
-                        version: "5.0.61118.0"
-                    },
-                    // See the event handlers in the full example.
-                    { onError: onSilverlightError },
-                    "param1=value1,param2=value2", "row3");
-            }
-                     
             this.refresh();
         },
 
@@ -85,21 +44,62 @@
                 //var a = $('<a></a>').addClass('delete').appendTo(li);
                 var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);// $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//
                 removeBtn.bind("click", function (event) {
-                    event.stopPropagation();
-                    window.Commands.Execute("LocalStorageRemoveModel", "user."+items[$(this).parent().index()]);
+                    if (that.options.onremovemodel !== undefined) 
+                        that.options.onremovemodel("user." + items[$(this).parent().index()]);
+                    //event.stopPropagation();
+                    //window.Commands.Execute("LocalStorageRemoveModel", "user."+items[$(this).parent().index()]);
                 })
             }
 
             this.ol.selectable({
                 stop: function () {
                     var ind = that.repo.find(".ui-selected").index();
-                    window.Commands.Execute("LocalStorageLoadModel", "user."+items[ind]);
+                    if (that.options.onloadmodel !== undefined)
+                        that.options.onloadmodel("user." + items[ind]);
+                    //window.Commands.Execute("LocalStorageLoadModel", "user."+items[ind]);
                 }
             });
+
+            this.createContextMenu();
         },
 
         Message: function (msg) {
-            this.message.text(msg);
+            if (this.onmessagechanged !== undefined)
+                this.onmessagechanged(msg);
+        },
+
+        createContextMenu: function () {
+            var that = this;
+            this.repo.contextmenu({
+                delegate: "li",
+                autoFocus: true,
+                preventContextMenuForPopup: true,
+                preventSelect: true,
+                menu: [
+                    { title: "Move to OneDrive", cmd: "MoveToOneDrive" },
+                    { title: "Copy to OneDrive", cmd: "CopyToOneDrive" },
+                ],
+                beforeOpen: function (event, ui) {
+                    if (that.options.enableContextMenu) {
+                        ui.menu.zIndex(50);
+                    } else return false;
+                },
+                select: function (event, ui) {
+                    var args: any = {};
+                    var idx = $(ui.target.context).index();
+
+                    if (that.options.setoncopytoonedrive !== undefined) {
+                        that.options.setoncopytoonedrive("user." + that.options.items[idx]).done(function () {
+
+                            if (ui.cmd == "MoveToOneDrive") {
+                                if (that.options.onremovemodel !== undefined)
+                                    that.options.onremovemodel("user." + that.options.items[idx]);
+                                //window.Commands.Execute("LocalStorageRemoveModel", "user." + that.options.items[idx]);
+                            }
+                        });
+                    }
+                }
+            });
         },
 
         _setOption: function (key, value) {
@@ -108,13 +108,26 @@
                     this.options.items = value;
                     this.refresh();
                     break;
+                case "onloadmodel":
+                    this.options.onloadmodel = value;
+                    break;
+                case "onremovemodel":
+                    this.options.onremovemodel = value;
+                    break;
+                case "setoncopytoonedrive":
+                    this.options.setoncopytoonedrive = value;
+                    break;
+                case "onmessagechanged":
+                    this.options.onmessagechanged = value;
+                    break;
+                case "enableContextMenu":
+                    this.options.enableContextMenu = value;
+                    break;
             }
-            $.Widget.prototype._setOption.apply(this, arguments);
-            this._super("_setOption", key, value);
+            this._super(key, value);
         },
 
         destroy: function () {
-            $.Widget.prototype.destroy.call(this);
             this.element.empty();
         }
 

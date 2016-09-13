@@ -154,6 +154,10 @@
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
       <Name>BioCheckAnalyzerCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\BmaBioCheckAnalyzer\BmaBioCheckAnalyzer.csproj">
+      <Project>{573C06C3-AB0D-4DB5-A2E2-53A40E1BBA57}</Project>
+      <Name>BmaBioCheckAnalyzer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FairShareScheduler.Common\FairShareScheduler.Common.fsproj">
       <Project>{850df26e-27b2-4766-99de-b815616c0d90}</Project>
       <Name>FairShareScheduler.Common</Name>

@@ -8,12 +8,18 @@ open Jobs
 type Job =
     { AppId: Guid
       Body: Stream }
+      
+type JobStatusWithInfo =
+    | Succeeded
+    | Queued of position:int
+    | Executing of started:DateTimeOffset
+    | Failed of message:string
 
 [<Interface>]
 type IScheduler =
     abstract AddJob : Job -> JobId
     abstract DeleteJob : AppId * JobId -> bool
-    abstract TryGetStatus : AppId * JobId -> (JobStatus * string) option
+    abstract TryGetStatus : AppId * JobId -> JobStatusWithInfo option
     abstract TryGetResult : AppId * JobId -> Stream option
 
 

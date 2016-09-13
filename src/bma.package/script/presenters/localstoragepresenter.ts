@@ -6,6 +6,7 @@
             private tool: BMA.UIDrivers.IModelRepository;
             private messagebox: BMA.UIDrivers.IMessageServiсe;
             private checker: BMA.UIDrivers.ICheckChanges;
+            private setOnCopy: Function;
 
             constructor(
                 appModel: BMA.Model.AppModel,
@@ -23,26 +24,39 @@
                 this.messagebox = messagebox;
                 this.checker = checker;
 
-                var keys = that.tool.GetModelList();
-                this.driver.SetItems(keys);
-                this.driver.Hide();
-
-                window.Commands.On("LocalStorageChanged", function () {
-                    var keys = that.tool.GetModelList();
-                    if (keys === undefined || keys.length == 0) 
-                        that.driver.Message("The model repository is empty");
-                    else that.driver.Message('');
+                that.tool.GetModelList().done(function (keys) {
                     that.driver.SetItems(keys);
+                    //that.driver.Hide();
+                }).fail(function (errorThrown) {
+                    alert(errorThrown);
                 });
 
-                window.Commands.On("LocalStorageRemoveModel", function (key) {
+                window.Commands.On("LocalStorageChanged", function () {
+                    that.tool.GetModelList().done(function (keys) {
+                        if (keys === undefined || keys.length == 0)
+                            that.driver.Message("The model repository is empty");
+                        else that.driver.Message('');
+                        that.driver.SetItems(keys);
+                    }).fail(function (errorThrown) {
+                        alert(errorThrown);
+                    });
+                });
+
+                //window.Commands.On("LocalStorageRemoveModel", function (key) {
+                //    that.tool.RemoveModel(key);
+                //});
+
+                that.driver.SetOnRemoveModel(function (key) {
                     that.tool.RemoveModel(key);
                 });
 
                 window.Commands.On("LocalStorageRequested", function () {
-                    var keys = that.tool.GetModelList();
-                    that.driver.SetItems(keys);
-                    that.driver.Show();
+                    that.tool.GetModelList().done(function (keys) {
+                        that.driver.SetItems(keys);
+                        //that.driver.Show();
+                    }).fail(function (errorThrown) {
+                        alert(errorThrown);
+                    });
                 });
 
                 window.Commands.On("LocalStorageSaveModel", function () {
@@ -57,7 +71,39 @@
                     }
                 });
 
-                window.Commands.On("LocalStorageLoadModel", function (key) {
+                that.driver.SetOnCopyToOneDriveCallback(function (key) {
+                    var deffered = $.Deferred();
+                    if (that.tool.IsInRepo(key)) {
+                        that.tool.LoadModel(key).done(function (result) {
+                            if (that.setOnCopy !== undefined) {
+                                var sp = key.split('.');
+                                if (sp[0] === "user") {
+                                    var q = sp[1];
+                                    for (var i = 2; i < sp.length; i++) {
+                                        q = q.concat('.');
+                                        q = q.concat(sp[i]);
+                                    }
+                                    that.setOnCopy(q, result);
+                                    deffered.resolve();
+                                }
+                            }
+                            deffered.reject();
+                        }).fail(function (error) {
+                            var res = JSON.parse(JSON.stringify(error));
+                            that.messagebox.Show(res.statusText);
+                            deffered.reject();
+                        });
+                    }
+                    else {
+                        that.messagebox.Show("The model was removed from outside");
+                        window.Commands.Execute("LocalStorageChanged", {});
+                        deffered.reject();
+                    }
+                    return deffered.promise();
+                });
+
+                that.driver.SetOnLoadModel(function (key) {
+                //window.Commands.On("LocalStorageLoadModel", function (key) {
                     try {
                         if (that.checker.IsChanged(that.appModel)) {
                             var userDialog = $('<div></div>').appendTo('body').userdialog({
@@ -94,8 +140,12 @@
                     function load() {
                         waitScreen.Show();
                         if (that.tool.IsInRepo(key)) {
-                            appModel.Deserialize(JSON.stringify(that.tool.LoadModel(key)));
-                            that.checker.Snapshot(that.appModel);
+                            that.tool.LoadModel(key).done(function (result) {
+                                appModel.Deserialize(JSON.stringify(result));
+                                that.checker.Snapshot(that.appModel);
+                            }).fail(function (result) {
+                                that.messagebox.Show(JSON.stringify(result));
+                            });
                         }
                         else {
                             that.messagebox.Show("The model was removed from outside");
@@ -107,12 +157,20 @@
 
                 window.Commands.On("LocalStorageInitModel", function (key) {
                     if (that.tool.IsInRepo(key)) {
-                        appModel.Deserialize(JSON.stringify(that.tool.LoadModel(key)));
-                        that.checker.Snapshot(that.appModel);
+                        that.tool.LoadModel(key).done(function (result) {
+                            appModel.Deserialize(JSON.stringify(result));
+                            that.checker.Snapshot(that.appModel);
+                        }).fail(function (result) {
+                            that.messagebox.Show(JSON.stringify(result));
+                        });
                     }
                 });
 
                 window.Commands.Execute("LocalStorageChanged", {});
+            }
+
+            public SetOnCopyCallback(callback: Function) {
+                this.setOnCopy = callback;
             }
         }
     }

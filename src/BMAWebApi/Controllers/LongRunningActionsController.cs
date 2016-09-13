@@ -5,6 +5,7 @@ using BMAWebApi;
 using Microsoft.FSharp.Core;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -44,19 +45,22 @@ namespace bma.client.Controllers
             var status = scheduler.TryGetStatus(appId, jobId);
             if (status != null)
             {
-                var st = status.Value.Item1;
-                var info = status.Value.Item2;
-                var s = bma.Cloud.Jobs.status(st);
-                switch (st)
+                var st = status.Value;
+                switch (st.Tag)
                 {
-                    case Jobs.JobStatus.Succeeded:
-                        return HttpResponses.PlainText(Request, s, HttpStatusCode.OK /* 200 */);
-                    case Jobs.JobStatus.Queued:
-                        return HttpResponses.PlainText(Request, s, HttpStatusCode.Created /* 201 */);
-                    case Jobs.JobStatus.Executing:
-                        return HttpResponses.PlainText(Request, s, HttpStatusCode.Accepted /* 202 */);
-                    case Jobs.JobStatus.Failed:
-                        return HttpResponses.PlainText(Request, info, (HttpStatusCode)203);
+                    case JobStatusWithInfo.Tags.Succeeded:
+                        return HttpResponses.PlainText(Request, "Succeeded", HttpStatusCode.OK /* 200 */);
+                    case JobStatusWithInfo.Tags.Queued:
+                        return HttpResponses.PlainText(Request, ((JobStatusWithInfo.Queued)st).position.ToString(), HttpStatusCode.Created /* 201 */);
+                    case JobStatusWithInfo.Tags.Executing:
+                        var x = (JobStatusWithInfo.Executing)st;
+                        int elapsed = (int)(DateTimeOffset.Now.Subtract(x.started)).TotalMilliseconds;
+                        JObject json = new JObject(new object[] {
+                            new JProperty("started", x.started.ToString("o")),
+                            new JProperty("elapsed", elapsed) });
+                        return HttpResponses.Json(Request, json.ToString(), HttpStatusCode.Accepted /* 202 */);
+                    case JobStatusWithInfo.Tags.Failed:
+                        return HttpResponses.PlainText(Request, ((JobStatusWithInfo.Failed)st).message, (HttpStatusCode)203);
                 }
                 return Request.CreateResponse((HttpStatusCode)501, new HttpError("Unknown status"));
             }

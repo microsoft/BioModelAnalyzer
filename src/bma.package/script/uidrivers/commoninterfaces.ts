@@ -130,9 +130,35 @@ module BMA {
         export interface ILocalStorageDriver {
             SetItems(keys);
             AddItem(key, item);
+            //Show();
+            //Hide();
+            Message(msg: string);
+            SetOnEnableContextMenu(enable: boolean);
+            SetOnLoadModel(callback: Function);
+            SetOnRemoveModel(callback: Function);
+            SetOnCopyToOneDriveCallback(callback: Function);
+        }
+
+        export interface IOneDriveDriver {
+            SetItems(keys);
+            AddItem(key, item);
+            //Show();
+            //Hide();
+            Message(msg: string);
+            SetOnLoadModel(callback: Function);
+            SetOnRemoveModel(callback: Function);
+            SetOnCopyToLocalCallback(callback: Function);
+            SetOnShareCallback(callback: Function);
+            SetOnActiveShareCallback(callback: Function);
+            SetOnOpenBMALink(callback: Function);
+        }
+
+        export interface IModelStorageDriver {
             Show();
             Hide();
-            Message(msg: string);
+            SetAuthorizationStatus(status: boolean);
+            //SetOnSignInCallback(callback: Function);
+            //SetOnSignOutCallback(callback: Function);
         }
 
         export interface IFileLoader {
@@ -149,9 +175,16 @@ module BMA {
             HighlightAreas(areas: { x: number; y: number; width: number; height: number; fill: string}[]);
         }
 
+
+
+        export interface ModelInfo {
+            id: string;
+            name: string;
+        }
+
         export interface IModelRepository {
-            GetModelList(): string[];
-            LoadModel(id: string): JSON;
+            GetModelList(): JQueryPromise<string[]>;
+            LoadModel(id: string): JQueryPromise<JSON>;
             RemoveModel(id: string);
             SaveModel(id: string, model: JSON);
             IsInRepo(id: string);
