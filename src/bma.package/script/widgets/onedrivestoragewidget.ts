@@ -41,21 +41,23 @@
                 menu: [
                     { title: "Move to local", cmd: "MoveToLocal" },
                     { title: "Copy to local", cmd: "CopyToLocal" },
-                    {
-                        title: "Share", cmd: "Share"/*, children: [
-                            { title: "BMA link", cmd: "BMALink" },
-                            { title: "Web link", cmd: "WebLink" },
-                            { title: "Email", cmd: "Email" },
-                        ]*/
-                    },
-                    { title: "Open BMA link", cmd: "OpenBMALink"},
-                    { title: "Active Shares", cmd: "ActiveShares"},
+                    //{
+                    //    title: "Share", cmd: "Share"/*, children: [
+                    //        { title: "BMA link", cmd: "BMALink" },
+                    //        { title: "Web link", cmd: "WebLink" },
+                    //        { title: "Email", cmd: "Email" },
+                    //    ]*/
+                    //},
+                    //{ title: "Open BMA link", cmd: "OpenBMALink"},
+                    //{ title: "Active Shares", cmd: "ActiveShares"},
                 ],
                 beforeOpen: function (event, ui) {
                     ui.menu.zIndex(50);
-                    if (that.options.activeShare.length === 0) $(this).contextmenu("showEntry", "ActiveShares", false);
-                    $(this).contextmenu("enableEntry", "Share", false);
-                    $(this).contextmenu("enableEntry", "OpenBMALink", false);
+                    var idx = $(ui.target.context).index();
+                    if (that.options.items[idx].shared) $(this).contextmenu("enableEntry", "MoveToLocal", false);
+                    //if (that.options.activeShare.length === 0) $(this).contextmenu("showEntry", "ActiveShares", false);
+                    //$(this).contextmenu("enableEntry", "Share", false);
+                    //$(this).contextmenu("enableEntry", "OpenBMALink", false);
                 },
                 select: function (event, ui) {
                     var args: any = {};
@@ -93,25 +95,62 @@
             this.ol = $('<ol></ol>').appendTo(this.repo);
 
             for (var i = 0; i < items.length; i++) {
-                var li = $('<li></li>').text(items[i].name).appendTo(this.ol);
+                var li = $('<li></li>').text(items[i].name).appendTo(this.ol).click(function () {
+                    var ind = $(this).index();
+                    if (that.options.onloadmodel !== undefined) {
+                        that.options.onloadmodel(items[ind]);//.done(function () {
+                        //    that.repo.find(".ui-selected").removeClass("ui-selected");
+                        //    $(that.options.selectedLi).addClass("ui-selected");
+                        //    if (that.options.oncancelselection !== undefined)
+                        //        that.options.oncancelselection();
+                        //});
+                    }
+                });
                 //var a = $('<a></a>').addClass('delete').appendTo(li);
-                var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);// $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//
-                removeBtn.bind("click", function (event) {
-                    event.stopPropagation();
-                    if (that.options.onremovemodel !== undefined)
-                        that.options.onremovemodel(items[$(this).parent().index()].id);
-                    //window.Commands.Execute("LocalStorageRemoveModel", "user." + items[$(this).parent().index()]);
-                })
-            }
-
-            this.ol.selectable({
-                stop: function () {
-                    var ind = that.repo.find(".ui-selected").index();
-                    if (that.options.onloadmodel !== undefined)
-                        that.options.onloadmodel(items[ind].id);
-                    //window.Commands.Execute("LocalStorageLoadModel", "user." + items[ind]);
+                if (items[i].shared) {
+                    var ownerName = items[i].shared.owner && items[i].shared.owner.user && items[i].shared.owner.user.displayName ?
+                        items[i].shared.owner.user.displayName : "Unknown";
+                    var sharedIcon = $("<div>S</div>").addClass("share-icon").appendTo(li);
+                    sharedIcon.tooltip({
+                        //tooltipClass: "share-icon",
+                        //position: {
+                        //    at: "left-48px bottom",
+                        //    collision: 'none',
+                        //},
+                        content: function () {
+                            return ownerName;
+                        },
+                        show: null,
+                        hide: false,
+                        items: "div.share-icon",
+                        close: function (event, ui) {
+                            sharedIcon.data("ui-tooltip").liveRegion.children().remove();
+                        },
+                    });
+                } else {
+                    var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);// $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//
+                    removeBtn.bind("click", function (event) {
+                        event.stopPropagation();
+                        if (that.options.onremovemodel !== undefined)
+                            that.options.onremovemodel(items[$(this).parent().index()].id);
+                        //window.Commands.Execute("LocalStorageRemoveModel", "user." + items[$(this).parent().index()]);
+                    });
                 }
-            });
+            }
+            
+            //this.ol.selectable({
+            //    start: function () {
+            //    },
+            //    stop: function () {
+            //        var ind = that.repo.find(".ui-selected").index();
+            //        if (that.options.onloadmodel !== undefined) {
+            //            that.options.onloadmodel(items[ind].id);
+            //            if (that.options.oncancelselection !== undefined)
+            //                that.options.oncancelselection();
+            //        }
+            //        //window.Commands.Execute("LocalStorageLoadModel", "user." + items[ind]);
+            //    }
+            //});
 
             this.createContextMenu();
         },
@@ -119,6 +158,25 @@
         Message: function (msg) {
             if (this.onmessagechanged !== undefined)
                 this.onmessagechanged(msg);
+        },
+
+        CancelSelection: function () {
+            this.repo.find(".ui-selected").removeClass("ui-selected");
+        },
+
+        SetActiveModel: function (modelName) {
+            var that = this;
+            var idx;
+            for (var i = 0; i < that.options.items.length; i++) {
+                if (that.options.items[i].name == modelName) {
+                    idx = i;
+                    break;
+                }
+            }
+            if (idx !== undefined) {
+                this.repo.find(".ui-selected").removeClass("ui-selected");
+                this.ol.children().eq(idx).addClass("ui-selected");
+            }
         },
 
         menuPopup: function (title, listOfItems) { // list : { name, callback}
@@ -176,6 +234,9 @@
                     break;
                 case "onmessagechanged":
                     this.options.onmessagechanged = value;
+                    break;
+                case "oncancelselection":
+                    this.options.oncancelselection = value;
                     break;
             }
             this._super(key, value);

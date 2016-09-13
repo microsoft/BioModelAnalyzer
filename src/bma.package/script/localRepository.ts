@@ -35,7 +35,7 @@
         }
 
         public SaveModel(id: string, model: JSON) {
-            if (window.localStorage.getItem(id) !== null) {
+            if (window.localStorage.getItem("user." + id) !== null) {
                 if (confirm("Overwrite the file?"))
                     this.Save("user." + id, JSON.stringify(model));
             }

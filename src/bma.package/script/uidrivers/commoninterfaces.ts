@@ -133,8 +133,10 @@ module BMA {
             //Show();
             //Hide();
             Message(msg: string);
+            SetActiveModel(key);
+            SetOnUnselect();
             SetOnEnableContextMenu(enable: boolean);
-            SetOnLoadModel(callback: Function);
+            SetOnRequestLoadModel(callback: Function);
             SetOnRemoveModel(callback: Function);
             SetOnCopyToOneDriveCallback(callback: Function);
         }
@@ -145,7 +147,9 @@ module BMA {
             //Show();
             //Hide();
             Message(msg: string);
-            SetOnLoadModel(callback: Function);
+            SetActiveModel(key);
+            SetOnUnselect();
+            SetOnRequestLoadModel(callback: Function);
             SetOnRemoveModel(callback: Function);
             SetOnCopyToLocalCallback(callback: Function);
             SetOnShareCallback(callback: Function);

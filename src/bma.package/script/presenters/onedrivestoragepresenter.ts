@@ -6,7 +6,11 @@
             private tool: BMA.OneDrive.OneDriveRepository;
             private messagebox: BMA.UIDrivers.IMessageServiсe;
             private checker: BMA.UIDrivers.ICheckChanges;
+            private waitScreen: BMA.UIDrivers.IWaitScreen;
             private setOnCopy: Function;
+            private setOnActive: Function;
+            private setOnIsActive: Function;
+            private setRequestLoad: Function;
 
             private commandsIds: any[] = [];
 
@@ -25,6 +29,7 @@
                 this.tool = tool;
                 this.messagebox = messagebox;
                 this.checker = checker;
+                this.waitScreen = waitScreen;
                 //this.commandsIds = [];
 
                 that.UpdateModelsList();
@@ -68,57 +73,9 @@
 
                 that.commandsIds.push({ commandName: "OneDriveStorageChanged", id: window.Commands.On("OneDriveStorageChanged", () => that.UpdateModelsList()) });
                 
-                that.driver.SetOnLoadModel(function (key) {
-                    try {
-                        if (that.checker.IsChanged(that.appModel)) {
-                            var userDialog = $('<div></div>').appendTo('body').userdialog({
-                                message: "Do you want to save changes?",
-                                actions: [
-                                    {
-                                        button: 'Yes',
-                                        callback: function () {
-                                            userDialog.detach();
-                                            window.Commands.Execute("OneDriveStorageSaveModel", {});
-                                        }
-                                    },
-                                    {
-                                        button: 'No',
-                                        callback: function () {
-                                            userDialog.detach();
-                                            load();
-                                        }
-                                    },
-                                    {
-                                        button: 'Cancel',
-                                        callback: function () { userDialog.detach(); }
-                                    }
-                                ]
-                            });
-                        }
-                        else load();
-                    }
-                    catch (ex) {
-                        alert(ex);
-                        load();
-                    }
-
-                    function load() {
-                        waitScreen.Show();
-                        if (that.tool.IsInRepo(key)) {
-                            that.tool.LoadModel(key).done(function (result) {
-                                appModel.Deserialize(JSON.stringify(result));
-                                that.checker.Snapshot(that.appModel);
-                            }).fail(function (result) {
-                                var res = JSON.parse(JSON.stringify(result));
-                                that.messagebox.Show(res.statusText);
-                            });
-                        }
-                        else {
-                            that.messagebox.Show("The model was removed from outside");
-                            window.Commands.Execute("OneDriveStorageChanged", {});
-                        }
-                        waitScreen.Hide();
-                    }
+                that.driver.SetOnRequestLoadModel(function (modelInfo) {
+                    if (that.setRequestLoad !== undefined)
+                        that.setRequestLoad(modelInfo);
                 });
 
                 that.commandsIds.push({ commandName: "OneDriveStorageRequested", id: window.Commands.On("OneDriveStorageRequested", () => that.UpdateModelsList()) });
@@ -128,8 +85,10 @@
                         try {
                             logService.LogSaveModel();
                             var key = appModel.BioModel.Name;
-                            that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
-                            that.checker.Snapshot(that.appModel);
+                            that.tool.SaveModel(key, JSON.parse(appModel.Serialize())).done(function () {
+                                window.Commands.Execute("OneDriveStorageChanged", {});
+                                that.checker.Snapshot(that.appModel);
+                            });
                         }
                         catch (ex) {
                             alert("Couldn't save model: " + ex);
@@ -149,6 +108,8 @@
                         that.driver.Message("The model repository is empty");
                     else that.driver.Message('');
                     that.driver.SetItems(modelsInfo);
+                    if (that.setOnIsActive !== undefined && that.setOnIsActive())
+                        that.driver.SetActiveModel(that.appModel.BioModel.Name);
                 }).fail(function (errorThrown) {
                     var res = JSON.parse(JSON.stringify(errorThrown));
                     that.messagebox.Show(res.statusText);
@@ -156,7 +117,41 @@
                 });
             }
 
+            public SetOnActiveCallback(callback: Function) {
+                this.setOnActive = callback;
+            }
 
+            public SetOnRequestLoad(callback: Function) {
+                this.setRequestLoad = callback;
+            }
+
+            public SetOnIsActive(callback: Function) {
+                this.setOnIsActive = callback;
+            }
+
+            public LoadModel(modelInfo) {
+                var that = this;
+                that.waitScreen.Show();
+                if (that.tool.IsInRepo(modelInfo.id)) {
+                    that.tool.LoadModel(modelInfo.id).done(function (result) {
+                        that.appModel.Deserialize(JSON.stringify(result));
+                        that.checker.Snapshot(that.appModel);
+                        that.driver.SetActiveModel(modelInfo.name);
+                        if (that.setOnActive !== undefined)
+                            that.setOnActive();
+                        that.waitScreen.Hide();
+                    }).fail(function (result) {
+                        var res = JSON.parse(JSON.stringify(result));
+                        that.messagebox.Show(res.statusText);
+                        that.waitScreen.Hide();
+                    });
+                }
+                else {
+                    that.messagebox.Show("The model was removed from outside");
+                    window.Commands.Execute("OneDriveStorageChanged", {});
+                    that.waitScreen.Hide();
+                }
+            }
             
             public Destroy() {
                 var that = this;

@@ -6,7 +6,11 @@
             private tool: BMA.UIDrivers.IModelRepository;
             private messagebox: BMA.UIDrivers.IMessageServiсe;
             private checker: BMA.UIDrivers.ICheckChanges;
+            private waitScreen: BMA.UIDrivers.IWaitScreen;
             private setOnCopy: Function;
+            private setOnActive: Function;
+            private setOnIsActive: Function;
+            private setRequestLoad: Function;
 
             constructor(
                 appModel: BMA.Model.AppModel,
@@ -23,6 +27,7 @@
                 this.tool = tool; 
                 this.messagebox = messagebox;
                 this.checker = checker;
+                this.waitScreen = waitScreen;
 
                 that.tool.GetModelList().done(function (keys) {
                     that.driver.SetItems(keys);
@@ -37,6 +42,9 @@
                             that.driver.Message("The model repository is empty");
                         else that.driver.Message('');
                         that.driver.SetItems(keys);
+
+                        if (that.setOnIsActive !== undefined && that.setOnIsActive())
+                            that.driver.SetActiveModel(that.appModel.BioModel.Name);
                     }).fail(function (errorThrown) {
                         alert(errorThrown);
                     });
@@ -64,6 +72,7 @@
                         logService.LogSaveModel();
                         var key = appModel.BioModel.Name;
                         that.tool.SaveModel(key, JSON.parse(appModel.Serialize()));
+                        window.Commands.Execute("LocalStorageChanged", {});
                         that.checker.Snapshot(that.appModel);
                     }
                     catch (ex) {
@@ -102,57 +111,10 @@
                     return deffered.promise();
                 });
 
-                that.driver.SetOnLoadModel(function (key) {
-                //window.Commands.On("LocalStorageLoadModel", function (key) {
-                    try {
-                        if (that.checker.IsChanged(that.appModel)) {
-                            var userDialog = $('<div></div>').appendTo('body').userdialog({
-                                message: "Do you want to save changes?",
-                                actions: [
-                                    {
-                                        button: 'Yes',
-                                        callback: function () {
-                                            userDialog.detach();
-                                            window.Commands.Execute("LocalStorageSaveModel", {});
-                                        }
-                                    },
-                                    {
-                                        button: 'No',
-                                        callback: function () {
-                                            userDialog.detach();
-                                            load();
-                                        }
-                                    },
-                                    {
-                                        button: 'Cancel',
-                                        callback: function () { userDialog.detach(); }
-                                    }
-                                ]
-                            });
-                        }
-                        else load();
-                    }
-                    catch (ex) {
-                        alert(ex);
-                        load();
-                    }
-
-                    function load() {
-                        waitScreen.Show();
-                        if (that.tool.IsInRepo(key)) {
-                            that.tool.LoadModel(key).done(function (result) {
-                                appModel.Deserialize(JSON.stringify(result));
-                                that.checker.Snapshot(that.appModel);
-                            }).fail(function (result) {
-                                that.messagebox.Show(JSON.stringify(result));
-                            });
-                        }
-                        else {
-                            that.messagebox.Show("The model was removed from outside");
-                            window.Commands.Execute("LocalStorageChanged", {});
-                        }
-                        waitScreen.Hide();
-                    }
+                that.driver.SetOnRequestLoadModel(function (key) {
+                    //window.Commands.On("LocalStorageLoadModel", function (key) {
+                    if (that.setRequestLoad !== undefined)
+                        that.setRequestLoad(key);
                 });
 
                 window.Commands.On("LocalStorageInitModel", function (key) {
@@ -171,6 +133,42 @@
 
             public SetOnCopyCallback(callback: Function) {
                 this.setOnCopy = callback;
+            }
+
+            public SetOnRequestLoad(callback: Function) {
+                this.setRequestLoad = callback;
+            }
+
+            public SetOnActiveCallback(callback: Function) {
+                this.setOnActive = callback;
+            }
+
+            public SetOnIsActive(callback: Function) {
+                this.setOnIsActive = callback;
+            }
+
+            public LoadModel(key) {
+                var that = this;
+                that.waitScreen.Show();
+                if (that.tool.IsInRepo(key)) {
+                    that.tool.LoadModel(key).done(function (result) {
+                        that.appModel.Deserialize(JSON.stringify(result));
+                        that.checker.Snapshot(that.appModel);
+                        that.driver.SetActiveModel(key);
+                        if (that.setOnActive !== undefined)
+                            that.setOnActive();
+                        that.waitScreen.Hide();
+                    }).fail(function (result) {
+                        var res = JSON.parse(JSON.stringify(result));
+                        that.messagebox.Show(res.statusText);
+                        that.waitScreen.Hide();
+                    });
+                }
+                else {
+                    that.messagebox.Show("The model was removed from outside");
+                    window.Commands.Execute("LocalStorageChanged", {});
+                    that.waitScreen.Hide();
+                }
             }
         }
     }
