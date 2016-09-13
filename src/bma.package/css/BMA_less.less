@@ -8,20 +8,20 @@ ul, menu, dir {
     -webkit-margin-before: 0;
     -webkit-margin-after: 0;
     -webkit-margin-start: 0;
-    -webkit-margin-end: 0; 
+    -webkit-margin-end: 0;
     -webkit-padding-start: 0;
-} 
+}
 
 
 
 img {
     border: 0;
-} 
+}
 
 .background-img() {
-    background-repeat: no-repeat; 
-    background-position: center;  
-    background-size: contain;  
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
 .hoverable:hover {
@@ -53,7 +53,7 @@ img {
     -o-box-shadow: @x @y @blur @shadow;
     box-shadow: @x @y @blur @shadow;
 }
- 
+
 .gradient(@side, @color1, @color2) {
     background-image: -moz-linear-gradient(@side, @color1, @color2);
     background-image: -webkit-linear-gradient(@side,@color1, @color2);
@@ -411,7 +411,7 @@ li.ui-state-default {
     width: 120px;
     height: 30px;
     display: table-cell;
-    padding-left: 5px; 
+    padding-left: 5px;
     vertical-align: middle;
     white-space: nowrap;
 }
@@ -478,13 +478,21 @@ li.ui-state-default {
 }
 
 .bma-formulaeditor-template {
+    width: calc(~"100% - 50px");
+    height: 50px;
+    position: relative;
+}
+
+.bma-formulaeditor-template-img {
+    width: 100%;
+    height: 50px;
     background-image: url("../images/template.png");
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
-    width: calc(~"100% - 50px");
-    height: 50px;
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .bma-formulaeditor-header {
@@ -493,7 +501,7 @@ li.ui-state-default {
 }
 
 .bma-formulaeditor-template-canvas {
-    width: calc(~"100% - 50px");
+    cursor: pointer;
     height: 50px;
     position: absolute;
     top: 0;
@@ -507,4 +515,49 @@ li.ui-state-default {
     background-size: contain;
     width: 50px;
     height: 50px;
+    cursor: pointer;
+}
+
+.bma-formulaeditor-template-clear:hover {
+    background-color: @lightgrey;
+}
+
+.bma-formulaeditor-switch {
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.bma-formulaeditor-switch:hover {
+    background-color: @lightgrey;
+}
+
+.bma-formulaeditor-switch-graphical {
+    background-image: url("/images/switchToText.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.bma-formulaeditor-switch-text {
+    background-image: url("/images/switchToGraphic.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.bma-formulaeditor-texteditor {
+    height: 140px;
+    display: inline-block;
+}
+
+.formulaeditor-failed {
+        border: 1px solid #FEB6B2;
+    }
+
+.formulaeditor-validated {
+    border: 1px solid #81BB83;
 }

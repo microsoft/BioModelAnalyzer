@@ -99,6 +99,10 @@
       <DependentUpon>BMA-Styles.css</DependentUpon>
     </Content>
     <Content Include="css\bma.css" />
+    <Content Include="js\monaco\editor\base\common\worker\simpleWorker.js" />
+    <Content Include="js\monaco\editor\base\common\worker\simpleWorker.nls.js" />
+    <Content Include="js\monaco\editor\base\worker\workerMain.js" />
+    <Content Include="js\monaco\editor\editor.main.css" />
     <Content Include="css\fonts.css">
       <DependentUpon>fonts.less</DependentUpon>
     </Content>
@@ -270,6 +274,8 @@
     <Content Include="images\succeeded.png" />
     <Content Include="images\succeeded.svg" />
     <Content Include="images\svgtest.txt" />
+    <Content Include="images\switchToGraphic.png" />
+    <Content Include="images\switchToText.png" />
     <Content Include="images\tabicon-LTL.svg" />
     <Content Include="images\template.png" />
     <Content Include="images\tick-128.png" />
@@ -295,12 +301,15 @@
     <Content Include="images\zoomplus.png" />
     <Content Include="images\zoomplus.svg" />
     <Content Include="index.html" />
+    <Content Include="js\monaco\editor\editor.main.js" />
+    <Content Include="js\monaco\editor\editor.main.nls.js" />
     <Content Include="js\jquery.mousewheel.js" />
     <Content Include="js\jquery.mousewheel.min.js" />
     <Content Include="js\jquery.ui-touchpunch.js" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="js\jquery.svganim.js" />
     <Content Include="js\jquery.svganim.min.js" />
+    <Content Include="js\monaco\loader.js" />
     <Content Include="Scripts\formulaParser.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />

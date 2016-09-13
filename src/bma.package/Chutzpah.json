@@ -33,6 +33,7 @@
     { "Path": "Silverlight.js" },
     { "Path": "tool.js" },
 
+
     {
       "Path": "test/TestComponents/",
       "Include": "*.ts"
