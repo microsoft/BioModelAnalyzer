@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/fonts.min.css" type="text/css" />
     <link rel="stylesheet" href="css/idd.css" type="text/css" />
     <link rel="stylesheet" href="css/bma.css" type="text/css" />
+    <link rel="stylesheet" href="js/monaco/editor/editor.main.css" type="text/css" />
     <script src="Scripts/jquery-2.1.4.min.js"></script>
     <script src="//js.live.net/v5.0/wl.js"></script>
     <script src="js/jquery.browser.min.js"></script>
@@ -26,6 +27,12 @@
     <!--<script src="tool.min.js"></script>-->
     <script src="app.js"></script>
     <script src="Scripts/formulaParser.js"></script>
+
+    <script>var require = { paths: { 'vs': 'js/monaco' } };</script>
+    <script src="js/monaco/loader.js"></script>
+    <script src="js/monaco/editor/editor.main.js"></script>
+    <script src="js/monaco/editor/editor.main.nls.js"></script>
+
     <style type="text/css">
         .page-loading {
           position: absolute;
