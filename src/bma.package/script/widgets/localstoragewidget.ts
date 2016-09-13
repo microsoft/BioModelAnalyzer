@@ -84,16 +84,16 @@
                 this.onmessagechanged(msg);
         },
 
-        SetActiveModel: function (modelName) {
+        SetActiveModel: function (key) {
             var that = this;
             var idx;
             for (var i = 0; i < that.options.items.length; i++) {
-                if (that.options.items[i] == modelName) {
+                if (("user." + that.options.items[i]) == key) {
                     idx = i;
                     break;
                 }
             }
-            if (idx) {
+            if (idx !== undefined) {
                 this.repo.find(".ui-selected").removeClass("ui-selected");
                 this.ol.children().eq(idx).addClass("ui-selected");
             }

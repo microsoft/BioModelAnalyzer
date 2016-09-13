@@ -98,7 +98,7 @@
                 var li = $('<li></li>').text(items[i].name).appendTo(this.ol).click(function () {
                     var ind = $(this).index();
                     if (that.options.onloadmodel !== undefined) {
-                        that.options.onloadmodel(items[ind].id);//.done(function () {
+                        that.options.onloadmodel(items[ind]);//.done(function () {
                         //    that.repo.find(".ui-selected").removeClass("ui-selected");
                         //    $(that.options.selectedLi).addClass("ui-selected");
                         //    if (that.options.oncancelselection !== undefined)
@@ -173,7 +173,7 @@
                     break;
                 }
             }
-            if (idx) {
+            if (idx !== undefined) {
                 this.repo.find(".ui-selected").removeClass("ui-selected");
                 this.ol.children().eq(idx).addClass("ui-selected");
             }

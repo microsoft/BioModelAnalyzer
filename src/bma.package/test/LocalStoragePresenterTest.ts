@@ -78,12 +78,16 @@
 
     it("should reset appModel when item from list was selected", () => {
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
+        localStorageTestPresenter.SetOnRequestLoad(function (key) {
+            localStorageTestPresenter.LoadModel(key);
+        });
         spyOn(appModel, "Deserialize");
         var ol = localStorageWidget.find("ol").eq(0);
         var li = ol.children().eq(0);
-        ol.children().eq(0).addClass("ui-selected");
-        var st = ol.selectable("option", "stop");
-        st();
+        li.click();
+        //ol.children().eq(0).addClass("ui-selected");
+        //var st = ol.selectable("option", "stop");
+        //st();
         expect(appModel.Deserialize).toHaveBeenCalled();
     });
     

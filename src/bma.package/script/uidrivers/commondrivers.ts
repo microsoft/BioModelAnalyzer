@@ -532,7 +532,7 @@ module BMA {
                 this.widget.localstoragewidget({ items: keys });
             }
 
-            public SetOnLoadModel(callback: Function) {
+            public SetOnRequestLoadModel(callback: Function) {
                 this.widget.localstoragewidget({
                     onloadmodel: callback
                 });
@@ -586,7 +586,7 @@ module BMA {
                 this.widget.onedrivestoragewidget("CancelSelection");
             }
 
-            public SetOnLoadModel(callback: Function) {
+            public SetOnRequestLoadModel(callback: Function) {
                 this.widget.onedrivestoragewidget({
                     onloadmodel: callback
                 });
