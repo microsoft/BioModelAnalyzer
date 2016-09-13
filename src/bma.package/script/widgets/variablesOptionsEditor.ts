@@ -154,7 +154,7 @@
                 that.textEdButton.addClass("selected");
                 if (that.texteditor.css("display") === "none") {
                     try {
-                        that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
+                        that.options.formula = /*BMA.ModelHelper.ConvertTFOperationToString(*/that.formulaeditor.formulaeditor("option", "operation");
                         that.texteditor.tftexteditor({ formula: that.options.formula });
                         that.texteditor.show();
                         that.formulaeditor.hide();
@@ -181,8 +181,11 @@
                             that.options.formula = that.texteditor.tftexteditor("option", "formula");
                             console.log("everything is ok");
                             that.formulaeditor.formulaeditor({
-                                operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                                formula: that.options.formula
                             });
+                            //that.formulaeditor.formulaeditor({
+                            //    operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                            //});
 
                             that.texteditor.hide();
                             that.formulaeditor.show();
@@ -242,6 +245,9 @@
 
             if (that.options.formula) {
                 this.texteditor.tftexteditor({
+                    formula: that.options.formula
+                });
+                this.formulaeditor.formulaeditor({
                     formula: that.options.formula
                 });
                 //this.formulaeditor.formulaeditor({
@@ -346,13 +352,14 @@
                     that.options.formula = value;
                     this.texteditor.tftexteditor({ formula: value });
                     if (this.formulaEdButton.hasClass("selected")) {
-                        try {
-                            this.formulaeditor.formulaeditor({
-                                operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
-                            });
-                        } catch (ex) {
-                            console.log(ex);
-                        }
+                        this.formulaeditor.formulaeditor({ formula: value });
+                        //try {
+                        //    this.formulaeditor.formulaeditor({
+                        //        operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                        //    });
+                        //} catch (ex) {
+                        //    console.log(ex);
+                        //}
                     }
                     break;
                 case "TFdescription":
