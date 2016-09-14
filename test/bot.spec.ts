@@ -8,14 +8,7 @@ import {assertConversation, assertStartsWith} from './helpers/util'
 
 const PORT = 5678
 
-function asAttachment (filename): builder.IAttachment {
-    return {
-        contentType: 'application/octet-stream',
-        contentUrl: `http://localhost:${PORT}/${filename}`
-    }
-}
-
-describe ('bot conversations', () => {
+function serveTestData () {
     let app: express.Express
     let server: http.Server
     before(() => {
@@ -27,15 +20,24 @@ describe ('bot conversations', () => {
     after(() => {
         server.close()
     })
+}
 
-    it ('start dialog directly skipping LUIS', () => {
+function asAttachment (filename): builder.IAttachment {
+    return {
+        contentType: 'application/octet-stream',
+        contentUrl: `http://localhost:${PORT}/${filename}`
+    }
+}
+
+describe ('bot conversations: debug/command mode (skipping LUIS)', () => {
+    it ('start dialog by ID', () => {
         return assertConversation([
             { user: '!formulaHistory' }, 
             { bot: strings.FORMULA_HISTORY_EMPTY }
         ])
     })
 
-    it ('start dialog directly with arguments skipping LUIS (debug purposes)', () => {
+    it ('start dialog by ID with arguments', () => {
         return assertConversation([
             { user: '!removeFormula Foo' },
             { bot: assertStartsWith(strings.FORMULA_REFERENCE_INVALID('')) }
@@ -45,16 +47,18 @@ describe ('bot conversations', () => {
     it ('cancel out of any dialog by saying "cancel"', () => {
         return assertConversation([
             { user: '!tutorials' }, 
-            { bot: msg => true },
+            { bot: assertStartsWith(strings.TUTORIAL_SELECT_PROMPT) },
             { user: 'cancel'},
             { bot: strings.OK }
         ])
     })
+})
 
+describe ('bot conversations: tutorials', () => {
     it ('sends the first tutorial', () => {
         return assertConversation([
-            { user: '!tutorials' }, 
-            { bot: msg => true },
+            { user: '!tutorials' },
+            { bot: assertStartsWith(strings.TUTORIAL_SELECT_PROMPT) },
             { user: '1'},
             { bot: assertStartsWith(strings.TUTORIAL_INTRO('')) },
             { bot: msg => true }, // tutorial description
@@ -67,12 +71,12 @@ describe ('bot conversations', () => {
     it ('user can cancel tutorial selection', () => {
         return assertConversation([
             { user: '!tutorials' }, 
-            { bot: msg => true },
-            { user: 'the first'},
+            { bot: assertStartsWith(strings.TUTORIAL_SELECT_PROMPT) },
+            { user: 'the first'}, // this is not LUIS, just bot framework logic
             { bot: assertStartsWith(strings.TUTORIAL_INTRO('')) },
             { bot: msg => true }, // tutorial description
             { bot: assertStartsWith(strings.TUTORIAL_START_PROMPT) },
-            { user: 'no'},
+            { user: 'no'}, // this is not LUIS, just some clever bot framework logic
             { bot: strings.OK }
         ])
     })
@@ -80,47 +84,44 @@ describe ('bot conversations', () => {
     it ('tutorial selection gets cancelled after two invalid inputs', () => {
         return assertConversation([
             { user: '!tutorials' },
-            { bot: msg => true },
+            { bot: assertStartsWith(strings.TUTORIAL_SELECT_PROMPT) },
             { user: 'foo'},
             { bot: assertStartsWith(strings.TUTORIAL_UNKNOWN_SELECT) },
             { user: 'bar'},
             { bot: strings.TUTORIAL_SELECT_CANCELLED }
         ])
     })
+})
 
-    it ('handles unknown messages', () => {
-        return assertConversation([
-            { user: 'Tell me a joke' }, 
-            { bot: strings.UNKNOWN_INTENT }
-        ])
-    })
+describe ('bot conversations: model and formula', () => {
+    serveTestData()
 
     it ('requests model file before answering LTL queries', () => {
         return assertConversation([
-            { user: 'Show me a simulation where x=1' },
+            { user: '!formula x=1' },
             { bot: strings.MODEL_SEND_PROMPT }
         ])
     })
 
-    it ('accepts JSON model file after prompting for it', () => {
-        return assertConversation([
-            { user: 'Show me a simulation where x=1'},
-            { bot: strings.MODEL_SEND_PROMPT }, 
-            { user: asAttachment('testmodel.json') },
-            { bot: strings.MODEL_RECEIVED('model 1') },
-            { bot: strings.FORMULA_HISTORY_FIRST_NOTICE },
-            { bot: 'Try this: x=1'}
-        ])
-    })
-
-    it ('parse formula without LUIS', () => {
+    it ('parses formula correctly', () => {
         return assertConversation([
             { user: '!formula x=1'},
             { bot: strings.MODEL_SEND_PROMPT }, 
             { user: asAttachment('testmodel.json') },
             { bot: strings.MODEL_RECEIVED('model 1') },
             { bot: strings.FORMULA_HISTORY_FIRST_NOTICE },
-            { bot: 'Try this: x=1'}
+            { bot: strings.TRY_THIS_FORMULA('x=1')}
+        ])
+    })
+
+    it ('accepts JSON model file after prompting for it', () => {
+        return assertConversation([
+            { user: '!formula x=1'},
+            { bot: strings.MODEL_SEND_PROMPT }, 
+            { user: asAttachment('testmodel.json') },
+            { bot: strings.MODEL_RECEIVED('model 1') },
+            { bot: strings.FORMULA_HISTORY_FIRST_NOTICE },
+            { bot: strings.TRY_THIS_FORMULA('x=1')}
         ])
     })
 
@@ -135,9 +136,35 @@ describe ('bot conversations', () => {
         return assertConversation([
             { user: asAttachment('testmodel.json') },
             { bot: strings.MODEL_RECEIVED('model 1') },
+            { user: '!requestUploadedModel'},
+            { bot: assertStartsWith(strings.HERE_IS_YOUR_UPLOADED_MODEL('')) }
+        ])
+    })
+})
+
+describe ('bot conversations: natural language via LUIS', () => {
+    serveTestData()
+
+    it ('handles unknown messages', () => {
+        return assertConversation([
+            { user: 'Tell me a joke' }, 
+            { bot: strings.UNKNOWN_INTENT }
+        ])
+    })
+
+    it ('recognizes LTL queries', () => {
+        return assertConversation([
+            { user: 'show me a simulation where x is 1' },
+            { bot: strings.MODEL_SEND_PROMPT }
+        ])
+    })
+
+    it ('recognizes uploaded model request', () => {
+        return assertConversation([
+            { user: asAttachment('testmodel.json') },
+            { bot: strings.MODEL_RECEIVED('model 1') },
             { user: 'which model did I upload?'},
             { bot: assertStartsWith(strings.HERE_IS_YOUR_UPLOADED_MODEL('')) }
         ])
     })
-  
 })

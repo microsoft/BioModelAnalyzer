@@ -40,10 +40,8 @@ function handleLTLQuery (session: builder.Session, text: string, modelStorage: M
     // fetch some session state
     let bmaModel: BMA.ModelFile = session.conversationData.bmaModel
 
-    let showFormulaHistoryInfo = false
     if (!session.conversationData.formulas) {
         session.conversationData.formulas = []
-        showFormulaHistoryInfo = true
     }
     let namedFormulas: NamedFormula[] = session.conversationData.formulas
 
@@ -55,8 +53,14 @@ function handleLTLQuery (session: builder.Session, text: string, modelStorage: M
     }
     let ast = result.AST
 
-    if (showFormulaHistoryInfo) {
+    let formulaCount = session.userData.totalFormulaCount = (session.userData.totalFormulaCount || 0) + 1
+    if (formulaCount === 1) {
         session.send(strings.FORMULA_HISTORY_FIRST_NOTICE)
+    } else if (formulaCount === 5) {
+        let randomVariable = bmaModel.Model.Variables.length > 0 ? bmaModel.Model.Variables[0].Name : 'Notch'
+        session.send(strings.FORMULA_SHORTCUT(randomVariable))
+    } else if (formulaCount === 100) {
+        session.send(strings.FORMULA_COUNT_100)
     }
 
     // embed all named formulas
