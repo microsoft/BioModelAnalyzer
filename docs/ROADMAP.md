@@ -14,6 +14,10 @@ This document lists some future development paths that could be followed for eac
 - Support activity levels like "a is off" or "a is highly active"
 - Allow user to work with multiple models and persist formula history of each model seperately
 
+## Knowledge base
+
+- Linking general queries such as 'What is LTL' with the tutorials, and providing the user with an option to see a descriptive answer or open a tutorial (if available)
+
 ## UI Integration
 
 - Provide the chat bot within the browser, so user does not have to jump between Skype and BMA UI
