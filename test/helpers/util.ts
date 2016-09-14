@@ -31,7 +31,6 @@ export interface DirectedMessage {
 
 /**
  * Verifies bot responses in pre-defined conversations.
- * Currently only supports text messages. 
  */
 export function assertConversation (messages: DirectedMessage[]) {
     return new Promise(resolve => {
@@ -79,7 +78,6 @@ export function assertConversation (messages: DirectedMessage[]) {
                     let refAttachment = msg.attachments[0]
                     let actualAttachment = actualMessage.attachments[0]
                     
-
                     assert.deepEqual(actualAttachment.content, refAttachment.content)
                 }
             }
@@ -89,4 +87,11 @@ export function assertConversation (messages: DirectedMessage[]) {
         // start the conversation
         next()
     })
+}
+
+/**
+ * Asserts whether a message starts with the given string. To be used as user/bot value in assertConversation().
+ */
+export function assertStartsWith (text: string) {
+    return (msg: builder.IMessage) => assert(msg.text.startsWith(text), `Mismatch: "${msg.text}"`)
 }

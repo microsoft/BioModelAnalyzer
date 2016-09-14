@@ -1,11 +1,10 @@
 // Copyright (C) 2016 Microsoft - All Rights Reserved
 
 import * as builder from 'botbuilder'
-import * as assert from 'assert'
 import * as express from 'express'
 import * as http from 'http'
 import * as strings from '../src/dialogs/strings'
-import {assertConversation} from './helpers/util'
+import {assertConversation, assertStartsWith} from './helpers/util'
 
 const PORT = 5678
 
@@ -39,7 +38,7 @@ describe ('bot conversations', () => {
     it ('start dialog directly with arguments skipping LUIS (debug purposes)', () => {
         return assertConversation([
             { user: '!removeFormula Foo' },
-            { bot: msg => assert(msg.text.startsWith(strings.FORMULA_REFERENCE_INVALID(''))) }
+            { bot: assertStartsWith(strings.FORMULA_REFERENCE_INVALID('')) }
         ])
     })
 
@@ -57,11 +56,11 @@ describe ('bot conversations', () => {
             { user: '!tutorials' }, 
             { bot: msg => true },
             { user: '1'},
-            { bot: msg => assert(msg.text.startsWith(strings.TUTORIAL_INTRO(''))) },
+            { bot: assertStartsWith(strings.TUTORIAL_INTRO('')) },
             { bot: msg => true }, // tutorial description
-            { bot: msg => msg.text.startsWith(strings.TUTORIAL_START_PROMPT) },
-            { user: 'yes'},
-            { bot: msg => assert(msg.text.startsWith('[1/'))}
+            { bot: assertStartsWith(strings.TUTORIAL_START_PROMPT) },
+            { user: 'yes' },
+            { bot: assertStartsWith('[1/') }
         ])
     })
 
@@ -70,9 +69,9 @@ describe ('bot conversations', () => {
             { user: '!tutorials' }, 
             { bot: msg => true },
             { user: 'the first'},
-            { bot: msg => assert(msg.text.startsWith(strings.TUTORIAL_INTRO(''))) },
+            { bot: assertStartsWith(strings.TUTORIAL_INTRO('')) },
             { bot: msg => true }, // tutorial description
-            { bot: msg => msg.text.startsWith(strings.TUTORIAL_START_PROMPT) },
+            { bot: assertStartsWith(strings.TUTORIAL_START_PROMPT) },
             { user: 'no'},
             { bot: strings.OK }
         ])
@@ -83,7 +82,7 @@ describe ('bot conversations', () => {
             { user: '!tutorials' },
             { bot: msg => true },
             { user: 'foo'},
-            { bot: msg => assert(msg.text.startsWith(strings.TUTORIAL_UNKNOWN_SELECT)) },
+            { bot: assertStartsWith(strings.TUTORIAL_UNKNOWN_SELECT) },
             { user: 'bar'},
             { bot: strings.TUTORIAL_SELECT_CANCELLED }
         ])
@@ -137,7 +136,7 @@ describe ('bot conversations', () => {
             { user: asAttachment('testmodel.json') },
             { bot: strings.MODEL_RECEIVED('model 1') },
             { user: 'which model did I upload?'},
-            { bot: msg => assert(msg.text.startsWith('Here is the model you sent me:'), `Mismatch: "${msg.text}"`) }
+            { bot: assertStartsWith(strings.HERE_IS_YOUR_UPLOADED_MODEL('')) }
         ])
     })
   
