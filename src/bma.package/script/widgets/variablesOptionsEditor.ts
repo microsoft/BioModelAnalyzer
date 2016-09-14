@@ -154,7 +154,7 @@
                 that.textEdButton.addClass("selected");
                 if (that.texteditor.css("display") === "none") {
                     try {
-                        that.options.formula = /*BMA.ModelHelper.ConvertTFOperationToString(*/that.formulaeditor.formulaeditor("option", "operation");
+                        that.options.formula = /*BMA.ModelHelper.ConvertTFOperationToString(*/that.formulaeditor.formulaeditor("option", "formula"/*"operation"*/);
                         that.texteditor.tftexteditor({ formula: that.options.formula });
                         that.texteditor.show();
                         that.formulaeditor.hide();
@@ -261,7 +261,7 @@
                 });
                 var variables = [];
                 for (var i = 0; i < that.options.inputs.length; i++)
-                    variables.push({ Name: that.options.inputs[i] });
+                    variables.push({ Name: that.options.inputs[i].Name, Id: that.options.inputs[i].Id });
 
                 this.formulaeditor.formulaeditor({
                     variables: variables
@@ -280,18 +280,18 @@
         getFormula: function () {
             var that = this;
             if (that.texteditor.css("display") === "none") {
-                that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
+                that.options.formula = /*BMA.ModelHelper.ConvertTFOperationToString(*/that.formulaeditor.formulaeditor("option", "formula"/*"operation"*/);//);
             } else {
                 that.options.formula = that.texteditor.tftexteditor("option", "formula");
             }
             return that.options.formula;
         },
 
-        getOperation: function () {
-            var that = this;
-            var formula = that.getFormula();
-            return BMA.ModelHelper.ConvertTargetFunctionToOperation(formula, that.options.inputs);
-        },
+        //getOperation: function () {
+        //    var that = this;
+        //    var formula = that.getFormula();
+        //    return BMA.ModelHelper.ConvertTargetFunctionToOperation(formula, that.options.inputs);
+        //},
 
         _bindExpanding: function () {
             var that = this;
@@ -373,7 +373,7 @@
                     var inputs = this.options.inputs;
                     var variables = [];
                     for (var i = 0; i < that.options.inputs.length; i++)
-                        variables.push({ Name: that.options.inputs[i].Name });
+                        variables.push({ Name: that.options.inputs[i].Name, Id: that.options.inputs[i].Id });
 
                     this.texteditor.tftexteditor({ inputs: variables});
 
