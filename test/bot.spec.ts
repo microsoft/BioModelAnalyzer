@@ -29,6 +29,66 @@ describe ('bot conversations', () => {
         server.close()
     })
 
+    it ('start dialog directly skipping LUIS', () => {
+        return assertConversation([
+            { user: '!formulaHistory' }, 
+            { bot: strings.FORMULA_HISTORY_EMPTY }
+        ])
+    })
+
+    it ('start dialog directly with arguments skipping LUIS (debug purposes)', () => {
+        return assertConversation([
+            { user: '!removeFormula "Foo"' },
+            { bot: msg => assert(msg.text.startsWith(strings.FORMULA_REFERENCE_INVALID(''))) }
+        ])
+    })
+
+    it ('cancel out of any dialog by saying "cancel"', () => {
+        return assertConversation([
+            { user: '!tutorials' }, 
+            { bot: msg => true },
+            { user: 'cancel'},
+            { bot: strings.OK }
+        ])
+    })
+
+    it ('sends the first tutorial', () => {
+        return assertConversation([
+            { user: '!tutorials' }, 
+            { bot: msg => true },
+            { user: '1'},
+            { bot: msg => assert(msg.text.startsWith(strings.TUTORIAL_INTRO(''))) },
+            { bot: msg => true }, // tutorial description
+            { bot: msg => msg.text.startsWith(strings.TUTORIAL_START_PROMPT) },
+            { user: 'yes'},
+            { bot: msg => assert(msg.text.startsWith('[1/'))}
+        ])
+    })
+
+    it ('user can cancel tutorial selection', () => {
+        return assertConversation([
+            { user: '!tutorials' }, 
+            { bot: msg => true },
+            { user: 'the first'},
+            { bot: msg => assert(msg.text.startsWith(strings.TUTORIAL_INTRO(''))) },
+            { bot: msg => true }, // tutorial description
+            { bot: msg => msg.text.startsWith(strings.TUTORIAL_START_PROMPT) },
+            { user: 'no'},
+            { bot: strings.OK }
+        ])
+    })
+
+    it ('tutorial selection gets cancelled after two invalid inputs', () => {
+        return assertConversation([
+            { user: '!tutorials' },
+            { bot: msg => true },
+            { user: 'foo'},
+            { bot: msg => assert(msg.text.startsWith(strings.TUTORIAL_UNKNOWN_SELECT)) },
+            { user: 'bar'},
+            { bot: strings.TUTORIAL_SELECT_CANCELLED }
+        ])
+    })
+
     it ('handles unknown messages', () => {
         return assertConversation([
             { user: 'Tell me a joke' }, 

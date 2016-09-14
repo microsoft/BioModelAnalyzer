@@ -1,5 +1,6 @@
 // Copyright (C) 2016 Microsoft - All Rights Reserved
 
+export let OK = 'OK.'
 export let LTL_DESCRIPTION = 'Linear Temporal Logic (LTL) is a modal temporal logic, and it helps us define an infinite sequence of states. It is useful within the BMA as it allows us to query paths, and how current paths may change or be affected in the future.'
 export let UNKNOWN_INTENT = 'I did not understand you.'
 export let UNKNOWN_LTL_QUERY = 'I did not understand your query.'
@@ -11,6 +12,7 @@ export let INVALID_JSON = (msg: string) => `Your uploaded file is not valid JSON
 export let HTTP_ERROR = (msg: string) => `HTTP Error: ${msg}.`
 export let TOO_MANY_FILES = 'Please upload exactly one JSON file.'
 export let MODEL_RECEIVED = (name: string) => `I received your model titled ${name} and will use it from now on.`
+export let TUTORIAL_INTRO = (title: string) => `Tutorial: ${title}`
 export let TUTORIAL_SELECT_PROMPT = 'Which tutorial would you like to do?'
 export let TUTORIAL_START_PROMPT = 'Would you like to start the tutorial?'
 export let TUTORIAL_SELECT_CANCELLED = 'Tutorial selection cancelled.'

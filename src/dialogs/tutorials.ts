@@ -83,7 +83,7 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
         // the first two fixed parts of each tutorial...
         let waterfall: builder.IDialogWaterfallStep[] = [
             (session: builder.Session) => {
-                session.send(`Tutorial: ${tutorial.title}`)
+                session.send(strings.TUTORIAL_INTRO(tutorial.title))
                 session.send(tutorial.description)
                 builder.Prompts.confirm(session, strings.TUTORIAL_START_PROMPT)
             },
@@ -91,6 +91,7 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
                 if (results.response) {
                     next()
                 } else {
+                    session.send(strings.OK)
                     session.endDialog()
                 }
             }
