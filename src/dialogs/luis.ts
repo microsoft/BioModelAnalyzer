@@ -5,15 +5,10 @@ import * as config from 'config'
 import * as request from 'request'
 import * as qs from 'querystring'
 import * as _ from 'underscore'
-import {v4 as uuid} from 'node-uuid'
 import * as strings from './strings'
-import {default as NLParser, ParserResponseType } from '../NLParser/NLParser'
-import {NamedFormula, embedNamedFormulas, toStatesAndFormula, toHumanReadableString, clampVariables} from '../NLParser/ASTUtils'
-import {downloadAttachments} from '../attachments'
+import {receiveModelAttachmentStep} from './modelStorage'
+import {NamedFormula} from '../NLParser/ASTUtils'
 import {ModelStorage} from '../ModelStorage'
-import * as BMA from '../BMA'
-import * as BMAApi from '../BMAApi'
-import {getBMAModelUrl, LETTERS_F} from '../util'
 
 /**
  * Registers the LUIS dialog as root dialog. 
@@ -94,7 +89,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
 
     matches('RenameFormulaInHistory', [(session, args) => {
         let text = session.message.text
-        let formulas: NamedFormula[] = session.conversationData.formulas
+        let formulas: NamedFormula[] = session.conversationData.formulas || []
         let from = builder.EntityRecognizer.findEntity(args.entities, 'FormulaRename::From')
         let to = builder.EntityRecognizer.findEntity(args.entities, 'FormulaRename::To')
         let fromName
@@ -268,131 +263,17 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             break
             case 'steps':session.send(strings.STEPS)
             break
-            case 'increase':session.send(strings.I_STEPS)
+            case 'increase':session.send(strings.INCREASE_STEPS)
             break
-            case 'decrease':session.send(strings.D_STEPS)
+            case 'decrease':session.send(strings.DECREASE_STEPS)
             break
         }   
     })
 
-    function handleLTLQuery (session: builder.Session, text: string) {
-        // fetch some session state
-        let bmaModel: BMA.ModelFile = session.conversationData.bmaModel
-
-        let showFormulaHistoryInfo = false
-        if (!session.conversationData.formulas) {
-            session.conversationData.formulas = []
-            showFormulaHistoryInfo = true
-        }
-        let namedFormulas: NamedFormula[] = session.conversationData.formulas
-
-        // parse formula
-        let result = NLParser.parse(text, bmaModel, namedFormulas)
-        if (result.responseType !== ParserResponseType.SUCCESS) {
-            session.send(strings.UNKNOWN_LTL_QUERY)
-            return
-        }
-        let ast = result.AST
-
-        if (showFormulaHistoryInfo) {
-            session.send(strings.FORMULA_HISTORY_FIRST_NOTICE)
-        }
-
-        // embed all named formulas
-        ast = embedNamedFormulas(ast, bmaModel, namedFormulas)
-
-        // check if variable values are in range and clamp if necessary
-        let clampingResult = clampVariables(ast, bmaModel)
-        if (clampingResult.clampings.length) {
-            ast = clampingResult.AST
-            let text = strings.VARIABLES_CLAMPED(clampingResult.clampings.map(c => `${c.variable.Name} -> ${c.clampedValue} (was ${c.originalValue})`).join(', '))
-            session.send(text)
-        }
-
-        // store formula in history for later composition if not in history yet
-        let astStr = JSON.stringify(ast)
-        let isInHistory = namedFormulas.some(historyAst => JSON.stringify(historyAst.ast) === astStr)
-        if (!isInHistory) {
-            let unusedId = _.isEmpty(namedFormulas) ? 0 : namedFormulas[namedFormulas.length - 1].id + 1
-            let unusedFormulaName = _.find(LETTERS_F, letter => !namedFormulas.some(f => f.name.toLowerCase() === letter.toLowerCase()))
-            if (!unusedFormulaName) {
-                session.send(strings.FORMULA_HISTORY_FULL)
-            } else {
-                namedFormulas.push({
-                    id: unusedId,
-                    name: unusedFormulaName,
-                    ast
-                })
-            }
-        }
-
-        // send human readable version of formula
-        session.send(strings.TRY_THIS_FORMULA(toHumanReadableString(ast, bmaModel)))
-
-        // merge formula into model copy and offer to user via URL
-        let ltl = toStatesAndFormula(ast, bmaModel)
-        let newBmaModel: BMA.ModelFile = JSON.parse(JSON.stringify(bmaModel))
-        newBmaModel.ltl = ltl
-
-        modelStorage.storeGeneratedModel(newBmaModel).then(url => {
-            session.send(strings.OPEN_BMA_MODEL_LINK(getBMAModelUrl(url)))
-        })
-
-        // run formula on BMA backend and send result back to user
-        let steps = 10
-        let simulationOptions = {
-            steps,
-            timeout: 3
-        }
-        let expandedFormula = BMAApi.getExpandedFormula(bmaModel.Model, ltl.states, ltl.operations[0])
-        BMAApi.runFastSimulation(bmaModel.Model, expandedFormula, simulationOptions).then(responseFast => {
-            BMAApi.runThoroughSimulation(bmaModel.Model, expandedFormula, responseFast, simulationOptions).then(responseThorough => {
-                if (responseThorough.Status) {
-                    session.send(strings.SIMULATION_DUALITY(steps))
-                } else if (responseFast.Status) {
-                    session.send(strings.SIMULATION_ALWAYS_TRUE(steps))
-                } else {
-                    session.send(strings.SIMULATION_ALWAYS_FALSE(steps))
-                }
-            }).catch(e => {
-                if (e.code === 'ETIMEDOUT') {
-                    if (responseFast.Status) {
-                        session.send(strings.SIMULATION_PARTIAL_TRUE(steps))
-                    } else {
-                        session.send(strings.SIMULATION_PARTIAL_FALSE(steps))
-                    }
-                } else {
-                    throw e
-                }
-            })
-        }).catch(e => {
-            if (e.code === 'ETIMEDOUT') {
-                session.send(strings.SIMULATION_CANCELLED)
-            } else {
-                throw e
-            }
-        })
-    }
-
     matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
-    matches('LTLQuery', [
-        (session, args, next) => {
-            // check if JSON model has been uploaded already, otherwise prompt user
-            if (!session.conversationData.bmaModel) {
-                session.conversationData.lastMessageText = session.message.text
-                session.save()
-                builder.Prompts.attachment(session, strings.MODEL_SEND_PROMPT)
-            } else {
-                handleLTLQuery(session, session.message.text)
-                session.endDialog()
-            }
-        },
-        (session, results, next) => receiveModelAttachmentStep(bot, modelStorage, session, results, next),
-        (session, results, next) => {
-            handleLTLQuery(session, session.conversationData.lastMessageText)
-            delete session.conversationData.lastMessageText
-        }
-    ])
+    matches('LTLQuery', session => {
+        session.beginDialog('/formula', session.message.text)
+    })
     
     intents.onDefault((session, results, next) => {
         let attachments = session.message.attachments
@@ -459,41 +340,6 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             let message = new builder.Message(session)
             message.text(correctedText)
             session.dispatch(session.sessionState, message.toMessage())
-        })
-    })
-}
-
-function receiveModelAttachmentStep (bot: builder.UniversalBot, modelStorage: ModelStorage, session: builder.Session, results, next) {
-    // check and store attachment
-    let attachments = session.message.attachments
-    if (attachments.length > 1) {
-        session.send(strings.TOO_MANY_FILES)
-        return
-    }
-    downloadAttachments(bot.connector('*'), session.message, (err, buffers) => {
-        if (err) {
-            session.send(strings.HTTP_ERROR(err))
-            return
-        }
-        // TODO handle more than one attachment
-        let buf = buffers[0].toString()
-        let model: BMA.ModelFile
-        try {
-            model = JSON.parse(buf)
-        } catch (e) {
-            session.send(strings.INVALID_JSON(e))
-            return
-        }
-        let modelId = session.conversationData.bmaModelId || uuid()
-        modelStorage.storeUserModel(modelId, model).then(() => {
-            session.conversationData.bmaModel = model
-            session.conversationData.bmaModelId = modelId
-            session.save()
-            session.send(strings.MODEL_RECEIVED(model.Model.Name))
-            next()
-        }).catch(e => {
-            session.send(strings.HTTP_ERROR(e))
-            session.endDialog()
         })
     })
 }

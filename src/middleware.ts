@@ -1,6 +1,7 @@
 // Copyright (C) 2016 Microsoft - All Rights Reserved
 
 import * as builder from 'botbuilder'
+import * as strings from './dialogs/strings'
 
 /** 
  * Registers debug middleware for the given bot with the following functionality:
@@ -19,15 +20,21 @@ export function registerMiddleware (bot: builder.UniversalBot) {
             let dialogIdRegEx = /^!\w+/
 
             if (text.toLowerCase().indexOf('cancel') === 0) {
-                session.send('OK.')
+                session.send(strings.OK)
                 session.cancelDialog(0)
             } else if (dialogIdRegEx.test(text)) {
                 let firstWhitespaceIdx = text.indexOf(' ')
                 let args
                 if (firstWhitespaceIdx !== -1) {
-                    args = JSON.parse(text.substr(firstWhitespaceIdx + 1))
+                    let argsStr = text.substr(firstWhitespaceIdx + 1)
+                    try {
+                        args = JSON.parse(argsStr)
+                    } catch (e) {
+                        console.log('Error parsing as JSON, fall-back to string argument: ' + argsStr)
+                        args = argsStr
+                    }
                 }
-                let dialogId = dialogIdRegEx.exec(text)[0]
+                let dialogId = '/' + dialogIdRegEx.exec(text)[0].substr(1)
                 session.beginDialog(dialogId, args)
             } else {
                 next()

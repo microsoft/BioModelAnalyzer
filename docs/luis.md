@@ -1,6 +1,7 @@
 # LUIS: BMA Chat Bot
 Below is the documentation for the entities and intents used to build the LUIS model.
 Use examples shown to invoke intents in luis.ts
+* For information of how to add general user queries with the help of LUIS click [here](questions.md)
 
 ## Intents
 #### AboutBot
