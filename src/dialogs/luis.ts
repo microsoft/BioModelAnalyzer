@@ -89,7 +89,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
 
     matches('RenameFormulaInHistory', [(session, args) => {
         let text = session.message.text
-        let formulas: NamedFormula[] = session.conversationData.formulas
+        let formulas: NamedFormula[] = session.conversationData.formulas || []
         let from = builder.EntityRecognizer.findEntity(args.entities, 'FormulaRename::From')
         let to = builder.EntityRecognizer.findEntity(args.entities, 'FormulaRename::To')
         let fromName
@@ -263,9 +263,9 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             break
             case 'steps':session.send(strings.STEPS)
             break
-            case 'increase':session.send(strings.I_STEPS)
+            case 'increase':session.send(strings.INCREASE_STEPS)
             break
-            case 'decrease':session.send(strings.D_STEPS)
+            case 'decrease':session.send(strings.DECREASE_STEPS)
             break
         }   
     })
