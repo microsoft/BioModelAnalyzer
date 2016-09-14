@@ -637,7 +637,7 @@ export default class NLParser extends Parser {
     })
 
     // for internal purpose only
-    private constructor(inputTokens: Token[]) {
+    constructor(inputTokens: Token[]) {
         super(inputTokens, ALLOWED_TOKENS)
         // very important to call this after all the rules have been defined.
         // otherwise the parser may not work correctly as it will lack information
