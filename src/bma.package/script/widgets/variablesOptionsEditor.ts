@@ -204,7 +204,7 @@
             });
 
             this.texteditor = $("<div></div>").appendTo(that.element);
-            this.formulaeditor = $("<div></div>").css("margin-top", "20px").css("width", "600px").appendTo(that.element);
+            this.formulaeditor = $("<div></div>").css("margin-top", "20px").css("width", "100%").appendTo(that.element);
 
             this.formulaeditor.formulaeditor(
                 //{
@@ -225,10 +225,10 @@
                 (params) => {
                     try {
                         BMA.ModelHelper.ConvertTargetFunctionToOperation(params.formula, that.options.inputs);
-                        that.formulaEdButton.removeClass("disabled");
+                        //that.formulaEdButton.removeClass("disabled");
                         that.SetValidation(true, "");
                     } catch (ex) {
-                        that.formulaEdButton.addClass("disabled");
+                        //that.formulaEdButton.addClass("disabled");
                         that.SetValidation(false, ex);
                     }
                 },
@@ -387,11 +387,11 @@
                         onformulachangedcallback: (params) => {
                             try {
                                 BMA.ModelHelper.ConvertTargetFunctionToOperation(params.formula, that.options.inputs);
-                                that.formulaEdButton.removeClass("disabled");
+                                //that.formulaEdButton.removeClass("disabled");
                                 that.element.removeClass('bmaeditor-expanded');
                                 this.SetValidation(true, "");
                             } catch (ex) {
-                                this.formulaEdButton.addClass("disabled");
+                                //this.formulaEdButton.addClass("disabled");
                                 that.element.addClass('bmaeditor-expanded');
                                 this.SetValidation(false, ex);
                             }
