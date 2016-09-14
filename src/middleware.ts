@@ -26,7 +26,13 @@ export function registerMiddleware (bot: builder.UniversalBot) {
                 let firstWhitespaceIdx = text.indexOf(' ')
                 let args
                 if (firstWhitespaceIdx !== -1) {
-                    args = JSON.parse(text.substr(firstWhitespaceIdx + 1))
+                    let argsStr = text.substr(firstWhitespaceIdx + 1)
+                    try {
+                        args = JSON.parse(argsStr)
+                    } catch (e) {
+                        console.log('Error parsing as JSON, fall-back to string argument: ' + argsStr)
+                        args = argsStr
+                    }
                 }
                 let dialogId = '/' + dialogIdRegEx.exec(text)[0].substr(1)
                 session.beginDialog(dialogId, args)

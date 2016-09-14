@@ -38,7 +38,7 @@ describe ('bot conversations', () => {
 
     it ('start dialog directly with arguments skipping LUIS (debug purposes)', () => {
         return assertConversation([
-            { user: '!removeFormula "Foo"' },
+            { user: '!removeFormula Foo' },
             { bot: msg => assert(msg.text.startsWith(strings.FORMULA_REFERENCE_INVALID(''))) }
         ])
     })
