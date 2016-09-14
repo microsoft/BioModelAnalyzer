@@ -114,6 +114,17 @@ describe ('bot conversations', () => {
         ])
     })
 
+    it ('parse formula without LUIS', () => {
+        return assertConversation([
+            { user: '!formula x=1'},
+            { bot: strings.MODEL_SEND_PROMPT }, 
+            { user: asAttachment('testmodel.json') },
+            { bot: strings.MODEL_RECEIVED('model 1') },
+            { bot: strings.FORMULA_HISTORY_FIRST_NOTICE },
+            { bot: 'Try this: x=1'}
+        ])
+    })
+
     it ('accepts JSON model file without prompting for it', () => {
         return assertConversation([
             { user: asAttachment('testmodel.json') },
