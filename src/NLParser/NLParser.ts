@@ -4,11 +4,10 @@
 /**
  *  Please read ./NLParserDocumentation.md for a high level explaination of the parser
  */
-import { Parser, Token, IParserConfig, Lexer, TokenConstructor, extendToken, ILexingResult } from 'chevrotain'
+import { Parser, Token, Lexer } from 'chevrotain'
 import * as _ from 'underscore'
 import * as natural from 'natural'
 import * as AST from './AST'
-import * as ASTUtils from './ASTUtils'
 /** 
  *  Parser response structure
  */
@@ -30,7 +29,7 @@ export interface FormulaPointer {
     id: number
 }
 /**
- *  Enumeration of the possible non-literal tokens in the grammar]
+ *  Enumeration of the possible non-literal tokens in the grammar
  */
 export enum TokenType {
     /** formula poointer variables, encoded as: FORMULAPOINTER(K) where K is the variable id */
@@ -79,7 +78,7 @@ class IntegerLiteral extends Token {
 
 class TrueLiteral extends Token {
     static PATTERN = /true/
-    static LABEL = "true"
+    static LABEL = 'true'
 }
 
 class FalseLiteral extends Token {
@@ -108,47 +107,47 @@ class WhiteSpace extends Token {
  *  GRAMMAR TOKENS: The set of tokens that are accepted by the grammar of our language,
  *  where each terminal token is augmented with a set of synonyms that can also be matched in the input token stream
  */
-let If = generateStemmedTokenDefinition("If", "if", ["if"], TokenType.GRAMMAR_CONSTRUCT)
-let Then = generateStemmedTokenDefinition("Then", "then", ["then"], TokenType.GRAMMAR_CONSTRUCT)
+let If = generateStemmedTokenDefinition('If', 'if', ['if'], TokenType.GRAMMAR_CONSTRUCT)
+let Then = generateStemmedTokenDefinition('Then', 'then', ['then'], TokenType.GRAMMAR_CONSTRUCT)
 
-//Arithmetic operator tokens
-let GThan = generateStemmedTokenDefinition("GThan", ">", [">", "is greater than", "is bigger than"], TokenType.ARITHMETIC_OPERATOR)
-let LThan = generateStemmedTokenDefinition("LThan", "<", ["<", "is less than", "is smaller than"], TokenType.ARITHMETIC_OPERATOR)
-let GThanEq = generateStemmedTokenDefinition("GThanEq", ">=", [">=", "is greater than or equal to", "is bigger than or equal to"], TokenType.ARITHMETIC_OPERATOR)
-let LThanEq = generateStemmedTokenDefinition("LThanEq", "<=", ["<=", "is less than or equal to", "is smaller than or equal to"], TokenType.ARITHMETIC_OPERATOR)
-let Eq = generateStemmedTokenDefinition("Eq", "=", ["=", "is equal to", "is same as", "equal", "is"], TokenType.ARITHMETIC_OPERATOR)
-let NotEq = generateStemmedTokenDefinition("NotEq", "!=", ["!=", "is not equal", "is not same as", "not equal", "is not"], TokenType.ARITHMETIC_OPERATOR)
+// Arithmetic operator tokens
+let GThan = generateStemmedTokenDefinition('GThan', '>', ['>', 'is greater than', 'is bigger than'], TokenType.ARITHMETIC_OPERATOR)
+let LThan = generateStemmedTokenDefinition('LThan', '<', ['<', 'is less than', 'is smaller than'], TokenType.ARITHMETIC_OPERATOR)
+let GThanEq = generateStemmedTokenDefinition('GThanEq', '>=', ['>=', 'is greater than or equal to', 'is bigger than or equal to'], TokenType.ARITHMETIC_OPERATOR)
+let LThanEq = generateStemmedTokenDefinition('LThanEq', '<=', ['<=', 'is less than or equal to', 'is smaller than or equal to'], TokenType.ARITHMETIC_OPERATOR)
+let Eq = generateStemmedTokenDefinition('Eq', '=', ['=', 'is equal to', 'is same as', 'equal', 'is'], TokenType.ARITHMETIC_OPERATOR)
+let NotEq = generateStemmedTokenDefinition('NotEq', '!=', ['!=', 'is not equal', 'is not same as', 'not equal', 'is not'], TokenType.ARITHMETIC_OPERATOR)
 
-//Boolean operator tokens
-let And = generateStemmedTokenDefinition("And", "and", ["and", "conjunction", "as well as", "also", "along with", "in conjunction with", "plus", "together with"], TokenType.BINARY_OPERATOR)
-let Or = generateStemmedTokenDefinition("Or", "or", ["or"], TokenType.BINARY_OPERATOR)
-let Implies = generateStemmedTokenDefinition("Implies", "implies", ["implies"], TokenType.BINARY_OPERATOR)
-let Not = generateStemmedTokenDefinition("Not", "not", ["not"], TokenType.UNARY_OPERATOR)
+// Boolean operator tokens
+let And = generateStemmedTokenDefinition('And', 'and', ['and', 'conjunction', 'as well as', 'also', 'along with', 'in conjunction with', 'plus', 'together with'], TokenType.BINARY_OPERATOR)
+let Or = generateStemmedTokenDefinition('Or', 'or', ['or'], TokenType.BINARY_OPERATOR)
+let Implies = generateStemmedTokenDefinition('Implies', 'implies', ['implies'], TokenType.BINARY_OPERATOR)
+let Not = generateStemmedTokenDefinition('Not', 'not', ['not'], TokenType.UNARY_OPERATOR)
 
 // Temporal operator tokens
-let Eventually = generateStemmedTokenDefinition("Eventually", "eventually", ["eventually", "finally", "ultimately", "after all", "at last", "at some point", "soon", "at the end", "sometime", "possible"], TokenType.UNARY_OPERATOR)
-let Always = generateStemmedTokenDefinition("Always", "always", ["always", "invariably", "perpetually", "forever", "constantly"], TokenType.UNARY_OPERATOR)
-let Next = generateStemmedTokenDefinition("Next", "next", ["next", "after", "then", "consequently", "afterwards", "subsequently", "followed by", "after this", "later", "thereafter", "directly after"], TokenType.UNARY_OPERATOR)
-let Upto = generateStemmedTokenDefinition("Upto", "upto", ["upto"], TokenType.BINARY_OPERATOR)
-let Until = generateStemmedTokenDefinition("Until", "until", ["until"], TokenType.BINARY_OPERATOR)
-let WUntil = generateStemmedTokenDefinition("WUntil", "weak until", ["weak until"], TokenType.BINARY_OPERATOR)
-let Release = generateStemmedTokenDefinition("Release", "release", ["release"], TokenType.BINARY_OPERATOR)
+let Eventually = generateStemmedTokenDefinition('Eventually', 'eventually', ['eventually', 'finally', 'ultimately', 'after all', 'at last', 'at some point', 'soon', 'at the end', 'sometime', 'possible'], TokenType.UNARY_OPERATOR)
+let Always = generateStemmedTokenDefinition('Always', 'always', ['always', 'invariably', 'perpetually', 'forever', 'constantly'], TokenType.UNARY_OPERATOR)
+let Next = generateStemmedTokenDefinition('Next', 'next', ['next', 'after', 'then', 'consequently', 'afterwards', 'subsequently', 'followed by', 'after this', 'later', 'thereafter', 'directly after'], TokenType.UNARY_OPERATOR)
+let Upto = generateStemmedTokenDefinition('Upto', 'upto', ['upto'], TokenType.BINARY_OPERATOR)
+let Until = generateStemmedTokenDefinition('Until', 'until', ['until'], TokenType.BINARY_OPERATOR)
+let WUntil = generateStemmedTokenDefinition('WUntil', 'weak until', ['weak until'], TokenType.BINARY_OPERATOR)
+let Release = generateStemmedTokenDefinition('Release', 'release', ['release'], TokenType.BINARY_OPERATOR)
 
 // Developmental end state tokens
-let SelfLoop = generateStemmedTokenDefinition("SelfLoop", "SelfLoop", ["self loop", "stable loop", "fixed point", "fixpoint", "stable recursion", "end state", "stabilises"], TokenType.DEVELOPMENTAL_END_STATE)
-let Oscillation = generateStemmedTokenDefinition("Oscillation", "Oscillation", ["loop", "oscillation", "unstable loop", "unstable recursion", "cycle"], TokenType.DEVELOPMENTAL_END_STATE)
+let SelfLoop = generateStemmedTokenDefinition('SelfLoop', 'SelfLoop', ['self loop', 'stable loop', 'fixed point', 'fixpoint', 'stable recursion', 'end state', 'stabilises'], TokenType.DEVELOPMENTAL_END_STATE)
+let Oscillation = generateStemmedTokenDefinition('Oscillation', 'Oscillation', ['loop', 'oscillation', 'unstable loop', 'unstable recursion', 'cycle'], TokenType.DEVELOPMENTAL_END_STATE)
 
-//Composite tokens - these are replaced when parsing with the replacement array (where replacement is done based on the order of the items in the replacement array ie: Never => not(eventually(..)))
-let Never = generateCompositeTokenDefinition("Never", "never", ["never", "impossible", "at no time"], TokenType.COMPOSITE_OPERATOR, [Always, Not])
-let Later = generateCompositeTokenDefinition("Later", "later", ["later", "sometime in the future", "in the future", "sometime later", "after a while", "in the long run", "in a while"], TokenType.COMPOSITE_OPERATOR, [Next, Eventually])
+// Composite tokens - these are replaced when parsing with the replacement array (where replacement is done based on the order of the items in the replacement array ie: Never => not(eventually(..)))
+let Never = generateCompositeTokenDefinition('Never', 'never', ['never', 'impossible', 'at no time'], TokenType.COMPOSITE_OPERATOR, [Always, Not])
+let Later = generateCompositeTokenDefinition('Later', 'later', ['later', 'sometime in the future', 'in the future', 'sometime later', 'after a while', 'in the long run', 'in a while'], TokenType.COMPOSITE_OPERATOR, [Next, Eventually])
 
-//Activity classes
-let Active = generateStemmedTokenDefinition("Active", "Active", ["active", "on"], TokenType.ACTIVITY_CLASS)
-let InActive = generateStemmedTokenDefinition("InActive", "InActive", ["inactive", "off", "idle"], TokenType.ACTIVITY_CLASS)
-let MaximumActivity = generateStemmedTokenDefinition("MaximumActivity", "MaximumActivity", ["most active", "most intense", "maximum activity", "maximally active", "extremely active", "most active", "most possible", "maximum", "max", "highest"], TokenType.ACTIVITY_CLASS)
-let MinimumActivity = generateStemmedTokenDefinition("MinimumActivity", "MinimumActivity", ["least active", "least intense", "minimum activity", "minimally active", "least possible", "minimum", "min", "lowest"], TokenType.ACTIVITY_CLASS)
-let HighActivity = generateStemmedTokenDefinition("HighActivity", "HighActivity", ["high activity", "highly active"], TokenType.ACTIVITY_CLASS)
-let LowActivity = generateStemmedTokenDefinition("LowActivity", "LowActivity", ["low activity"], TokenType.ACTIVITY_CLASS)
+// Activity classes
+let Active = generateStemmedTokenDefinition('Active', 'Active', ['active', 'on'], TokenType.ACTIVITY_CLASS)
+let InActive = generateStemmedTokenDefinition('InActive', 'InActive', ['inactive', 'off', 'idle'], TokenType.ACTIVITY_CLASS)
+let MaximumActivity = generateStemmedTokenDefinition('MaximumActivity', 'MaximumActivity', ['most active', 'most intense', 'maximum activity', 'maximally active', 'extremely active', 'most active', 'most possible', 'maximum', 'max', 'highest'], TokenType.ACTIVITY_CLASS)
+let MinimumActivity = generateStemmedTokenDefinition('MinimumActivity', 'MinimumActivity', ['least active', 'least intense', 'minimum activity', 'minimally active', 'least possible', 'minimum', 'min', 'lowest'], TokenType.ACTIVITY_CLASS)
+let HighActivity = generateStemmedTokenDefinition('HighActivity', 'HighActivity', ['high activity', 'highly active'], TokenType.ACTIVITY_CLASS)
+let LowActivity = generateStemmedTokenDefinition('LowActivity', 'LowActivity', ['low activity'], TokenType.ACTIVITY_CLASS)
 
 
 /**
@@ -175,14 +174,14 @@ let ALLOWED_TOKENS = (<typeof Token[]>IGNORE)
     .concat(TEMPORAL_OPERATORS)
 
 function generateCompositeTokenDefinition(id: string, label: string, synonyms: string[], tokenType: TokenType, replacementTokens?: typeof Token[]) {
-    if (tokenType == TokenType.COMPOSITE_OPERATOR && (!replacementTokens || _.isEmpty(replacementTokens))) {
-        throw Error("No replacement tokens found for composite token type")
+    if (tokenType === TokenType.COMPOSITE_OPERATOR && (!replacementTokens || _.isEmpty(replacementTokens))) {
+        throw Error('No replacement tokens found for composite token type')
     } else {
         let tokenClass = generateStemmedTokenDefinition(id, label, synonyms, tokenType)
         let compositeTokenClass = class extends CompositeToken {
             static REPLACEMENT_TOKENS = replacementTokens
         }
-        for (var k in tokenClass) compositeTokenClass[k] = tokenClass[k];
+        for (var k in tokenClass) compositeTokenClass[k] = tokenClass[k]
         Object.defineProperty(compositeTokenClass.prototype.constructor, 'name', { value: id })
         return compositeTokenClass
     }
@@ -200,9 +199,9 @@ function generateCompositeTokenDefinition(id: string, label: string, synonyms: s
  */
 
 function generateStemmedTokenDefinition(id: string, label: string, synonyms: string[], tokenType): typeof BaseToken {
-    let stemmedSynonyms = synonyms.map(s => s.split(" ").map(natural.PorterStemmer.stem).join(" "))
-    //We require explicit token boundaries on binary tokens to ensure input strings do not get match with tokens that are substrings eg: notch and not
-    let pattern = RegExp(tokenType == TokenType.BINARY_OPERATOR ? "(\\b)(" + stemmedSynonyms.join('|') + ")(\\b)" : stemmedSynonyms.join('|'), "i")
+    let stemmedSynonyms = synonyms.map(s => s.split(' ').map(natural.PorterStemmer.stem).join(' '))
+    // We require explicit token boundaries on binary tokens to ensure input strings do not get match with tokens that are substrings eg: notch and not
+    let pattern = RegExp(tokenType === TokenType.BINARY_OPERATOR ? '(\\b)(' + stemmedSynonyms.join('|') + ')(\\b)' : stemmedSynonyms.join('|'), 'i')
 
     let tokenClass = class extends BaseToken {
         static PATTERN = pattern
@@ -222,8 +221,7 @@ function generateStemmedTokenDefinition(id: string, label: string, synonyms: str
 export default class NLParser extends Parser {
 
     /** Base entry rule of the graar */
-    private formula = this.RULE<AST.InternalFormula>("formula", () => {
-        let ltlFormula
+    private formula = this.RULE<AST.InternalFormula>('formula', () => {
         let tree = {
             left: null
         }
@@ -246,7 +244,7 @@ export default class NLParser extends Parser {
 
         var trailingTree, lastTrailingNode
 
-        //handle trailing operators
+        // handle trailing operators
         this.MANY2(() => {
             var subTrailingTree = trailingTree
             let unaryOperatorTree = NLParser.asUnaryExpressionNode(this.SUBRULE2(this.compositeOperator))
@@ -302,7 +300,7 @@ export default class NLParser extends Parser {
      *  E.g.: (a=1 and b=1) (this is still a disjunctionExpression with an implicit disjunction)
      *        (a=1 or (a=1 and a=2))
      */
-    private disjunctionExpression = this.RULE<AST.DisjunctionExpression | AST.DisjunctionExpressionChild>("disjunctionExpression", () => {
+    private disjunctionExpression = this.RULE<AST.DisjunctionExpression | AST.DisjunctionExpressionChild>('disjunctionExpression', () => {
         let nodes: AST.DisjunctionExpressionChild[] = []
         let values = []
 
@@ -315,14 +313,14 @@ export default class NLParser extends Parser {
             })
             nodes.push(this.SUBRULE2(this.conjunctionExpression))
         })
-        return NLParser.asNestedTree<AST.DisjunctionExpression | AST.ConjunctionExpressionChild>("disjunctionExpression", nodes, values)
+        return NLParser.asNestedTree<AST.DisjunctionExpression | AST.ConjunctionExpressionChild>('disjunctionExpression', nodes, values)
     })
 
     /**
      *  Conjunction expressions have higher precedence than disjunction expressions hence their order in the tree.
      *  These are of the form: (a=1 and b=2)
      */
-    private conjunctionExpression = this.RULE<AST.ConjunctionExpression | AST.ConjunctionExpressionChild>("conjunctionExpression", () => {
+    private conjunctionExpression = this.RULE<AST.ConjunctionExpression | AST.ConjunctionExpressionChild>('conjunctionExpression', () => {
         let nodes: AST.ConjunctionExpressionChild[] = []
         let values = []
 
@@ -335,14 +333,14 @@ export default class NLParser extends Parser {
             })
             nodes.push(this.SUBRULE2(this.temporalExpression))
         })
-        return NLParser.asNestedTree<AST.ConjunctionExpression | AST.ConjunctionExpressionChild>("conjunctionExpression", nodes, values)
+        return NLParser.asNestedTree<AST.ConjunctionExpression | AST.ConjunctionExpressionChild>('conjunctionExpression', nodes, values)
     })
 
     /**
      *  Temporal expressions can be of the form: always(x=1), (always(x=1) until eventually(k=2)).
      *  Binary temporal operators have a higher precedence than logical binary operators.
      */
-    private temporalExpression = this.RULE<AST.TemporalExpression | AST.AtomicExpression>("temporalExpression", () => {
+    private temporalExpression = this.RULE<AST.TemporalExpression | AST.AtomicExpression>('temporalExpression', () => {
         let nodes: AST.AtomicExpression[] = []
         let values = []
 
@@ -351,13 +349,13 @@ export default class NLParser extends Parser {
             values.push(this.SUBRULE(this.binaryTemporalOperator))
             nodes.push(this.SUBRULE2(this.atomicExpression))
         })
-        return NLParser.asNestedTree<AST.TemporalExpression | AST.AtomicExpression>("temporalExpression", nodes, values)
+        return NLParser.asNestedTree<AST.TemporalExpression | AST.AtomicExpression>('temporalExpression', nodes, values)
     })
 
     /**
      *  Atomic expressions eg: eventually(a=1)
      */
-    private atomicExpression = this.RULE<AST.AtomicExpression>("atomicExpression", () => {
+    private atomicExpression = this.RULE<AST.AtomicExpression>('atomicExpression', () => {
         let lastNode
         let tree = {
             left: null
@@ -393,7 +391,7 @@ export default class NLParser extends Parser {
     /**
      *  A single unit eg:  MODELVAR(1) = 1 where MODELVAR(1) is the encoding of the actual variable with id=1
      */
-    private relationalExpression = this.RULE<AST.RelationalExpression>("relationalExpression", () => {
+    private relationalExpression = this.RULE<AST.RelationalExpression>('relationalExpression', () => {
         // consume the model variable token ie:  MODELVAR(variableId)
         let image = this.CONSUME(ModelVariable).image
         // The model variables are always encoded in the form MODELVAR(variableId), 
@@ -413,17 +411,17 @@ export default class NLParser extends Parser {
     /**
     *  A single unit eg:  MODELVAR(1) = 1 where MODELVAR(1) is the encoding of the actual variable with id=1
     */
-    private activityExpression = this.RULE<AST.ActivityExpression>("activityExpression", () => {
+    private activityExpression = this.RULE<AST.ActivityExpression>('activityExpression', () => {
         // consume the model variable token ie:  MODELVAR(variableId)
         let image = this.CONSUME(ModelVariable).image
         // The model variables are always encoded in the form MODELVAR(variableId), 
         // which means the variable id will always be found at the 4th group in the RegExp.match results
         let modelVariableId = parseInt(image.match(new RegExp(ModelVariable.PATTERN))[3])
-        //activity assignment ("only the 'is' makes sense, but support for the others is present nevertheless")
+        // activity assignment ("only the 'is' makes sense, but support for the others is present nevertheless")
         this.OPTION(() => {
             this.CONSUME(Eq)
         })
-        //activity classes
+        // activity classes
         let activityClass = this.OR([{
             ALT: () => {
                 this.CONSUME(Active)
@@ -467,7 +465,7 @@ export default class NLParser extends Parser {
     /**
     *  A single unit eg:  FORMULAPOINTER(1) = 1 where FORMULAPOINTER(1) is the encoding of the actual variable with id=1
     */
-    private formulaPointer = this.RULE<AST.FormulaPointer>("formulaPointer", () => {
+    private formulaPointer = this.RULE<AST.FormulaPointer>('formulaPointer', () => {
         let image = this.CONSUME(FormulaPointerToken).image
         let formulaPointerId = parseInt(image.match(new RegExp(FormulaPointerToken.PATTERN))[3])
         return {
@@ -477,7 +475,7 @@ export default class NLParser extends Parser {
     })
 
 
-    private booleanLiteral = this.RULE<AST.TrueLiteral | AST.UnaryExpression>("booleanLiteral", () => {
+    private booleanLiteral = this.RULE<AST.TrueLiteral | AST.UnaryExpression>('booleanLiteral', () => {
         let trueLiteralSubtree: AST.TrueLiteral = {
             type: AST.Type.TrueLiteral,
             value: TrueLiteral.LABEL as AST.TrueLiteralSymbol
@@ -493,7 +491,7 @@ export default class NLParser extends Parser {
                 return FalseLiteral
             }
         }])
-        if (tokenClass == TrueLiteral) {
+        if (tokenClass === TrueLiteral) {
             return trueLiteralSubtree
         } else {
             return {
@@ -507,7 +505,7 @@ export default class NLParser extends Parser {
         }
     })
 
-    private developmentalEndState = this.RULE<AST.DevelopmentalEndState>("developmentalEndState", () => {
+    private developmentalEndState = this.RULE<AST.DevelopmentalEndState>('developmentalEndState', () => {
         let developmentalEndStateLabel = this.OR([{
             ALT: () => {
                 this.CONSUME(SelfLoop)
@@ -526,7 +524,7 @@ export default class NLParser extends Parser {
         }
     })
 
-    private binaryTemporalOperator = this.RULE<AST.BinaryTemporalOperator>("binaryTemporalOperator", () => {
+    private binaryTemporalOperator = this.RULE<AST.BinaryTemporalOperator>('binaryTemporalOperator', () => {
         return {
             type: AST.Type.BinaryTemporalOperator,
             value: this.OR([{
@@ -551,8 +549,8 @@ export default class NLParser extends Parser {
                 }
             }]) as AST.BinaryTemporalOperatorSymbol
         }
-    });
-    private relationalOperator = this.RULE<AST.RelationalOperator>("relationalOperator", () => {
+    })
+    private relationalOperator = this.RULE<AST.RelationalOperator>('relationalOperator', () => {
         return {
             type: AST.Type.RelationalOperator,
             value: this.OR([{
@@ -587,9 +585,9 @@ export default class NLParser extends Parser {
                 }
             }]) as AST.RelationalOperatorSymbol
         }
-    });
+    })
 
-    private compositeOperator = this.RULE("compositeOperator", () => {
+    private compositeOperator = this.RULE('compositeOperator', () => {
         return this.OR([{
             ALT: () => [this.SUBRULE(this.unaryOperator)]
         }, {
@@ -603,9 +601,9 @@ export default class NLParser extends Parser {
                 return CompositeToken.replacementTokensAsSubtrees(Later)
             }
         }])
-    });
+    })
 
-    private unaryOperator = this.RULE<AST.UnaryOperator>("unaryOperator", () => {
+    private unaryOperator = this.RULE<AST.UnaryOperator>('unaryOperator', () => {
         return {
             type: AST.Type.UnaryOperator,
             value: this.OR([{
@@ -636,15 +634,15 @@ export default class NLParser extends Parser {
                 }
             }]).LABEL as AST.UnaryOperatorSymbol
         }
-    });
+    })
 
-    //for internal purpose only
+    // for internal purpose only
     private constructor(inputTokens: Token[]) {
         super(inputTokens, ALLOWED_TOKENS)
         // very important to call this after all the rules have been defined.
         // otherwise the parser may not work correctly as it will lack information
         // derived during the self analysis phase.
-        Parser.performSelfAnalysis(this);
+        Parser.performSelfAnalysis(this)
     }
 
     private static asUnaryExpressionNode(unaryOperators) {
@@ -660,8 +658,8 @@ export default class NLParser extends Parser {
             }
             subtree = subtree.left
             lastNode = subtree
-        });
-        //get rid of the first empty left node
+        })
+        // get rid of the first empty left node
         return { tree: tree.left, lastNode: lastNode }
     }
 
@@ -705,15 +703,14 @@ export default class NLParser extends Parser {
     private static applySentencePreprocessing(sentence: string, bmaModel, formulaPointers?: FormulaPointer[]): string {
         let hasFormulaPointers = formulaPointers && !_.isEmpty(formulaPointers)
         let modelVariables = bmaModel.Model.Variables
-        let modelVariableRelationOpRegex = "(" + _.pluck(modelVariables, "Name").join("|") +
-            ")(\\s*)(" + ARITHMETIC_OPERATORS.map((op) => op.NON_STEMMED_SYNONYMS.join("|")).join("|") +
-            ")(\\s*)"
-        let modelVariableAndFormulaPointerRegex = new RegExp(hasFormulaPointers ? modelVariableRelationOpRegex + "|" + "\\b(" + _.pluck(formulaPointers, "name").join("|") + ")\\b" : modelVariableRelationOpRegex, "ig")
+        let modelVariableRelationOpRegex = '(' + _.pluck(modelVariables, 'Name').join('|') +
+            ')(\\s*)(' + ARITHMETIC_OPERATORS.map((op) => op.NON_STEMMED_SYNONYMS.join('|')).join('|') +
+            ')(\\s*)'
+        let modelVariableAndFormulaPointerRegex = new RegExp(hasFormulaPointers ? modelVariableRelationOpRegex + '|' + '\\b(' + _.pluck(formulaPointers, 'name').join('|') + ')\\b' : modelVariableRelationOpRegex, 'ig')
 
-        var matchedGroups, variableTokens = [];
-        let unknownIdentifiers = { variables: [], formulaPointers: [] }
+        var matchedGroups, variableTokens = []
         while ((matchedGroups = modelVariableAndFormulaPointerRegex.exec(sentence)) !== null) {
-            //The variable will always on the 1st index as the 0th index is the entire group and the variable is matched in the 1st group of the regex expression
+            // The variable will always on the 1st index as the 0th index is the entire group and the variable is matched in the 1st group of the regex expression
             if (hasFormulaPointers && _.last(matchedGroups)) {
                 let forumulaPointer = _.last(matchedGroups)
                 variableTokens.push({ offset: matchedGroups.index, name: forumulaPointer, id: _.find(formulaPointers, (v: any) => v.name === forumulaPointer).id, type: FormulaPointerToken })
@@ -721,27 +718,27 @@ export default class NLParser extends Parser {
                 variableTokens.push({ offset: matchedGroups.index, name: matchedGroups[1], id: _.find(bmaModel.Model.Variables, (v: any) => v.Name.toLowerCase() === matchedGroups[1].toLowerCase()).Id, type: ModelVariable })
             }
         }
-        //use the generated offsets to replace instances of variable usage with MODELVAR(k), where k is the model variable
-        //variableTokens can be empty when processing a resynched token stream
+        // use the generated offsets to replace instances of variable usage with MODELVAR(k), where k is the model variable
+        // variableTokens can be empty when processing a resynched token stream
         if (!_.isEmpty(variableTokens)) {
             var processedSentence
             for (var i = 0; i < variableTokens.length; i++) {
                 let token = variableTokens[i]
-                let encodedToken = token.type == FormulaPointerToken ? "FORMULAPOINTER(" + token.id + ")" : "MODELVAR(" + token.id + ")"
-                if (i == 0) {
+                let encodedToken = token.type === FormulaPointerToken ? 'FORMULAPOINTER(' + token.id + ')' : 'MODELVAR(' + token.id + ')'
+                if (i === 0) {
                     processedSentence = sentence.substring(0, token.offset) + encodedToken
                 } else {
                     let prevToken = variableTokens[i - 1]
                     processedSentence += sentence.substring(prevToken.offset + prevToken.name.length, token.offset) + encodedToken
                 }
             }
-            //append the tail of the original sentence to the processed sentence
+            // append the tail of the original sentence to the processed sentence
             let lastVariableToken = _.last(variableTokens)
             processedSentence += sentence.substring(lastVariableToken.offset + lastVariableToken.name.length, sentence.length)
             sentence = processedSentence
         }
-        //stem the sentence
-        return sentence.split(" ").map((t) => ModelVariable.PATTERN.test(t) || FormulaPointerToken.PATTERN.test(t) || TrueLiteral.PATTERN.test(t) || FalseLiteral.PATTERN.test(t) ? t : natural.PorterStemmer.stem(t)).join(" ")
+        // stem the sentence
+        return sentence.split(' ').map((t) => ModelVariable.PATTERN.test(t) || FormulaPointerToken.PATTERN.test(t) || TrueLiteral.PATTERN.test(t) || FalseLiteral.PATTERN.test(t) ? t : natural.PorterStemmer.stem(t)).join(' ')
     }
 
     /**
@@ -749,19 +746,19 @@ export default class NLParser extends Parser {
      */
     static parse(sentence: string, bmaModel, formulaPointers?: FormulaPointer[], didResynchedBefore?: boolean): ParserResponse {
         sentence = NLParser.applySentencePreprocessing(sentence, bmaModel, formulaPointers)
-        //lex the sentence to get token stream where illegal tokens are ignored and returns a token stream
+        // lex the sentence to get token stream where illegal tokens are ignored and returns a token stream
         let lexerResult = (new Lexer(ALLOWED_TOKENS, true)).tokenize(sentence)
         var parser = new NLParser(lexerResult.tokens)
-        //We perform parsing by execute the root rule
+        // We perform parsing by execute the root rule
         var parserResponse = parser.formula()
-        //handle parse response
+        // handle parse response
         if (parserResponse.AST) {
             return {
                 responseType: ParserResponseType.SUCCESS,
                 AST: parserResponse.AST
             }
         } else if (parserResponse.resyncedToken) {
-            //the parser failed to parse a token and return the set of tokens less the error token that can possibly be parsed 
+            // the parser failed to parse a token and return the set of tokens less the error token that can possibly be parsed 
             return handleResynchedTokens(formulaPointers, didResynchedBefore)
         } else {
             return createParseError()
@@ -778,9 +775,9 @@ export default class NLParser extends Parser {
           *  We continue parsing the resynched tokens until we find a good parse, no tokens are left or no new resynched tokens are generated
           */
         function handleResynchedTokens(formulaPointers?: FormulaPointer[], didResynchedBefore?: boolean): ParserResponse {
-            //extract the part of the sentance starting from the first resynched token
-            var currentResynched = sentence.substring(parserResponse.resyncedToken.offset, sentence.length);
-            //check the newly generated suffix with the previously generated suffix in order to prevent an infinite loop
+            // extract the part of the sentance starting from the first resynched token
+            var currentResynched = sentence.substring(parserResponse.resyncedToken.offset, sentence.length)
+            // check the newly generated suffix with the previously generated suffix in order to prevent an infinite loop
             if (didResynchedBefore) {
                 return NLParser.parse(sentence.substring(0, parserResponse.errorToken.offset) + currentResynched, bmaModel, formulaPointers, didResynchedBefore)
             } else {
