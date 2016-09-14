@@ -37,9 +37,9 @@ describe('parse() should detect variables correctly', () => {
 })
 describe('parse() should detect unknown variable usage', () => {
     it('parse() should handle single variables', () => {
-        var sentence = "show me a simulation where unknownvar=123 and a=2"
+        var sentence = "show me a simulation where Unknownvar is 123 and a=2"
         var parserResponse = NLParser.parse(sentence, testModel)
-        expect(parserResponse.unknownVariables && parserResponse.unknownVariables.length == 1 && parserResponse.unknownVariables[0]==="unknownvar")
+        expect(parserResponse.responseType == ParserResponseType.UNKNOWN_VARIABLES_FOUND && parserResponse.unknownVariables && parserResponse.unknownVariables.length == 1 && parserResponse.unknownVariables[0] === "unknownvar")
     })
 })
 
