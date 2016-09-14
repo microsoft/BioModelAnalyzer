@@ -11,7 +11,7 @@ We will be using the example 'What is the BMA' :
 - Continue to add different utterances the user may enter, and submit them as the AboutBMA intent
 - Train the model and then update the published application
 
-* For more information on how LUIS can be used click [LUIS](microsoft.com/cognitive-services/en-us/LUIS-api/documentation/home) 
+* For more information on how LUIS can be used click [here](microsoft.com/cognitive-services/en-us/LUIS-api/documentation/home) 
 
 ## Adding question to BMA chat bot 
 
