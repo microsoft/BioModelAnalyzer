@@ -142,72 +142,81 @@ module BMA.CodeEditor {
             suggestVariables: new Array<string>(0),
         },
 
-        _create: function () {
-            this._refresh();
-        },
+        editor: monaco.editor,
 
-        _refresh: function () {
+        _create: function () {
             var that = this;
             var options = <BMA.CodeEditor.Options>this.options;
+            var lang = BMA.CodeEditor.languages[options.language];
+            monaco.languages.register({ id: options.language });
+            monaco.languages.setMonarchTokensProvider(options.language, lang.tokensProvider);
+            monaco.languages.setLanguageConfiguration(options.language, { brackets: [['(', ')']] });
 
-            var editor = $.data(this.element, "editor");
-            if (!editor) {
-                var lang = BMA.CodeEditor.languages[options.language];
-                monaco.languages.register({ id: options.language });
-                monaco.languages.setMonarchTokensProvider(options.language, lang.tokensProvider);
-                monaco.languages.setLanguageConfiguration(options.language, { brackets: [['(', ')']] });
+            if (lang._completionItemProvider) lang._completionItemProvider.dispose();
+            lang._completionItemProvider = monaco.languages.registerCompletionItemProvider(options.language, { provideCompletionItems: lang.completionItemProvider(options.suggestVariables) });
 
-                if (lang._completionItemProvider) lang._completionItemProvider.dispose();
-                lang._completionItemProvider = monaco.languages.registerCompletionItemProvider(options.language, { provideCompletionItems: lang.completionItemProvider(options.suggestVariables) });
+            this.element.empty();
+            this.element.addClass("bma.codeeditor");
 
-                this.element.empty();
-                this.element.addClass("bma.codeeditor");
+            var editor = monaco.editor.create(this.element[0], {
+                value: options.text,
+                language: options.language,
+                lineNumbers: false,
+                scrollBeyondLastLine: false,
+                autoClosingBrackets: true,
+                wordWrap: true
+            });
+            this.editor = editor;
+            this.onContentChanged = editor.onDidChangeModelContent(e => {
+                that._trigger("change");
+            });
+        },        
 
-                editor = monaco.editor.create(this.element[0], {
-                    value: options.text,
-                    language: options.language,
-                    lineNumbers: false,
-                    scrollBeyondLastLine: false,
-                    autoClosingBrackets: true,
-                    wordWrap: true
-                });
-                $.data(this.element, "editor", editor);
-                this.onContentChanged = editor.onDidChangeModelContent(e => {
-                    that._trigger("change");
-                });
+        _setOption: function (key, value) {
+            var editor = this.editor;
+            if (key === "text") {
+                editor.setValue(value);
             }
-            else { // already initialized
-                var lang = BMA.CodeEditor.languages[options.language];
-
-                // Update completion item provider
+            else if (key === "suggestVariables") {
+                var language = this.options.language;
+                var lang = BMA.CodeEditor.languages[language];
                 if (lang._completionItemProvider) lang._completionItemProvider.dispose();
-                lang._completionItemProvider = monaco.languages.registerCompletionItemProvider(options.language, { provideCompletionItems: lang.completionItemProvider(options.suggestVariables) });
-
-                // If need, update editor text
-                if (editor.getValue() != options.text) {
-                    editor.setValue(options.text);
-                }
+                lang._completionItemProvider = monaco.languages.registerCompletionItemProvider(language, { provideCompletionItems: lang.completionItemProvider(value) });
             }
+            else {
+                console.log("Option " + key + " cannot be changed");
+            }
+            this._superApply(arguments);
         },
 
         _destroy: function () {
-            var editor = $.data(this.element, "editor");
+            var editor = this.editor;
             if (editor) {
-                editor.dispose();
+                editor.dispose();                
             }
+            this.editor = undefined;
             this.element.empty();
         },
 
-        // _setOptions is called with a hash of all options that are changing
-        // always refresh when changing options
-        _setOptions: function () {
-            this._superApply(arguments);
-            this._refresh();
+        text: function () {
+            var editor = this.editor;
+            return editor.getValue();
         },
 
-        text: function () {
-            var editor = $.data(this.element, "editor");
-            return editor.getValue();
+        insertTextAtCursor: function (text: string): boolean {
+            var editor = <monaco.editor.IStandaloneCodeEditor>this.editor;
+            var selection = editor.getSelection(); 
+            var insert: monaco.editor.IIdentifiedSingleEditOperation = {
+                identifier: {
+                    major: 0, minor: 0
+                },
+                range: selection,
+                text: text,
+                forceMoveMarkers: true,
+                isAutoWhitespaceEdit: false
+            };
+
+            return editor.executeEdits("codeeditor", [insert]);
         }
     });
 } (jQuery));
