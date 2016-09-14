@@ -3,6 +3,8 @@
 import * as assert from 'assert'
 import * as Promise from 'promise'
 import * as builder from 'botbuilder'
+import * as express from 'express'
+import * as http from 'http'
 import {setup as setupBot} from '../../src/bot'
 import TestConnector from './TestConnector'
 import MemoryModelStorage from './MemoryModelStorage'
@@ -17,8 +19,31 @@ function createBot () {
         persistConversationData: true
     })
     let modelStorage = new MemoryModelStorage()
-    setupBot(bot, modelStorage)
+    setupBot(bot, modelStorage, true)
     return bot
+}
+
+const PORT = 5678
+
+export function serveTestData () {
+    let app: express.Express
+    let server: http.Server
+    before(() => {
+        app = express()
+        app.use('/', express.static('./test/data'))
+        server = app.listen(PORT)        
+    })
+
+    after(() => {
+        server.close()
+    })
+}
+
+export function asAttachment (filename): builder.IAttachment {
+    return {
+        contentType: 'application/octet-stream',
+        contentUrl: `http://localhost:${PORT}/${filename}`
+    }
 }
 
 export interface DirectedMessage {

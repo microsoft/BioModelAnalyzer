@@ -11,11 +11,11 @@ import {registerModelStorageDialogs} from './dialogs/modelStorage'
 import {ModelStorage} from './ModelStorage'
 
 /** Registers all dialogs and middlewares onto the given bot instance. */
-export function setup (bot: builder.UniversalBot, modelStorage: ModelStorage) {
+export function setup (bot: builder.UniversalBot, modelStorage: ModelStorage, skipBMAAPI = false) {
     registerMiddleware(bot)
     registerLUISDialog(bot, modelStorage)
     registerTutorialDialogs(bot)
-    registerFormulaDialog(bot, modelStorage)
+    registerFormulaDialog(bot, modelStorage, skipBMAAPI)
     registerFormulaHistoryDialogs(bot)
     registerModelStorageDialogs(bot, modelStorage)
 }
