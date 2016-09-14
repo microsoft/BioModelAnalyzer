@@ -12,7 +12,7 @@
         editor.bmaeditor();
         editor.bmaeditor("destroy");
     });
-
+    /*
     it("should change a name in <input> when widget option changed", () => {
         var value = "testname";
         var nameinput = editor.find("input").eq(0);
@@ -69,7 +69,7 @@
         expect(editor.bmaeditor("getFormula")).toEqual(value);
     });
 
-    /*
+    
     it("should set options", () => {
         var neweditor = $('<div></div>');
         //neweditor.bmaeditor({ functions: ["fight", "rebel", "riot"] });
@@ -93,7 +93,7 @@
         expect(funs.length).toEqual(1);
         //expect(neweditor.find("div.bma-formula-validation-message").text()).toEqual(error);
     });
-    */
+    
 
     it("should throw error when functions are not registered", () => {
         var edd = $('<div></div>');
@@ -153,7 +153,7 @@
             expect(inputslist.children().eq(i).text()).toEqual(arr[i].Name);
         }
     });
-    /*
+    
     describe("input functions", () => {
         window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
         window.Commands = new BMA.CommandRegistry();
@@ -256,7 +256,7 @@
             expect(textarea.val()).toEqual("floor()");
         });
     })
-    */
+    
     
 
     it("should input vars in formula correctly after choosing from the list", () => {
@@ -314,6 +314,6 @@
         expect(editor.bmaeditor("option", "formula")).toEqual("");
         expect(textarea.val()).toEqual("testformula");
     });
-
+    */
 
 })   
