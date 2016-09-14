@@ -6,4 +6,5 @@ BMA Chat Bot Documentation
   * [LUIS model](luis.md)
   * [LTL-NL parser](NLParser.md)
   * [How to add/modify tutorials](tutorials.md)
+  * [Adding general user queries](questions.md)
 * [Roadmap](ROADMAP.md)

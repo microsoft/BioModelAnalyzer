@@ -15,8 +15,8 @@ We will be using the example 'What is the BMA' :
 
 ## Adding question to BMA chat bot 
 
-- Open strings.ts to add your answer with a descriptive name, e.g. `ABOUT_BMA = 'insert description here'` 
-- Open luis.ts to add the new intent handler using the format below:
+- Open /src/dialogs/strings.ts to add your answer with a descriptive name, e.g. `ABOUT_BMA = 'insert description here'` 
+- Open /src/dialogs/luis.ts to add the new intent handler using the format below:
 
 ```
     matches('AboutBMA', (session) => {
