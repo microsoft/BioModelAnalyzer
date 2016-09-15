@@ -1,11 +1,11 @@
 // Copyright (C) 2016 Microsoft - All Rights Reserved
 
 import { expect } from 'chai'
-import { default as NLParser, ParserResponseType } from '../src/NLParser/NLParser'
-import * as ASTUtils from '../src/NLParser/ASTUtils'
-import { ModelFile } from '../src/BMA'
+import { default as NLParser, ParserResponseType } from '../../src/NLParser/NLParser'
+import * as ASTUtils from '../../src/NLParser/ASTUtils'
+import { ModelFile } from '../../src/BMA'
 
-let testModel: ModelFile = require('./data/testmodel.json')
+let testModel: ModelFile = require('../data/testmodel.json')
 
 var formulaPointers = [{
     name: "FMA",

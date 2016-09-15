@@ -8,6 +8,7 @@ This document lists some future development paths that could be followed for eac
 - Accept phrases with infix unary operators ie: "a is always 1"
 - Enhance the error recovery to perform probabilistic token replacement as well as token skipping
 - Identify unknown variables in formula
+- Log queries that could not be parsed
 
 ## Model Knowledge
 
