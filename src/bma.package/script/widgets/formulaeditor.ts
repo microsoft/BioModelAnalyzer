@@ -131,7 +131,23 @@
             //Adding text editor
             var textEditorDiv = $("<div></div>").width("calc(100% - 10px)").width("calc(100% - 50px)").css("padding-top", 10).css("padding-left", 10).appendTo(formulaContainer);
             that.textEditor = textEditorDiv;
-            textEditorDiv.formulatexteditor({ formula: "2 + 3", isvalid: false, errormessage: "test Error message" });
+            textEditorDiv.formulatexteditor({
+                formula: "", isvalid: true, errormessage: "", onformulachangedcallback: function () {
+                    that.options.formula = textEditorDiv.formulatexteditor("option", "formula");
+                    try {
+                        that.operation = BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.variables);
+                        that.textEditor.formulatexteditor({ isvalid: true, errormessage: "" });
+                    }
+                    catch (ex) {
+                        //Switch to text mode with current value
+                        that.textEditor.formulatexteditor({ isvalid: false, errormessage: ex });
+                        if (that.operationLayout !== undefined) {
+                            that.operationLayout.IsVisible = false;
+                            that.operationLayout = undefined;
+                        }
+                    }
+                }
+            });
             textEditorDiv.hide();
 
             //Adding drawing surface
@@ -405,10 +421,10 @@
                 drop: function (arg, ui) {
                     that.opToDrag = undefined;
                     that.draggableDiv.attr("data-dragsource", undefined);
+                    that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
                     that._switchMode("compact");
                 }
             });
-
 
             var editor = $("<div></div>").css("position", "absolute").css("background-color", "white").css("z-index", 1).addClass("window").addClass("container-name").appendTo(svgDiv);
             editor.click(function (arg) { arg.stopPropagation(); });
@@ -913,15 +929,9 @@
             var formulaDiv = $('<div></div>')
                 .addClass('target-function')
                 .css("margin-top", 0)
+                .css("display", "flex").css("flex-direcition", "row")
                 .appendTo(root);
-                /*
-            this.formulaTextArea = $('<textarea></textarea>')
-                .attr("spellcheck", "false")
-                .addClass("formula-text-area")
-                .css("margin-top", 0)
-                .height(140)
-                .appendTo(formulaDiv);
-                */
+               
             this.formulaTextArea = $('<div></div>').width("calc(100% - 55px)")
                 .addClass("bma-formulaeditor-texteditor")
                 .css("margin-top", 0)
@@ -933,7 +943,7 @@
                 .appendTo(formulaDiv);
             this.errorMessage = $('<div></div>')
                 .addClass("formula-validation-message")
-                .appendTo(formulaDiv);
+                .appendTo(root);
 
             this.formulaTextArea.codeeditor({
                 text: that.options.formula,
