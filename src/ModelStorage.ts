@@ -12,14 +12,15 @@ const GENERATED_MODELS = 'genmodels'
 
 export interface ModelStorage {
     storeUserModel (id: string, model: BMA.ModelFile): Promise.IThenable<boolean>
-    getUserModel (id: string): Promise.IThenable<any>
+    getUserModel (id: string): Promise.IThenable<BMA.ModelFile>
     getUserModelUrl (id: string): string
     removeUserModel (id: string): Promise.IThenable<boolean>
     storeGeneratedModel (model: BMA.ModelFile): Promise.IThenable<string>
 }
 
 export class BlobModelStorage implements ModelStorage {
-    blobService
+    private blobService
+
     constructor () {
         this.blobService = azure.createBlobService(config.get('AZURE_STORAGE_ACCOUNT'), config.get('AZURE_STORAGE_ACCESS_KEY'))
 
@@ -64,7 +65,7 @@ export class BlobModelStorage implements ModelStorage {
         }
     }
 
-    storeUserModel (id, model) {
+    storeUserModel (id: string, model: BMA.ModelFile) {
         // TODO think about expiration
         let content = JSON.stringify(model, null, 2)
 
@@ -80,7 +81,7 @@ export class BlobModelStorage implements ModelStorage {
         })        
     }
 
-    getUserModel (id) {
+    getUserModel (id: string) {
         return new Promise((resolve, reject) => {
             this.blobService.getBlobToText(USER_MODELS, id, {}, (error, text) => {
                 if (error) {
@@ -93,7 +94,7 @@ export class BlobModelStorage implements ModelStorage {
         })
     }
 
-    removeUserModel (id) {
+    removeUserModel (id: string) {
         return new Promise((resolve, reject) => {
             this.blobService.deleteBlobIfExists(USER_MODELS, id, {}, (error, removed) => {
                 if (error) {
@@ -106,12 +107,12 @@ export class BlobModelStorage implements ModelStorage {
         })
     }
 
-    getUserModelUrl (id) {
+    getUserModelUrl (id: string) {
         var url = this.blobService.getUrl(USER_MODELS, id)
         return url
     }
 
-    storeGeneratedModel (model) {
+    storeGeneratedModel (model: BMA.ModelFile) {
         // TODO remove old models
         let content = JSON.stringify(model, null, 2)
 
