@@ -589,7 +589,7 @@ function loadScript(version) {
 
     var localSettings = new BMA.OneDrive.OneDriveSettings("79832916-6a39-4c73-b13e-ee28c25d46a7", "http://localhost:81/html/callback.html", "signin");
     var bmaNewSettings = new BMA.OneDrive.OneDriveSettings("000000004C12BD9C", "http://bmanew.cloudapp.net/html/callback.html", "signin");
-    var oneDriveSettings = localSettings;
+    var oneDriveSettings = bmaNewSettings; //localSettings;
 
     var connector = new BMA.OneDrive.OneDriveConnector(oneDriveSettings);
     
