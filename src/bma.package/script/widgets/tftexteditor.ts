@@ -3,6 +3,8 @@
 
 (function ($) {
     $.widget("BMA.tftexteditor", {
+        formulaTextArea: undefined,
+
         options: {
             formula: "",
             functions: ["VAR", "CONST"],//, "POS", "NEG"],//],
@@ -21,12 +23,17 @@
             inputs.forEach(function (val, ind) {
                 var item = $('<div></div>').text(val.Name).appendTo(that.listOfInputs);
                 item.bind("click", function () {
-                    that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
+                    //that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
+                    var formulaPart = "var(" + $(this).text() + ")";
+                    that.formulaTextArea.codeeditor("insertTextAtCursor", formulaPart);
                     that.listOfInputs.hide();
                 });
             });
 
-            this.formulaTextArea.val(that.options.formula);
+            //this.formulaTextArea.val(that.options.formula);
+            this.formulaTextArea.codeeditor({
+                formula: that.options.formula
+            });
             if (that.options.onformulachangedcallback !== undefined) {
                 that.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
             }
@@ -96,16 +103,33 @@
                 .addClass("window-title")
                 .text("Target Function")
                 .appendTo(formulaDiv);
+            /*
             this.formulaTextArea = $('<textarea></textarea>')
                 .attr("spellcheck", "false")
                 .addClass("formula-text-area")
                 .appendTo(formulaDiv);
+            */
+            this.formulaTextArea = $('<div></div>')
+                .addClass("formula-text-area")
+                .appendTo(formulaDiv);
+
             this.prooficon = $('<div></div>')
                 .addClass("validation-icon")
                 .appendTo(formulaDiv);
             this.errorMessage = $('<div></div>')
                 .addClass("formula-validation-message")
                 .appendTo(formulaDiv);
+
+            this.formulaTextArea.mousedown(function (e) {
+                e.stopPropagation();
+            });
+
+            this.formulaTextArea.codeeditor({
+                text: that.options.formula,
+                language: 'bma.targetfunc',
+                suggestVariables: that.options.inputs
+            });
+
         },
 
         _processExpandingContent: function () {
@@ -214,9 +238,10 @@
         },
 
         _InsertToFormula: function (name, offset) {
-            var caret = this.getCaretPos(this.formulaTextArea) + offset;// + item.Offset;
-            this.formulaTextArea.insertAtCaret(name).change();
-            this.formulaTextArea[0].setSelectionRange(caret, caret);
+            //var caret = this.getCaretPos(this.formulaTextArea) + offset;// + item.Offset;
+            //this.formulaTextArea.insertAtCaret(name).change();
+            //this.formulaTextArea[0].setSelectionRange(caret, caret);
+            this.formulaTextArea.codeeditor("insertTextAtCursor", name);
         },
 
         _refreshText: function (selected: JQuery, div: JQuery) {
@@ -231,12 +256,26 @@
         _bindExpanding: function () {
             var that = this;
 
-            this.formulaTextArea.bind("input change propertychange", function () {
-                that.options.formula = that.formulaTextArea.val();
+            //this.formulaTextArea.bind("input change propertychange", function () {
+            //    that.options.formula = that.formulaTextArea.val();
+            //    if (that.options.onformulachangedcallback !== undefined) {
+            //        that.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
+            //    }
+            //});
+
+            this.formulaTextArea.bind("codeeditorchange", function () {
+                var text = that.formulaTextArea.codeeditor("text");
+
+                if (that.options.formula === text)
+                    return;
+
+                that.options.formula = text;
                 if (that.options.onformulachangedcallback !== undefined) {
                     that.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
                 }
             });
+
+
             
         },
 
@@ -256,13 +295,21 @@
                 case "formula":
                     that.options.formula = value;
                     var inparr = that._inputsArray();
+                    var text = that.formulaTextArea.codeeditor("text");
+                    if (text !== that.options.formula) {
+                        this.formulaTextArea.codeeditor({ text: that.options.formula });
+                        if (this.options.onformulachangedcallback !== undefined) {
+                            this.options.onformulachangedcallback({ formula: that.options.formula, inputs: inparr });
+                        }
+                    }
+                    /*
                     if (this.formulaTextArea.val() !== that.options.formula) {
                         this.formulaTextArea.val(that.options.formula);
                         if (this.options.onformulachangedcallback !== undefined) {
                             this.options.onformulachangedcallback({ formula: that.options.formula, inputs: inparr });
                         }
-                        //window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
                     }
+                    */
                     break;
                 case "inputs":
                     this.options.inputs = value;
@@ -271,7 +318,9 @@
                     inputs.forEach(function (val, ind) {
                         var item = $('<div></div>').text(val.Name).appendTo(that.listOfInputs);
                         item.bind("click", function () {
-                            that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
+                            var formulaPart = "var(" + $(this).text() + ")";
+                            that.formulaTextArea.codeeditor("insertTextAtCursor", formulaPart);
+                            //that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
                             that.listOfInputs.hide();
                         });
                     });

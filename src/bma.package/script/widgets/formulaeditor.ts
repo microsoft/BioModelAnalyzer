@@ -717,10 +717,11 @@
         _refresh: function (shouldConvert = false) {
             var that = this;
 
-            that.textEditor.formulatexteditor({ "formula": that.options.formula, isvalid: true, errormessage: "" });
+            that.textEditor.formulatexteditor({ "formula": that.options.formula });
             if (shouldConvert) {
                 try {
                     that.operation = BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.variables);
+                    that.textEditor.formulatexteditor({ isvalid: true, errormessage: "" });
                 }
                 catch (ex) {
                     //Switch to text mode with current value
@@ -929,10 +930,10 @@
             var formulaDiv = $('<div></div>')
                 .addClass('target-function')
                 .css("margin-top", 0)
-                .css("display", "flex").css("flex-direcition", "row")
+                //.css("display", "flex").css("flex-direcition", "row")
                 .appendTo(root);
                
-            this.formulaTextArea = $('<div></div>').width("calc(100% - 55px)")
+            this.formulaTextArea = $('<div></div>')
                 .addClass("bma-formulaeditor-texteditor")
                 .css("margin-top", 0)
                 .css("margin-left", 0)
@@ -943,13 +944,19 @@
                 .appendTo(formulaDiv);
             this.errorMessage = $('<div></div>')
                 .addClass("formula-validation-message")
-                .appendTo(root);
+                .appendTo(formulaDiv);
+
+            this.formulaTextArea.mousedown(function (e) {
+                e.stopPropagation();
+            });
 
             this.formulaTextArea.codeeditor({
                 text: that.options.formula,
                 language: 'bma.targetfunc',
                 suggestVariables: that.options.variables
             });
+
+
 
             that.errorMessage.text(that.options.errormessage);
             that._setisvalid();
