@@ -26,6 +26,15 @@ describe ('bot conversations: model and formula', () => {
         ])
     })
 
+    it ('informs user if formula cannot be parsed', () => {
+        return assertConversation([
+            { user: asAttachment('testmodel.json') },
+            { bot: strings.MODEL_RECEIVED('model 1') },
+            { user: '!formula the world is not flat'},
+            { bot: strings.UNKNOWN_LTL_QUERY }
+        ])
+    })
+
     it ('accepts JSON model file after prompting for it', () => {
         return assertConversation([
             { user: '!formula x=1'},
