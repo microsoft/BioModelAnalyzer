@@ -152,6 +152,11 @@
 
             //Adding drawing surface
             var svgDiv = $("<div></div>").height("100%").width("calc(100% - 40px)").appendTo(formulaContainer);
+
+            svgDiv.mousedown(function (e) {
+                e.stopPropagation();
+            })
+
             that.svgDiv = svgDiv;
 
             var pixofs = 0;
@@ -495,17 +500,21 @@
                         return;
 
                     if (that.opToDrag !== undefined) {
-                        //that._clipboardOps.push({ operation: opToDrag.operation.Clone(), status: "nottested" });
-                        //that._tpViewer.temporalpropertiesviewer({ "operations": that._clipboardOps });
-                        template.formulatemplate({
-                            "operation": that._getNoOperandsOperation(that.opToDrag.operation)
-                        });
+                        if (that.opToDrag.operation.Operands !== undefined) {
+                            //that._clipboardOps.push({ operation: opToDrag.operation.Clone(), status: "nottested" });
+                            //that._tpViewer.temporalpropertiesviewer({ "operations": that._clipboardOps });
+                            template.formulatemplate({
+                                "operation": that._getNoOperandsOperation(that.opToDrag.operation)
+                            });
 
-                        var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
-                        if (opL === undefined) {
-                            that.operation = that.opToDrag.operation;
-                            that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
-                            that._refresh();
+                            var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+                            if (opL === undefined) {
+                                that.operation = that.opToDrag.operation;
+                                that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
+                                that._refresh();
+                            } else {
+                                that.opToDrag.parentoperation.Operands[that.opToDrag.parentoperationindex] = that.opToDrag.operation;
+                            }
                         } else {
                             that.opToDrag.parentoperation.Operands[that.opToDrag.parentoperationindex] = that.opToDrag.operation;
                         }
