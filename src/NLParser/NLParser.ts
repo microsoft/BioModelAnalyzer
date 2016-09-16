@@ -143,14 +143,14 @@ let Always = generateStemmedTokenDefinition('Always', 'always', ['always', 'inva
 let Next = generateStemmedTokenDefinition('Next', 'next', ['next', 'after', 'then', 'consequently', 'afterwards', 'subsequently', 'followed by', 'after this', 'later', 'thereafter', 'directly after'], TokenType.UNARY_OPERATOR)
 let Upto = generateStemmedTokenDefinition('Upto', 'upto', ['upto'], TokenType.BINARY_OPERATOR)
 let Until = generateStemmedTokenDefinition('Until', 'until', ['until'], TokenType.BINARY_OPERATOR)
-let WUntil = generateStemmedTokenDefinition('WUntil', 'weak until', ['weak until'], TokenType.BINARY_OPERATOR)
+let WUntil = generateStemmedTokenDefinition('WUntil', 'weak until', ['weak until', 'weakly until'], TokenType.BINARY_OPERATOR)
 let Release = generateStemmedTokenDefinition('Release', 'release', ['release'], TokenType.BINARY_OPERATOR)
 
 // Developmental end state tokens
 let SelfLoop = generateStemmedTokenDefinition('SelfLoop', 'SelfLoop', ['self loop', 'stable loop', 'fixed point', 'fixpoint', 'stable recursion', 'end state', 'stabilises'], TokenType.DEVELOPMENTAL_END_STATE)
 let Oscillation = generateStemmedTokenDefinition('Oscillation', 'Oscillation', ['loop', 'oscillation', 'unstable loop', 'unstable recursion', 'cycle'], TokenType.DEVELOPMENTAL_END_STATE)
 
-// Composite tokens - these are replaced when parsing with the replacement array (where replacement is done based on the order of the items in the replacement array ie: Never => not(eventually(..)))
+// Composite tokens - these are replaced when parsing    with the replacement array (where replacement is done based on the order of the items in the replacement array ie: Never => not(eventually(..)))
 let Never = generateCompositeTokenDefinition('Never', 'never', ['never', 'impossible', 'at no time'], TokenType.COMPOSITE_OPERATOR, [Always, Not])
 let Later = generateCompositeTokenDefinition('Later', 'later', ['later', 'sometime in the future', 'in the future', 'sometime later', 'after a while', 'in the long run', 'in a while'], TokenType.COMPOSITE_OPERATOR, [Next, Eventually])
 
@@ -172,7 +172,7 @@ let DEVELOPMENTAL_END_STATES = [SelfLoop, Oscillation]
 let CONSTRUCTS = [If, Then]
 let ARITHMETIC_OPERATORS = [LThanEq, GThanEq, GThan, LThan, NotEq, Eq]
 let BOOLEAN_OPERATORS = [And, Or, Implies, Not]
-let TEMPORAL_OPERATORS = [Never, Later, Eventually, Always, Next, Upto, Until, WUntil, Release]
+let TEMPORAL_OPERATORS = [Never, Later, Eventually, Always, Next, Upto, WUntil, Until, Release]
 let ACTIVITY_CLASSES = [HighActivity, LowActivity, MinimumActivity, MaximumActivity, InActive, Active]
 /**
  *  Explicit Token Precedence for Lexer (tokens with lower index have higher priority)
@@ -542,13 +542,13 @@ export default class NLParser extends Parser {
             type: AST.Type.BinaryTemporalOperator,
             value: this.OR([{
                 ALT: () => {
-                    this.CONSUME(Until)
-                    return Until.LABEL
+                    this.CONSUME(WUntil)
+                    return WUntil.LABEL
                 }
             }, {
                 ALT: () => {
-                    this.CONSUME(WUntil)
-                    return WUntil.LABEL
+                    this.CONSUME(Until)
+                    return Until.LABEL
                 }
             }, {
                 ALT: () => {
@@ -716,15 +716,15 @@ export default class NLParser extends Parser {
     private static applySentencePreprocessing(sentence: string, bmaModel: BMA.ModelFile, formulaPointers?: FormulaPointer[]): string {
         let hasFormulaPointers = formulaPointers && !_.isEmpty(formulaPointers)
         let modelVariables = bmaModel.Model.Variables
-        let modelVariableRelationOpRegex = 
+        let modelVariableRelationOpRegex =
             '(' + _.pluck(modelVariables, 'Name').join('|') +
             ')(\\s*)(' + ARITHMETIC_OPERATORS.map((op) => op.NON_STEMMED_SYNONYMS.join('|')).join('|') +
             ')(\\s*)'
         let modelVariableAndFormulaPointerRegex = new RegExp(
-            hasFormulaPointers ? 
-            modelVariableRelationOpRegex + '|' + '\\b(' + _.pluck(formulaPointers, 'name').join('|') + ')\\b' :
-            modelVariableRelationOpRegex, 'ig')
-        
+            hasFormulaPointers ?
+                modelVariableRelationOpRegex + '|' + '\\b(' + _.pluck(formulaPointers, 'name').join('|') + ')\\b' :
+                modelVariableRelationOpRegex, 'ig')
+
         // collect all variables and formula pointers
         let matchedGroups
         let variableTokens = []
@@ -734,8 +734,8 @@ export default class NLParser extends Parser {
                 variableTokens.push({
                     offset: matchedGroups.index,
                     name: formulaPointer,
-                    id: _.find(formulaPointers, v => v.name === formulaPointer).id, 
-                    type: FormulaPointerToken 
+                    id: _.find(formulaPointers, v => v.name === formulaPointer).id,
+                    type: FormulaPointerToken
                 })
             } else {
                 variableTokens.push({
@@ -772,16 +772,16 @@ export default class NLParser extends Parser {
         // TODO move stemmed token classes in a list at the top of the module
         return sentence
             .split(' ')
-            .map(t => ModelVariable.PATTERN.test(t) || FormulaPointerToken.PATTERN.test(t) || TrueLiteral.PATTERN.test(t) || FalseLiteral.PATTERN.test(t) ? 
-                      t : 
-                      natural.PorterStemmer.stem(t))
+            .map(t => ModelVariable.PATTERN.test(t) || FormulaPointerToken.PATTERN.test(t) || TrueLiteral.PATTERN.test(t) || FalseLiteral.PATTERN.test(t) ?
+                t :
+                natural.PorterStemmer.stem(t))
             .join(' ')
     }
 
     /**
      *  Main Parse routine
      */
-    static parse (sentence: string, bmaModel, formulaPointers?: FormulaPointer[], didResyncBefore?: boolean): ParserResponse {
+    static parse(sentence: string, bmaModel, formulaPointers?: FormulaPointer[], didResyncBefore?: boolean): ParserResponse {
         sentence = NLParser.applySentencePreprocessing(sentence, bmaModel, formulaPointers)
         // lex the sentence to get token stream where illegal tokens are ignored and returns a token stream
         let lexerResult = (new Lexer(ALLOWED_TOKENS, true)).tokenize(sentence)

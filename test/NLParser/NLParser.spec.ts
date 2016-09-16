@@ -39,8 +39,30 @@ describe('parse() should detect unknown variable usage', () => {
     it('parse() should handle single variables', () => {
         var sentence = "show me a simulation where Unknownvar is 123 and a=2"
         var parserResponse = NLParser.parse(sentence, testModel)
-        expect(parserResponse.responseType == ParserResponseType.UNKNOWN_VARIABLES_FOUND && parserResponse.unknownVariables && parserResponse.unknownVariables.length == 1 && parserResponse.unknownVariables[0] === "unknownvar")
+        expect(parserResponse.responseType === ParserResponseType.UNKNOWN_VARIABLES_FOUND && parserResponse.unknownVariables && parserResponse.unknownVariables.length == 1 && parserResponse.unknownVariables[0] === "unknownvar")
     })
+})
+
+describe('parse() should handle formulae with  binaryTemporalOperators', () => {
+    it('parse() should handle formulae with binaryTemporalOperators', () => {
+        var sentence = "can you give me a simulation where a is 1 until b is 2 and x is 3"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "((a=1 until b=2) and x=3)"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
+    it('parse() should handle formulae with multiple binaryTemporalOperators', () => {
+        var sentence = "can you give me a simulation where a is 1 until b is 2 release x is 3 upto y is not 20 holds weakly until z is greater than 2"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "(a=1 until (b=2 release (x=3 upto (y!=20 weak until z>2))))"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
+})
+
+it('parse() handles the use of "then" as a unary operator', () => {
+    var sentence = "give me some simulation where x is 5 and then y is 2"
+    var parserResponse = NLParser.parse(sentence, testModel)
+    var expected = "(x=5 and next(y=2))"
+    expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
 })
 
 
@@ -64,12 +86,19 @@ it('parse() should handle if/then pattern and convert to implies', () => {
     var expected = "(x=1 implies y=1)"
     expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
 })
-
-it('parse() should prepend trailing unary operators maintaining their ordering', () => {
-    var sentence = "show me a simulation where a=1 and b=2 happens eventually"
-    var parserResponse = NLParser.parse(sentence, testModel)
-    var expected = "eventually((a=1 and b=2))"
-    expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+describe('parse() should prepend trailing unary operators maintaining their ordering', () => {
+    it('parse() should should handle single trailing unary operator', () => {
+        var sentence = "show me a simulation where a=1 and b=2 happens eventually"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "eventually((a=1 and b=2))"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
+    it('parse() should should handle multiple trailing unary operator', () => {
+        var sentence = "show me a simulation where a=1 and b=2 happens eventually always"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = "eventually(always((a=1 and b=2)))"
+        expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
+    })
 })
 it('parse() should automatically recover from tokens that appear incorrectly anywhere in the token stream according to the grammar', () => {
     var sentence = "no that and previous one were incorrect show me a simulation where it is always the case that if x is 1 then y is 5 and the whole thing is followed by z is 25"
@@ -181,7 +210,7 @@ describe('parse() should handle composite operator usage', () => {
         var expected = "(a=1 and next(eventually(b=2)))"
         expect(ASTUtils.toHumanReadableString(parserResponse.AST, testModel)).to.equal(expected)
     })
-    it('parse() should handle distinction between "eventually" and "later" keywords usage', () => {
+    it('parse() should throw an error when composite tokens are defined with missing replacement tokens', () => {
         var sentence = "can you give me a simulation such that a is 1 and sometime b is 2"
         var parserResponse = NLParser.parse(sentence, testModel)
         var expected = "(a=1 and eventually(b=2))"
@@ -270,6 +299,19 @@ describe('parse() should handle activity classes', () => {
         var expected = JSON.stringify({
             "type": "activityExpression",
             "value": "HighActivity",
+            "left": {
+                "type": "modelVariable",
+                "value": 8
+            }
+        })
+        expect(JSON.stringify(parserResponse.AST)).to.equal(expected)
+    })
+    it('parse() should handle "low activity"', () => {
+        var sentence = "show me a simulation where a is seen to have low activity"
+        var parserResponse = NLParser.parse(sentence, testModel)
+        var expected = JSON.stringify({
+            "type": "activityExpression",
+            "value": "LowActivity",
             "left": {
                 "type": "modelVariable",
                 "value": 8
