@@ -91,9 +91,9 @@ export let NOT_NEXT = 'NOT NEXT returns all cases that do not satisfy the result
 export let NOT_ALWAYS = 'NOT ALWAYS returns all cases that do not satisfy the results of the ALWAYS operator(all states holding a true value).'
 
 // LTL Semantics 
-export let OSCILLATIONS = 'An oscillation refers to a fluctuation between two things, this can occur between two states or values of a state.'
-export let TRUE_STATE = ''
-export let SELF_LOOP = ''
+export let OSCILLATIONS = 'An oscillation refers to a fluctuation between two things, this can occur between two states or values of a state. See an example in the ecoli tutorial.'
+export let TRUE_STATE = 'This refers to a state where a true value holds.'
+export let SELF_LOOP = 'A self loop refers to a fixed point in the network. A nice example can be seen in the ecoli tutorial.'
 export let STEPS = 'The number of steps determines how long your query runs for, and a state value is given for each step with a simulation graph.'
 export let DECREASE_STEPS = 'Decreasing the number of steps a query runs for can limit your results, as you only see a subsection of results which may or may not satisfy your query. The default of 10 steps is recommended.'
 export let INCREASE_STEPS = 'Increasing the number of steps will give you a broader view of how the state values fluctuate over time, and may reveal several traces of your query being true.'
