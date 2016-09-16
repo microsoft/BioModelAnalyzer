@@ -142,7 +142,7 @@ module BMA.CodeEditor {
             suggestVariables: new Array<string>(0),
         },
 
-        editor: monaco.editor,
+        editor: <monaco.editor.IStandaloneCodeEditor>undefined,
 
         _create: function () {
             var that = this;
