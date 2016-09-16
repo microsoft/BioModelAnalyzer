@@ -319,6 +319,9 @@
 
             this.description.bind("input change", function () {
                 that.options.TFdescription = that.description.val();
+                if (that.options.ondescriptionchanged !== undefined) {
+                    that.options.ondescriptionchanged(that.options.TFdescription);
+                }
                 //if (that.options.onvariablechangedcallback !== undefined) {
                 //    that.options.onvariablechangedcallback();
                 //}
