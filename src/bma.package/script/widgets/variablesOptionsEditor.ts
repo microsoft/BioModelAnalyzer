@@ -26,6 +26,7 @@
             this.name.val(that.options.name);
             this.rangeFrom.val(that.options.rangeFrom);
             this.rangeTo.val(that.options.rangeTo); 
+            //this.description.val(that.options.TFdescription);
         },
 
         SetValidation: function (result: boolean, message: string) {
@@ -136,72 +137,74 @@
                 //window.Commands.Execute("VariableEdited", {});
             });
 
-            var descriptionDiv = $("<div></div>")
-                .addClass("description")
-                .appendTo(that.element);
-            $('<div></div>')
-                .addClass("window-title")
-                .text("Description")
-                .appendTo(descriptionDiv);
-            this.description = $("<input type='text'>")
-                .addClass("description-input")
-                .appendTo(descriptionDiv);
+            //var descriptionDiv = $("<div></div>")
+            //    .addClass("description")
+            //    .appendTo(that.element);
+            //$('<div></div>')
+            //    .addClass("window-title")
+            //    .text("Description")
+            //    .appendTo(descriptionDiv);
+            //this.description = $("<input type='text'>")
+            //    .attr("placeholder", "Description")
+            //    .addClass("description-input")
+            //    .appendTo(descriptionDiv);
 
-            this.switcher = $("<div></div>").addClass("tfswitcher").appendTo(that.element);
-            this.textEdButton = $("<div>T</div>").addClass("tfswitch").appendTo(that.switcher).click(function () {
-                that.element.removeClass("bmaeditor-expanded").removeClass("bmaeditor-expanded-horizontaly");
-                that.switcher.children().removeClass("selected");
-                that.textEdButton.addClass("selected");
-                if (that.texteditor.css("display") === "none") {
-                    try {
-                        that.options.formula = /*BMA.ModelHelper.ConvertTFOperationToString(*/that.formulaeditor.formulaeditor("option", "formula"/*"operation"*/);
-                        that.texteditor.tftexteditor({ formula: that.options.formula });
-                        that.texteditor.show();
-                        that.formulaeditor.hide();
-                    } catch (ex) {
-                        console.log(ex);
-                        that.element.addClass("bmaeditor-expanded").addClass("bmaeditor-expanded-horizontaly");
-                        that.switcher.children().removeClass("selected");
-                        that.formulaEdButton.addClass("selected");
-                    }
-                }
-                //if (that.options.onvariablechangedcallback !== undefined) {
-                //    that.options.onvariablechangedcallback();
-                //}
-                that.updateLayout();
-            });
+            //!!!!
+            //this.switcher = $("<div></div>").addClass("tfswitcher").appendTo(that.element);
+            //this.textEdButton = $("<div>T</div>").addClass("tfswitch").appendTo(that.switcher).click(function () {
+            //    that.element.removeClass("bmaeditor-expanded").removeClass("bmaeditor-expanded-horizontaly");
+            //    that.switcher.children().removeClass("selected");
+            //    that.textEdButton.addClass("selected");
+            //    if (that.texteditor.css("display") === "none") {
+            //        try {
+            //            that.options.formula = /*BMA.ModelHelper.ConvertTFOperationToString(*/that.formulaeditor.formulaeditor("option", "formula"/*"operation"*/);
+            //            that.texteditor.tftexteditor({ formula: that.options.formula });
+            //            that.texteditor.show();
+            //            that.formulaeditor.hide();
+            //        } catch (ex) {
+            //            console.log(ex);
+            //            that.element.addClass("bmaeditor-expanded").addClass("bmaeditor-expanded-horizontaly");
+            //            that.switcher.children().removeClass("selected");
+            //            that.formulaEdButton.addClass("selected");
+            //        }
+            //    }
+            //    //if (that.options.onvariablechangedcallback !== undefined) {
+            //    //    that.options.onvariablechangedcallback();
+            //    //}
+            //    that.updateLayout();
+            //});
 
-            this.formulaEdButton = $("<div>G</div>").addClass("tfswitch").appendTo(that.switcher).click(function () {
-                if (!$(this).hasClass("disabled")) {
-                    that.element.addClass("bmaeditor-expanded").addClass("bmaeditor-expanded-horizontaly");
-                    that.switcher.children().removeClass("selected");
-                    that.formulaEdButton.addClass("selected");
-                    if (that.formulaeditor.css("display") === "none") {
-                        try {
-                            that.options.formula = that.texteditor.tftexteditor("option", "formula");
-                            console.log("everything is ok");
-                            that.formulaeditor.formulaeditor({
-                                formula: that.options.formula
-                            });
-                            //that.formulaeditor.formulaeditor({
-                            //    operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
-                            //});
+            //this.formulaEdButton = $("<div>G</div>").addClass("tfswitch").appendTo(that.switcher).click(function () {
+            //    if (!$(this).hasClass("disabled")) {
+            //        that.element.addClass("bmaeditor-expanded").addClass("bmaeditor-expanded-horizontaly");
+            //        that.switcher.children().removeClass("selected");
+            //        that.formulaEdButton.addClass("selected");
+            //        if (that.formulaeditor.css("display") === "none") {
+            //            try {
+            //                that.options.formula = that.texteditor.tftexteditor("option", "formula");
+            //                console.log("everything is ok");
+            //                that.formulaeditor.formulaeditor({
+            //                    formula: that.options.formula
+            //                });
+            //                //that.formulaeditor.formulaeditor({
+            //                //    operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+            //                //});
 
-                            that.texteditor.hide();
-                            that.formulaeditor.show();
-                        } catch (ex) {
-                            console.log(ex);
-                            that.element.removeClass("bmaeditor-expanded").removeClass("bmaeditor-expanded-horizontaly");
-                            that.switcher.children().removeClass("selected");
-                            that.textEdButton.addClass("selected");
-                        }
-                    }
-                    that.updateLayout();
-                    //if (that.options.onvariablechangedcallback !== undefined) {
-                    //    that.options.onvariablechangedcallback();
-                    //}
-                }
-            });
+            //                that.texteditor.hide();
+            //                that.formulaeditor.show();
+            //            } catch (ex) {
+            //                console.log(ex);
+            //                that.element.removeClass("bmaeditor-expanded").removeClass("bmaeditor-expanded-horizontaly");
+            //                that.switcher.children().removeClass("selected");
+            //                that.textEdButton.addClass("selected");
+            //            }
+            //        }
+            //        that.updateLayout();
+            //        //if (that.options.onvariablechangedcallback !== undefined) {
+            //        //    that.options.onvariablechangedcallback();
+            //        //}
+            //    }
+            //}); !!!!
 
             this.texteditor = $("<div></div>").appendTo(that.element);
             this.formulaeditor = $("<div></div>").css("margin-top", "20px").css("width", "100%").appendTo(that.element);
@@ -218,7 +221,7 @@
                 //}
             );
             this.formulaeditor.hide();
-            that.textEdButton.addClass("selected");
+            //that.textEdButton.addClass("selected");
             
             this.texteditor.tftexteditor({
                 onformulachangedcallback: //that.options.onformulachangedcallback,
@@ -320,13 +323,13 @@
                 //window.Commands.Execute("VariableEdited", {});
             });
 
-            this.description.bind("input change", function () {
-                that.options.TFdescription = that.description.val();
-                //if (that.options.onvariablechangedcallback !== undefined) {
-                //    that.options.onvariablechangedcallback();
-                //}
-                //window.Commands.Execute("VariableEdited", {});
-            });
+            //this.description.bind("input change", function () {
+            //    that.options.TFdescription = that.description.val();
+            //    //if (that.options.onvariablechangedcallback !== undefined) {
+            //    //    that.options.onvariablechangedcallback();
+            //    //}
+            //    //window.Commands.Execute("VariableEdited", {});
+            //});
         },
 
         _setOption: function (key, value) {
@@ -351,21 +354,22 @@
                 case "formula":
                     that.options.formula = value;
                     this.texteditor.tftexteditor({ formula: value });
-                    if (this.formulaEdButton.hasClass("selected")) {
-                        this.formulaeditor.formulaeditor({ formula: value });
-                        //try {
-                        //    this.formulaeditor.formulaeditor({
-                        //        operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
-                        //    });
-                        //} catch (ex) {
-                        //    console.log(ex);
-                        //}
-                    }
+                    //if (this.formulaEdButton.hasClass("selected")) {
+                    //    this.formulaeditor.formulaeditor({ formula: value });
+                    //    //try {
+                    //    //    this.formulaeditor.formulaeditor({
+                    //    //        operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                    //    //    });
+                    //    //} catch (ex) {
+                    //    //    console.log(ex);
+                    //    //}
+                    //}
                     break;
                 case "TFdescription":
                     that.options.TFdescription = value;
-                    if (this.description.val() !== that.options.TFdescription)
-                        this.description.val(that.options.TFdescription);
+                    this.texteditor.tftexteditor({ TFdescription: value });
+                    //if (this.description.val() !== that.options.TFdescription)
+                    //    this.description.val(that.options.TFdescription);
                     break;
                 case "inputs": 
                     this.options.inputs = value;

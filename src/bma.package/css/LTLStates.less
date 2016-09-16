@@ -1067,7 +1067,7 @@
 }
 
 .window.variable-editor{
-    height:474px;
+    height:404px;
 }
 
 .variable-editor{
@@ -1084,19 +1084,30 @@
     }
 
     &.bmaeditor-expanded {
-        height: 514px;
+        height: 434px;
     }
 
     &.bmaeditor-expanded-horizontaly {
         width:485px;
         height:700px;
     }
+    .target-function {
+        .formula-text-area{
+            width: calc(~"100% - 2px");
+		    height:150px;
+        }
+        .formula-validation-message {
+            color:@darkred;
+        }
+    }
 
     .description {
-        margin-top:20px;
+        /*margin-top:20px;*/
+         margin-bottom:20px;
+         width:368px;
         
         .description-input{
-            width:80%;
+            width:100%;
             padding:0 5px;
             height: 30px;
         }
