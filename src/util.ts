@@ -10,6 +10,7 @@ export const LETTERS: string[] = Array.apply(0, Array(26)).map((x, y) => String.
 /** FA-ZZ, used as auto-generated names for stored formulas */
 export const LETTERS_F: string[] = [].concat(...LETTERS.slice(5).map(a => LETTERS.map(b => a + b)))
 
+/** The URL prefix under which static files (from the /public folder) are served. */
 const STATIC_URL_PREFIX = 'static/'
 
 /**

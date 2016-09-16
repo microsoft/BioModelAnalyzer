@@ -271,16 +271,25 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
     })
 
     matches('ExplainLTL', builder.DialogAction.send(strings.LTL_DESCRIPTION))
+
     matches('LTLQuery', session => {
         session.beginDialog('/formula', session.message.text)
     })
     
+    // onDefault gets called when no intent was recognized
     intents.onDefault((session, results, next) => {
+        // if the user sends an attachment then the message has an empty text,
+        // which is why LUIS does not recognize an intent
+        // TODO skip calling LUIS if attachment is detected
         let attachments = session.message.attachments
         if (attachments && attachments.length > 0) {
             receiveModelAttachmentStep(bot, modelStorage, session, results, next)
             return
         }
+
+        // if there was no attachment, then we spellcheck the text and run LUIS again on it
+        // (LUIS is very sensitive to spelling mistakes)
+        // if we already spellchecked the text once and we end up here again, then we stop
 
         console.log(`Message: "${session.message.text}" [not recognized]`)
         console.log(JSON.stringify(results, null, 2))
@@ -292,6 +301,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             return
         }
 
+        // do the spell checking using Bing Spell Check API
         let inputText = session.message.text
         let params = {
             text: inputText,
@@ -318,6 +328,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             console.log('spellcheck response:')
             console.log(JSON.stringify(body, null, 2))
 
+            // correct the flagged words in the input text with the first suggestion from Bing
             let inputOffset = 0
             let correctedText = ''
             for (let flaggedToken of body.flaggedTokens) {
@@ -335,8 +346,10 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             session.conversationData.hasSpellChecked = true
             session.save()
             
+            // let the user know how his input was corrected
             session.send(strings.SPELLCHECK_ASSUMPTION(correctedText))
 
+            // dispatch the corrected input again (i.e. invoke LUIS again)
             let message = new builder.Message(session)
             message.text(correctedText)
             session.dispatch(session.sessionState, message.toMessage())

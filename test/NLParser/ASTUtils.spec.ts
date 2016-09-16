@@ -1,13 +1,13 @@
 // Copyright (C) 2016 Microsoft - All Rights Reserved
 
 import { expect } from 'chai'
-import NLParser from '../src/NLParser/NLParser'
-import { toAPIString, toStatesAndFormula } from '../src/NLParser/ASTUtils'
-import { ModelFile, Ltl } from '../src/BMA'
+import NLParser from '../../src/NLParser/NLParser'
+import { toAPIString, toStatesAndFormula } from '../../src/NLParser/ASTUtils'
+import { ModelFile, Ltl } from '../../src/BMA'
 
-let testModel: ModelFile = require('./data/testmodel.json')
-let ltlMultipleStates: Ltl = require('./data/ltl-multiple-states.json')
-let ltlMultipleVariables: Ltl = require('./data/ltl-multiple-variables.json')
+let testModel: ModelFile = require('../data/testmodel.json')
+let ltlMultipleStates: Ltl = require('../data/ltl-multiple-states.json')
+let ltlMultipleVariables: Ltl = require('../data/ltl-multiple-variables.json')
 
 describe('ASTUtils', () => {
     describe('#toAPIString', () => {

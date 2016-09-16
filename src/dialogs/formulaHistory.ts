@@ -10,6 +10,9 @@ import * as strings from './strings'
  * Registers dialogs related to the formula history.
  */
 export function registerFormulaHistoryDialogs (bot: builder.UniversalBot) {
+    /*
+     * Sends a list of all formulas in the history.
+     */
     bot.dialog('/formulaHistory', (session, args, next) => {
         let model: BMA.ModelFile = session.conversationData.bmaModel
         let formulas: NamedFormula[] = session.conversationData.formulas
@@ -23,6 +26,10 @@ export function registerFormulaHistoryDialogs (bot: builder.UniversalBot) {
         session.send(text)
         next()
     })
+
+    /*
+     * Removes all formulas in the history.
+     */
     bot.dialog('/removeFormulas', (session, args, next) => {
         let formulas: NamedFormula[] = session.conversationData.formulas
         if (!formulas || !formulas.length) {
@@ -34,6 +41,11 @@ export function registerFormulaHistoryDialogs (bot: builder.UniversalBot) {
         session.send(strings.FORMULA_HISTORY_CLEARED)
         next()
     })
+
+    /*
+     * Removes a specific formula from the history, specified either by formula name
+     * or position in the history, starting from 1.
+     */
     bot.dialog('/removeFormula', (session, args: string | number, next) => {
         let model: BMA.ModelFile = session.conversationData.bmaModel
         let formulas: NamedFormula[] = session.conversationData.formulas || []
@@ -60,6 +72,10 @@ export function registerFormulaHistoryDialogs (bot: builder.UniversalBot) {
         session.send(strings.FORMULA_REMOVED_FROM_HISTORY(toHumanReadableString(formula.ast, model)))
         next()
     })
+
+    /*
+     * Renames a formula in the history by specifying the name of the formula to rename, and the new name.
+     */
     bot.dialog('/renameFormula', (session, args: {from: string, to: string}, next) => {
         let formulas: NamedFormula[] = session.conversationData.formulas || []
         let from = args.from || ''
@@ -91,6 +107,9 @@ export function registerFormulaHistoryDialogs (bot: builder.UniversalBot) {
     })
 }
 
+/**
+ * Returns string representations of the given formulas in the format that the BMA UI undestands (via copy-pasting). 
+ */
 export function getFormattedFormulas (formulas: NamedFormula[], model: BMA.ModelFile) {
     return formulas.map(formula => `[${formula.name}] ${toHumanReadableString(formula.ast, model)}`).join(' \n\n ')
 }

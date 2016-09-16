@@ -6,6 +6,9 @@ import * as async from 'async'
 import * as url from 'url'
 import * as request from 'request'
 
+/**
+ * Downloads user attachments with support for Skype URLs which require authorization.
+ */
 export function downloadAttachments(connector, message, callback) {
     var attachments = []
     var containsSkypeUrl = false

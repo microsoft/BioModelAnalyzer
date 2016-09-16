@@ -1,15 +1,18 @@
 // Copyright (C) 2016 Microsoft - All Rights Reserved
 
 /// <reference path="../../node_modules/chevrotain/lib/chevrotain.d.ts" />
+
 /**
- *  Please read ./NLParserDocumentation.md for a high level explaination of the parser
+ *  Please read /docs/NLParser.md for a high level explaination of the parser.
  */
 import { Parser, Token, Lexer } from 'chevrotain'
 import * as _ from 'underscore'
 import * as natural from 'natural'
+import * as BMA from '../BMA'
 import * as AST from './AST'
-/** 
- *  Parser response structure
+
+/**
+ * Parser response structure
  */
 export enum ParserResponseType {
     SUCCESS,
@@ -22,6 +25,16 @@ export interface ParserResponse {
     errors?: any
     AST?: AST.Formula
     unknownVariables?: string[]
+}
+
+/**
+ * The result of invoking the root grammar rule directly.
+ * Note that clients will not see this and instead work with ParserResponse when calling NLParser.parse().
+ */
+interface InternalFormula {
+    AST?: AST.Formula
+    resyncedToken?: any
+    errorToken?: any
 }
 
 export interface FormulaPointer {
@@ -71,7 +84,7 @@ class CompositeToken extends BaseToken {
     })
 }
 
-/**  literals (no stemming required) */
+// literals (no stemming required)
 class IntegerLiteral extends Token {
     static PATTERN = /\d+/
 }
@@ -83,6 +96,7 @@ class TrueLiteral extends Token {
 
 class FalseLiteral extends Token {
     static PATTERN = /false/
+    // no LABEL here as we never output False directly, but transform it to Not True
 }
 
 /**  Model variable token: in the form MODELVAR(varId) (no stemming required) */
@@ -101,7 +115,6 @@ class WhiteSpace extends Token {
     static PATTERN = /\s+/
     static GROUP = Lexer.SKIPPED
 }
-
 
 /*
  *  GRAMMAR TOKENS: The set of tokens that are accepted by the grammar of our language,
@@ -220,8 +233,8 @@ function generateStemmedTokenDefinition(id: string, label: string, synonyms: str
  */
 export default class NLParser extends Parser {
 
-    /** Base entry rule of the graar */
-    private formula = this.RULE<AST.InternalFormula>('formula', () => {
+    /** Base entry rule of the grammar */
+    private formula = this.RULE<InternalFormula>('formula', () => {
         let tree = {
             left: null
         }
@@ -700,25 +713,42 @@ export default class NLParser extends Parser {
      *  and encodes the variables as MODELVAR(k) where k is the id of the variable a
      *  and then performs stemming on the remaining tokens.
      */
-    private static applySentencePreprocessing(sentence: string, bmaModel, formulaPointers?: FormulaPointer[]): string {
+    private static applySentencePreprocessing(sentence: string, bmaModel: BMA.ModelFile, formulaPointers?: FormulaPointer[]): string {
         let hasFormulaPointers = formulaPointers && !_.isEmpty(formulaPointers)
         let modelVariables = bmaModel.Model.Variables
-        let modelVariableRelationOpRegex = '(' + _.pluck(modelVariables, 'Name').join('|') +
+        let modelVariableRelationOpRegex = 
+            '(' + _.pluck(modelVariables, 'Name').join('|') +
             ')(\\s*)(' + ARITHMETIC_OPERATORS.map((op) => op.NON_STEMMED_SYNONYMS.join('|')).join('|') +
             ')(\\s*)'
-        let modelVariableAndFormulaPointerRegex = new RegExp(hasFormulaPointers ? modelVariableRelationOpRegex + '|' + '\\b(' + _.pluck(formulaPointers, 'name').join('|') + ')\\b' : modelVariableRelationOpRegex, 'ig')
-
-        var matchedGroups, variableTokens = []
+        let modelVariableAndFormulaPointerRegex = new RegExp(
+            hasFormulaPointers ? 
+            modelVariableRelationOpRegex + '|' + '\\b(' + _.pluck(formulaPointers, 'name').join('|') + ')\\b' :
+            modelVariableRelationOpRegex, 'ig')
+        
+        // collect all variables and formula pointers
+        let matchedGroups
+        let variableTokens = []
         while ((matchedGroups = modelVariableAndFormulaPointerRegex.exec(sentence)) !== null) {
-            // The variable will always on the 1st index as the 0th index is the entire group and the variable is matched in the 1st group of the regex expression
             if (hasFormulaPointers && _.last(matchedGroups)) {
-                let forumulaPointer = _.last(matchedGroups)
-                variableTokens.push({ offset: matchedGroups.index, name: forumulaPointer, id: _.find(formulaPointers, (v: any) => v.name === forumulaPointer).id, type: FormulaPointerToken })
+                let formulaPointer = _.last(matchedGroups)
+                variableTokens.push({
+                    offset: matchedGroups.index,
+                    name: formulaPointer,
+                    id: _.find(formulaPointers, v => v.name === formulaPointer).id, 
+                    type: FormulaPointerToken 
+                })
             } else {
-                variableTokens.push({ offset: matchedGroups.index, name: matchedGroups[1], id: _.find(bmaModel.Model.Variables, (v: any) => v.Name.toLowerCase() === matchedGroups[1].toLowerCase()).Id, type: ModelVariable })
+                variableTokens.push({
+                    offset: matchedGroups.index,
+                    name: matchedGroups[1],
+                    id: _.find(bmaModel.Model.Variables, v => v.Name.toLowerCase() === matchedGroups[1].toLowerCase()).Id,
+                    type: ModelVariable
+                })
             }
         }
+
         // use the generated offsets to replace instances of variable usage with MODELVAR(k), where k is the model variable
+        // similar for formula pointers
         // variableTokens can be empty when processing a resynched token stream
         if (!_.isEmpty(variableTokens)) {
             var processedSentence
@@ -737,14 +767,21 @@ export default class NLParser extends Parser {
             processedSentence += sentence.substring(lastVariableToken.offset + lastVariableToken.name.length, sentence.length)
             sentence = processedSentence
         }
-        // stem the sentence
-        return sentence.split(' ').map((t) => ModelVariable.PATTERN.test(t) || FormulaPointerToken.PATTERN.test(t) || TrueLiteral.PATTERN.test(t) || FalseLiteral.PATTERN.test(t) ? t : natural.PorterStemmer.stem(t)).join(' ')
+        // stem the sentence, ignoring any variables, formula pointers, and true/false tokens
+        // true/false is ignored because stemming them is not that useful
+        // TODO move stemmed token classes in a list at the top of the module
+        return sentence
+            .split(' ')
+            .map(t => ModelVariable.PATTERN.test(t) || FormulaPointerToken.PATTERN.test(t) || TrueLiteral.PATTERN.test(t) || FalseLiteral.PATTERN.test(t) ? 
+                      t : 
+                      natural.PorterStemmer.stem(t))
+            .join(' ')
     }
 
     /**
-     *  Main Parse routine:
+     *  Main Parse routine
      */
-    static parse(sentence: string, bmaModel, formulaPointers?: FormulaPointer[], didResynchedBefore?: boolean): ParserResponse {
+    static parse (sentence: string, bmaModel, formulaPointers?: FormulaPointer[], didResyncBefore?: boolean): ParserResponse {
         sentence = NLParser.applySentencePreprocessing(sentence, bmaModel, formulaPointers)
         // lex the sentence to get token stream where illegal tokens are ignored and returns a token stream
         let lexerResult = (new Lexer(ALLOWED_TOKENS, true)).tokenize(sentence)
@@ -759,12 +796,8 @@ export default class NLParser extends Parser {
             }
         } else if (parserResponse.resyncedToken) {
             // the parser failed to parse a token and return the set of tokens less the error token that can possibly be parsed 
-            return handleResynchedTokens(formulaPointers, didResynchedBefore)
+            return handleResynchedTokens(formulaPointers, didResyncBefore)
         } else {
-            return createParseError()
-        }
-
-        function createParseError() {
             return {
                 responseType: ParserResponseType.PARSE_ERROR,
                 errors: parser.errors
@@ -774,16 +807,15 @@ export default class NLParser extends Parser {
         /**
           *  We continue parsing the resynched tokens until we find a good parse, no tokens are left or no new resynched tokens are generated
           */
-        function handleResynchedTokens(formulaPointers?: FormulaPointer[], didResynchedBefore?: boolean): ParserResponse {
+        function handleResynchedTokens(formulaPointers?: FormulaPointer[], didResyncBefore?: boolean): ParserResponse {
             // extract the part of the sentance starting from the first resynched token
             var currentResynched = sentence.substring(parserResponse.resyncedToken.offset, sentence.length)
             // check the newly generated suffix with the previously generated suffix in order to prevent an infinite loop
-            if (didResynchedBefore) {
-                return NLParser.parse(sentence.substring(0, parserResponse.errorToken.offset) + currentResynched, bmaModel, formulaPointers, didResynchedBefore)
+            if (didResyncBefore) {
+                return NLParser.parse(sentence.substring(0, parserResponse.errorToken.offset) + currentResynched, bmaModel, formulaPointers, didResyncBefore)
             } else {
                 return NLParser.parse(currentResynched, bmaModel, formulaPointers, true)
             }
         }
     }
 }
-

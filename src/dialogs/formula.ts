@@ -14,7 +14,7 @@ import * as strings from './strings'
 /**
  * Registers dialogs related to the formula history.
  */
-export function registerFormulaDialog (bot: builder.UniversalBot, modelStorage: ModelStorage) {
+export function registerFormulaDialog (bot: builder.UniversalBot, modelStorage: ModelStorage, skipBMAAPI: boolean) {
     bot.dialog('/formula', [
         (session, args, next) => {
             let text = args
@@ -24,19 +24,28 @@ export function registerFormulaDialog (bot: builder.UniversalBot, modelStorage: 
                 session.save()
                 builder.Prompts.attachment(session, strings.MODEL_SEND_PROMPT)
             } else {
-                handleLTLQuery(session, text, modelStorage)
+                processFormulaText(session, text, modelStorage, skipBMAAPI)
                 session.endDialog()
             }
         },
         (session, results, next) => receiveModelAttachmentStep(bot, modelStorage, session, results, next),
         (session, results, next) => {
-            handleLTLQuery(session, session.conversationData.lastMessageText, modelStorage)
+            processFormulaText(session, session.conversationData.lastMessageText, modelStorage, skipBMAAPI)
             delete session.conversationData.lastMessageText
         }
     ])
 }
 
-function handleLTLQuery (session: builder.Session, text: string, modelStorage: ModelStorage) {
+/**
+ * Tries to parse a given formula in natural language into a structured LTL formula,
+ * stores it into the formula history, sends the formula back to the user in BMA string format
+ * and as a BMA model link, and also tests the formula using the BMA backend.
+ * 
+ * Note that testing a formula is done on a best-efforts basis in regards to time spent.
+ * If the BMA backend takes too long, then the user is informed about that and directed to the BMA tool
+ * to test the formula himself.  
+ */
+function processFormulaText (session: builder.Session, text: string, modelStorage: ModelStorage, skipBMAAPI: boolean) {
     // fetch some session state
     let bmaModel: BMA.ModelFile = session.conversationData.bmaModel
 
@@ -103,38 +112,40 @@ function handleLTLQuery (session: builder.Session, text: string, modelStorage: M
         session.send(strings.OPEN_BMA_MODEL_LINK(getBMAModelUrl(url)))
     })
 
-    // run formula on BMA backend and send result back to user
-    let steps = 10
-    let simulationOptions = {
-        steps,
-        timeout: 3
-    }
-    let expandedFormula = BMAApi.getExpandedFormula(bmaModel.Model, ltl.states, ltl.operations[0])
-    BMAApi.runFastSimulation(bmaModel.Model, expandedFormula, simulationOptions).then(responseFast => {
-        BMAApi.runThoroughSimulation(bmaModel.Model, expandedFormula, responseFast, simulationOptions).then(responseThorough => {
-            if (responseThorough.Status) {
-                session.send(strings.SIMULATION_DUALITY(steps))
-            } else if (responseFast.Status) {
-                session.send(strings.SIMULATION_ALWAYS_TRUE(steps))
-            } else {
-                session.send(strings.SIMULATION_ALWAYS_FALSE(steps))
-            }
+    if (!skipBMAAPI) {
+        // run formula on BMA backend and send result back to user
+        let steps = 10
+        let simulationOptions = {
+            steps,
+            timeout: 3
+        }
+        let expandedFormula = BMAApi.getExpandedFormula(bmaModel.Model, ltl.states, ltl.operations[0])
+        BMAApi.runFastSimulation(bmaModel.Model, expandedFormula, simulationOptions).then(responseFast => {
+            BMAApi.runThoroughSimulation(bmaModel.Model, expandedFormula, responseFast, simulationOptions).then(responseThorough => {
+                if (responseThorough.Status) {
+                    session.send(strings.SIMULATION_DUALITY(steps))
+                } else if (responseFast.Status) {
+                    session.send(strings.SIMULATION_ALWAYS_TRUE(steps))
+                } else {
+                    session.send(strings.SIMULATION_ALWAYS_FALSE(steps))
+                }
+            }).catch(e => {
+                if (e.code === 'ETIMEDOUT') {
+                    if (responseFast.Status) {
+                        session.send(strings.SIMULATION_PARTIAL_TRUE(steps))
+                    } else {
+                        session.send(strings.SIMULATION_PARTIAL_FALSE(steps))
+                    }
+                } else {
+                    throw e
+                }
+            })
         }).catch(e => {
             if (e.code === 'ETIMEDOUT') {
-                if (responseFast.Status) {
-                    session.send(strings.SIMULATION_PARTIAL_TRUE(steps))
-                } else {
-                    session.send(strings.SIMULATION_PARTIAL_FALSE(steps))
-                }
+                session.send(strings.SIMULATION_CANCELLED)
             } else {
                 throw e
             }
         })
-    }).catch(e => {
-        if (e.code === 'ETIMEDOUT') {
-            session.send(strings.SIMULATION_CANCELLED)
-        } else {
-            throw e
-        }
-    })
+    }
 }

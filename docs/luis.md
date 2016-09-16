@@ -1,9 +1,16 @@
 # LUIS: BMA Chat Bot
 Below is the documentation for the entities and intents used to build the LUIS model.
-Use examples shown to invoke intents in luis.ts
-* For information of how to add general user queries with the help of LUIS click [here](questions.md)
+Use examples shown to invoke intents in `/src/dialogs/luis.ts`.
+
+For information of how to add general user queries with the help of LUIS click [here](questions.md).
 
 ## Intents
+
+#### None
+No intents are recognised, and a default intent is called to alert the user, returns UNKNOWN_INTENT
+
+*Example: This is irrelevant* 
+
 #### AboutBot
 Recognises user greeting the bot, or asking for help, returns ABOUT_BOT. 
 
@@ -25,7 +32,7 @@ Chosen intent for when user requires to go back, may be useful for tutorials. Us
 *Example: Please go back*
 
 #### ClearFormulaHistory
-Intent for clearing previous formula history  
+Intent for clearing previous formula history.
 
 *Example: remove all formulas you have remembered*
 
@@ -35,19 +42,14 @@ Knowledgebase query, gives user an explanation of each operator, Required param:
 *Example: How can I use the until operator in my model?*
 
 #### ListTutorial
-Chosen intent when user asks for tutorials, returns list of all available files in 'docs', allows user to choose  
+Chosen intent when user asks for tutorials, returns list of all available files in 'data/tutorials', allows user to choose a tutorial.
 
 *Example: List all the tutorials available*
 
 #### LTLQuery
-Recognises users query as an LTL query, this is later parsed to return a formula, required param: Query 
+Recognises user's query as an LTL query, this is later parsed to return a formula, required param: Query 
 
 *Example: I need to see ras equal to 1 and notch equal to 1 sometime later*
-
-#### None
-No intents are recognised, and a default intent is called to alert the user, returns UNKNOWN_INTENT
-
-*Example: This is irrelevant* 
 
 #### OperatorExample
 Knowledgebase query, gives user an example of each operator, Required param: Operator, returns EXAMPLE_{OPERATOR}
@@ -75,36 +77,37 @@ Recognises user wanting to delete their model
 *Example: please remove the uploaded model* 
 
 #### Semantics
-Intent for users queries about oscillations/loops/steps, required param: Lookup
+Intent for user's queries about oscillations/loops/steps, required param: Lookup
 
 *Example: What happens if I increase the number of steps*
 
 #### ShowFormulaHistory
-Chosen intent for when user asks for formulas previously used for the model, these are returned as a list
+Chosen intent for when user asks for formulas previously used for the model, these are returned as a list.
 
 *Example: List all remembered formulas*
 
 #### UploadedModel
-Recognises user asking for their model, and returns model name
+Recognises user asking for their model, and returns model as link to BMA.
 
-*Example: Can you check the model that was uploaded*
+*Example: Which model did I send you?*
 
 ## Entities
 #### FormulaName
-Recognises name of specific formula, used for RenameFormulaInHistory
+Recognises name of specific formula, used for RenameFormulaInHistory.
 
 #### FormulaRename
 Children: To, from
-Used within RenameFormulaInHistory
+
+Used within RenameFormulaInHistory.
 
 #### Interactions
-Recognises different operator possibilities, used for OperatorInteractions
+Recognises different operator possibilities, used for OperatorInteractions.
 
 #### Lookup
-Default entity, can be used within any intent
+Default entity, can be used within any intent.
 
 #### Operator
-Recognises operator, used for 'OperatorExample', 'ExplainOp'
+Recognises operator, used for 'OperatorExample', 'ExplainOp'.
 
 #### Query
-Recognises query, used for intent 'LTLQuery'
+Recognises query, used for intent 'LTLQuery'.
