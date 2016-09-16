@@ -106,7 +106,7 @@ module BMA.CodeEditor {
                     label: 'var',
                     kind: monaco.languages.CompletionItemKind.Keyword,
                     insertText: 'var({{A}})',
-                    documentation: "Represents a variable with the give name."
+                    documentation: "Represents a variable with the given name."
                 },
                 {
                     label: 'const',
@@ -118,7 +118,7 @@ module BMA.CodeEditor {
             if (variables) {
                 for (var i = 0; i < variables.length; i++) {
                     items.push({
-                        label: variables[i],
+                        label: 'var(' + variables[i] + ')',
                         kind: monaco.languages.CompletionItemKind.Variable,
                         insertText: 'var(' + variables[i] + ')',
                         documentation: undefined
@@ -164,7 +164,9 @@ module BMA.CodeEditor {
                 lineNumbers: false,
                 scrollBeyondLastLine: false,
                 autoClosingBrackets: true,
-                wordWrap: true
+                wordWrap: true,
+                glyphMargin: false, 
+                renderLineHighlight: false               
             });
             this.editor = editor;
             this.onContentChanged = editor.onDidChangeModelContent(e => {
