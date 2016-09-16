@@ -2,6 +2,7 @@
 
 /*
  * The main entry point of the application.
+ * Note that in unit tests a custom entry point is used.
  */
 
 import * as builder from 'botbuilder'
