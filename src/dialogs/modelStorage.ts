@@ -13,6 +13,9 @@ import * as strings from './strings'
  * Registers dialogs related to managing the user uploaded model.
  */
 export function registerModelStorageDialogs (bot: builder.UniversalBot, modelStorage: ModelStorage) {
+    /*
+     * Sends a message with a BMA UI link which opens the uploaded model of the user.
+     */
     bot.dialog('/requestUploadedModel', (session, args, next) => {
         let modelId = session.conversationData.bmaModelId
         if (!modelId) {
@@ -24,6 +27,10 @@ export function registerModelStorageDialogs (bot: builder.UniversalBot, modelSto
         session.send(strings.HERE_IS_YOUR_UPLOADED_MODEL(url))
         next()
     })
+
+    /*
+     * Removes the user uploaded model from all storage, that is, conversation storage and blob storage.
+     */
     bot.dialog('/removeUploadedModel', (session, args, next) => {
         let id = session.conversationData.bmaModelId
         if (!id) {
@@ -39,6 +46,15 @@ export function registerModelStorageDialogs (bot: builder.UniversalBot, modelSto
     })
 }
 
+/**
+ * Downloads an attachment (which is given by URL) which is assumed to be an uploaded BMA model file,
+ * and store it (in conversation storage and blob storage).
+ * 
+ * Note that no validation is done except checking if the uploaded file is a valid JSON file.
+ * If the user uploads a JSON file that is not a BMA model, then subsequent errors will occur elsewhere.
+ * 
+ * TODO do more error checking on uploaded file
+ */
 export function receiveModelAttachmentStep (bot: builder.UniversalBot, modelStorage: ModelStorage, session: builder.Session, results, next) {
     // check and store attachment
     let attachments = session.message.attachments

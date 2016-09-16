@@ -3,7 +3,6 @@
 import * as builder from 'botbuilder'
 import * as yaml from 'js-yaml'
 import * as fs from 'fs'
-
 import * as strings from './strings'
 import {getTutorialImageAttachment, getBMAModelUrl, getTutorialModelUrl} from '../util'
 
@@ -41,10 +40,10 @@ interface TutorialStep {
     text: string
 
     /** The filename of the image that will be sent to the user. */
-    image: string
+    image?: string
 
     /** Name of the model that is sent to the user. */
-    model: string
+    model?: string
 }
 
 /** Reads all YAML tutorial files and dynamically creates dialogs from them, including the tutorial selection dialog. */
@@ -52,6 +51,7 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
     // all available tutorials
     let tutorialPaths = TUTORIALS.map(name => `data/tutorials/${name}.yaml`)
     
+    // TODO load tutorials one after another and implement better error reporting on YAML parsing errors (useful during development)
     let tutorials: Tutorial[] = tutorialPaths.map(path => fs.readFileSync(path, 'utf8')).map(yaml.safeLoad)
 
     // the tutorial selection dialog

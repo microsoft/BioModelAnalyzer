@@ -1,5 +1,9 @@
 // Copyright (C) 2016 Microsoft - All Rights Reserved
 
+/*
+ * The main entry point of the application.
+ */
+
 import * as builder from 'botbuilder'
 import * as express from 'express'
 import * as cors from 'cors'

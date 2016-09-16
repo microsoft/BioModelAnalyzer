@@ -3,15 +3,16 @@
 /// <reference path="../../node_modules/chevrotain/lib/chevrotain.d.ts" />
 
 /**
- *  Please read ./NLParserDocumentation.md for a high level explaination of the parser
+ *  Please read /docs/NLParser.md for a high level explaination of the parser.
  */
 import { Parser, Token, Lexer } from 'chevrotain'
 import * as _ from 'underscore'
 import * as natural from 'natural'
 import * as BMA from '../BMA'
 import * as AST from './AST'
-/** 
- *  Parser response structure
+
+/**
+ * Parser response structure
  */
 export enum ParserResponseType {
     SUCCESS,
@@ -24,6 +25,16 @@ export interface ParserResponse {
     errors?: any
     AST?: AST.Formula
     unknownVariables?: string[]
+}
+
+/**
+ * The result of invoking the root grammar rule directly.
+ * Note that clients will not see this and instead work with ParserResponse when calling NLParser.parse().
+ */
+interface InternalFormula {
+    AST?: AST.Formula
+    resyncedToken?: any
+    errorToken?: any
 }
 
 export interface FormulaPointer {
@@ -73,7 +84,7 @@ class CompositeToken extends BaseToken {
     })
 }
 
-/**  literals (no stemming required) */
+// literals (no stemming required)
 class IntegerLiteral extends Token {
     static PATTERN = /\d+/
 }
@@ -85,6 +96,7 @@ class TrueLiteral extends Token {
 
 class FalseLiteral extends Token {
     static PATTERN = /false/
+    // no LABEL here as we never output False directly, but transform it to Not True
 }
 
 /**  Model variable token: in the form MODELVAR(varId) (no stemming required) */
@@ -103,7 +115,6 @@ class WhiteSpace extends Token {
     static PATTERN = /\s+/
     static GROUP = Lexer.SKIPPED
 }
-
 
 /*
  *  GRAMMAR TOKENS: The set of tokens that are accepted by the grammar of our language,
@@ -222,8 +233,8 @@ function generateStemmedTokenDefinition(id: string, label: string, synonyms: str
  */
 export default class NLParser extends Parser {
 
-    /** Base entry rule of the graar */
-    private formula = this.RULE<AST.InternalFormula>('formula', () => {
+    /** Base entry rule of the grammar */
+    private formula = this.RULE<InternalFormula>('formula', () => {
         let tree = {
             left: null
         }

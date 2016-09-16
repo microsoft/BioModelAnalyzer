@@ -1,5 +1,6 @@
 // Copyright (C) 2016 Microsoft - All Rights Reserved
 
+// General
 export let OK = 'OK.'
 export let LTL_DESCRIPTION = 'Linear Temporal Logic (LTL) is a modal temporal logic, and it helps us define an infinite sequence of states. It is useful within the BMA as it allows us to query paths, and how current paths may change or be affected in the future.'
 export let UNKNOWN_INTENT = 'I did not understand you.'

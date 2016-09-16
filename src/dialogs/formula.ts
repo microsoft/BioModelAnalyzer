@@ -24,19 +24,28 @@ export function registerFormulaDialog (bot: builder.UniversalBot, modelStorage: 
                 session.save()
                 builder.Prompts.attachment(session, strings.MODEL_SEND_PROMPT)
             } else {
-                handleLTLQuery(session, text, modelStorage, skipBMAAPI)
+                processFormulaText(session, text, modelStorage, skipBMAAPI)
                 session.endDialog()
             }
         },
         (session, results, next) => receiveModelAttachmentStep(bot, modelStorage, session, results, next),
         (session, results, next) => {
-            handleLTLQuery(session, session.conversationData.lastMessageText, modelStorage, skipBMAAPI)
+            processFormulaText(session, session.conversationData.lastMessageText, modelStorage, skipBMAAPI)
             delete session.conversationData.lastMessageText
         }
     ])
 }
 
-function handleLTLQuery (session: builder.Session, text: string, modelStorage: ModelStorage, skipBMAAPI: boolean) {
+/**
+ * Tries to parse a given formula in natural language into a structured LTL formula,
+ * stores it into the formula history, sends the formula back to the user in BMA string format
+ * and as a BMA model link, and also tests the formula using the BMA backend.
+ * 
+ * Note that testing a formula is done on a best-efforts basis in regards to time spent.
+ * If the BMA backend takes too long, then the user is informed about that and directed to the BMA tool
+ * to test the formula himself.  
+ */
+function processFormulaText (session: builder.Session, text: string, modelStorage: ModelStorage, skipBMAAPI: boolean) {
     // fetch some session state
     let bmaModel: BMA.ModelFile = session.conversationData.bmaModel
 

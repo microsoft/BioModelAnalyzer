@@ -1,5 +1,9 @@
 // Copyright (C) 2016 Microsoft - All Rights Reserved
 
+/*
+ * This file contains types for the abstract syntax tree that the parser generates.
+ */
+
 export const Type = {
     ConditionalsExpression: <'conditionalsExpression'>'conditionalsExpression',
     DisjunctionExpression: <'disjunctionExpression'>'disjunctionExpression',
@@ -86,12 +90,7 @@ export interface Node<L extends Node<any, any>, R extends Node<any, any>> {
     right?: R
 }
 
-export interface InternalFormula {
-    AST?: Formula
-    resyncedToken?: any
-    errorToken?: any
-}
-
+/** The root AST type. */
 export type Formula = UnaryExpression |
     ConditionalsExpression | ConditionalsExpressionChild |
     DisjunctionExpression | DisjunctionExpressionChild

@@ -18,11 +18,14 @@ export interface ModelStorage {
     storeGeneratedModel (model: BMA.ModelFile): Promise.IThenable<string>
 }
 
+/**
+ * Stores BMA models in Azure Blob Storage and generates public URLs for them.
+ */
 export class BlobModelStorage implements ModelStorage {
     private blobService
 
     constructor () {
-        this.blobService = azure.createBlobService(config.get('AZURE_STORAGE_ACCOUNT'), config.get('AZURE_STORAGE_ACCESS_KEY'))
+        this.blobService = azure.createBlobService(config.get<string>('AZURE_STORAGE_ACCOUNT'), config.get<string>('AZURE_STORAGE_ACCESS_KEY'))
 
         // enable CORS
         this.blobService.getServiceProperties((error, result, response) => {

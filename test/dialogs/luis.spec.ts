@@ -48,23 +48,20 @@ describe ('bot conversations: natural language via LUIS', () => {
             { bot: strings.ALWAYS_EVENTUALLY }
         ])
     })
-// TODO uncomment once LUIS is trained on that
-/*
+
     it ('bot explains operator', () => {
         return assertConversation([
             { user: 'what does eventually mean?' },
             { bot: strings.EXPLAIN_EVENTUALLY }
         ])
     })
-*/
-/*
+
     it ('bot gives operator example', () => {
         return assertConversation([
             { user: 'show me an example of the next operator' },
             { bot: assertStartsWith(strings.EXAMPLE_NEXT) }
         ])
     })
-*/
 
     it ('bot explains semantics', () => {
         return assertConversation([
@@ -72,9 +69,8 @@ describe ('bot conversations: natural language via LUIS', () => {
             { bot: strings.INCREASE_STEPS },
             { user: 'what is an oscillation?' },
             { bot: strings.OSCILLATIONS },
-            // TODO uncomment once answer is added to strings.ts
-            /*{ user: 'how does a self loop work?' },
-            { bot: strings.SELF_LOOP }*/
+            { user: 'how does a self loop work?' },
+            { bot: strings.SELF_LOOP }
         ])
     })
 
