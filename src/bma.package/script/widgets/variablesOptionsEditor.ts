@@ -235,6 +235,9 @@
                         that.SetValidation(false, ex);
                     }
                 },
+                ondescriptionchanged: function (description) {
+                    that.options.TFdescription = description;
+                }
                 //onvariablechangedcallback: () => {
                 //    that.options.formula = that.texteditor.tftexteditor("option", "formula");
                 //    that.formulaeditor.formulaeditor({
@@ -367,7 +370,12 @@
                     break;
                 case "TFdescription":
                     that.options.TFdescription = value;
-                    this.texteditor.tftexteditor({ TFdescription: value });
+                    this.texteditor.tftexteditor({
+                        TFdescription: value,
+                        ondescriptionchanged: function (description) {
+                            that.options.TFdescription = description;
+                        }
+                    });
                     //if (this.description.val() !== that.options.TFdescription)
                     //    this.description.val(that.options.TFdescription);
                     break;
