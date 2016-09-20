@@ -87,10 +87,17 @@
 
         $(function () {
             connector.Enable(onLogin, onLoginFailed, onLogout);
+
+            $("#signin").hide();
+            $("#testBtn").click(function () {
+                $("#signin :button").click();
+            });
+
         });
     </script>
 </head>
 <body>
     <div id="signin"></div>
+    <div id="testBtn" style="background-color:gray; width: 100px;">Click Me!</div>
 </body>
 </html>

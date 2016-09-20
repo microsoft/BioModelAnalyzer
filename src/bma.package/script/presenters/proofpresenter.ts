@@ -20,7 +20,7 @@
                 ajax: BMA.UIDrivers.IServiceDriver,
                 messagebox: BMA.UIDrivers.IMessageServiсe,
                 logService: BMA.ISessionLog
-                ) {
+            ) {
 
                 this.appModel = appModel;
                 this.ajax = ajax;
@@ -76,67 +76,83 @@
                         return;
                     }
 
+                    var invalidVariables = BMA.ModelHelper.CheckVariablesInModel(appModel.BioModel);
+                    if (invalidVariables !== undefined && invalidVariables.length > 0) {
+                        var message = "Incorrect target functions for variables: ";
+                        message += invalidVariables[0].name;
+                        for (var i = 1; i < invalidVariables.length; i++) {
+                            message += ", " + invalidVariables[i].name;
+                        }
+
+                        proofResultViewer.SetData({
+                            issucceeded: "Invalid Model",
+                            message: message,
+                            data: undefined
+                        });
+                        return;
+                    }
+
                     proofResultViewer.OnProofStarted();
                     that.logService.LogProofRun();
                     var result = that.ajax.Invoke(proofInput)
                         .done(function (res) {
-                        //console.log("Proof Result Status: " + res.Status);
-                        var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", res.Time, res.Ticks);
+                            //console.log("Proof Result Status: " + res.Status);
+                            var result = appModel.ProofResult = new BMA.Model.ProofResult(res.Status === "Stabilizing", res.Time, res.Ticks);
 
-                        if (res.Ticks !== null) {
-                            that.expandedProofPropagation = $('<div></div>');
+                            if (res.Ticks !== null) {
+                                that.expandedProofPropagation = $('<div></div>');
 
-                            if (res.Status === "NotStabilizing")
-                                window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
-                            else
-                                window.Commands.Execute("ProofFailed", undefined);
-                            that.stability = that.Stability(res.Ticks);
-                            var variablesData = that.CreateTableView(that.stability.variablesStability);
-                            that.colorData = that.CreateColoredTable(res.Ticks);
+                                if (res.Status === "NotStabilizing")
+                                    window.Commands.Execute("ProofFailed", { Model: proofInput, Res: res, Variables: that.appModel.BioModel.Variables });
+                                else
+                                    window.Commands.Execute("ProofFailed", undefined);
+                                that.stability = that.Stability(res.Ticks);
+                                var variablesData = that.CreateTableView(that.stability.variablesStability);
+                                that.colorData = that.CreateColoredTable(res.Ticks);
 
-                            var deferredProofPropagation = function () {
-                                var d = $.Deferred();
-                                var full = that.CreateExpandedProofPropagation(appModel.ProofResult.Ticks);//.addClass("proof-expanded");
-                                d.resolve(full);
-                                return d.promise();
-                            }
-                            $.when(deferredProofPropagation()).done(function (res) {
-                                that.expandedProofPropagation = res;
-                            })
-
-                            var deferredProofVariables = function () {
-                                var d = $.Deferred();
-                                var full = that.CreateExpandedProofVariables(variablesData);
-                                d.resolve(full);
-                                return d.promise();
-                            }
-                            $.when(deferredProofVariables()).done(function (res) {
-                                that.expandedProofVariables = res;
-                            })
-
-                            window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
-                            proofResultViewer.SetData({ issucceeded: result.IsStable, message: that.CreateMessage(result.IsStable, result.Time), data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: that.colorData } });
-                            proofResultViewer.ShowResult(appModel.ProofResult);
-                        }
-                        else {
-                            logService.LogProofError();
-                            if (res.Status == "Error") {
-                                proofResultViewer.SetData({
-                                    issucceeded: undefined,
-                                    message: res.Error,
-                                    data: undefined
+                                var deferredProofPropagation = function () {
+                                    var d = $.Deferred();
+                                    var full = that.CreateExpandedProofPropagation(appModel.ProofResult.Ticks);//.addClass("proof-expanded");
+                                    d.resolve(full);
+                                    return d.promise();
+                                }
+                                $.when(deferredProofPropagation()).done(function (res) {
+                                    that.expandedProofPropagation = res;
                                 })
-                            }
-                            else
-                                proofResultViewer.SetData({
-                                    issucceeded: res.Status === "Stabilizing",
-                                    message: that.CreateMessage(result.IsStable, result.Time),
-                                    data: undefined
+
+                                var deferredProofVariables = function () {
+                                    var d = $.Deferred();
+                                    var full = that.CreateExpandedProofVariables(variablesData);
+                                    d.resolve(full);
+                                    return d.promise();
+                                }
+                                $.when(deferredProofVariables()).done(function (res) {
+                                    that.expandedProofVariables = res;
                                 })
-                            proofResultViewer.ShowResult(appModel.ProofResult);
-                        }
-                        that.Snapshot();
-                    })
+
+                                window.Commands.Execute("DrawingSurfaceSetProofResults", that.stability);
+                                proofResultViewer.SetData({ issucceeded: result.IsStable, message: that.CreateMessage(result.IsStable, result.Time), data: { numericData: variablesData.numericData, colorVariables: variablesData.colorData, colorData: that.colorData } });
+                                proofResultViewer.ShowResult(appModel.ProofResult);
+                            }
+                            else {
+                                logService.LogProofError();
+                                if (res.Status == "Error") {
+                                    proofResultViewer.SetData({
+                                        issucceeded: undefined,
+                                        message: res.Error,
+                                        data: undefined
+                                    })
+                                }
+                                else
+                                    proofResultViewer.SetData({
+                                        issucceeded: res.Status === "Stabilizing",
+                                        message: that.CreateMessage(result.IsStable, result.Time),
+                                        data: undefined
+                                    })
+                                proofResultViewer.ShowResult(appModel.ProofResult);
+                            }
+                            that.Snapshot();
+                        })
                         .fail(function (XMLHttpRequest, textStatus, errorThrown) {
                             appModel.ProofResult = new BMA.Model.ProofResult(false, null, null);
                             proofResultViewer.SetData({
@@ -145,10 +161,10 @@
                                 data: undefined
                             })
                             proofResultViewer.ShowResult(appModel.ProofResult);
-                        //console.log("Proof Service Failed: " + errorThrown);
-                        //that.messagebox.Show("Proof Service Failed: " + errorThrown);
-                        //proofResultViewer.OnProofFailed();
-                    });
+                            //console.log("Proof Service Failed: " + errorThrown);
+                            //that.messagebox.Show("Proof Service Failed: " + errorThrown);
+                            //proofResultViewer.OnProofFailed();
+                        });
                 });
 
 
@@ -163,7 +179,7 @@
                     }
                 });
 
-                window.Commands.On("Expand",(param) => {
+                window.Commands.On("Expand", (param) => {
                     if (this.appModel.BioModel.Variables.length !== 0) {
                         switch (param) {
                             case "ProofPropagation":
@@ -186,10 +202,15 @@
                     }
                 });
 
-                window.Commands.On("Collapse",(param) => {
+                window.Commands.On("Collapse", (param) => {
                     proofResultViewer.Show({ tab: param });
                     popupViewer.Hide();
                 });
+
+                //window.Commands.On("ModelReset", function (param) {
+                //    that.currentBioModel = undefined;
+                //    that.currentLayout = undefined;
+                //});
             }
 
             public CurrentModelChanged() {
@@ -260,7 +281,7 @@
             }
 
             public CreateTableView(stability) {
-                
+
                 if (stability === undefined) return { numericData: undefined, colorData: undefined };
 
                 var biomodel = this.appModel.BioModel;
@@ -293,7 +314,7 @@
                 for (var i = 0; i < v; i++) {
                     color[i] = [];
                     for (var j = 0; j < t; j++) {
-                        var ij = ticks[t-j-1].Variables[i];
+                        var ij = ticks[t - j - 1].Variables[i];
                         color[i][j] = ij.Hi === ij.Lo;
                     }
                 }
