@@ -149,7 +149,7 @@
                 var sizeDiff = containerSize - container.Size;
                 var shouldMove = sizeDiff > 0;
 
-                
+
                 var containerLayouts = layout.Containers;
                 var variables = model.Variables;
                 var variableLayouts = layout.Variables;
@@ -244,7 +244,7 @@
 
             var variables = model.Variables;
 
-            var getGridCell = function(x,y) {
+            var getGridCell = function (x, y) {
                 var cellX = Math.ceil((x - grid.xOrigin) / grid.xStep) - 1;
                 var cellY = Math.ceil((y - grid.yOrigin) / grid.yStep) - 1;
                 return { x: cellX, y: cellY };
@@ -298,7 +298,7 @@
          */
         export function UpdateStatesWithModel(model: BMA.Model.BioModel, layout: BMA.Model.Layout, states: BMA.LTLOperations.Keyframe[]):
             { states: BMA.LTLOperations.Keyframe[], isChanged: boolean, shouldNotify: boolean } {
-            
+
             var isChanged = false;
             var shouldNotify = false;
             var newStates = [];
@@ -338,7 +338,7 @@
                         if (variable.Name != variableInModel.Name)
                             isChanged = true;
                         variable = new BMA.LTLOperations.NameOperand(variableInModel.Name, variableInModel.Id);
-                        
+
                         var newOperand;
                         if (operand instanceof BMA.LTLOperations.KeyframeEquation) {
                             newOperand = new BMA.LTLOperations.KeyframeEquation(variable, operand.Operator, operand.RightOperand);
@@ -370,7 +370,7 @@
                         break;
                     }
                 }
-                
+
                 var editedVariableIndex = -1;
                 for (var j = 0; j < newModel.Variables.length; j++) {
                     if (newModel.Variables[j].Id === variableId) {
@@ -378,7 +378,7 @@
                         break;
                     }
                 }
-                
+
                 if (editingVariableIndex != -1 && editedVariableIndex != -1) {
                     var oldName = variables[editingVariableIndex].Name;
                     var newName = newModel.Variables[editedVariableIndex].Name
@@ -474,7 +474,7 @@
             var lastStateName = "A";
             for (var i = 0; i < k; i++) {
                 var lastStateIdx = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
-                var stateName = states[i].Name ? states[i].Name : "A"; 
+                var stateName = states[i].Name ? states[i].Name : "A";
                 var stateIdx = stateName.length > 1 ? parseFloat(stateName.slice(1)) : 0;
 
                 if (stateIdx >= lastStateIdx) {
@@ -486,18 +486,18 @@
 
             var newStateName = newState && newState.Name ? newState.Name : "A";
             var newStateIdx = (newStateName && newStateName.length > 1) ? parseFloat(newStateName.slice(1)) : 0;
-            
+
             if (lastStateName && ((lastStateIdx == newStateIdx && lastStateName.charAt(0) >= newStateName.charAt(0))
                 || lastStateIdx > newStateIdx)) {
-                
+
                 var charCode = lastStateName ? lastStateName.charCodeAt(0) : 65;
                 var n = (lastStateName && lastStateName.length > 1) ? parseFloat(lastStateName.slice(1)) : 0;
-                
+
                 if (charCode >= 90) {
                     n++;
                     charCode = 65;
                 } else if (lastStateName) charCode++;
-               
+
 
                 newStateName = n ? String.fromCharCode(charCode) + n : String.fromCharCode(charCode);
             }
@@ -509,7 +509,7 @@
                 widthWithScroll = $('<div>').css({ width: '100%' }).appendTo($outer).outerWidth(),
                 heightWithScroll = $('<div>').css({ height: '100%' }).appendTo($outer).outerHeight();
             $outer.remove();
-            var width =  100 - widthWithScroll;
+            var width = 100 - widthWithScroll;
             var height = 100 - heightWithScroll;
 
             return { width: width, height: height };
@@ -522,7 +522,7 @@
                 var parsedFormula = BMA.parser.parse(formula);
                 var result = ConvertToOperation(parsedFormula, states, model);
                 var operation = result.operation;
-                if (operation instanceof BMA.LTLOperations.Operation) 
+                if (operation instanceof BMA.LTLOperations.Operation)
                     return {
                         operation: operation,
                         states: result.states
@@ -609,7 +609,7 @@
                     if (variableID.length == 0) throw "Variable '" + formula.state.variable + "' is not found";
                     var state = new BMA.LTLOperations.Keyframe("A", "", [
                         new BMA.LTLOperations.KeyframeEquation(new BMA.LTLOperations.NameOperand(formula.state.variable, parseFloat(variableID[0])),
-                        formula.state.operator, new BMA.LTLOperations.ConstOperand(parseFloat(formula.state.const)))]);
+                            formula.state.operator, new BMA.LTLOperations.ConstOperand(parseFloat(formula.state.const)))]);
                     var mergedStates = BMA.ModelHelper.MergeStates(states, [state]);
                     for (var i = 0; i < mergedStates.states.length; i++)
                         if (mergedStates.states[i].Name == mergedStates.map[state.Name])
@@ -729,17 +729,17 @@
                         op += " " + operation.Operator.Name + " " + BMA.ModelHelper.ConvertTFOperationToString(operation.Operands[i]);
                     }
                 }
-            } 
+            }
             return op;
         }
 
         export function ConvertTargetFunctionToOperation(formula: string, variables: BMA.Model.Variable[]): any {
             var parsedFormula;
             //try {
-                if (formula == "") return undefined;
-                var parsedFormula = BMA.TFParser.parse(formula);
-                return ConvertTFtoOperation(parsedFormula, variables);
-                
+            if (formula == "") return undefined;
+            var parsedFormula = BMA.TFParser.parse(formula);
+            return ConvertTFtoOperation(parsedFormula, variables);
+
             //} catch (ex) {
             //    alert(ex);
             //}
@@ -798,7 +798,7 @@
         }
 
         export function ConvertOperationToString(operation: BMA.LTLOperations.IOperand, extendedStates: boolean = false): string {
-            var op ="";
+            var op = "";
             if (operation instanceof BMA.LTLOperations.Keyframe) {
                 if (extendedStates) {
                     if (operation.Operands.length == 0) throw "Unsuitable states are found";
@@ -827,8 +827,8 @@
                 if (operation.Operator.MinOperandsCount == 2) {
                     op += (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[0]) == 1 ? "(" + (BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates)).trim() + ") " :
                         BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates)) + operation.Operator.Name.toLowerCase() + " " +
-                    (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[1]) ? "(" + BMA.ModelHelper.ConvertOperationToString(operation.Operands[1], extendedStates).trim() + ") " :
-                        BMA.ModelHelper.ConvertOperationToString(operation.Operands[1], extendedStates));
+                        (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[1]) ? "(" + BMA.ModelHelper.ConvertOperationToString(operation.Operands[1], extendedStates).trim() + ") " :
+                            BMA.ModelHelper.ConvertOperationToString(operation.Operands[1], extendedStates));
                 } else if (operation.Operator.MinOperandsCount == 1) {
                     op += operation.Operator.Name.toLowerCase() + " " + (BMA.ModelHelper.CompareOperationsPriority(operation, operation.Operands[0]) == 1 ?
                         "(" + BMA.ModelHelper.ConvertOperationToString(operation.Operands[0], extendedStates).trim() + ") " :
@@ -863,7 +863,7 @@
                 }
                 if (oldStates[newState.Name]) {
                     result.map[newState.Name] = newState.Name;
-                } 
+                }
                 if (!exist) {
                     statesToAdd.push(newState.Clone());
                 }
@@ -881,18 +881,48 @@
 
         export function MergeTwoStatesInOne(state1: BMA.LTLOperations.Keyframe, state2: BMA.LTLOperations.Keyframe): BMA.LTLOperations.Keyframe {
             var newState = new BMA.LTLOperations.Keyframe("A", "", []);
-            
+
             for (var i = 0; i < state1.Operands.length; i++)
                 newState.Operands.push(state1.Operands[i].Clone());
 
             //if (state1.GetFormula() !== state2.GetFormula()) {
-                for (var i = 0; i < state2.Operands.length; i++) {
-                    //if (newState.Operands.indexOf(state2.Operands[i]) == -1) 
-                        newState.Operands.push(state2.Operands[i].Clone());
-                }
+            for (var i = 0; i < state2.Operands.length; i++) {
+                //if (newState.Operands.indexOf(state2.Operands[i]) == -1) 
+                newState.Operands.push(state2.Operands[i].Clone());
+            }
             //}
 
             return newState;
+        }
+
+        //Returns list of variables with incorrect target functions
+        export function CheckVariablesInModel(model: BMA.Model.BioModel): any[] {
+            var result = [];
+            var variables = model.Variables;
+            var relationships = model.Relationships;
+            for (var i = 0; i < variables.length; i++) {
+                var variable = variables[i];
+
+                var connectedVariables = [];
+                for (var j = 0; j < relationships.length; j++) {
+                    var rel = relationships[j];
+                    if (rel.ToVariableId === variable.Id) {
+                        connectedVariables.push(model.GetVariableById(rel.FromVariableId));
+                    }
+                }
+                var formula = variable.Formula;
+                if (formula !== "") {
+                    try {
+                        var parsedFormula = BMA.TFParser.parse(formula);
+                    } catch (ex) {
+                        result.push({
+                            name: variable.Name, error: ex
+                        });
+                    }
+                }
+            }
+
+            return result;
         }
     }
 } 
