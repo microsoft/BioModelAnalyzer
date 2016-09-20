@@ -11,6 +11,7 @@
             isAuthorized: false,
             onsigninonedrive: undefined,
             onsignoutonedrive: undefined,
+            activeRepo: "local",
         },
 
         _create: function () {
@@ -54,12 +55,30 @@
                 $(that.localStorage).replaceWith(that.options.localStorageWidget);
                 that.localStorage = that.options.localStorageWidget;
                 that.localStorage.addClass("localstorage-repo");
+
+                that.localStorage.localstoragewidget({
+                    onmessagechanged: function (msg) {
+                        that.message.text(msg);
+                    },
+                    oncancelselection: function () {
+                        that.CancelSelection();
+                    }
+                });
             }
             //this.localStorage.localstoragewidget();
             if (that.options.oneDriveWidget) {
                 $(that.oneDriveStorage).replaceWith(that.options.oneDriveWidget);
                 that.oneDriveStorage = that.options.oneDriveWidget;
                 that.oneDriveStorage.addClass("localstorage-repo");
+
+                that.oneDriveStorage.onedrivestoragewidget({
+                    onmessagechanged: function (msg) {
+                        that.message.text(msg);
+                    },
+                    oncancelselection: function () {
+                        that.CancelSelection();
+                    }
+                });
             }
 
             //this.oneDriveStorage.onedrivestoragewidget();
@@ -152,6 +171,16 @@
         //    return this.oneDriveStorage;
         //},
 
+        //CancelSelection: function () {
+        //    var that = this;
+        //    if (that.options.isAuthorized) {
+        //        if (that.localStorageBtn.hasClass("active"))
+        //            that.oneDriveStorage.onedrivestoragewidget("cancelSelection");
+        //        else if (that.oneDriveStorageBtn.hasClass("active"))
+        //            that.localStorage.localstoragewidget("cancelSelection");
+        //    }
+        //},
+
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
@@ -196,7 +225,7 @@
                         that.localStorage.localstoragewidget({
                             onmessagechanged: function (msg) {
                                 that.message.text(msg);
-                            }
+                            },
                         });
                     }
                     break;
@@ -210,7 +239,7 @@
                         that.oneDriveStorage.onedrivestoragewidget({
                             onmessagechanged: function (msg) {
                                 that.message.text(msg);
-                            }
+                            },
                         });
                     }
                     break;

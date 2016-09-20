@@ -491,6 +491,7 @@
     <Content Include="Silverlight.js" />
     <Content Include="tool.js" />
     <Content Include="tool.min.js" />
+    <Content Include="codeeditor.js" />
     <Content Include="version.txt" />
     <Content Include="xmlParserTestPage.html" />
     <Content Include="serviceTestPage.html" />

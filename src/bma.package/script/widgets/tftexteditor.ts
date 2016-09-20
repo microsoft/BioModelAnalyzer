@@ -3,12 +3,15 @@
 
 (function ($) {
     $.widget("BMA.tftexteditor", {
+        formulaTextArea: undefined,
+
         options: {
             formula: "",
             functions: ["VAR", "CONST"],//, "POS", "NEG"],//],
             operators1: ["+", "-", "*", "/"],
             operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
             inputs: [],
+            TFdescription: "",
             isValid: undefined,
             onvariablechangedcallback: undefined,
             onformulachangedcallback: undefined,
@@ -21,15 +24,22 @@
             inputs.forEach(function (val, ind) {
                 var item = $('<div></div>').text(val.Name).appendTo(that.listOfInputs);
                 item.bind("click", function () {
-                    that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
+                    //that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
+                    var formulaPart = "var(" + $(this).text() + ")";
+                    that.formulaTextArea.codeeditor("insertTextAtCursor", formulaPart);
                     that.listOfInputs.hide();
                 });
             });
 
-            this.formulaTextArea.val(that.options.formula);
+            //this.formulaTextArea.val(that.options.formula);
+            this.formulaTextArea.codeeditor({
+                formula: that.options.formula
+            });
             if (that.options.onformulachangedcallback !== undefined) {
                 that.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
             }
+
+            this.description.val(that.options.TFdescription);
         },
 
         SetValidation: function (result: boolean, message: string) {
@@ -37,19 +47,19 @@
             var that = this;
 
             if (this.options.approved === undefined) {
-                that.prooficon.removeClass("formula-failed-icon");
-                that.prooficon.removeClass("formula-validated-icon");
+                //that.prooficon.removeClass("formula-failed-icon");
+                //that.prooficon.removeClass("formula-validated-icon");
                 this.formulaTextArea.removeClass("formula-failed-textarea");
                 this.formulaTextArea.removeClass("formula-validated-textarea");
             }
             else {
 
                 if (this.options.approved === true) {
-                    that.prooficon.removeClass("formula-failed-icon").addClass("formula-validated-icon");
+                    //that.prooficon.removeClass("formula-failed-icon").addClass("formula-validated-icon");
                     this.formulaTextArea.removeClass("formula-failed-textarea").addClass("formula-validated-textarea");
                 }
                 else if (this.options.approved === false) {
-                    that.prooficon.removeClass("formula-validated-icon").addClass("formula-failed-icon");
+                    //that.prooficon.removeClass("formula-validated-icon").addClass("formula-failed-icon");
                     this.formulaTextArea.removeClass("formula-validated-textarea").addClass("formula-failed-textarea");
                 }
 
@@ -96,16 +106,45 @@
                 .addClass("window-title")
                 .text("Target Function")
                 .appendTo(formulaDiv);
+
+            var descriptionDiv = $("<div></div>")
+                .addClass("description")
+                .appendTo(formulaDiv);
+            //$('<div></div>')
+            //    .addClass("window-title")
+            //    .text("Description")
+            //    .appendTo(descriptionDiv);
+            this.description = $("<input type='text'>")
+                .attr("placeholder", "Description")
+                .addClass("description-input")
+                .appendTo(descriptionDiv);
+            /*
             this.formulaTextArea = $('<textarea></textarea>')
                 .attr("spellcheck", "false")
                 .addClass("formula-text-area")
                 .appendTo(formulaDiv);
-            this.prooficon = $('<div></div>')
-                .addClass("validation-icon")
+            */
+            this.formulaTextArea = $('<div></div>')
+                .addClass("formula-text-area")
                 .appendTo(formulaDiv);
+
+            //this.prooficon = $('<div></div>')
+            //    .addClass("validation-icon")
+            //    .appendTo(formulaDiv);
             this.errorMessage = $('<div></div>')
                 .addClass("formula-validation-message")
                 .appendTo(formulaDiv);
+
+            this.formulaTextArea.mousedown(function (e) {
+                e.stopPropagation();
+            });
+
+            this.formulaTextArea.codeeditor({
+                text: that.options.formula,
+                language: 'bma.targetfunc',
+                suggestVariables: that.options.inputs
+            });
+
         },
 
         _processExpandingContent: function () {
@@ -126,7 +165,7 @@
             var opUl1 = $('<ul></ul>').appendTo(operatorsDiv);
             var opUl2 = $('<ul></ul>').appendTo(operatorsDiv);
 
-            this.infoTextArea = $('<div></div>').addClass('operators-info').appendTo(operatorsDiv);
+            this.infoTextArea = $('<div></div>').addClass('operators-info');//.appendTo(operatorsDiv);
 
             var functions = this.options.functions;
             functions.forEach(
@@ -200,23 +239,50 @@
                     inpbttn.removeClass('inputs-list-header-expanded');
                 }
             });
+            
+            $(document).mousedown(function (e) {
+                if (!that.inputsList.is(e.target) && that.inputsList.has(e.target).length === 0) {
+                    that.inputsList.css("border-radius", "15px");
+                    that.listOfInputs.hide();
+                    inpbttn.removeClass('inputs-list-header-expanded');
+                }
+            });
         },
 
         _OnHoverFunction: function (item: JQuery, textarea: JQuery) {
+            var that = this;
             var selected = item.addClass("ui-selected");
             item.parent().children().not(selected).removeClass("ui-selected");
-            this._refreshText(selected, textarea);
+            (<any>item).tooltip({
+                //tooltipClass: "share-icon",
+                //position: {
+                //    at: "left-48px bottom",
+                //    collision: 'none',
+                //},
+                content: function () {
+                    //var text = $('<div></div>').addClass('operators-info');
+                    return that._refreshText(selected, textarea);
+                },
+                show: null,
+                hide: false,
+                items: "button.ui-selected, li",
+                close: function (event, ui) {
+                    (<any>item).data("ui-tooltip").liveRegion.children().remove();
+                },
+            });
+            //this._refreshText(selected, textarea);
         },
 
         _OffHoverFunction: function (item: JQuery, textarea: JQuery) {
             item.parent().children().removeClass("ui-selected");
-            textarea.text("");
+            //textarea.text("");
         },
 
         _InsertToFormula: function (name, offset) {
-            var caret = this.getCaretPos(this.formulaTextArea) + offset;// + item.Offset;
-            this.formulaTextArea.insertAtCaret(name).change();
-            this.formulaTextArea[0].setSelectionRange(caret, caret);
+            //var caret = this.getCaretPos(this.formulaTextArea) + offset;// + item.Offset;
+            //this.formulaTextArea.insertAtCaret(name).change();
+            //this.formulaTextArea[0].setSelectionRange(caret, caret);
+            this.formulaTextArea.codeeditor("insertTextAtCursor", name);
         },
 
         _refreshText: function (selected: JQuery, div: JQuery) {
@@ -226,16 +292,40 @@
             var description = fun.Description.split(":");
             $('<h3></h3>').text(description[0]).appendTo(div);
             $('<p></p>').text(description[1]).appendTo(div);
+            return div;
         },
 
         _bindExpanding: function () {
             var that = this;
 
-            this.formulaTextArea.bind("input change propertychange", function () {
-                that.options.formula = that.formulaTextArea.val();
+            //this.formulaTextArea.bind("input change propertychange", function () {
+            //    that.options.formula = that.formulaTextArea.val();
+            //    if (that.options.onformulachangedcallback !== undefined) {
+            //        that.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
+            //    }
+            //});
+
+            this.formulaTextArea.bind("codeeditorchange", function () {
+                var text = that.formulaTextArea.codeeditor("text");
+
+                if (that.options.formula === text)
+                    return;
+
+                that.options.formula = text;
                 if (that.options.onformulachangedcallback !== undefined) {
                     that.options.onformulachangedcallback({ formula: that.options.formula, inputs: that._inputsArray() });
                 }
+            });
+
+            this.description.bind("input change", function () {
+                that.options.TFdescription = that.description.val();
+                if (that.options.ondescriptionchanged !== undefined) {
+                    that.options.ondescriptionchanged(that.options.TFdescription);
+                }
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
+                //window.Commands.Execute("VariableEdited", {});
             });
             
         },
@@ -253,16 +343,29 @@
         _setOption: function (key, value) {
             var that = this;
             switch (key) {
+                case "TFdescription":
+                    that.options.TFdescription = value;
+                    if (this.description.val() !== that.options.TFdescription)
+                        this.description.val(that.options.TFdescription);
+                    break;
                 case "formula":
                     that.options.formula = value;
                     var inparr = that._inputsArray();
+                    var text = that.formulaTextArea.codeeditor("text");
+                    if (text !== that.options.formula) {
+                        this.formulaTextArea.codeeditor({ text: that.options.formula });
+                        if (this.options.onformulachangedcallback !== undefined) {
+                            this.options.onformulachangedcallback({ formula: that.options.formula, inputs: inparr });
+                        }
+                    }
+                    /*
                     if (this.formulaTextArea.val() !== that.options.formula) {
                         this.formulaTextArea.val(that.options.formula);
                         if (this.options.onformulachangedcallback !== undefined) {
                             this.options.onformulachangedcallback({ formula: that.options.formula, inputs: inparr });
                         }
-                        //window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
                     }
+                    */
                     break;
                 case "inputs":
                     this.options.inputs = value;
@@ -271,7 +374,9 @@
                     inputs.forEach(function (val, ind) {
                         var item = $('<div></div>').text(val.Name).appendTo(that.listOfInputs);
                         item.bind("click", function () {
-                            that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
+                            var formulaPart = "var(" + $(this).text() + ")";
+                            that.formulaTextArea.codeeditor("insertTextAtCursor", formulaPart);
+                            //that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
                             that.listOfInputs.hide();
                         });
                     });

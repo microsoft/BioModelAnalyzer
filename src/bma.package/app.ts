@@ -451,7 +451,7 @@ function loadScript(version) {
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
 
     $("#btn-local-save").click(function (args) {
-        window.Commands.Execute("LocalStorageSaveModel", undefined);
+        window.Commands.Execute("SaveModel", undefined);
     });
     $("#btn-new-model").click(function (args) {
         window.Commands.Execute("NewModel", undefined);
@@ -589,7 +589,7 @@ function loadScript(version) {
 
     var localSettings = new BMA.OneDrive.OneDriveSettings("79832916-6a39-4c73-b13e-ee28c25d46a7", "http://localhost:81/html/callback.html", "signin");
     var bmaNewSettings = new BMA.OneDrive.OneDriveSettings("000000004C12BD9C", "http://bmanew.cloudapp.net/html/callback.html", "signin");
-    var oneDriveSettings = localSettings;
+    var oneDriveSettings = bmaNewSettings; //localSettings;
 
     var connector = new BMA.OneDrive.OneDriveConnector(oneDriveSettings);
     

@@ -67,7 +67,6 @@ module.exports = function (grunt) {
                     "script/widgets/visibilitysettings.js",
                     "script/widgets/formulaeditor.js",
                     "script/widgets/tftexteditor.js",
-                    "script/widgets/codeeditor.js",
                     "script/widgets/ltl/keyframetable.js",
                     "script/widgets/ltl/keyframecompact.js",
                     "script/widgets/ltl/ltlstatesviewer.js",
@@ -106,6 +105,7 @@ module.exports = function (grunt) {
                     { src: 'tool.min.js', dest: '../bma.client/tool.min.js' },
                     { src: 'app.js', dest: '../bma.client/app.js' },
                     { src: 'css/bma.css', dest: '../bma.client/css/bma.css' },
+                    { src: 'script/widgets/codeeditor.js', dest: '../bma.client/codeeditor.js' },
                     { src: 'js/idd.js', dest: '../bma.client/js/idd.js' },
                     { src: 'js/jquery.ui-contextmenu.min.js', dest: '../bma.client/js/jquery.ui-contextmenu.min.js' },
                     { src: 'js/jquery.ui-contextmenu.js', dest: '../bma.client/js/jquery.ui-contextmenu.js' }

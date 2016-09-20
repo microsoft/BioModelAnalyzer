@@ -1067,7 +1067,7 @@
 }
 
 .window.variable-editor{
-    height:474px;
+    height:404px;
 }
 
 .variable-editor{
@@ -1084,18 +1084,30 @@
     }
 
     &.bmaeditor-expanded {
-        height: 514px;
+        height: 434px;
     }
 
     &.bmaeditor-expanded-horizontaly {
-        width:600px;
+        width:485px;
+        height:700px;
+    }
+    .target-function {
+        .formula-text-area{
+            width: calc(~"100% - 2px");
+		    height:150px;
+        }
+        .formula-validation-message {
+            color:@darkred;
+        }
     }
 
     .description {
-        margin-top:20px;
+        /*margin-top:20px;*/
+         margin-bottom:20px;
+         width:368px;
         
         .description-input{
-            width:80%;
+            width:100%;
             padding:0 5px;
             height: 30px;
         }
@@ -1147,6 +1159,20 @@
 }
 
 .model-repository{
+    
+    .share-icon{
+        display: inline-block;
+        height: 20px;
+        width: 20px;
+        border: 1px solid @green;
+        border-radius: 100px;
+        color:white;
+        background-color:@green;
+        text-align: center;
+        line-height: 20px;
+        float: right;
+    }
+
     .repository-switcher{
         background-color:@midgrey;
         color:white;
@@ -1211,6 +1237,7 @@
                 background-color:white;
             }
         }
+
     }
 
     .repository-readonly-bttn{
@@ -1231,4 +1258,25 @@
             border-color:@green;
         }
     }
+}
+
+.ui-tooltip-content {
+   
+	.operators-info{
+        width:258px;
+        font-family: 'Segoe-UI';
+        font-size:13px;
+        line-height: 17px;
+        color: #606060;
+
+        h3 {
+            margin-top:0;
+        }
+
+        p {
+            margin: 0;
+            padding: 0;
+            width: 95%;
+        }
+	}
 }

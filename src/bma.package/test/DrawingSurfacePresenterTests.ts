@@ -20,6 +20,16 @@ describe("DesignSurfacePresenter", () => {
         };
     });
 
+    it("codeditor widget initializes correctly", () => {
+        var drawingSurface = $("<div></div>");
+        var editor = drawingSurface.codeeditor({
+            text: 'max(var(LET-23), var(lin-3), const(3))',
+            language: 'bma.targetfunc',
+            suggestVariables: ['LET-23', 'lin-3']
+        });
+        expect(editor).toBeDefined();
+    });
+
     it("should be created from BioModel, Layout and ISVGPlot driver instance", () => {
         var drawingSurface = $("<div></div>");
         drawingSurface.drawingsurface();

@@ -32,7 +32,11 @@
     { "Path": "js/FileSaver.js" },
     { "Path": "Silverlight.js" },
     { "Path": "tool.js" },
-
+    { "Path": "test/pre/monacotest_pre.js" },
+    { "Path": "node_modules/monaco-editor/min/vs/loader.js" },
+    { "Path": "node_modules/monaco-editor/min/vs/editor/editor.main.nls.js" },
+    { "Path": "node_modules/monaco-editor/min/vs/editor/editor.main.js" },
+    { "Path": "script/widgets/codeeditor.js" },
     {
       "Path": "test/TestComponents/",
       "Include": "*.ts"

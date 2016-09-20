@@ -2,6 +2,7 @@
     export module Presenters {
         export class StoragePresenter {
             private appModel: BMA.Model.AppModel;
+            private appModelKey: string;
             private driver: BMA.UIDrivers.IModelStorageDriver;
             private localStorageDriver: BMA.UIDrivers.ILocalStorageDriver;
             private oneDriveStorageDriver: BMA.UIDrivers.IOneDriveDriver;
@@ -11,6 +12,7 @@
             private localRepository: BMA.UIDrivers.IModelRepository;
             private messagebox: BMA.UIDrivers.IMessageServiсe;
             private checker: BMA.UIDrivers.ICheckChanges;
+            private activePresenter: string = "local";
 
             constructor(
                 appModel: BMA.Model.AppModel,
@@ -45,6 +47,17 @@
                 this.localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(that.appModel, that.localStorageDriver,
                     localRepository, messagebox, checker, logService, waitScreen);
 
+                this.localStoragePresenter.SetOnIsActive(function () {
+                    if (that.activePresenter == "local") return true;
+                    return false;
+                });
+
+                this.localStoragePresenter.SetOnRequestLoad(function (key) {
+                    that.RequestLoadModel().done(function () {
+                        that.localStoragePresenter.LoadModel(key);
+                    });
+                });
+
                 var onLogin = function (oneDrive) {
                     that.driver.SetAuthorizationStatus(true);
                     that.localStorageDriver.SetOnEnableContextMenu(true);
@@ -65,10 +78,31 @@
                         // set copied model to oneDrivePresenter
                     });
 
+                    that.localStoragePresenter.SetOnActiveCallback(function () {
+                        that.activePresenter = "local";
+                        that.oneDriveStorageDriver.SetOnUnselect();
+                    });
+
                     that.oneDrivePresenter.SetOnCopyCallback(function (key, item) {
                         that.localRepository.SaveModel(key, item);
                         window.Commands.Execute("LocalStorageChanged", {});
                         // set copied to localpresenter
+                    });
+
+                    that.oneDrivePresenter.SetOnActiveCallback(function () {
+                        that.activePresenter = "oneDrive";
+                        that.localStorageDriver.SetOnUnselect();
+                    });
+
+                    that.oneDrivePresenter.SetOnIsActive(function () {
+                        if (that.activePresenter == "oneDrive") return true;
+                        return false;
+                    });
+
+                    that.oneDrivePresenter.SetOnRequestLoad(function (key) {
+                        that.RequestLoadModel().done(function () {
+                            that.oneDrivePresenter.LoadModel(key);
+                        });
                     });
                 };
 
@@ -77,6 +111,7 @@
                 };
                 
                 var onLogout = function (logout) {
+                    that.activePresenter = "local";
                     that.driver.SetAuthorizationStatus(false);
                     that.localStorageDriver.SetOnEnableContextMenu(false);
                     if (that.oneDrivePresenter) {
@@ -100,6 +135,75 @@
                     window.Commands.Execute("LocalStorageRequested", undefined);
                 });
 
+                window.Commands.On("SaveModel", function () {
+                    if (that.activePresenter == "local")
+                        window.Commands.Execute("LocalStorageSaveModel", undefined);
+                    else window.Commands.Execute("OneDriveStorageSaveModel", undefined);
+                });
+
+                window.Commands.On("NewModel", function () {
+                    if (that.activePresenter == "local")
+                        that.localStorageDriver.SetOnUnselect();
+                    else that.oneDriveStorageDriver.SetOnUnselect();
+                });
+            }
+
+            public RequestLoadModel() {
+                var that = this;
+                var deffered = $.Deferred();
+                try {
+                    if (that.checker.IsChanged(that.appModel)) {
+                        var userDialog = $('<div></div>').appendTo('body').userdialog({
+                            message: "Do you want to save changes?",
+                            actions: [
+                                {
+                                    button: 'Yes',
+                                    callback: function () {
+                                        userDialog.detach();
+                                        if (that.activePresenter == "local")
+                                            window.Commands.Execute("LocalStorageSaveModel", {});
+                                        else window.Commands.Execute("OneDriveStorageSaveModel", {});
+                                        deffered.resolve();
+                                        //load(key);
+                                    }
+                                },
+                                {
+                                    button: 'No',
+                                    callback: function () {
+                                        userDialog.detach();
+                                        deffered.resolve();
+                                        //load(key);
+                                    }
+                                },
+                                {
+                                    button: 'Cancel',
+                                    callback: function () {
+                                        userDialog.detach();
+                                        deffered.reject();
+                                    }
+                                }
+                            ]
+                        });
+                    }
+                    else {
+                        deffered.resolve();
+                        //load(key);
+                    }
+                }
+                catch (ex) {
+                    alert(ex);
+                    deffered.resolve();
+                    //load(key);
+                }
+
+                //function load(key) {
+                //    that.waitScreen.Show();
+                //    if (that.activePresenter == "local")
+                //        that.localStoragePresenter && that.localStoragePresenter.LoadModel(key);
+                //    else that.oneDrivePresenter && that.oneDrivePresenter.LoadModel(key);
+                //    that.waitScreen.Hide();
+                //}
+                return deffered.promise();
             }
         }
     }

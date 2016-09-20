@@ -4,6 +4,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <link rel="stylesheet" data-name="vs/editor/editor.main" href="../node_modules/monaco-editor/min/vs/editor/editor.main.css">
+    <style>
+        .token.invalid {
+            color: red;
+        }
+    </style>
 </head>
 <body>
 
@@ -18,6 +23,8 @@
     <div>
         <button id="vars">Change variables</button>
         <button id="updateText">Change text</button>
+        <button id="insertText">Insert text</button>
+        <button id="destroy">Destroy editor</button>
     </div>
 
     <script src="../Scripts/jquery-2.1.4.js"></script>
@@ -46,6 +53,12 @@
         });
         $("#updateText").click(function () {
             editor.codeeditor("option", "text", 'max(var(LET-24), var(lin-4),\n\tconst(3))');
+        });
+        $("#insertText").click(function () {
+            editor.codeeditor("insertTextAtCursor", 'max(,)');
+        });
+        $("#destroy").click(function () {
+            editor.codeeditor("destroy");
         });
     </script>
 

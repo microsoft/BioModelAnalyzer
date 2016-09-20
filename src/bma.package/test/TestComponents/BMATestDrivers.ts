@@ -89,6 +89,14 @@ module BMA {
                 this.widget.localstoragewidget("AddItem", key);
             }
 
+            public SetActiveModel(modelName) {
+                this.widget.localstoragewidget("SetActiveModel", modelName);
+            }
+
+            public SetOnUnselect() {
+                this.widget.localstoragewidget("CancelSelection");
+            }
+
             public Show() {
             }
 
@@ -99,7 +107,7 @@ module BMA {
                 this.widget.localstoragewidget({ items: keys });
             }
 
-            public SetOnLoadModel(callback: Function) {
+            public SetOnRequestLoadModel(callback: Function) {
                 this.widget.localstoragewidget({
                     onloadmodel: callback
                 });

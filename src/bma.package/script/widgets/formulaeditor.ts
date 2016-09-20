@@ -131,11 +131,32 @@
             //Adding text editor
             var textEditorDiv = $("<div></div>").width("calc(100% - 10px)").width("calc(100% - 50px)").css("padding-top", 10).css("padding-left", 10).appendTo(formulaContainer);
             that.textEditor = textEditorDiv;
-            textEditorDiv.formulatexteditor({ formula: "2 + 3", isvalid: false, errormessage: "test Error message" });
+            textEditorDiv.formulatexteditor({
+                formula: "", isvalid: true, errormessage: "", onformulachangedcallback: function () {
+                    that.options.formula = textEditorDiv.formulatexteditor("option", "formula");
+                    try {
+                        that.operation = BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.variables);
+                        that.textEditor.formulatexteditor({ isvalid: true, errormessage: "" });
+                    }
+                    catch (ex) {
+                        //Switch to text mode with current value
+                        that.textEditor.formulatexteditor({ isvalid: false, errormessage: ex });
+                        if (that.operationLayout !== undefined) {
+                            that.operationLayout.IsVisible = false;
+                            that.operationLayout = undefined;
+                        }
+                    }
+                }
+            });
             textEditorDiv.hide();
 
             //Adding drawing surface
             var svgDiv = $("<div></div>").height("100%").width("calc(100% - 40px)").appendTo(formulaContainer);
+
+            svgDiv.mousedown(function (e) {
+                e.stopPropagation();
+            })
+
             that.svgDiv = svgDiv;
 
             var pixofs = 0;
@@ -405,10 +426,10 @@
                 drop: function (arg, ui) {
                     that.opToDrag = undefined;
                     that.draggableDiv.attr("data-dragsource", undefined);
+                    that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
                     that._switchMode("compact");
                 }
             });
-
 
             var editor = $("<div></div>").css("position", "absolute").css("background-color", "white").css("z-index", 1).addClass("window").addClass("container-name").appendTo(svgDiv);
             editor.click(function (arg) { arg.stopPropagation(); });
@@ -479,17 +500,21 @@
                         return;
 
                     if (that.opToDrag !== undefined) {
-                        //that._clipboardOps.push({ operation: opToDrag.operation.Clone(), status: "nottested" });
-                        //that._tpViewer.temporalpropertiesviewer({ "operations": that._clipboardOps });
-                        template.formulatemplate({
-                            "operation": that._getNoOperandsOperation(that.opToDrag.operation)
-                        });
+                        if (that.opToDrag.operation.Operands !== undefined) {
+                            //that._clipboardOps.push({ operation: opToDrag.operation.Clone(), status: "nottested" });
+                            //that._tpViewer.temporalpropertiesviewer({ "operations": that._clipboardOps });
+                            template.formulatemplate({
+                                "operation": that._getNoOperandsOperation(that.opToDrag.operation)
+                            });
 
-                        var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
-                        if (opL === undefined) {
-                            that.operation = that.opToDrag.operation;
-                            that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
-                            that._refresh();
+                            var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
+                            if (opL === undefined) {
+                                that.operation = that.opToDrag.operation;
+                                that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.operation);
+                                that._refresh();
+                            } else {
+                                that.opToDrag.parentoperation.Operands[that.opToDrag.parentoperationindex] = that.opToDrag.operation;
+                            }
                         } else {
                             that.opToDrag.parentoperation.Operands[that.opToDrag.parentoperationindex] = that.opToDrag.operation;
                         }
@@ -701,10 +726,11 @@
         _refresh: function (shouldConvert = false) {
             var that = this;
 
-            that.textEditor.formulatexteditor({ "formula": that.options.formula, isvalid: true, errormessage: "" });
+            that.textEditor.formulatexteditor({ "formula": that.options.formula });
             if (shouldConvert) {
                 try {
                     that.operation = BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.variables);
+                    that.textEditor.formulatexteditor({ isvalid: true, errormessage: "" });
                 }
                 catch (ex) {
                     //Switch to text mode with current value
@@ -913,16 +939,10 @@
             var formulaDiv = $('<div></div>')
                 .addClass('target-function')
                 .css("margin-top", 0)
+                //.css("display", "flex").css("flex-direcition", "row")
                 .appendTo(root);
-                /*
-            this.formulaTextArea = $('<textarea></textarea>')
-                .attr("spellcheck", "false")
-                .addClass("formula-text-area")
-                .css("margin-top", 0)
-                .height(140)
-                .appendTo(formulaDiv);
-                */
-            this.formulaTextArea = $('<div></div>').width("calc(100% - 55px)")
+               
+            this.formulaTextArea = $('<div></div>')
                 .addClass("bma-formulaeditor-texteditor")
                 .css("margin-top", 0)
                 .css("margin-left", 0)
@@ -935,11 +955,17 @@
                 .addClass("formula-validation-message")
                 .appendTo(formulaDiv);
 
+            this.formulaTextArea.mousedown(function (e) {
+                e.stopPropagation();
+            });
+
             this.formulaTextArea.codeeditor({
                 text: that.options.formula,
                 language: 'bma.targetfunc',
                 suggestVariables: that.options.variables
             });
+
+
 
             that.errorMessage.text(that.options.errormessage);
             that._setisvalid();
