@@ -582,6 +582,10 @@ module BMA {
                 this.widget.onedrivestoragewidget("SetActiveModel", modelName);
             }
 
+            public SetOnLoading(flag: boolean) {
+                this.widget.onedrivestoragewidget({ loading: flag });
+            }
+
             public SetOnUnselect() {
                 this.widget.onedrivestoragewidget("CancelSelection");
             }

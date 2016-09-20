@@ -450,6 +450,10 @@ function loadScript(version) {
     $("#button-undo").click(() => { window.Commands.Execute("Undo", undefined); });
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
 
+    $("#btn-onedrive-switcher").click(function (args) {
+        $("#signin :button").click();
+        //window.Commands.Execute("SwitchOneDrive", undefined);
+    });
     $("#btn-local-save").click(function (args) {
         window.Commands.Execute("SaveModel", undefined);
     });
@@ -498,6 +502,14 @@ function loadScript(version) {
     //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
     (<any>window).VisualSettings = visualSettings;
+
+    window.Commands.On("OneDriveLoggedIn", () => {
+        $("#btn-onedrive-switcher").addClass("logged-in");
+    });
+
+    window.Commands.On("OneDriveLoggedOut", () => {
+        $("#btn-onedrive-switcher").removeClass("logged-in");
+    });
 
     window.Commands.On("Commands.ToggleLabels", function (param) {
         visualSettings.TextLabelVisibility = param;
@@ -589,7 +601,7 @@ function loadScript(version) {
 
     var localSettings = new BMA.OneDrive.OneDriveSettings("79832916-6a39-4c73-b13e-ee28c25d46a7", "http://localhost:81/html/callback.html", "signin");
     var bmaNewSettings = new BMA.OneDrive.OneDriveSettings("000000004C12BD9C", "http://bmanew.cloudapp.net/html/callback.html", "signin");
-    var oneDriveSettings = bmaNewSettings; //localSettings;
+    var oneDriveSettings = localSettings;//bmaNewSettings; //localSettings;
 
     var connector = new BMA.OneDrive.OneDriveConnector(oneDriveSettings);
     

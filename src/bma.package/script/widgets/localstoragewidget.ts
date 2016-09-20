@@ -72,7 +72,7 @@
             //    }
             //});
 
-            this.createContextMenu();
+            //this.createContextMenu();
         },
 
         CancelSelection: function () {

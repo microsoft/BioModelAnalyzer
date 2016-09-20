@@ -149,6 +149,7 @@ module BMA {
             Message(msg: string);
             SetActiveModel(key);
             SetOnUnselect();
+            SetOnLoading(flag: boolean);
             SetOnRequestLoadModel(callback: Function);
             SetOnRemoveModel(callback: Function);
             SetOnCopyToLocalCallback(callback: Function);

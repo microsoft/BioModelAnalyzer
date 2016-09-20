@@ -59,8 +59,10 @@
                 });
 
                 var onLogin = function (oneDrive) {
+                    window.Commands.Execute("OneDriveLoggedIn", undefined);
                     that.driver.SetAuthorizationStatus(true);
-                    that.localStorageDriver.SetOnEnableContextMenu(true);
+                    //that.localStorageDriver.SetOnEnableContextMenu(true);
+                    that.activePresenter = "oneDrive";
 
                     oneDriveRepository = new BMA.OneDrive.OneDriveRepository(oneDrive);
 
@@ -107,13 +109,15 @@
                 };
 
                 var onLoginFailed = function (failure) {
+                    that.activePresenter = "local";
                     console.error("Login failed: " + failure.error_description);
                 };
                 
                 var onLogout = function (logout) {
+                    window.Commands.Execute("OneDriveLoggedOut", undefined);
                     that.activePresenter = "local";
                     that.driver.SetAuthorizationStatus(false);
-                    that.localStorageDriver.SetOnEnableContextMenu(false);
+                    //that.localStorageDriver.SetOnEnableContextMenu(false);
                     if (that.oneDrivePresenter) {
                         that.oneDrivePresenter.Destroy();
                         that.oneDrivePresenter = undefined;

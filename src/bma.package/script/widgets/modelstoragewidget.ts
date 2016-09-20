@@ -33,20 +33,20 @@
             //.addClass('localstorage-widget-message')
                 .appendTo(this.element);
 
-            this.switcher = $("<div></div>").addClass("repository-switcher").appendTo(this.element).hide();
-            this.localStorageBtn = $("<div>Local</div>").addClass("repository-bttn").addClass("active").appendTo(this.switcher).click(function() {
-                that.localStorageBtn.addClass("active");
-                that.oneDriveStorageBtn.removeClass("active");
-                that.localStorage.show();
-                that.oneDriveStorage.hide();
-            });
+            //this.switcher = $("<div></div>").addClass("repository-switcher").appendTo(this.element).hide();
+            //this.localStorageBtn = $("<div>Local</div>").addClass("repository-bttn").addClass("active").appendTo(this.switcher).click(function() {
+            //    that.localStorageBtn.addClass("active");
+            //    that.oneDriveStorageBtn.removeClass("active");
+            //    that.localStorage.show();
+            //    that.oneDriveStorage.hide();
+            //});
 
-            this.oneDriveStorageBtn = $("<div>OneDrive</div>").addClass("repository-bttn").appendTo(this.switcher).click(function () {
-                that.localStorageBtn.removeClass("active");
-                that.oneDriveStorageBtn.addClass("active");
-                that.localStorage.hide();
-                that.oneDriveStorage.show();
-            });
+            //this.oneDriveStorageBtn = $("<div>OneDrive</div>").addClass("repository-bttn").appendTo(this.switcher).click(function () {
+            //    that.localStorageBtn.removeClass("active");
+            //    that.oneDriveStorageBtn.addClass("active");
+            //    that.localStorage.hide();
+            //    that.oneDriveStorage.show();
+            //});
 
             this.localStorage = $("<div></div>").addClass("localstorage-repo").appendTo(this.element);
             this.oneDriveStorage = $("<div></div>").addClass("localstorage-repo").appendTo(this.element); 
@@ -126,7 +126,7 @@
             //        "param1=value1,param2=value2", "row3");
             //}
 
-            this.singinOneDriveBtn = $("<div></div>").attr("id", "signin").addClass("signin").appendTo(this.element);/*.click(function () {
+            /*this.singinOneDriveBtn = $("<div></div>").attr("id", "signin").addClass("signin").appendTo(this.element);*//*.click(function () {
                 if ($(this).text() == "Sign in with OneDrive") {
                     if (that.options.onsigninonedrive !== undefined) {
                         that.options.onsigninonedrive();
@@ -203,16 +203,20 @@
                 case "isAuthorized":
                     that.options.isAuthorized = value;
                     if (that.options.isAuthorized) {
+                        //that.localStorageBtn.removeClass("active");
+                        //that.oneDriveStorageBtn.addClass("active");
+                        that.localStorage.hide();
+                        that.oneDriveStorage.show();
                         //that.singinOneDriveBtn.text("Sign out OneDrive");
-                        that.switcher.show();
+                        // that.switcher.show();
                     } else {
-                        that.localStorageBtn.addClass("active");
-                        that.oneDriveStorageBtn.removeClass("active");
+                        //that.localStorageBtn.addClass("active");
+                        //that.oneDriveStorageBtn.removeClass("active");
                         that.localStorage.show();
                         that.oneDriveStorage.hide();
 
                         //that.singinOneDriveBtn.text("Sign in with OneDrive");
-                        that.switcher.hide();
+                        //that.switcher.hide();
                     }
                     break;
                 case "localStorageWidget":

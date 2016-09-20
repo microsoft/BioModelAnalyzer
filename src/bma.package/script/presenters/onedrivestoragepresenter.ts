@@ -35,11 +35,14 @@
                 that.UpdateModelsList();
 
                 that.driver.SetOnRemoveModel(function (key) {
+                    that.driver.SetOnLoading(true);
                     that.tool.RemoveModel(key).done(function (result) {
                         if (result)
                             window.Commands.Execute("OneDriveStorageChanged", {});
+                        //that.driver.SetOnLoading(false);
                     }).fail(function () {
                         that.messagebox.Show("Failed to remove model");
+                        that.driver.SetOnLoading(false);
                     });
                 });
 
@@ -103,6 +106,7 @@
 
             public UpdateModelsList() {
                 var that = this;
+                that.driver.SetOnLoading(true);
                 that.tool.GetModelList().done(function (modelsInfo) {
                     if (modelsInfo === undefined || modelsInfo.length == 0)
                         that.driver.Message("The model repository is empty");
@@ -110,10 +114,12 @@
                     that.driver.SetItems(modelsInfo);
                     if (that.setOnIsActive !== undefined && that.setOnIsActive())
                         that.driver.SetActiveModel(that.appModel.BioModel.Name);
+                    that.driver.SetOnLoading(false);
                 }).fail(function (errorThrown) {
                     var res = JSON.parse(JSON.stringify(errorThrown));
                     that.messagebox.Show(res.statusText);
                     that.driver.SetItems([]);
+                    that.driver.SetOnLoading(false);
                 });
             }
 
