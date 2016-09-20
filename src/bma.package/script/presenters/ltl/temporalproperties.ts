@@ -1090,6 +1090,27 @@ module BMA {
                                     if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                         return;
 
+                                    that.log.LogLTLError();
+                                    if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
+                                        operation.AnalysisStatus = "partialfail";
+                                        driver.SetStatus(operation.AnalysisStatus);
+
+                                    } else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
+                                        operation.AnalysisStatus = "partialsuccess";
+                                        driver.SetStatus(operation.AnalysisStatus);
+
+                                    } else {
+                                        operation.AnalysisStatus = "nottested";
+                                        if (errorThrown === "Processing Timeout") {
+                                            driver.SetStatus("nottested", "Timed Out");
+                                        } else {
+                                            driver.SetStatus("nottested", "Server Error");
+                                        }
+                                    }
+                                    domplot.updateLayout();
+                                    that.OnOperationsChanged(false);
+
+                                    /*
                                     if (errorThrown === "Processing Timeout") {
                                         //Starting long-running job
                                         driver.SetStatus("processinglra");
@@ -1152,8 +1173,8 @@ module BMA {
                                         domplot.updateLayout();
                                         that.OnOperationsChanged(false);
                                     }
+                                    */
                                 });
-
                             }
                         })
                         .fail(function (xhr, textStatus, errorThrown) {
@@ -1287,7 +1308,7 @@ module BMA {
                                 resultStatus = "success";
                             } else {
                                 //Something weird happened. Status shouldn't be unknown here
-                                                    
+
                             }
                         } else if (positiveResult.Status === 0/*False*/) {
                             if (negativeResult.Status === 1/*True*/) {
