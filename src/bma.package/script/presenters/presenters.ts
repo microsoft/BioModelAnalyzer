@@ -668,7 +668,7 @@ module BMA {
                 });
 
                 variableEditorDriver.SetOnVariableEditedCallback(() => {
-                    console.log("variable changed callback");
+                    //console.log("variable changed callback");
                     that.prevVariablesOptions = that.variableEditor.GetVariableProperties();
                     if (that.variableEditedId !== undefined) {
                         that.VariableEdited();
