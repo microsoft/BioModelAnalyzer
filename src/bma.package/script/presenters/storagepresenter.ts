@@ -106,6 +106,10 @@
                             that.oneDrivePresenter.LoadModel(key);
                         });
                     });
+
+                    that.driver.SetOnUpdateModelList(function () {
+                        that.oneDrivePresenter.UpdateModelsList();
+                    });
                 };
 
                 var onLoginFailed = function (failure) {
@@ -136,7 +140,9 @@
 
                 window.Commands.On("ModelStorageRequested", function () {
                     that.driver.Show();
-                    window.Commands.Execute("LocalStorageRequested", undefined);
+                    if (that.activePresenter == "local")
+                        window.Commands.Execute("LocalStorageRequested", undefined);
+                    else window.Commands.Execute("OneDriveStorageRequested", undefined);
                 });
 
                 window.Commands.On("SaveModel", function () {

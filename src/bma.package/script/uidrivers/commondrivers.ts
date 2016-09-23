@@ -665,6 +665,12 @@ module BMA {
                 this.widget.modelstoragewidget({ isAuthorized: status });
             }
 
+            public SetOnUpdateModelList(callback: Function) {
+                this.widget.modelstoragewidget({
+                    updatemodellistcallback: callback
+                });
+            }
+
             //public SetOnSignInCallback(callback: Function) {
             //    this.widget.modelstoragewidget({
             //        onsigninonedrive: callback

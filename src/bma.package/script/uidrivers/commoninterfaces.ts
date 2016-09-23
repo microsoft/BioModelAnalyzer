@@ -162,6 +162,7 @@ module BMA {
             Show();
             Hide();
             SetAuthorizationStatus(status: boolean);
+            SetOnUpdateModelList(callback: Function);
             //SetOnSignInCallback(callback: Function);
             //SetOnSignOutCallback(callback: Function);
         }

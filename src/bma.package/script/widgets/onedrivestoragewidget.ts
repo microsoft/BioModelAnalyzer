@@ -103,7 +103,7 @@
 
             for (var i = 0; i < items.length; i++) {
                 if (items[i].shared === undefined) {
-                    var li = $('<li></li>').text(items[i].name).appendTo(this.ol).click(function () {
+                    var li = $('<li></li>')/*.text(items[i].name)*/.appendTo(this.ol).click(function () {
                         var ind = $(this).index();
                         if (that.options.onloadmodel !== undefined) {
                             that.options.onloadmodel(items[ind]);//.done(function () {
@@ -114,6 +114,7 @@
                             //});
                         }
                     });
+                    var modelName = $("<div>" + items[i].name + "</div>").appendTo(li);
                 //} 
                 //var a = $('<a></a>').addClass('delete').appendTo(li);
                 //if (items[i].shared) {

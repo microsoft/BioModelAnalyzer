@@ -23,6 +23,10 @@
                 .text("Repository")
                 .addClass('window-title')
                 .appendTo(that.element);
+            this.refreshDiv = $("<div></div>").addClass("refresh").appendTo(that.element).click(function () {
+                if (that.options.updatemodellistcallback !== undefined)
+                    that.options.updatemodellistcallback();
+            }).hide();
             var closediv = $('<div></div>').addClass('close-icon').appendTo(that.element);
             var closing = $('<img src="../../images/close.png">').appendTo(closediv);
             closing.bind("click", function () {
@@ -207,6 +211,7 @@
                         //that.oneDriveStorageBtn.addClass("active");
                         that.localStorage.hide();
                         that.oneDriveStorage.show();
+                        that.refreshDiv.show();
                         //that.singinOneDriveBtn.text("Sign out OneDrive");
                         // that.switcher.show();
                     } else {
@@ -214,6 +219,7 @@
                         //that.oneDriveStorageBtn.removeClass("active");
                         that.localStorage.show();
                         that.oneDriveStorage.hide();
+                        that.refreshDiv.hide();
 
                         //that.singinOneDriveBtn.text("Sign in with OneDrive");
                         //that.switcher.hide();
