@@ -137,19 +137,19 @@ module BMA.OneDrive {
                         return d;
                     }
                 });
-            var sharedModels = that.oneDrive.EnumerateSharedWithMeFiles()
-                .then<SharedOneDriveFile[]>(function (files) {
-                    var jsonFiles = [];
-                    for (var i = 0; i < files.length; i++) {
-                        if (files[i]["file"]["mimeType"].indexOf("application/json") === 0) {
-                            jsonFiles.push(OneDriveRepository.UpdateName(files[i]));
-                        }
-                    }
-                    return jsonFiles;                  
-                });
-            return $.when(myModels, sharedModels)
+            //var sharedModels = that.oneDrive.EnumerateSharedWithMeFiles()
+            //    .then<SharedOneDriveFile[]>(function (files) {
+            //        var jsonFiles = [];
+            //        for (var i = 0; i < files.length; i++) {
+            //            if (files[i]["file"]["mimeType"].indexOf("application/json") === 0) {
+            //                jsonFiles.push(OneDriveRepository.UpdateName(files[i]));
+            //            }
+            //        }
+            //        return jsonFiles;                  
+            //    });
+            return $.when(myModels/*, sharedModels*/)
                 .then(function (myFiles: OneDriveFile[], sharedFiles: OneDriveFile[]) {
-                    return myFiles.concat(sharedFiles);
+                    return myFiles; //.concat(sharedFiles);
                 });
         }
 
