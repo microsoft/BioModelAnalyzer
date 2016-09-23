@@ -37,8 +37,8 @@
         ParseErrorMessage: function (message) {
             var newmessage = "";
             if (!message) return newmessage;
-            if (message.stack) {
-                var splitedMessage = message.stack.split("Expecting");
+            if (message.message) {
+                var splitedMessage = message.message.split("Expecting");
                 var errorPlace = splitedMessage[0];
                 var missingPart = splitedMessage[1];
                 if (missingPart === undefined) {
@@ -228,10 +228,12 @@
                 (params) => {
                     try {
                         BMA.ModelHelper.ConvertTargetFunctionToOperation(params.formula, that.options.inputs);
+                        that.element.removeClass('bmaeditor-expanded');
                         //that.formulaEdButton.removeClass("disabled");
                         that.SetValidation(true, "");
                     } catch (ex) {
                         //that.formulaEdButton.addClass("disabled");
+                        that.element.addClass('bmaeditor-expanded');
                         that.SetValidation(false, ex);
                     }
                 },
