@@ -214,10 +214,15 @@
                     popupViewer.Hide();
                 });
 
-                //window.Commands.On("ModelReset", function (param) {
-                //    that.currentBioModel = undefined;
-                //    that.currentLayout = undefined;
-                //});
+                window.Commands.On("ModelReset", function (param) {
+                    that.currentBioModel = undefined;
+                    that.currentLayout = undefined;
+                });
+
+                window.Commands.On("AppModelChanged", function (param) {
+                    that.currentBioModel = undefined;
+                    that.currentLayout = undefined;
+                });
             }
 
             public CurrentModelChanged() {
