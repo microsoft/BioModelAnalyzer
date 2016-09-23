@@ -150,6 +150,12 @@
                         that.localStorageDriver.SetOnUnselect();
                     else that.oneDriveStorageDriver.SetOnUnselect();
                 });
+
+                window.Commands.On("ModelReset", function () {
+                    if (that.activePresenter == "local")
+                        that.localStorageDriver.SetOnUnselect();
+                    else that.oneDriveStorageDriver.SetOnUnselect();
+                });
             }
 
             public RequestLoadModel() {

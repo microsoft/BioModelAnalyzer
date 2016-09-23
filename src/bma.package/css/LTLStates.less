@@ -913,6 +913,16 @@
         
         .red{
             color:@darkred;
+
+            &.errorMessage{
+                max-height: 50px;
+                overflow-y: hidden;
+                text-overflow: ellipsis;
+
+                &:hover{
+                    cursor:pointer;
+                }
+            }
         }
 
 	}
@@ -1285,12 +1295,16 @@
         .onedrive-switch-btn {
             background:url("../images/onedrive-logout.png") no-repeat;
             background-size: 60px 60px;
-            background-position-y: 30%;
+            background-position:0% 30%;
             &.logged-in{
                 background:url("../images/onedrive-login.png") no-repeat;
                 background-size: 60px 60px;
-                background-position-y: 30%;
+                background-position:0% 30%;
             }
         }
     }
+}
+
+.tooltip-red{
+    color:@darkred;
 }
