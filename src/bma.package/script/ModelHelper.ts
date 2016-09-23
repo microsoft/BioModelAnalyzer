@@ -6,7 +6,8 @@
                 m: BMA.Model.Variable;
                 l: BMA.Model.VariableLayout
             }[];
-            Realtionships: BMA.Model.Relationship[]
+            Realtionships: BMA.Model.Relationship[],
+            isCopy: boolean;
         } {
 
             var result = undefined;

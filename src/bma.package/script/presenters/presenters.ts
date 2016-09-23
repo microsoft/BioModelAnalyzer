@@ -53,7 +53,8 @@ module BMA {
                     m: BMA.Model.Variable;
                     l: BMA.Model.VariableLayout
                 }[];
-                Realtionships: BMA.Model.Relationship[]
+                Realtionships: BMA.Model.Relationship[];
+                isCopy: boolean
             };
 
             constructor(appModel: BMA.Model.AppModel,
@@ -305,7 +306,7 @@ module BMA {
                     if (showPaste === true) {
 
                         if (that.clipboard.Container !== undefined) {
-                            showPaste = that.CanAddContainer(that.clipboard.Container.Id, x, y, that.clipboard.Container.Size);
+                            showPaste = that.CanAddContainer(that.clipboard.Container.Id, x, y, that.clipboard.Container.Size, that.clipboard.isCopy);
                         } else {
                             var variable = that.clipboard.Variables[0];
                             showPaste = that.CanAddVariable(x, y, variable.m.Type, undefined);
@@ -667,7 +668,7 @@ module BMA {
                 });
 
                 variableEditorDriver.SetOnVariableEditedCallback(() => {
-                    console.log("variable changed callback");
+                    //console.log("variable changed callback");
                     that.prevVariablesOptions = that.variableEditor.GetVariableProperties();
                     if (that.variableEditedId !== undefined) {
                         that.VariableEdited();
@@ -815,6 +816,7 @@ module BMA {
                 that.variableEditor.Hide();
                 if (that.contextElement !== undefined) {
                     that.clipboard = ModelHelper.CreateClipboardContent(that.undoRedoPresenter.Current.model, that.undoRedoPresenter.Current.layout, that.contextElement);
+                    that.clipboard.isCopy = !remove;
                     if (remove) {
                         if (that.contextElement.type === "variable") {
                             that.RemoveVariable(that.contextElement.id);
@@ -1146,7 +1148,7 @@ module BMA {
                 }
             }
 
-            private CanAddContainer(id: number, x: number, y: number, size: number): boolean {
+            private CanAddContainer(id: number, x: number, y: number, size: number, isCopy: boolean = false): boolean {
                 var that = this;
                 var gridCell = that.GetGridCell(x, y);
 
@@ -1154,7 +1156,7 @@ module BMA {
                     for (var j = 0; j < size; j++) {
                         var cellForCheck = { x: gridCell.x + i, y: gridCell.y + j };
                         var cnt = that.GetContainerFromGridCell(cellForCheck);
-                        var checkCell = (cnt === undefined || cnt.Id === id) && that.GetConstantsFromGridCell(cellForCheck).length === 0;
+                        var checkCell = (cnt === undefined || (cnt.Id === id && !isCopy)) && that.GetConstantsFromGridCell(cellForCheck).length === 0;
                         if (checkCell !== true)
                             return false;
                     }
