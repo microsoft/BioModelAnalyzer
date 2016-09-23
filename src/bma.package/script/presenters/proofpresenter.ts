@@ -92,6 +92,13 @@
                         return;
                     }
 
+                    //Clear Proof
+                    proofResultViewer.SetData({
+                        issucceeded: undefined,
+                        message: undefined,
+                        data: undefined
+                    });
+
                     proofResultViewer.OnProofStarted();
                     that.logService.LogProofRun();
                     var result = that.ajax.Invoke(proofInput)
