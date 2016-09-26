@@ -1172,10 +1172,12 @@
     .refresh {
         display:inline-block;
         background:url("../images/random2.png") no-repeat;
-        background-size: 21px 21px;
-        height:21px;
-        width:21px;
+        background-size: 25px 25px;
+        height:30px;
+        width:30px;
         cursor:pointer;
+        padding-bottom:5px;
+        vertical-align:middle;
     }
     .close-icon{
         display:inline-block;
@@ -1329,4 +1331,19 @@
 
 .tooltip-red{
     color:@darkred;
+}
+
+.simulation-popout {
+    .steps-container {
+        ul.button-list {
+            li.disabled {
+                &:hover{
+                    background-color: @darkgrey;
+                    button {
+                        color:white;
+                    }
+                }
+            }
+        }
+    }
 }
