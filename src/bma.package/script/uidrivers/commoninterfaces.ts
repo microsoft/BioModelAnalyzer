@@ -118,6 +118,7 @@ module BMA {
 
         export interface ISimulationExpanded {
             AddResult(res);
+            SetNumberOfSteps(num);
             GetViewer();
             Set(data);
             SetData(data);

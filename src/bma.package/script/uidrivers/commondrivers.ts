@@ -404,6 +404,10 @@ module BMA {
                 this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: undefined });
             }
 
+            public SetNumberOfSteps(num) {
+                this.viewer.simulationexpanded({ num: num });
+            }
+
             public SetData(data) {
                 var toAdd = this.CreatePlotView(data);
                 this.viewer.simulationexpanded("option", "data", toAdd);

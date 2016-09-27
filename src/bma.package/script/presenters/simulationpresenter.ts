@@ -140,6 +140,7 @@
                             init: initValues
                         });
                         that.simulationStatus = "NotStarted";
+                        that.expandedViewer.SetNumberOfSteps(10);
                         window.Commands.Execute("RunSimulation", { num: 10, data: initValues });
                     }
                     else {
