@@ -6,7 +6,11 @@ let check_stability_lazy network =
     let seq_counter = ref 0 
     let bounds_history = ref [] // in rev order 
 
-    (GenLemmas.stabilize_lazy_2 network)
+    // An alternative implementation of stabilize_lazy is available at
+    // stabilize_lazy_1 and stabilize_lazy_2
+    // The two should be benchmarked to decide which is the better one for
+    // production but have both been tested.
+    (GenLemmas.stabilize_lazy network)
     |> Seq.map 
         (fun (still_working,bounds) -> 
             bounds_history := (!seq_counter,bounds) :: !bounds_history
