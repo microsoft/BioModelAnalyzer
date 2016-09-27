@@ -92,42 +92,52 @@
             var items = this.options.items;
             this.repo.empty();
             var that = this;
+
+            this.loading = $("<div></div>").appendTo(this.repo);
+            var anim = $("<div></div>").addClass("spinner").appendTo(that.loading);
+            $("<div></div>").addClass("bounce1").appendTo(anim);
+            $("<div></div>").addClass("bounce2").appendTo(anim);
+            $("<div></div>").addClass("bounce3").appendTo(anim);
+
             this.ol = $('<ol></ol>').appendTo(this.repo);
 
             for (var i = 0; i < items.length; i++) {
-                var li = $('<li></li>').text(items[i].name).appendTo(this.ol).click(function () {
-                    var ind = $(this).index();
-                    if (that.options.onloadmodel !== undefined) {
-                        that.options.onloadmodel(items[ind]);//.done(function () {
-                        //    that.repo.find(".ui-selected").removeClass("ui-selected");
-                        //    $(that.options.selectedLi).addClass("ui-selected");
-                        //    if (that.options.oncancelselection !== undefined)
-                        //        that.options.oncancelselection();
-                        //});
-                    }
-                });
-                //var a = $('<a></a>').addClass('delete').appendTo(li);
-                if (items[i].shared) {
-                    var ownerName = items[i].shared.owner && items[i].shared.owner.user && items[i].shared.owner.user.displayName ?
-                        items[i].shared.owner.user.displayName : "Unknown";
-                    var sharedIcon = $("<div>S</div>").addClass("share-icon").appendTo(li);
-                    sharedIcon.tooltip({
-                        //tooltipClass: "share-icon",
-                        //position: {
-                        //    at: "left-48px bottom",
-                        //    collision: 'none',
-                        //},
-                        content: function () {
-                            return ownerName;
-                        },
-                        show: null,
-                        hide: false,
-                        items: "div.share-icon",
-                        close: function (event, ui) {
-                            sharedIcon.data("ui-tooltip").liveRegion.children().remove();
-                        },
+                if (items[i].shared === undefined) {
+                    var li = $('<li></li>')/*.text(items[i].name)*/.appendTo(this.ol).click(function () {
+                        var ind = $(this).index();
+                        if (that.options.onloadmodel !== undefined) {
+                            that.options.onloadmodel(items[ind]);//.done(function () {
+                            //    that.repo.find(".ui-selected").removeClass("ui-selected");
+                            //    $(that.options.selectedLi).addClass("ui-selected");
+                            //    if (that.options.oncancelselection !== undefined)
+                            //        that.options.oncancelselection();
+                            //});
+                        }
                     });
-                } else {
+                    var modelName = $("<div>" + items[i].name + "</div>").appendTo(li);
+                //} 
+                //var a = $('<a></a>').addClass('delete').appendTo(li);
+                //if (items[i].shared) {
+                //    var ownerName = items[i].shared.owner && items[i].shared.owner.user && items[i].shared.owner.user.displayName ?
+                //        items[i].shared.owner.user.displayName : "Unknown";
+                //    var sharedIcon = $("<div>S</div>").addClass("share-icon").appendTo(li);
+                //    sharedIcon.tooltip({
+                //        //tooltipClass: "share-icon",
+                //        //position: {
+                //        //    at: "left-48px bottom",
+                //        //    collision: 'none',
+                //        //},
+                //        content: function () {
+                //            return ownerName;
+                //        },
+                //        show: null,
+                //        hide: false,
+                //        items: "div.share-icon",
+                //        close: function (event, ui) {
+                //            sharedIcon.data("ui-tooltip").liveRegion.children().remove();
+                //        },
+                //    });
+                //} else {
                     var removeBtn = $('<button></button>').addClass("delete icon-delete").appendTo(li);// $('<img alt="" src="../images/icon-delete.svg">').appendTo(a);//
                     removeBtn.bind("click", function (event) {
                         event.stopPropagation();
@@ -137,6 +147,15 @@
                     });
                 }
             }
+
+            if (this.options.loading) {
+                this.loading.show();
+                this.ol.hide();
+            } else {
+                this.loading.hide();
+                this.ol.show();
+            }
+
             
             //this.ol.selectable({
             //    start: function () {
@@ -152,7 +171,7 @@
             //    }
             //});
 
-            this.createContextMenu();
+            //this.createContextMenu();
         },
 
         Message: function (msg) {
@@ -219,6 +238,16 @@
 
         _setOption: function (key, value) {
             switch (key) {
+                case "loading":
+                    this.options.loading = value;
+                    if (this.options.loading) {
+                        this.loading.show();
+                        this.ol.hide();
+                    } else {
+                        this.loading.hide();
+                        this.ol.show();
+                    }
+                    break;
                 case "items":
                     this.options.items = value;
                     this.refresh();

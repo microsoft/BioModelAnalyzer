@@ -89,14 +89,18 @@
             })
             var add10 = $('<button></button>').text('+ ' + step).appendTo(li2);
             add10.bind("click", function () {
-                that._setOption("num", that.options.num + step);
+                if (!li2.hasClass("disabled"))
+                    that._setOption("num", that.options.num + step);
             });
+            this.add = add10;
 
             this.num = $('<button></button>').text('STEPS: ' + that.options.num).appendTo(li1);
             var min10 = $('<button></button>').text('- ' + step).appendTo(li0);
             min10.bind("click", function () {
-                that._setOption("num", that.options.num - step);
+                if (!li0.hasClass("disabled"))
+                    that._setOption("num", that.options.num - step);
             })
+            this.min = min10;
             this.RunButton = $('<button></button>').addClass('run-button').text('Run').appendTo(li3);
 
             this.refresh();
@@ -109,6 +113,8 @@
                 case "ActiveMode":
                     var li = this.RunButton.parent();
                     li.removeClass('waiting');
+                    this.min.parent().removeClass("disabled");
+                    this.add.parent().removeClass("disabled");
                     li.find('.spinner').detach();
                     this.RunButton.text('Run');
                     this.RunButton.bind("click", function () {
@@ -122,6 +128,8 @@
                 case "StandbyMode":
                     var li = this.RunButton.parent();
                     li.addClass('waiting');
+                    this.min.parent().addClass("disabled");
+                    this.add.parent().addClass("disabled");
                     this.RunButton.text('');
                     var snipper = $('<div class="spinner"></div>').appendTo(this.RunButton);
                     for (var i = 1; i < 4; i++) {

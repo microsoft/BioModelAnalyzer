@@ -59,8 +59,10 @@
                 });
 
                 var onLogin = function (oneDrive) {
+                    window.Commands.Execute("OneDriveLoggedIn", undefined);
                     that.driver.SetAuthorizationStatus(true);
-                    that.localStorageDriver.SetOnEnableContextMenu(true);
+                    //that.localStorageDriver.SetOnEnableContextMenu(true);
+                    that.activePresenter = "oneDrive";
 
                     oneDriveRepository = new BMA.OneDrive.OneDriveRepository(oneDrive);
 
@@ -104,16 +106,22 @@
                             that.oneDrivePresenter.LoadModel(key);
                         });
                     });
+
+                    that.driver.SetOnUpdateModelList(function () {
+                        that.oneDrivePresenter.UpdateModelsList();
+                    });
                 };
 
                 var onLoginFailed = function (failure) {
+                    that.activePresenter = "local";
                     console.error("Login failed: " + failure.error_description);
                 };
                 
                 var onLogout = function (logout) {
+                    window.Commands.Execute("OneDriveLoggedOut", undefined);
                     that.activePresenter = "local";
                     that.driver.SetAuthorizationStatus(false);
-                    that.localStorageDriver.SetOnEnableContextMenu(false);
+                    //that.localStorageDriver.SetOnEnableContextMenu(false);
                     if (that.oneDrivePresenter) {
                         that.oneDrivePresenter.Destroy();
                         that.oneDrivePresenter = undefined;
@@ -132,7 +140,9 @@
 
                 window.Commands.On("ModelStorageRequested", function () {
                     that.driver.Show();
-                    window.Commands.Execute("LocalStorageRequested", undefined);
+                    if (that.activePresenter == "local")
+                        window.Commands.Execute("LocalStorageRequested", undefined);
+                    else window.Commands.Execute("OneDriveStorageRequested", undefined);
                 });
 
                 window.Commands.On("SaveModel", function () {
@@ -142,6 +152,12 @@
                 });
 
                 window.Commands.On("NewModel", function () {
+                    if (that.activePresenter == "local")
+                        that.localStorageDriver.SetOnUnselect();
+                    else that.oneDriveStorageDriver.SetOnUnselect();
+                });
+
+                window.Commands.On("ModelReset", function () {
                     if (that.activePresenter == "local")
                         that.localStorageDriver.SetOnUnselect();
                     else that.oneDriveStorageDriver.SetOnUnselect();

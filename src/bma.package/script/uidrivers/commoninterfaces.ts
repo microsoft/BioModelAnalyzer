@@ -118,6 +118,7 @@ module BMA {
 
         export interface ISimulationExpanded {
             AddResult(res);
+            SetNumberOfSteps(num);
             GetViewer();
             Set(data);
             SetData(data);
@@ -149,6 +150,7 @@ module BMA {
             Message(msg: string);
             SetActiveModel(key);
             SetOnUnselect();
+            SetOnLoading(flag: boolean);
             SetOnRequestLoadModel(callback: Function);
             SetOnRemoveModel(callback: Function);
             SetOnCopyToLocalCallback(callback: Function);
@@ -161,6 +163,7 @@ module BMA {
             Show();
             Hide();
             SetAuthorizationStatus(status: boolean);
+            SetOnUpdateModelList(callback: Function);
             //SetOnSignInCallback(callback: Function);
             //SetOnSignOutCallback(callback: Function);
         }

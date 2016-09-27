@@ -31,9 +31,12 @@
 
                 that.tool.GetModelList().done(function (keys) {
                     that.driver.SetItems(keys);
+                    that.driver.Message("");
                     //that.driver.Hide();
                 }).fail(function (errorThrown) {
-                    alert(errorThrown);
+                    var res = JSON.parse(JSON.stringify(errorThrown));
+                    that.driver.Message(res.statusText);
+                    //alert(errorThrown);
                 });
 
                 window.Commands.On("LocalStorageChanged", function () {
@@ -46,7 +49,9 @@
                         if (that.setOnIsActive !== undefined && that.setOnIsActive())
                             that.driver.SetActiveModel(that.appModel.BioModel.Name);
                     }).fail(function (errorThrown) {
-                        alert(errorThrown);
+                        var res = JSON.parse(JSON.stringify(errorThrown));
+                        that.driver.Message(res.statusText);
+                        //alert(errorThrown);
                     });
                 });
 
@@ -61,9 +66,12 @@
                 window.Commands.On("LocalStorageRequested", function () {
                     that.tool.GetModelList().done(function (keys) {
                         that.driver.SetItems(keys);
+                        that.driver.Message("");
                         //that.driver.Show();
                     }).fail(function (errorThrown) {
-                        alert(errorThrown);
+                        var res = JSON.parse(JSON.stringify(errorThrown));
+                        that.driver.Message(res.statusText);
+                        //alert(errorThrown);
                     });
                 });
 
@@ -76,7 +84,8 @@
                         that.checker.Snapshot(that.appModel);
                     }
                     catch (ex) {
-                        alert("Couldn't save model: " + ex);
+                        that.driver.Message("Couldn't save model: " + ex);
+                        //alert("Couldn't save model: " + ex);
                     }
                 });
 
@@ -84,6 +93,7 @@
                     var deffered = $.Deferred();
                     if (that.tool.IsInRepo(key)) {
                         that.tool.LoadModel(key).done(function (result) {
+                            that.driver.Message("");
                             if (that.setOnCopy !== undefined) {
                                 var sp = key.split('.');
                                 if (sp[0] === "user") {
@@ -99,12 +109,14 @@
                             deffered.reject();
                         }).fail(function (error) {
                             var res = JSON.parse(JSON.stringify(error));
-                            that.messagebox.Show(res.statusText);
+                            //that.messagebox.Show(res.statusText);
+                            that.driver.Message(res.statusText);
                             deffered.reject();
                         });
                     }
                     else {
-                        that.messagebox.Show("The model was removed from outside");
+                        //that.messagebox.Show("The model was removed from outside");
+                        that.driver.Message("The model was removed from outside");
                         window.Commands.Execute("LocalStorageChanged", {});
                         deffered.reject();
                     }
@@ -120,10 +132,13 @@
                 window.Commands.On("LocalStorageInitModel", function (key) {
                     if (that.tool.IsInRepo(key)) {
                         that.tool.LoadModel(key).done(function (result) {
+                            that.driver.Message("");
                             appModel.Deserialize(JSON.stringify(result));
                             that.checker.Snapshot(that.appModel);
                         }).fail(function (result) {
-                            that.messagebox.Show(JSON.stringify(result));
+                            var res = JSON.parse(JSON.stringify(result));
+                            that.driver.Message(res);
+                            //that.messagebox.Show(JSON.stringify(result));
                         });
                     }
                 });
@@ -152,6 +167,7 @@
                 that.waitScreen.Show();
                 if (that.tool.IsInRepo(key)) {
                     that.tool.LoadModel(key).done(function (result) {
+                        that.driver.Message("");
                         that.appModel.Deserialize(JSON.stringify(result));
                         that.checker.Snapshot(that.appModel);
                         that.driver.SetActiveModel(key);
@@ -160,12 +176,14 @@
                         that.waitScreen.Hide();
                     }).fail(function (result) {
                         var res = JSON.parse(JSON.stringify(result));
-                        that.messagebox.Show(res.statusText);
+                        //that.messagebox.Show(res.statusText);
+                        that.driver.Message(res.statusText);
                         that.waitScreen.Hide();
                     });
                 }
                 else {
-                    that.messagebox.Show("The model was removed from outside");
+                    //that.messagebox.Show("The model was removed from outside");
+                    that.driver.Message("The model was removed from outside");
                     window.Commands.Execute("LocalStorageChanged", {});
                     that.waitScreen.Hide();
                 }

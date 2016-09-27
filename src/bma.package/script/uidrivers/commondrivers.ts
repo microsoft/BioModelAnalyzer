@@ -404,6 +404,10 @@ module BMA {
                 this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: undefined });
             }
 
+            public SetNumberOfSteps(num) {
+                this.viewer.simulationexpanded({ num: num });
+            }
+
             public SetData(data) {
                 var toAdd = this.CreatePlotView(data);
                 this.viewer.simulationexpanded("option", "data", toAdd);
@@ -582,6 +586,10 @@ module BMA {
                 this.widget.onedrivestoragewidget("SetActiveModel", modelName);
             }
 
+            public SetOnLoading(flag: boolean) {
+                this.widget.onedrivestoragewidget({ loading: flag });
+            }
+
             public SetOnUnselect() {
                 this.widget.onedrivestoragewidget("CancelSelection");
             }
@@ -659,6 +667,12 @@ module BMA {
 
             public SetAuthorizationStatus(status: boolean) {
                 this.widget.modelstoragewidget({ isAuthorized: status });
+            }
+
+            public SetOnUpdateModelList(callback: Function) {
+                this.widget.modelstoragewidget({
+                    updatemodellistcallback: callback
+                });
             }
 
             //public SetOnSignInCallback(callback: Function) {

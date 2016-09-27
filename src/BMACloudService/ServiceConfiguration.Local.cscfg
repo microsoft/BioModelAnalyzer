@@ -6,6 +6,7 @@
       <Setting name="StorageConnectionString" value="UseDevelopmentStorage=true" />
       <Setting name="ComputeTimeLimit" value="90" />
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="ComputeServiceUrl" value="http://bmamathnew.cloudapp.net" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>

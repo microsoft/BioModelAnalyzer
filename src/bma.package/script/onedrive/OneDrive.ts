@@ -212,7 +212,7 @@ module BMA.OneDrive {
                 brand: "none",
                 theme: "white",
                 type: "custom",
-                sign_in_text: "Sign in with OneDrive",
+                sign_in_text: "Sign in",
                 sign_out_text: "Sign out",
             });
         }

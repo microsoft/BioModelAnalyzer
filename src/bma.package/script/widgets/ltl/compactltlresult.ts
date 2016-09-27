@@ -42,7 +42,24 @@
 
                         var ltltestdiv = $("<div></div>").addClass("LTL-test-results").addClass("default").appendTo(opDiv);
                         if (that.options.message) {
-                            var errorMessage = $("<div>" + that.options.message + "</div>").addClass("red").appendTo(ltltestdiv);
+                            if (that.options.message == "Server Error") {
+                                var errorMessage = $("<div>" + that.options.message + "</div>").addClass("red").addClass("errorMessage").appendTo(ltltestdiv);
+                            } else {
+                                var errorMessage = $("<div>Error</div>").addClass("red").addClass("errorMessage").appendTo(ltltestdiv);
+                                errorMessage.tooltip({
+                                    content: function () {
+                                        //var text = $('<div></div>').addClass('operators-info');
+                                        var message = $("<div>" + that.options.message + "</div>").addClass("tooltip-red");
+                                        return message;
+                                    },
+                                    show: null,
+                                    hide: false,
+                                    items: "div.errorMessage",
+                                    close: function (event, ui) {
+                                        errorMessage.data("ui-tooltip").liveRegion.children().remove();
+                                    },
+                                });
+                            }
                         }
                         var d = $("<div></div>").addClass("number-of-steps").appendTo(ltltestdiv);
                         var input = $("<input></input>").attr("type", "text").attr("value", that.options.steps).appendTo(d);

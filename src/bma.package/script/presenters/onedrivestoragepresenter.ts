@@ -35,11 +35,16 @@
                 that.UpdateModelsList();
 
                 that.driver.SetOnRemoveModel(function (key) {
+                    that.driver.SetOnLoading(true);
                     that.tool.RemoveModel(key).done(function (result) {
+                        that.driver.Message("");
                         if (result)
                             window.Commands.Execute("OneDriveStorageChanged", {});
+                        //that.driver.SetOnLoading(false);
                     }).fail(function () {
-                        that.messagebox.Show("Failed to remove model");
+                        //that.messagebox.Show("Failed to remove model");
+                        that.driver.Message("Failed to remove model");
+                        that.driver.SetOnLoading(false);
                     });
                 });
 
@@ -53,18 +58,21 @@
                     var deffered = $.Deferred();
                     if (that.tool.IsInRepo(modelInfo.id)) {
                         that.tool.LoadModel(modelInfo.id).done(function (result) {
+                            that.driver.Message("");
                             if (that.setOnCopy !== undefined) {
                                 that.setOnCopy(modelInfo.name, result);
                                 deffered.resolve();
                             } else deffered.reject();
                         }).fail(function (errorThrown) {
                             var res = JSON.parse(JSON.stringify(errorThrown));
-                            that.messagebox.Show(res.statusText);
+                            //that.messagebox.Show(res.statusText);
+                            that.driver.Message(res.statusText);
                             deffered.reject();
                         });
                     }
                     else {
-                        that.messagebox.Show("The model was removed from outside");
+                        //that.messagebox.Show("The model was removed from outside");
+                        that.driver.Message("The model was removed from outside");
                         window.Commands.Execute("OneDriveStorageChanged", {});
                         deffered.reject();
                     }
@@ -91,7 +99,8 @@
                             });
                         }
                         catch (ex) {
-                            alert("Couldn't save model: " + ex);
+                            that.driver.Message("Couldn't save model: " + ex);
+                            //that.messagebox.Show("Couldn't save model: " + ex);
                         }
                     })
                 });
@@ -103,6 +112,7 @@
 
             public UpdateModelsList() {
                 var that = this;
+                that.driver.SetOnLoading(true);
                 that.tool.GetModelList().done(function (modelsInfo) {
                     if (modelsInfo === undefined || modelsInfo.length == 0)
                         that.driver.Message("The model repository is empty");
@@ -110,10 +120,13 @@
                     that.driver.SetItems(modelsInfo);
                     if (that.setOnIsActive !== undefined && that.setOnIsActive())
                         that.driver.SetActiveModel(that.appModel.BioModel.Name);
+                    that.driver.SetOnLoading(false);
                 }).fail(function (errorThrown) {
                     var res = JSON.parse(JSON.stringify(errorThrown));
-                    that.messagebox.Show(res.statusText);
+                    //that.messagebox.Show(res.statusText);
+                    that.driver.Message(res.statusText);
                     that.driver.SetItems([]);
+                    that.driver.SetOnLoading(false);
                 });
             }
 
@@ -137,17 +150,20 @@
                         that.appModel.Deserialize(JSON.stringify(result));
                         that.checker.Snapshot(that.appModel);
                         that.driver.SetActiveModel(modelInfo.name);
+                        that.driver.Message("");
                         if (that.setOnActive !== undefined)
                             that.setOnActive();
                         that.waitScreen.Hide();
                     }).fail(function (result) {
                         var res = JSON.parse(JSON.stringify(result));
-                        that.messagebox.Show(res.statusText);
+                        //that.messagebox.Show(res.statusText);
+                        that.driver.Message(res.statusText);
                         that.waitScreen.Hide();
                     });
                 }
                 else {
-                    that.messagebox.Show("The model was removed from outside");
+                    //that.messagebox.Show("The model was removed from outside");
+                    that.driver.Message("The model was removed from outside");
                     window.Commands.Execute("OneDriveStorageChanged", {});
                     that.waitScreen.Hide();
                 }

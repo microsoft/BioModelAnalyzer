@@ -157,7 +157,6 @@ function popup_position() {
 
 $(document).ready(function () {
     //InteractiveDataDisplay.ZIndexDOMMarkers = undefined;
-
     var snipper = $('<div></div>').addClass('spinner').appendTo($('.loading-text'));
     for (var i = 1; i < 4; i++) {
         $('<div></div>').addClass('bounce' + i).appendTo(snipper);
@@ -226,7 +225,7 @@ function versionCheck(version) {
 function loadVersion(): JQueryPromise<Object> {
     var d = $.Deferred();
     $.ajax({
-        url: "version.txt",
+        url: "/api/version", //"version.txt",
         dataType: "text",
         success: function (data) {
             var version = JSON.parse(data);
@@ -249,7 +248,7 @@ function loadScript(version) {
 
     //Defining processing service URL
     // To test locally, change to "" (empty string)
-    window.BMAServiceURL = "http://bmamathnew.cloudapp.net";
+    window.BMAServiceURL = version.computeServiceUrl; //"http://bmamathnew.cloudapp.net";
 
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
@@ -450,6 +449,10 @@ function loadScript(version) {
     $("#button-undo").click(() => { window.Commands.Execute("Undo", undefined); });
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
 
+    $("#btn-onedrive-switcher").click(function (args) {
+        $("#signin :button").click();
+        //window.Commands.Execute("SwitchOneDrive", undefined);
+    });
     $("#btn-local-save").click(function (args) {
         window.Commands.Execute("SaveModel", undefined);
     });
@@ -498,6 +501,14 @@ function loadScript(version) {
     //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
     (<any>window).VisualSettings = visualSettings;
+
+    window.Commands.On("OneDriveLoggedIn", () => {
+        $("#btn-onedrive-switcher").addClass("logged-in");
+    });
+
+    window.Commands.On("OneDriveLoggedOut", () => {
+        $("#btn-onedrive-switcher").removeClass("logged-in");
+    });
 
     window.Commands.On("Commands.ToggleLabels", function (param) {
         visualSettings.TextLabelVisibility = param;

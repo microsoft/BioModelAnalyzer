@@ -271,6 +271,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="data\Firing_neuron_2_cells.json" />
+    <Content Include="test\pre\monacotest_pre.js" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>

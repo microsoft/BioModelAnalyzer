@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="css/jquery.svg.css" type="text/css" />
     <link rel="stylesheet" href="css/fonts.min.css" type="text/css" />
     <link rel="stylesheet" href="css/idd.css" type="text/css" />
-    <link rel="stylesheet" href="css/bma.css" type="text/css" />
     <link rel="stylesheet" href="js/monaco/editor/editor.main.css" type="text/css" />
+    <link rel="stylesheet" href="css/bma.css" type="text/css" />
     <script src="Scripts/jquery-2.1.4.min.js"></script>
     <script src="//js.live.net/v5.0/wl.js"></script>
     <script src="js/jquery.browser.min.js"></script>
@@ -22,7 +22,7 @@
     <script src="Scripts/rx.lite.min.js"></script>
     <script src="Scripts/rx.aggregates.min.js"></script>
     <script src="js/idd.js"></script>
-    <script src="js/taphold.js"></script>
+    <!--<script src="js/taphold.js"></script>-->
     <script src="Silverlight.js"></script>
     <script src="js/jquery.ui-contextmenu.min.js"></script>
     <script src="js/FileSaver.js"></script>
@@ -163,6 +163,11 @@
                 <div id="modelToolbarContent" class="model-icons">
                     <ul>
                         <li>
+                            <div id="btn-onedrive-switcher" class="onedrive-switch-btn">
+                                ONEDRIVE
+                            </div>
+                        </li>
+                        <li>
                             <div id="btn-local-save" data-command="LocalStorageSaveModel" class="local-save-btn">
                                 SAVE
                             </div>
@@ -242,6 +247,7 @@
                 <img src="http://research.microsoft.com/a/i/c/ms-logo.png" alt="Logo" />
             </a>
         </div>
+        <div id="signin" style="display:none"></div>
     </footer>
 
 </body>

@@ -15,6 +15,7 @@
       <Setting name="StorageConnectionString" />
       <Setting name="ComputeTimeLimit" />
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
+      <Setting name="ComputeServiceUrl" />
     </ConfigurationSettings>
   </WebRole>
 </ServiceDefinition>
