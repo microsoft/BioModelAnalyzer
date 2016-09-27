@@ -158,40 +158,60 @@ describe("OneDrive repository", function () {
             });
     });
 
-    it("enumerate models includes shared with me files", function (done) {
-        oneDrive.EnumerateSharedWithMeFiles = function () {
-            var d = $.Deferred();
-            d.resolve([
-                { id: "0", file: { mimeType: "plain/text" }, name: "1.txt" },
-                { id: "1", file: { mimeType: "application/json" }, name: "1.json" },
-                { id: "2", file: { mimeType: "application/json" }, name: "2.json" }
-            ]);
-            return d.promise();
-        };
+    //xit("enumerate models includes shared with me files", function (done) {
+    //    oneDrive.EnumerateSharedWithMeFiles = function () {
+    //        var d = $.Deferred();
+    //        d.resolve([
+    //            { id: "0", file: { mimeType: "plain/text" }, name: "1.txt" },
+    //            { id: "1", file: { mimeType: "application/json" }, name: "1.json" },
+    //            { id: "2", file: { mimeType: "application/json" }, name: "2.json" }
+    //        ]);
+    //        return d.promise();
+    //    };
 
-        repo.GetModelList()
-            .done(function (models) {
-                expect(models.length).toEqual(2);
-                expect(models[0].name).toEqual("1");
-                expect(models[1].name).toEqual("2");
-                done();
-            })
-            .fail(function (err) {
-                expect(true).toBeFalsy();
-            });
-    });
+    //    repo.GetModelList()
+    //        .done(function (models) {
+    //            expect(models.length).toEqual(2);
+    //            expect(models[0].name).toEqual("1");
+    //            expect(models[1].name).toEqual("2");
+    //            done();
+    //        })
+    //        .fail(function (err) {
+    //            expect(true).toBeFalsy();
+    //        });
+    //});
 
-    it("enumerate models includes my files and shared with me files", function (done) {
-        oneDrive.EnumerateSharedWithMeFiles = function () {
-            var d = $.Deferred();
-            d.resolve([
-                { id: "0", file: { mimeType: "plain/text" }, name: "1.txt" },
-                { id: "1", file: { mimeType: "application/json" }, name: "1.json" },
-                { id: "2", file: { mimeType: "application/json" }, name: "2.json" }
-            ]);
-            return d.promise();
-        };
+    //xit("enumerate models includes my files and shared with me files", function (done) {
+    //    oneDrive.EnumerateSharedWithMeFiles = function () {
+    //        var d = $.Deferred();
+    //        d.resolve([
+    //            { id: "0", file: { mimeType: "plain/text" }, name: "1.txt" },
+    //            { id: "1", file: { mimeType: "application/json" }, name: "1.json" },
+    //            { id: "2", file: { mimeType: "application/json" }, name: "2.json" }
+    //        ]);
+    //        return d.promise();
+    //    };
 
+    //    repo.SaveModel("my model", model)
+    //        .fail(function (err) {
+    //            expect(true).toBeFalsy();
+    //        })
+    //        .done(function (info: BMA.UIDrivers.ModelInfo) {
+    //            repo.GetModelList()
+    //                .done(function (models) {
+    //                    expect(models.length).toEqual(3);
+    //                    expect(models[0].name).toEqual("sample");
+    //                    expect(models[1].name).toEqual("1");
+    //                    expect(models[2].name).toEqual("2");
+    //                    done();
+    //                })
+    //                .fail(function (err) {
+    //                    expect(true).toBeFalsy();
+    //                });
+    //        });
+    //});
+
+    it("enumerate models includes my files", function (done) {
         repo.SaveModel("my model", model)
             .fail(function (err) {
                 expect(true).toBeFalsy();
@@ -199,10 +219,8 @@ describe("OneDrive repository", function () {
             .done(function (info: BMA.UIDrivers.ModelInfo) {
                 repo.GetModelList()
                     .done(function (models) {
-                        expect(models.length).toEqual(3);
+                        expect(models.length).toEqual(1);
                         expect(models[0].name).toEqual("sample");
-                        expect(models[1].name).toEqual("1");
-                        expect(models[2].name).toEqual("2");
                         done();
                     })
                     .fail(function (err) {
