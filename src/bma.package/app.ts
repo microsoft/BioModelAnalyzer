@@ -225,7 +225,7 @@ function versionCheck(version) {
 function loadVersion(): JQueryPromise<Object> {
     var d = $.Deferred();
     $.ajax({
-        url: "version.txt",
+        url: "/api/version", //"version.txt",
         dataType: "text",
         success: function (data) {
             var version = JSON.parse(data);
@@ -248,7 +248,7 @@ function loadScript(version) {
 
     //Defining processing service URL
     // To test locally, change to "" (empty string)
-    window.BMAServiceURL = "http://bmamathnew.cloudapp.net";
+    window.BMAServiceURL = version.computeServiceUrl; //"http://bmamathnew.cloudapp.net";
 
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
