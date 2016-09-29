@@ -600,10 +600,10 @@ function loadScript(version) {
 
     var localSettings = new BMA.OneDrive.OneDriveSettings("79832916-6a39-4c73-b13e-ee28c25d46a7", "http://localhost:81/html/callback.html", "signin");
     var bmaNewSettings = new BMA.OneDrive.OneDriveSettings("000000004C12BD9C", "http://bmanew.cloudapp.net/html/callback.html", "signin");
-    var oneDriveSettings = bmaNewSettings; //localSettings;
+    var productionSettings = new BMA.OneDrive.OneDriveSettings("c18205a1-8587-4a03-9274-85845cbbcbb0", "http://biomodelanalyzer.research.microsoft.com/html/callback.html", "signin");
+    var oneDriveSettings = productionSettings; //bmaNewSettings; //localSettings;
 
     var connector = new BMA.OneDrive.OneDriveConnector(oneDriveSettings);
-    
 
     var oneDriveRepositoryTool = new BMA.LocalRepositoryTool(messagebox);//new BMA.OneDrive.OneDriveRepository;
     var changesCheckerTool = new BMA.ChangesChecker();
