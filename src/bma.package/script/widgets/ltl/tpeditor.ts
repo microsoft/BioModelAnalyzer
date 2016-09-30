@@ -361,7 +361,7 @@
                     { title: "Copy", cmd: "Copy", uiIcon: "ui-icon-copy" },
                     { title: "Paste", cmd: "Paste", uiIcon: "ui-icon-clipboard" },
                     { title: "Delete", cmd: "Delete", uiIcon: "ui-icon-trash" },
-                    { title: "Edit as text", cmd: "EditAsText", },
+                    { title: "Edit as text", cmd: "EditAsText", uiIcon: "ui-icon-pencil" },
                     { title: "Export as", cmd: "Export", uiIcon: "ui-icon-export", children: [{ title: "json", cmd: "ExportAsJson" }, { title: "text", cmd: "ExportAsText" }, { title: "extended text", cmd: "ExportAsTextExtended" } ] },
                     { title: "Import from", cmd: "Import", uiIcon: "ui-icon-import", children: [{ title: "json", cmd: "ImportAsJson" }, { title: "text", cmd: "ImportAsText" }] },
                 ],
