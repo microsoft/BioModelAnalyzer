@@ -25,6 +25,8 @@ namespace bma.client
         public JObject Get()
         {
             JObject version;
+
+            //Client version
             try { 
                 version = JObject.Parse(File.ReadAllText(HttpContext.Current.Server.MapPath("/version.txt")));
             } 
@@ -35,6 +37,8 @@ namespace bma.client
                 version.Add("minor", 0);
                 version.Add("build", 0);
             }
+
+            //Math service URL
             try { 
                 version.Add("computeServiceUrl", RoleEnvironment.GetConfigurationSettingValue("ComputeServiceUrl"));
             }
@@ -42,6 +46,27 @@ namespace bma.client
             {
                 version.Add("computeServiceUrl", "");
             }
+
+            //OneDrive App ID
+            try
+            {
+                version.Add("onedriveappid", RoleEnvironment.GetConfigurationSettingValue("OneDriveAppId"));
+            }
+            catch
+            {
+                version.Add("onedriveappid", "");
+            }
+
+            //OneDrive redirect URL
+            try
+            {
+                version.Add("onedriveredirecturl", RoleEnvironment.GetConfigurationSettingValue("OneDriveRedirectUrl"));
+            }
+            catch
+            {
+                version.Add("onedriveredirecturl", "");
+            }
+
             return version;
         }
     }

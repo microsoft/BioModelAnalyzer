@@ -598,10 +598,11 @@ function loadScript(version) {
     var ltlDriver = new BMA.UIDrivers.LTLViewer($("#analytics"), $('#tabs-3'));
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
 
-    var localSettings = new BMA.OneDrive.OneDriveSettings("79832916-6a39-4c73-b13e-ee28c25d46a7", "http://localhost:81/html/callback.html", "signin");
-    var bmaNewSettings = new BMA.OneDrive.OneDriveSettings("000000004C12BD9C", "http://bmanew.cloudapp.net/html/callback.html", "signin");
-    var productionSettings = new BMA.OneDrive.OneDriveSettings("c18205a1-8587-4a03-9274-85845cbbcbb0", "http://biomodelanalyzer.research.microsoft.com/html/callback.html", "signin");
-    var oneDriveSettings = productionSettings; //bmaNewSettings; //localSettings;
+    //var localSettings = new BMA.OneDrive.OneDriveSettings("79832916-6a39-4c73-b13e-ee28c25d46a7", "http://localhost:81/html/callback.html", "signin");
+    //var bmaNewSettings = new BMA.OneDrive.OneDriveSettings("000000004C12BD9C", "http://bmanew.cloudapp.net/html/callback.html", "signin");
+    //var productionSettings = new BMA.OneDrive.OneDriveSettings("c18205a1-8587-4a03-9274-85845cbbcbb0", "http://biomodelanalyzer.research.microsoft.com/html/callback.html", "signin");
+
+    var oneDriveSettings = new BMA.OneDrive.OneDriveSettings(version.onedriveappid, version.onedriveredirecturl, "signin");
 
     var connector = new BMA.OneDrive.OneDriveConnector(oneDriveSettings);
 

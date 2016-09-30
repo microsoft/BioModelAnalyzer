@@ -11,7 +11,7 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="***REMOVED***" />
       <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2017-06-06T23:59:59.0000000+03:00" />-->
     </ConfigurationSettings>
-    <<!--Certificates>
+    <!--<Certificates>
       <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="***REMOVED***" thumbprintAlgorithm="sha1" />
     </Certificates>-->
   </Role>
