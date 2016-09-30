@@ -6,7 +6,9 @@
       <Setting name="StorageConnectionString" value="UseDevelopmentStorage=true" />
       <Setting name="ComputeTimeLimit" value="90" />
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
-      <Setting name="ComputeServiceUrl" value="http://bmamathnew.cloudapp.net" />
+      <Setting name="ComputeServiceUrl" value="http://bmamath.cloudapp.net" />
+      <Setting name="OneDriveAppId" value="79832916-6a39-4c73-b13e-ee28c25d46a7" />
+      <Setting name="OneDriveRedirectUrl" value="http://localhost/html/callback.html" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>
