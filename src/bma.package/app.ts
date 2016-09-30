@@ -225,7 +225,7 @@ function versionCheck(version) {
 function loadVersion(): JQueryPromise<Object> {
     var d = $.Deferred();
     $.ajax({
-        url: "version.txt",
+        url: "/api/version", //"version.txt",
         dataType: "text",
         success: function (data) {
             var version = JSON.parse(data);
@@ -248,7 +248,7 @@ function loadScript(version) {
 
     //Defining processing service URL
     // To test locally, change to "" (empty string)
-    window.BMAServiceURL = "http://bmamathnew.cloudapp.net";
+    window.BMAServiceURL = version.computeServiceUrl; //"http://bmamathnew.cloudapp.net";
 
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
@@ -598,12 +598,13 @@ function loadScript(version) {
     var ltlDriver = new BMA.UIDrivers.LTLViewer($("#analytics"), $('#tabs-3'));
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
 
-    var localSettings = new BMA.OneDrive.OneDriveSettings("79832916-6a39-4c73-b13e-ee28c25d46a7", "http://localhost:81/html/callback.html", "signin");
-    var bmaNewSettings = new BMA.OneDrive.OneDriveSettings("000000004C12BD9C", "http://bmanew.cloudapp.net/html/callback.html", "signin");
-    var oneDriveSettings = bmaNewSettings; //localSettings;
+    //var localSettings = new BMA.OneDrive.OneDriveSettings("79832916-6a39-4c73-b13e-ee28c25d46a7", "http://localhost:81/html/callback.html", "signin");
+    //var bmaNewSettings = new BMA.OneDrive.OneDriveSettings("000000004C12BD9C", "http://bmanew.cloudapp.net/html/callback.html", "signin");
+    //var productionSettings = new BMA.OneDrive.OneDriveSettings("c18205a1-8587-4a03-9274-85845cbbcbb0", "http://biomodelanalyzer.research.microsoft.com/html/callback.html", "signin");
+
+    var oneDriveSettings = new BMA.OneDrive.OneDriveSettings(version.onedriveappid, version.onedriveredirecturl, "signin");
 
     var connector = new BMA.OneDrive.OneDriveConnector(oneDriveSettings);
-    
 
     var oneDriveRepositoryTool = new BMA.LocalRepositoryTool(messagebox);//new BMA.OneDrive.OneDriveRepository;
     var changesCheckerTool = new BMA.ChangesChecker();

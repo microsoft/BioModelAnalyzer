@@ -16,18 +16,18 @@
     <Endpoints>
       <InputEndpoint name="Endpoint1" protocol="http" port="80" />
     </Endpoints>
-    <Imports>
+    <!--<Imports>
       <Import moduleName="RemoteAccess" />
-    </Imports>
+    </Imports>-->
   </WebRole>
   <WorkerRole name="LTLCheckRole" vmsize="A5">
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
       <Setting name="StorageConnectionString" />
     </ConfigurationSettings>
-    <Imports>
+    <!--<Imports>
       <Import moduleName="RemoteAccess" />
       <Import moduleName="RemoteForwarder" />
-    </Imports>
+    </Imports>-->
   </WorkerRole>
 </ServiceDefinition>
