@@ -10,5 +10,10 @@
       <Setting name="OneDriveAppId" value="c18205a1-8587-4a03-9274-85845cbbcbb0" />
       <Setting name="OneDriveRedirectUrl" value="https://biomodelanalyzer.research.microsoft.com/html/callback.html" />
     </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="Microsoft IT SSL SHA2"
+          thumbprint="97EFF3028677894BDD4F9AC53F789BEE5DF4AD86"
+          thumbprintAlgorithm="sha1" />
+    </Certificates>
   </Role>
 </ServiceConfiguration>
