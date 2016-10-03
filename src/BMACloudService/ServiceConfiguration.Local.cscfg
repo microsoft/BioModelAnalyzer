@@ -11,9 +11,9 @@
       <Setting name="OneDriveRedirectUrl" value="http://localhost/html/callback.html" />
     </ConfigurationSettings>
     <Certificates>
-      <Certificate name="Microsoft IT SSL SHA2"
-          thumbprint="97EFF3028677894BDD4F9AC53F789BEE5DF4AD86"
-          thumbprintAlgorithm="sha2" />
+      <Certificate name="biomodelanalyzer2.cloudapp.net"
+          thumbprint="F5C7A8A81186035DAF12000BBAE3E174DE162DA2"
+          thumbprintAlgorithm="sha1" />
     </Certificates>
   </Role>
 </ServiceConfiguration>

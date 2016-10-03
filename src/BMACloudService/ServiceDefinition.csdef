@@ -11,7 +11,7 @@
     </Sites>
     <Endpoints>
       <InputEndpoint name="Endpoint1" protocol="http" port="80" />
-      <InputEndpoint name="HttpsIn" protocol="https" port="443" certificate="Microsoft IT SSL SHA2" />
+      <InputEndpoint name="HttpsIn" protocol="https" port="443" certificate="biomodelanalyzer2.cloudapp.net" />
     </Endpoints>
     <ConfigurationSettings>
       <Setting name="StorageConnectionString" />
@@ -22,7 +22,7 @@
       <Setting name="OneDriveRedirectUrl" />
     </ConfigurationSettings>
     <Certificates>
-      <Certificate name="Microsoft IT SSL SHA2"
+      <Certificate name="biomodelanalyzer2.cloudapp.net"
                    storeLocation="LocalMachine"
                    storeName="My"
                    permissionLevel="limitedOrElevated" />
