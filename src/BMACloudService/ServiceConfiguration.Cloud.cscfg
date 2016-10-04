@@ -13,7 +13,7 @@
     </ConfigurationSettings>
     <Certificates>
       <Certificate name="biomodelanalyzer2.cloudapp.net"
-          thumbprint="F5C7A8A81186035DAF12000BBAE3E174DE162DA2"
+          thumbprint="5C8B0B3B8507405438114366F159A660223C106D"
           thumbprintAlgorithm="sha1" />
     </Certificates>
   </Role>
