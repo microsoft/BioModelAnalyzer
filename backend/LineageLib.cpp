@@ -12,6 +12,7 @@
 using std::vector;
 using std::map;
 using std::string;
+using std::stringstream;
 using std::unique_ptr;
 using std::pair;
 
@@ -26,6 +27,43 @@ namespace linux_problem {
 	}
 };
 
+vector<string> programs(vector<string> pgm) {
+	try {
+		unique_ptr<Simulation> s{ new Simulation(pgm) };
+		return s->programs();
+	}
+	catch (const string& err) {
+		vector<string> errv;
+		string ferr = "Error: " + err;
+		errv.push_back(ferr);
+		return errv;
+	}
+}
+
+vector<string> conditions(vector<string> pgm, string program) {
+    vector<string> ret;
+	try {
+		unique_ptr<Simulation> s{ new Simulation(pgm) };
+		CellProgram* prog = s->program(program);
+		if (nullptr == prog) {
+			ret.push_back("Error: Could not compile the program.");
+			return ret;
+		}
+		for (CellProgram::iterator it = prog->begin(); it != prog->end(); ++it) {
+			stringstream val;
+			val << *it;
+			ret.push_back(val.str());
+		}
+	}
+	catch (const string& err) {
+		vector<string> errv;
+		string ferr = "Error: " + err;
+		errv.push_back(ferr);
+		return errv;
+	}
+	return ret;
+}
+
 vector<string> simulate(vector<string> pgm, string condition) {
 	try {
 		unique_ptr<Simulation> s{ new Simulation(pgm) };
@@ -33,8 +71,11 @@ vector<string> simulate(vector<string> pgm, string condition) {
 		return s->toVectorString();
 	}
 	catch (const string& err) {
+		vector<string> errv;
+		string ferr = "Error: " + err;
+		errv.push_back(ferr);
+		return errv;
 	}
-	return vector<string>();
 }
 
 vector<string> checkTimeOverlap(vector<string> pgm, string condition, string firstCell, string secondCell, unsigned int numSimulations, bool rawData) {
@@ -122,8 +163,11 @@ vector<string> checkTimeOverlap(vector<string> pgm, string condition, string fir
 		return result;
 	}
 	catch (const string& err) {
+		vector<string> errv;
+		string ferr = "Error: " + err;
+		errv.push_back(ferr);
+		return errv;
 	}
-	return vector<string>();
 }
 
 vector<string> cellExistence(vector<string> programs, string condition, unsigned int numSimulations) {
@@ -153,9 +197,11 @@ vector<string> cellExistence(vector<string> programs, string condition, unsigned
 		return results;
 	}
 	catch (const string& err) {
-
+		vector<string> errv;
+		string ferr = "Error: " + err;
+		errv.push_back(ferr);
+		return errv;
 	}
-	return vector<string>();
 }
 
 vector<string> simulateAbnormal(vector<string> programs, string condition, unsigned int repetitions) {
@@ -191,7 +237,9 @@ vector<string> simulateAbnormal(vector<string> programs, string condition, unsig
 		return results;
 	}
 	catch (const string& err) {
-
+		vector<string> errv;
+		string ferr = "Error: " + err;
+		errv.push_back(ferr);
+		return errv;
 	}
-	return vector<string>();
 }

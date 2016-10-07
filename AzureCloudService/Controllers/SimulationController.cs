@@ -23,4 +23,19 @@ namespace WebApi
             return o;
         }
     }
+
+    public class ProgramsController : ApiController
+    {
+        public ProgramsOutput Post(ProgramsInput input)
+        {
+            var p = input.Pgm;
+
+            var b = BackEndClassLibrary1.Class1.getPrograms(p);
+
+            var o = new ProgramsOutput { Output = b };
+
+            return o;
+        }
+    }
+
 }

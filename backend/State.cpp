@@ -53,7 +53,8 @@ pair<bool,const Type::Value*> State::value(const string& var) const {
 	}
 	auto it=_vars.find(var);
 	if (it == _vars.end()) {
-		return make_pair(false,nullptr);
+		const Type::Value* ptr = nullptr;
+		return make_pair(false,ptr);
 	}
 	return make_pair(true,it->second->value());
 }
