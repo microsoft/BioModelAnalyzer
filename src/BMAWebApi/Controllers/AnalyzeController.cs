@@ -1,5 +1,6 @@
 ﻿using BioCheckAnalyzerCommon;
 using BioModelAnalyzer;
+using bma.BioCheck;
 using BMAWebApi;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
@@ -17,222 +18,26 @@ using System.Xml.Serialization;
 
 namespace bma.client.Controllers
 {
-    public class AnalysisOutput : AnalysisResult
-    {
-        public int Time { get; set; }
-
-        public string[] ErrorMessages { get; set; }
-
-        public string[] DebugMessages { get; set; }
-    }
-
-    public class AnalysisInput : Model
-    {
-        [XmlIgnore]
-        public bool EnableLogging { get; set; }
-    }
-
-
     public class AnalyzeController : ApiController
     {
         private readonly IFailureLogger faultLogger;
 
         public AnalyzeController(IFailureLogger logger)
         {
+            if (logger == null) throw new ArgumentNullException("logger");
             this.faultLogger = logger;
         }
 
-        // POST api/Analyze
         public AnalysisOutput Post([FromBody]AnalysisInput input)
         {
-
             var log = new DefaultLogService();
-
-            //FailureAzureLogger faultLogger = new FailureAzureLogger(
-            //       CloudStorageAccount.Parse(
-            //           RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
-            /*var engineName = input.Engine.Name;
-
-            if (engineName == "VMCAI")
-            {*/
-            // Standard Proof
-            try
+            var output = Utilities.RunWithTimeLimit(() => Analysis.Analyze(input), Utilities.GetTimeLimitFromConfig());
+            if (output.ErrorMessages != null && output.ErrorMessages.Length > 0)
             {
-                IAnalyzer analyzer = new UIMain.Analyzer();
-                var analyisStartTime = DateTime.Now;
-
-                if (input.EnableLogging)
-                {
-                    analyzer.LoggingOn(log);
-                }
-                else
-                {
-                    analyzer.LoggingOff();
-                }
-
-                var model = (Model)input;
-                var result = Utilities.RunWithTimeLimit(() => analyzer.checkStability(model), Utilities.GetTimeLimitFromConfig());
-
-                var time = Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
-                log.LogDebug(string.Format("Analyzer took {0} seconds to run.", time));
-
-                if (result.Status != StatusType.Stabilizing && result.Status != StatusType.NotStabilizing)
-                {
-                    log.LogError(result.Error);
-                    var version = typeof(AnalyzeController).Assembly.GetName().Version;
-                    faultLogger.Add(DateTime.Now, version.ToString(), input, log);
-                }
-
-                return new AnalysisOutput
-                {
-                    Error = result.Error,
-                    Ticks = result.Ticks,
-                    Status = result.Status,
-                    Time = (int)time,
-                    ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
-                    DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
-                    //outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
-                    //outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
-                };
+                var contents = new LogContents(output.DebugMessages, output.ErrorMessages);
+                faultLogger.Add(DateTime.Now, typeof(JobController).Assembly.GetName().Version.ToString(), input, contents);
             }
-            catch (Exception ex)
-            {
-                //  azureLogService.Debug("Analyze Exception", ex.ToString());
-
-                log.LogError(ex.ToString());
-                var version = typeof(AnalyzeController).Assembly.GetName().Version;
-                faultLogger.Add(DateTime.Now, version.ToString(), input, log);
-                // Return an Unknown if fails
-                return new AnalysisOutput
-                {
-                    Status = StatusType.Error,
-                    Error = ex.Message,
-                    ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
-                    DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
-                };
-            }
+            return output;
         }
-        /*
-            else if (engineName == "CAV")
-            {
-                // LTL Proof
-                try
-                {
-                    string formula = input.Engine.Formula;
-                    string num_of_steps = input.Engine.Number_of_steps;
-
-                    IAnalyzer analyzer = new UIMain.Analyzer();
-
-                    var analyisStartTime = DateTime.Now;
-
-                    // Call the Analyzer and get the Output Xml
-                    if (input.EnableLogging)
-                    {
-                        analyzer.LoggingOn(log);
-                    }
-                    else
-                    {
-                        analyzer.LoggingOff();
-                        log.LogDebug("Enable Logging from the Run LTL Proof button context menu to see more detailed logging info.");
-                    }
-
-                    var model = (Model)input;
-                    var result = Utilities.RunWithTimeLimit(() => analyzer.checkLTL((Model)input, formula, num_of_steps), Utilities.GetTimeLimitFromConfig());
-
-                    // Log the output XML each time it's run
-                    // DEBUG: Sam - to check why the output is returning is null
-                    //azureLogService.Debug("Analyze Output XML", outputXml.ToString());
-
-                    var time = (int)Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
-                    log.LogDebug(string.Format("The LTL proof took {0} seconds to run.", time));
-
-                    // Convert to the Output Data
-                    //outputData.Status = outputXml.Descendants("Status").FirstOrDefault().Value;    // <-- Change (unless contained and of use)
-                    //if (outputData.Status != StatusTypes.Stabilizing && outputData.Status != StatusTypes.NotStabilizing)
-                    //{
-                    //    var error = outputXml.Descendants("Error").FirstOrDefault();
-                    //    outputData.Error = error != null ? error.AttributeString("Msg") : "There was an error during the LTL analysis";
-                    //}
-                    return new AnalysisOutputDTO
-                    {
-                        Error = result.Error,
-                        Ticks = result.Ticks,
-                        Status = result.Status,
-                        Time = (int)time,
-                        ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
-                        DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
-                        //outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
-                        //outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
-                    };
-                }
-                catch (Exception ex)
-                {
-                    //  azureLogService.Debug("Analyze Exception", ex.ToString());
-
-                    log.LogError(ex.ToString());
-                    faultLogger.Add(DateTime.Now, "2.0", input, log);
-                    // Return an Unknown if fails
-                    return new AnalysisOutputDTO
-                    {
-                        Status = StatusType.Error,
-                        Error = ex.Message,
-                        ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
-                        DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
-                    };
-                }
-            }
-        }*/
-        /*else
-        {
-            // if (engineName == "SYN")
-            try
-            {
-                IAnalyzer2 analyzer = new UIMain.Analyzer2();                   // Needs changing to the SYN engine.
-
-                var analyisStartTime = DateTime.Now;
-
-                // Call the Analyzer and get the Output Xml
-                if (input.EnableLogging)
-                {
-                    analyzer.LoggingOn(log);
-                }
-                else
-                {
-                    analyzer.LoggingOff();
-                    log.LogDebug("Enable Logging from the context menu to see more detailed logging info.");
-                }
-
-                var outputXml = analyzer.checkSynth(inputXml);                        // analyzer (set above)
-
-                var time = Math.Round((DateTime.Now - analyisStartTime).TotalSeconds, 1);
-                log.LogDebug(string.Format("Synthesis took {0} seconds to run.", time));
-
-                // Convert to the Output Data
-                var outputData = new AnalysisOutputDTO();
-
-                outputData.Time = time;
-                outputData.ErrorMessages = log.ErrorMessages;
-
-                //outputData.ZippedXml = ZipHelper.Zip(inputXml.ToString());                      // Just sending back the input XML at the moment.
-                outputData.ZippedXml = ZipHelper.Zip(outputXml.ToString());
-                outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));  // The log!
-
-                return outputData;
-            }
-            catch (Exception ex)
-            {
-                azureLogService.Debug("SYN Exception", ex.ToString());
-
-                // Return an Unknown if fails
-                var outputData = new AnalysisOutputDTO
-                {
-                    Status = StatusTypes.Unknown,
-                    Error = ex.ToString(),
-                    ErrorMessages = log.ErrorMessages,
-                    ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages))
-                };
-                return outputData;
-            }
-        }*/
     }
 }

@@ -35,7 +35,7 @@
         }
 
         public SaveModel(id: string, model: JSON) {
-            if (window.localStorage.getItem(id) !== null) {
+            if (window.localStorage.getItem("user." + id) !== null) {
                 if (confirm("Overwrite the file?"))
                     this.Save("user." + id, JSON.stringify(model));
             }
@@ -47,20 +47,24 @@
             window.Commands.Execute("LocalStorageChanged", {});
         }
 
-        public LoadModel(id: string): JSON {
+        public LoadModel(id: string): JQueryPromise<JSON> {
+            var deffered = $.Deferred();
             var model = window.localStorage.getItem(id);
             if (model !== null) {
                 try {
                     var app = new BMA.Model.AppModel();
                     app.Deserialize(model);
-                    return JSON.parse(app.Serialize());
+                    return deffered.resolve(JSON.parse(app.Serialize()));
                 }
-                catch (ex) { alert(ex); }
+                catch (ex) { alert(ex); deffered.reject(ex); }
             }
-            else return null;
+            else return deffered.resolve(null);
+
+            return deffered.promise();
         }
 
-        public GetModelList(): string[] {
+        public GetModelList(): JQueryPromise<string[]> {
+            var deffered = $.Deferred();
             var keys = [];
             for (var i = 0; i < window.localStorage.length; i++) {
                 var key = window.localStorage.key(i);
@@ -72,7 +76,9 @@
                     }
                 }
             }
-            return keys;
+            deffered.resolve(keys);
+
+            return deffered.promise();
         }
 
         private IsUserKey(key: string): string {

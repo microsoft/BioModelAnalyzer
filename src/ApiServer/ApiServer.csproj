@@ -39,9 +39,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\FSharp 4.4.0.0\FSharp.Core.dll</HintPath>
+      <HintPath>..\..\ext\FSharp 4.3.1.0\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.KeyVault.Core">
       <HintPath>..\..\ext\nuget\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
@@ -135,6 +135,10 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\ext\z3\z3-4.4.1-x64-win\bin\libz3.dll">
+      <Link>libz3.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -169,6 +173,30 @@
     <ProjectReference Include="..\BMAWebApi\BMAWebApi.csproj">
       <Project>{6652fdab-c878-4661-baad-664cf8327467}</Project>
       <Name>BMAWebApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FairShareScheduler\FairShareScheduler.fsproj">
+      <Project>{a66e4ee3-5d4e-4889-90ec-36317a4de882}</Project>
+      <Name>FairShareScheduler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\AnalyzeLTL\AnalyzeLTL.csproj">
+      <Project>{f27a4a37-7fde-473e-ac6a-dcb38451bbf4}</Project>
+      <Name>AnalyzeLTL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\Analyze\Analyze.csproj">
+      <Project>{dffb825c-8482-4cc2-bf67-0b787a9f5e1e}</Project>
+      <Name>Analyze</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\FurtherTesting\FurtherTesting.csproj">
+      <Project>{31cd1208-f215-40ce-80b9-0093e1b1494b}</Project>
+      <Name>FurtherTesting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\SimulateLTL\SimulateLTL.csproj">
+      <Project>{e7535067-7b3d-4e8f-81b9-62e23550b535}</Project>
+      <Name>SimulateLTL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Jobs\Simulate\Simulate.csproj">
+      <Project>{90ff5549-6138-4653-89c7-5a0dfb9034cf}</Project>
+      <Name>Simulate</Name>
     </ProjectReference>
     <ProjectReference Include="..\UIExpr\UIExpr.fsproj">
       <Project>{c6745675-ea9f-41f3-bffc-2c3810585b36}</Project>

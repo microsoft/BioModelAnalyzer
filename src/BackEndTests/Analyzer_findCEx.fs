@@ -8,11 +8,13 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 open Newtonsoft.Json.Linq
 open BioModelAnalyzer
 open System.Text.RegularExpressions
+open System.ComponentModel
 
 [<TestClass>]
+[<DeploymentItem("libz3.dll")>]
 type VMCAIFurtherTestingTests() = 
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("SimpleBifurcation.json")>]
     member x.``Bifurcating model bifurcates`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("SimpleBifurcation.json"))
@@ -34,11 +36,10 @@ type VMCAIFurtherTestingTests() =
 //        Assert.AreEqual(result.Variables.[0].Fix2, 1)
         let var3_0 = result.Variables |> Seq.pick (fun v -> if v.Id = "3^0" then Some(v) else None) 
         Assert.AreEqual(var3_0.Id, "3^0")
-        Assert.AreEqual(var3_0.Fix1, 0)
-        Assert.AreEqual(var3_0.Fix2, 1)
+        Assert.IsTrue(var3_0.Fix1 = 0 && var3_0.Fix2 = 1 || var3_0.Fix1 = 1 && var3_0.Fix2 = 0, "Bifuraction fixpoints")
 
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("Race.json")>]
     member x.``Race model cycles`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("Race.json"))
@@ -61,7 +62,7 @@ type VMCAIFurtherTestingTests() =
         Assert.AreEqual(var4_1.Value, 1)
 
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ion channel.json")>]
     member x.``Ion channel has fixpoint`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ion channel.json"))
@@ -88,9 +89,9 @@ type VMCAIFurtherTestingTests() =
         let var3_0 = result2.Variables |> Seq.pick (fun v -> if v.Id = "3^0" then Some(v) else None) 
         Assert.AreEqual(var3_0.Value, 0)
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ceilFunc.json")>]
-    member x.``FinCounter Examples correctly handles ceil and floor functions`` () = 
+    member x.``Find Counter Examples correctly handles ceil and floor functions`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ceilFunc.json"))
 
         // Extract model from json
@@ -111,7 +112,7 @@ type VMCAIFurtherTestingTests() =
         let var2_0 = result2.Variables |> Seq.filter (fun v -> Regex.IsMatch(v.Id, "\d*\^\d*") |> not ) |> Seq.length
         Assert.AreEqual(var2_0, 0)
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("RestingNeuron.json")>]
     member x.``RestingNeuron.json is processed correctly`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("RestingNeuron.json"))
@@ -125,22 +126,22 @@ type VMCAIFurtherTestingTests() =
 
         // Check stability
         let result =  (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).checkStability(model)
-        Assert.AreEqual(result.Status, StatusType.NotStabilizing)
+        Assert.AreEqual(result.Status, StatusType.NotStabilizing, "not stabilizing")
 
         // Find fix points
         let result2o = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExFixpoint(model, result)
         let result2 = result2o.Value
         // Check that var(2^0) exists and has value 0. 
         let var2_0 = result2.Variables |> Seq.filter (fun v -> Regex.IsMatch(v.Id, "\d*\^\d*") |> not ) |> Seq.length
-        Assert.AreEqual(var2_0, 0)
+        Assert.AreEqual(var2_0, 0, "zero fixpoint")
 
         let resultBF = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExBifurcates(model, result)
-        Assert.AreEqual(resultBF, null)
+        Assert.AreEqual(resultBF, null, "bifurcation")
 
         let resultC = (analyzer :> BioCheckAnalyzerCommon.IAnalyzer).findCExCycles(model, result)
-        Assert.AreNotEqual(resultC, null)
+        Assert.AreEqual(resultC, null, "cycle")
 
-//    [<TestMethod>]
+//    [<TestMethod; TestCategory("CI")>]
 //    [<DeploymentItem("ToyModelUnstable.json")>]
 //    member x.``LTL check`` () = 
 //        let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelUnstable.json"))

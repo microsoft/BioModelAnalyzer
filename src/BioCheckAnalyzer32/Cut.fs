@@ -25,36 +25,25 @@ open System
 type nature = OneWayInc | OneWayDec | TwoWay | ZeroWay
 
 let ExistsEdgeAcrossCut (qn : QN.node list) ranges (bounds : Map<QN.var, int*int>) (cutNode : QN.node) (cutFrom : int) (cutTo : int) =
-    let cfg = new Config()
-    cfg.SetParamValue("MODEL", "true")
-    let ctx = new Context(cfg)
+    let cfg = System.Collections.Generic.Dictionary()
+    cfg.Add("MODEL", "true")
+    use ctx = new Context(cfg)
+    use s = ctx.MkSolver()
 
     for node in qn do
-        Z.assert_target_function qn cutNode ranges 0 1 ctx
+        Z.assert_target_function qn cutNode ranges 0 1 ctx s
 
     for node in qn do
         if node.var = cutNode.var then
-            Z.assert_bound node (cutFrom, cutFrom) 0 ctx
-            Z.assert_bound node (cutTo, cutTo) 1 ctx
+            Z.assert_bound node (cutFrom, cutFrom) 0 ctx s
+            Z.assert_bound node (cutTo, cutTo) 1 ctx s
         else 
-            Z.assert_bound node bounds.[node.var] 0 ctx
-            Z.assert_bound node bounds.[node.var] 1 ctx
+            Z.assert_bound node bounds.[node.var] 0 ctx s
+            Z.assert_bound node bounds.[node.var] 1 ctx s
 
-    let model = ref null
-
-    let sat = ctx.CheckAndGetModel (model)
-
-    let res =
-        if sat = LBool.True then
-                 true
-        else
-                 false
-
-    if (!model) <> null then (!model).Dispose()
-    ctx.Dispose()
-    cfg.Dispose()
-
-    res
+    match s.Check() with
+    | Status.SATISFIABLE -> true
+    | _ -> false
 
 let CanIncreaseAcrossCut (qn : QN.node list) ranges (bounds : Map<QN.var, int*int>) (cutNode : QN.node) (cutAt : int) =
     ExistsEdgeAcrossCut qn ranges bounds cutNode cutAt (cutAt+1)

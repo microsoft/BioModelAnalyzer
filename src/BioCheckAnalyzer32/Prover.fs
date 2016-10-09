@@ -19,6 +19,7 @@ module Prover
 
 
 open System
+open VariableEncoding
 
 type CEX =
     | Bifurcation of Map<QN.var, int> * Map<QN.var, int>
@@ -210,20 +211,20 @@ let ProveStability (qn : QN.node list) =
                     // id^t --> id
                     let parse s = 
                         let (id,t) = 
-                            try Z.get_qn_var_at_t_from_z3_var s 
+                            try dec_qn_var_at_t_from_z3_var s 
                             with exn -> failwith "Failed to parse bifurcation id"
                         id
                     let fix1 = 
                         Map.fold
                             (fun newMap name value ->
-                                let (id,t) = Z.get_qn_var_at_t_from_z3_var name
+                                let (id,t) = dec_qn_var_at_t_from_z3_var name
                                 Map.add id value newMap)
                             Map.empty
                             fix1
                     let fix2 = 
                         Map.fold
                             (fun newMap name value ->
-                                let (id,t) = Z.get_qn_var_at_t_from_z3_var name
+                                let (id,t) = dec_qn_var_at_t_from_z3_var name
                                 Map.add id value newMap)
                             Map.empty
                             fix2

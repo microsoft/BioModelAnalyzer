@@ -125,6 +125,7 @@ module BMA {
             private contextMenuDriver: IContextMenu;
             private statesToSet = [];
             private ftvcallback: Function = undefined;
+            private oneditformulacallback: Function = undefined;
 
             constructor(commands: ICommandRegistry, popupWindow: JQuery) {
                 this.popupWindow = popupWindow;
@@ -223,9 +224,28 @@ module BMA {
                 }
             }
 
+            SetFormulasEditorCallback(callback: Function) {
+                this.oneditformulacallback = callback;
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor({ oneditformula: callback });
+                }
+            }
+
             SetCopyZoneIcon(operation: BMA.LTLOperations.Operation) {
                 if (this.tpeditor !== undefined) {
                     this.tpeditor.temporalpropertieseditor({ copyzoneoperation: operation });
+                }
+            }
+
+            ShowFormulaEditor(formula: string) {
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor("showFormulaEditor", formula);
+                }
+            }
+
+            HideFormulaEditor() {
+                if (this.tpeditor !== undefined) {
+                    this.tpeditor.temporalpropertieseditor("hideFormulaEditor");
                 }
             }
         }
@@ -576,6 +596,7 @@ module BMA {
             private expandedcallback;
             private showresultcallback;
             private onstepschangedcallback;
+            private oncancelrequestcallback;
 
             constructor(compactltlresult: JQuery) {
                 var that = this;
@@ -604,6 +625,11 @@ module BMA {
                         if (that.showresultcallback !== undefined) {
                             that.showresultcallback(showpositive);
                         }
+                    },
+                    oncancelrequest: function () {
+                        if (that.oncancelrequestcallback !== undefined) {
+                            that.oncancelrequestcallback();
+                        }
                     }
                 });
             }
@@ -631,17 +657,17 @@ module BMA {
                 }
 
                 if (message)
-                    options.error = message;
+                    options.message = message;
 
                 this.compactltlresult.compactltlresult(options);
             }
 
             public SetMessage(message: string) {
-                this.compactltlresult.compactltlresult({ "error": message });
+                this.compactltlresult.compactltlresult({ "message": message });
             }
 
             public GetMessage(): string {
-                return this.compactltlresult.compactltlresult("option", "error");
+                return this.compactltlresult.compactltlresult("option", "message");
             }
 
             public SetSteps(steps: number) {
@@ -673,18 +699,24 @@ module BMA {
                 this.onstepschangedcallback = callback;
             }
 
+            public SetOnCancelRequestCallback(callback) {
+                this.oncancelrequestcallback = callback;
+            }
+
             public Destroy() {
                 this.compactltlresult.compactltlresult({
                     ontestrequested: undefined,
                     onstepschanged: undefined,
                     onexpanded: undefined,
-                    onshowresultsrequested: undefined
+                    onshowresultsrequested: undefined,
+                    oncancelrequest: undefined,
                 });
 
                 this.ltlrequested = undefined;
                 this.expandedcallback = undefined;
                 this.showresultcallback = undefined;
                 this.onstepschangedcallback = undefined;
+                this.oncancelrequestcallback = undefined;
 
                 this.compactltlresult.compactltlresult("destroy");
                 this.compactltlresult.empty();
@@ -733,7 +765,7 @@ module BMA {
 
                     if (this.createStateRequested !== undefined) {
                         this.ltlResultsViewer.ltlresultsviewer({
-                            columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                            columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                             createStateRequested: that.createStateRequested
                         });
                         this.createStateRequested = undefined;
@@ -990,7 +1022,7 @@ module BMA {
             public SetOnCreateStateRequested(callback) {
                 if (this.ltlResultsViewer !== undefined) {
                     this.ltlResultsViewer.ltlresultsviewer({
-                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                         createStateRequested: callback
                     });
                 } else {

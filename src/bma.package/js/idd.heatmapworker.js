@@ -80,40 +80,42 @@ self.onmessage = function (event) {
 
     var width = event.data.width;
     var height = event.data.height;
+    if (event !== undefined && event.data !== undefined && event.data.x !== undefined) {
+        if (event.data.x.length != event.data.f.length) {
+            renderMatrix(event.data.image, width, height, event.data.x, event.data.y, event.data.f, event.data.fmin, event.data.fmax, event.data.palette, event.data.plotRect, dataToScreenX, dataToScreenY, hasdtX, hasdtY);
+        } else {
+            var screenToDataX, screenToDataY;
+            xscale_r = 1 / xscale;
+            yscale_r = 1 / yscale;
+            if (hasdtX) {
+                var plotToData = dt.plotToData;
+                screenToDataX = function (xs) {
+                    return plotToData((xs - xoffset) * xscale_r);
+                };
+            } else {
+                screenToDataX = function (xs) {
+                    return (xs - xoffset) * xscale_r;
+                };
+            }
+            if (hasdtY) {
+                var plotToData = dt.plotToData;
+                screenToDataY = function (ys) {
+                    return plotToData((yoffset - ys) * yscale_r);
+                };
+            } else {
+                screenToDataY = function (ys) {
+                    return (yoffset - ys) * yscale_r;
+                };
+            }
+            renderGradient(event.data.image, width, height, event.data.x, event.data.y, event.data.f, event.data.fmin, event.data.fmax, event.data.palette, event.data.plotRect, dataToScreenX, screenToDataX, dataToScreenY, screenToDataY, hasdtX, hasdtY);
+        }
 
-    if (event.data.x.length != event.data.f.length) {
-        renderMatrix(event.data.image, width, height, event.data.x, event.data.y, event.data.f, event.data.fmin, event.data.fmax, event.data.palette, event.data.plotRect, dataToScreenX, dataToScreenY, hasdtX, hasdtY);
-    } else {
-        var screenToDataX, screenToDataY;
-        xscale_r = 1 / xscale;
-        yscale_r = 1 / yscale;
-        if (hasdtX) {
-            var plotToData = dt.plotToData;
-            screenToDataX = function (xs) {
-                return plotToData((xs - xoffset) * xscale_r);
-            };
-        } else {
-            screenToDataX = function (xs) {
-                return (xs - xoffset) * xscale_r;
-            };
-        }
-        if (hasdtY) {
-            var plotToData = dt.plotToData;
-            screenToDataY = function (ys) {
-                return plotToData((yoffset - ys) * yscale_r);
-            };
-        } else {
-            screenToDataY = function (ys) {
-                return (yoffset - ys) * yscale_r;
-            };
-        }
-        renderGradient(event.data.image, width, height, event.data.x, event.data.y, event.data.f, event.data.fmin, event.data.fmax, event.data.palette, event.data.plotRect, dataToScreenX, screenToDataX, dataToScreenY, screenToDataY, hasdtX, hasdtY);
+        event.data.x = undefined;
+        event.data.y = undefined;
+        event.data.f = undefined;
+        event.data.palette = undefined;
+        self.postMessage(event.data);
     }
-    event.data.x = undefined;
-    event.data.y = undefined;
-    event.data.f = undefined;
-    event.data.palette = undefined;
-    self.postMessage(event.data);
 };
 
 var getDataTransform = function (type) {

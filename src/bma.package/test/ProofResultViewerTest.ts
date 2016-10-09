@@ -12,10 +12,6 @@ describe("ProofResultViewer", () => {
         widget.proofresultviewer("destroy");
     })
 
-    it("creates widget", () => {
-        widget.proofresultviewer();
-    })
-
     it("should stabilizing", () => {
         var issucceeded = true;
         var msg = 'Test Message';
@@ -34,20 +30,6 @@ describe("ProofResultViewer", () => {
         expect(success.text()).toEqual("Failed to Stabilize");
         var p = widget.find("p").eq(0);
         expect(p.text()).toEqual(msg);
-    })
-
-    it("should set data", () => {
-        var numericData = [];
-        numericData[0] = [1, 1, 1];
-        numericData[1] = [2, 2, 2];
-        numericData[2] = [3, 3, 3];
-        var colorData = [];
-        colorData[0] = [true, false, true];
-        colorData[1] = [false, false, false];
-        colorData[2] = [true, true, true];
-        var issucceeded = true;
-        var time = 17;
-        widget.proofresultviewer({ issucceeded: issucceeded, time: time, data: { numericData: numericData, colorData: colorData} });
     })
 
     it("should create resultswindowviewer for variables table", () => {

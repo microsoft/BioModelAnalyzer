@@ -50,6 +50,8 @@ module BMA {
 
             private statesPresenter: BMA.LTL.StatesPresenter;
 
+            private editingOperation: BMA.LTLOperations.OperationLayout = undefined;
+
             private zoomConstraints = {
                 minWidth: 100,
                 maxWidth: 1000
@@ -164,7 +166,7 @@ module BMA {
 
                             var op = new BMA.LTLOperations.Operation();
                             op.Operator = registry.GetOperatorByName(that.elementToAdd.name);
-                            op.Operands = op.Operator.OperandsCount > 1 ? [undefined, undefined] : [undefined];
+                            op.Operands = op.Operator.MinOperandsCount > 1 ? [undefined, undefined] : [undefined];
 
 
                             if (operation !== undefined) {
@@ -275,7 +277,15 @@ module BMA {
                     if (this.contextElement !== undefined) {
                         var operationDescr = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
                         var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
-                        commands.Execute("ExportLTLFormulaAsText", { operation: (<BMA.LTLOperations.IOperand>clonned).GetFormula() });
+                        commands.Execute("ExportLTLFormulaAsText", { operation: clonned });
+                    }
+                });
+
+                commands.On("TemporalPropertiesEditorExportAsTextExtended", (args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        var operationDescr = this.contextElement.operationlayoutref.PickOperation(this.contextElement.x, this.contextElement.y);
+                        var clonned = operationDescr !== undefined ? operationDescr.operation.Clone() : undefined;
+                        commands.Execute("ExportLTLFormulaAsTextExtended", { operation: clonned });
                     }
                 });
 
@@ -291,6 +301,19 @@ module BMA {
                     if (this.contextElement !== undefined) {
                         commands.Execute("ImportLTLFormulaAsText", {
                             position: { x: this.contextElement.x, y: this.contextElement.y }
+                        });
+                    }
+                });
+
+                commands.On("TemporalPropertiesEditorEditAsText", (args: { top: number; left: number }) => {
+                    if (this.contextElement !== undefined) {
+                        this.editingOperation = that.contextElement.operationlayoutref;
+                        var opFormula = BMA.ModelHelper.ConvertOperationToString(this.contextElement.operationlayoutref.operation.Clone());
+                        tpEditorDriver.ShowFormulaEditor(opFormula);
+                        tpEditorDriver.GetNavigationDriver().SetCenter(this.editingOperation.Position.x, -this.editingOperation.Position.y);
+                        var bbox = this.editingOperation.BoundingBox;
+                        tpEditorDriver.GetSVGDriver().SetVisibleRect({
+                            x: bbox.x, y: bbox.y, width: bbox.width, height: bbox.height
                         });
                     }
                 });
@@ -434,6 +457,47 @@ module BMA {
 
                 tpEditorDriver.SetFitToViewCallback(() => {
                     that.FitToView();
+                });
+
+                tpEditorDriver.SetFormulasEditorCallback((formula) => {
+                    if (this.editingOperation !== undefined) {
+                        var result = BMA.ModelHelper.ConvertFormulaToOperation(formula, this.appModel.States, this.appModel.BioModel);
+                        var operation = result.operation;
+
+                        if (operation instanceof BMA.LTLOperations.Operation && !this.editingOperation.Operation.Equals(operation)) {
+                            var states = result.states;
+                            var statesChanged = BMA.ModelHelper.UpdateStatesWithModel(that.appModel.BioModel, that.appModel.Layout, states);
+                            if (statesChanged.isChanged) {
+                                states = statesChanged.states;
+                                BMA.LTLOperations.RefreshStatesInOperation(operation, states);
+                            }
+                            if (statesChanged.shouldNotify) window.Commands.Execute("InvalidStatesImported", {});
+                            var merged = BMA.ModelHelper.MergeStates(that.appModel.States, states);
+                            that.states = merged.states;
+                            tpEditorDriver.SetStates(merged.states);
+                            var idx;
+                            for (var i = 0; i < that.operations.length; i++) {
+                                if (that.operations[i].Operation.Equals(this.editingOperation.Operation)) {
+                                    idx = i;
+                                    break;
+                                }
+                            }
+                            if (idx !== undefined) {
+                                that.ClearOperationTag(that.operations[idx], true);
+                                that.operations[idx].IsVisible = false;
+                                that.operations.splice(idx, 1,
+                                    new BMA.LTLOperations.OperationLayout(that.driver.GetSVGRef(), operation.Clone(), this.editingOperation.Position));
+                                that.operations[idx].UpdateVersion();
+                                that.editingOperation = undefined;
+                                that.InitializeOperationTag(that.operations[idx]);
+                                that.OnOperationsChanged(true, true);
+                                that.FitToView();
+                                that.commands.Execute("KeyframesChanged", { states: merged.states });
+                            }
+                        }
+
+                        tpEditorDriver.HideFormulaEditor();
+                    }
                 });
 
                 this.InitializeDragndrop();
@@ -755,7 +819,7 @@ module BMA {
                     for (var i = 0; i < states.length; i++) {
                         var st = states[i];
                         var appst = this.states[i];
-                        if (st.Name !== appst.Name || st.GetFormula() !== appst.GetFormula() || st.Description !== appst.Description)
+                        if (st.Name !== appst.Name || BMA.LTLOperations.GetLTLServiceProcessingFormula(st) !== BMA.LTLOperations.GetLTLServiceProcessingFormula(appst) || st.Description !== appst.Description)
                             return true;
                     }
 
@@ -931,7 +995,7 @@ module BMA {
                     driver.SetStatus("processing", undefined);
                     domplot.updateLayout();
 
-                    var formula = operation.Operation.GetFormula();
+                    var formula = BMA.LTLOperations.GetLTLServiceProcessingFormula(operation.Operation);
 
                     var model;
                     try {
@@ -945,7 +1009,23 @@ module BMA {
                         operation.Tag.steps = driver.GetSteps();
                         domplot.updateLayout();
                         that.OnOperationsChanged(false);
+                        return;
+                    }
 
+                    var invalidVariables = BMA.ModelHelper.CheckVariablesInModel(that.appModel.BioModel);
+                    if (invalidVariables !== undefined && invalidVariables.length > 0) {
+                        var message = "Incorrect target functions for variables: ";
+                        message += invalidVariables[0].name;
+                        for (var i = 1; i < invalidVariables.length; i++) {
+                            message += ", " + invalidVariables[i].name;
+                        }
+                        driver.SetStatus("nottested", "Incorrect Model: " + message);
+                        operation.AnalysisStatus = "nottested";
+                        operation.Tag.data = undefined;
+                        operation.Tag.negdata = undefined;
+                        operation.Tag.steps = driver.GetSteps();
+                        domplot.updateLayout();
+                        that.OnOperationsChanged(false);
                         return;
                     }
 
@@ -970,12 +1050,7 @@ module BMA {
 
                             if (res.Ticks == null && res.Status !== 2) {
                                 that.log.LogLTLError();
-
-                                if (res.Error.indexOf("Operation is not completed in") > -1)
-                                    driver.SetStatus("nottested", "Timed out");
-                                else
-                                    driver.SetStatus("nottested", "Server error: " + res.Error);
-
+                                driver.SetStatus("nottested", "Server error: " + res.Error);
                                 operation.AnalysisStatus = "nottested";
                                 operation.Tag.data = undefined;
                                 operation.Tag.negdata = undefined;
@@ -1024,9 +1099,35 @@ module BMA {
 
                                 (<any>proofInput).Polarity = polarity;
 
-                                
+
                                 that.polarityService.Invoke(proofInput).done(function (polarityResults) {
-                                    that.ProcessLTLResults(res, polarityResults, operation, opVersion, () => {
+                                    that.ProcessLTLResults(res, polarityResults, operation, opVersion);
+                                }).fail(function (xhr, textStatus, errorThrown) {
+                                    if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
+                                        return;
+
+                                    that.log.LogLTLError();
+                                    if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
+                                        operation.AnalysisStatus = "partialfail";
+                                        driver.SetStatus(operation.AnalysisStatus);
+
+                                    } else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
+                                        operation.AnalysisStatus = "partialsuccess";
+                                        driver.SetStatus(operation.AnalysisStatus);
+
+                                    } else {
+                                        operation.AnalysisStatus = "nottested";
+                                        if (errorThrown === "Processing Timeout") {
+                                            driver.SetStatus("nottested", "Timed Out");
+                                        } else {
+                                            driver.SetStatus("nottested", "Server Error");
+                                        }
+                                    }
+                                    domplot.updateLayout();
+                                    that.OnOperationsChanged(false);
+
+                                    /*
+                                    if (errorThrown === "Processing Timeout") {
                                         //Starting long-running job
                                         driver.SetStatus("processinglra");
                                         var tempStatus = operation.AnalysisStatus.split(",");
@@ -1036,8 +1137,8 @@ module BMA {
                                             operation.AnalysisStatus = "processinglra," + tempStatus[1];
                                         }
 
-                                        that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
-                                            that.ProcessLTLResults(res, polarityResults2, operation, opVersion, undefined);
+                                        var lrapromise = that.lraPolarityService.Invoke(proofInput).done(function (polarityResults2) {
+                                            that.ProcessLTLResults(res, polarityResults2, operation, opVersion);
                                         }).fail(function (xhr, textStatus, errorThrown) {
                                             if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
                                                 return;
@@ -1054,27 +1155,41 @@ module BMA {
                                             }
                                             domplot.updateLayout();
                                             that.OnOperationsChanged(false);
+                                        }).progress(function (res) {
+                                            driver.SetMessage(res);
+                                            domplot.updateLayout();
+                                            that.OnOperationsChanged(false);
                                         });
-                                    });
-                                }).fail(function (xhr, textStatus, errorThrown) {
-                                    if (operation === undefined || operation.Version !== opVersion || operation.AnalysisStatus.indexOf("processing") < 0 || operation.IsVisible === false)
-                                        return;
-                                    that.log.LogLTLError();
-                                    if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
-                                        operation.AnalysisStatus = "partialfail";
-                                        driver.SetStatus(operation.AnalysisStatus);
 
-                                    } else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
-                                        operation.AnalysisStatus = "partialsuccess";
-                                        driver.SetStatus(operation.AnalysisStatus);
-
+                                        driver.SetOnCancelRequestCallback(() => {
+                                            var status = operation.AnalysisStatus.split(', ');
+                                            var parsedstatus = status[1] ? status[1] : "nottested";
+                                            driver.SetStatus(parsedstatus);
+                                            operation.AnalysisStatus = parsedstatus;
+                                            domplot.updateLayout();
+                                            that.OnOperationsChanged(false, true);
+                                            (<any>lrapromise).abort();
+                                        });
                                     } else {
-                                        operation.AnalysisStatus = "nottested";
-                                        driver.SetStatus("nottested", "Server Error");
 
+                                        that.log.LogLTLError();
+                                        if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
+                                            operation.AnalysisStatus = "partialfail";
+                                            driver.SetStatus(operation.AnalysisStatus);
+
+                                        } else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
+                                            operation.AnalysisStatus = "partialsuccess";
+                                            driver.SetStatus(operation.AnalysisStatus);
+
+                                        } else {
+                                            operation.AnalysisStatus = "nottested";
+                                            driver.SetStatus("nottested", "Server Error");
+
+                                        }
+                                        domplot.updateLayout();
+                                        that.OnOperationsChanged(false);
                                     }
-                                    domplot.updateLayout();
-                                    that.OnOperationsChanged(false);
+                                    */
                                 });
                             }
                         })
@@ -1083,7 +1198,11 @@ module BMA {
                                 return;
 
                             that.log.LogLTLError();
-                            driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
+                            if (errorThrown === "Processing Timeout") {
+                                driver.SetStatus("nottested", "Timed out");
+                            } else {
+                                driver.SetStatus("nottested", "Server Error" + (errorThrown !== undefined && errorThrown !== "" ? ": " + errorThrown : ""));
+                            }
                             operation.AnalysisStatus = "nottested";
                             operation.Tag.data = undefined;
                             operation.Tag.negdata = undefined;
@@ -1105,7 +1224,7 @@ module BMA {
                 }
             }
 
-            private ProcessLTLResults(simulationResult, polarityResults, operation, opVersion, timeoutcallback) {
+            private ProcessLTLResults(simulationResult, polarityResults, operation, opVersion) {
                 var that = this;
                 var driver = operation.Tag.driver;
                 var domplot: any = this.navigationDriver.GetNavigationSurface();
@@ -1120,23 +1239,19 @@ module BMA {
                     }
 
                     if (polarityResult === undefined || polarityResult.Ticks == null || polarityResult.Error) {
-                        if (timeoutcallback === undefined) {
-                            that.log.LogLTLError();
-                            if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
-                                operation.AnalysisStatus = "partialfail";
-                                driver.SetStatus(operation.AnalysisStatus);
-                            } else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
-                                operation.AnalysisStatus = "partialsuccess";
-                                driver.SetStatus(operation.AnalysisStatus);
-                            } else {
-                                operation.AnalysisStatus = "nottested";
-                                driver.SetStatus("nottested", "Server Error");
-                            }
-                            domplot.updateLayout();
-                            that.OnOperationsChanged(false);
+                        that.log.LogLTLError();
+                        if (operation.AnalysisStatus.indexOf("partialfail") > -1) {
+                            operation.AnalysisStatus = "partialfail";
+                            driver.SetStatus(operation.AnalysisStatus);
+                        } else if (operation.AnalysisStatus.indexOf("partialsuccess") > -1) {
+                            operation.AnalysisStatus = "partialsuccess";
+                            driver.SetStatus(operation.AnalysisStatus);
                         } else {
-                            timeoutcallback();
+                            operation.AnalysisStatus = "nottested";
+                            driver.SetStatus("nottested", "Server Error");
                         }
+                        domplot.updateLayout();
+                        that.OnOperationsChanged(false);
                     }
                     else {
                         var polarityStatus = polarityResult.Status;
@@ -1183,23 +1298,19 @@ module BMA {
                         negativeResult = polarityResults.Item2;
                     }
                     if (positiveResult === undefined || negativeResult === undefined || positiveResult.Ticks == null || negativeResult.Ticks == null) {
-                        if (timeoutcallback === undefined) {
-                            that.log.LogLTLError();
+                        that.log.LogLTLError();
 
-                            if (positiveResult.Error.indexOf("Operation is not completed in") > -1)
-                                driver.SetStatus("nottested", "Timed out");
-                            else
-                                driver.SetStatus("nottested", "Server error: " + positiveResult.Error);
+                        if (positiveResult.Error.indexOf("Operation is not completed in") > -1)
+                            driver.SetStatus("nottested", "Timed out");
+                        else
+                            driver.SetStatus("nottested", "Server error: " + positiveResult.Error);
 
-                            operation.AnalysisStatus = "nottested";
-                            operation.Tag.data = undefined;
-                            operation.Tag.negdata = undefined;
-                            operation.Tag.steps = driver.GetSteps();
-                            domplot.updateLayout();
-                            that.OnOperationsChanged(false);
-                        } else {
-                            timeoutcallback();
-                        }
+                        operation.AnalysisStatus = "nottested";
+                        operation.Tag.data = undefined;
+                        operation.Tag.negdata = undefined;
+                        operation.Tag.steps = driver.GetSteps();
+                        domplot.updateLayout();
+                        that.OnOperationsChanged(false);
                     } else {
                         var resultStatus = "";
                         operation.Tag.negdata = undefined;
@@ -1213,7 +1324,7 @@ module BMA {
                                 resultStatus = "success";
                             } else {
                                 //Something weird happened. Status shouldn't be unknown here
-                                                    
+
                             }
                         } else if (positiveResult.Status === 0/*False*/) {
                             if (negativeResult.Status === 1/*True*/) {

@@ -4,51 +4,16 @@ module Z
 /// Z3 related stuff.
 
 open Microsoft.Z3
+open VariableEncoding
 
 open Expr
 
-///////////////////////////////////////////////////////////////////////////////
-// Encode the target function in Z3
-///////////////////////////////////////////////////////////////////////////////
-
-let gensym =
-    let counter = ref 0
-    (fun s -> incr counter; s + ((string)!counter))
-
-// Naming convention for Z3 variables
-// The same functions appear in BioCheckZ3 and BioCheckPlusZ3
-let get_z3_int_var_at_time (node : QN.node) time = sprintf "v%d^%d" node.var time
-let make_z3_int_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkIntSort())
-
-
-let get_qn_var_from_z3_var (name : string) =
-    let parts = name.Split[|'^'|]
-    let id = (parts.[0]).Substring 1
-    ((int id) : QN.var)
-
-let get_qn_var_at_t_from_z3_var (name : string) =
-    let parts = name.Split[|'^'|]
-    let id = (parts.[0]).Substring 1
-    ((int id),(int parts.[1]) : QN.var * int)
-
-// The env encoding is different as it does not include the v before the %d^%d!
-let enc_for_env_qn_id_string_at_t (id : string) time =
-    (id +  "^" + ((string)time))
-
-let enc_for_env_qn_id_at_t (id : QN.var) time =
-    enc_for_env_qn_id_string_at_t ((string) id) time
-
-let dec_from_env_qn_id_at_t (name : string) = 
-    let parts = name.Split[|'^'|]
-    let id = parts.[0]
-    ((id),((int)parts.[1]))
-
-
 // Z.expr_to_z3 should be similar to Expr.eval_expr_int.
-let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
+let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) : BoolExpr list * RealExpr =
+    let asReal (e:Expr) : RealExpr = e :?> RealExpr
     let node_min,node_max = node.range
 
-    let rec tr expr =
+    let rec tr expr : BoolExpr list * RealExpr =
         match expr with
         | Var v ->
             // Use the node's original range
@@ -58,95 +23,95 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
             // Don't scale/displace constants.
             let scale,displacement =
                 if (v_min<>v_max) then
-                    let t = z.MkRealNumeral(node_max - node_min)
-                    let b = z.MkRealNumeral(v_max - v_min)
-                    (z.MkDiv(t,b) , z.MkRealNumeral( (node_min - v_min):int ))
-                else (z.MkRealNumeral 1, z.MkRealNumeral 0)
+                    let t = z.MkReal(node_max - node_min)
+                    let b = z.MkReal(v_max - v_min)
+                    (z.MkDiv(t,b) |> asReal, z.MkReal( (node_min - v_min):int ))
+                else (upcast z.MkReal 1, z.MkReal 0)
 
             let input_var =
-                let v_t = get_z3_int_var_at_time v_defn time
-                z.MkToReal(make_z3_int_var v_t z)
-            ([], z.MkAdd(z.MkMul(input_var,scale), displacement))
-        | Const c -> ([],z.MkRealNumeral c)
+                let v_t = enc_z3_int_var_at_time v_defn time
+                z.MkInt2Real(make_z3_int_var v_t z)
+            ([], z.MkAdd(z.MkMul(input_var,scale), displacement) |> asReal)
+        | Const c -> ([],upcast z.MkReal c)
         | Plus(e1, e2) ->
             let (a1,z1) = tr e1
             let (a2,z2) = tr e2
-            (a1@a2, z.MkAdd(z1,z2))
+            (a1@a2, z.MkAdd(z1,z2) |> asReal)
         | Minus(e1, e2) ->
             let (a1,z1) = tr e1
             let (a2,z2) = tr e2
-            (a1@a2, z.MkSub(z1,z2))
+            (a1@a2, z.MkSub(z1,z2) |> asReal)
         | Times(e1, e2) ->
             let (a1,z1) = tr e1
             let (a2,z2) = tr e2
-            (a1@a2, z.MkMul(z1,z2))
+            (a1@a2, z.MkMul(z1,z2) |> asReal)
         | Div(e1, e2) ->
             let (a1,z1) = tr e1
             let (a2,z2) = tr e2
-            (a1@a2, z.MkDiv(z1,z2))
+            (a1@a2, z.MkDiv(z1,z2) |> asReal)
         | Max(e1, e2) ->
             let (a1,z1) = tr e1
             let (a2,z2) = tr e2
             let is_gt = z.MkGt(z1, z2)
-            (a1@a2, z.MkIte(is_gt, z1, z2))
+            (a1@a2, z.MkITE(is_gt, z1, z2) |> asReal)
         | Min(e1, e2) ->
             let (a1,z1) = tr e1
             let (a2,z2) = tr e2
             let is_lt = z.MkLt(z1, z2)
-            (a1@a2, z.MkIte(is_lt, z1, z2))
+            (a1@a2, z.MkITE(is_lt, z1, z2) |> asReal)
         // x:Real, m,n:Int. If x-1 < m <= x <= n < x+1. Then floor(x)=m and ceil(x)=n.
 (* Nir's code:
         | Ceil e1 ->
             let z1 = tr e1
-            let floor = z.MkToReal( z.MkToInt(z1))
+            let floor = z.MkToReal( z.MkReal2Int(z1))
             let is_int = z.MkEq (floor, z1)
-            let floor_plus_one = z.MkAdd(floor, z.MkRealNumeral(1))
+            let floor_plus_one = z.MkAdd(floor, z.MkReal(1))
             let ceil_assert = z.MkTrue
             z.MkIte(is_int,floor,floor_plus_one)
         | Floor e1 ->
             let z1 = tr e1
             let floor_assert = z.MkTrue
-            z.MkToReal (z.MkToInt z1)
+            z.MkToReal (z.MkReal2Int z1)
 *)
         | Ceil e1 -> // TODO: CHECK WITH SAMIN
             let (a1,x) = tr e1
-            let x' = z.MkAdd(x, z.MkRealNumeral(1))
+            let x' = z.MkAdd(x, z.MkReal(1))
             let n =
                 let n = gensym "ceil"
-                z.MkToReal(make_z3_int_var n z)
+                z.MkInt2Real(make_z3_int_var n z)
             let x_leq_n = z.MkLe(x, n)
             let n_lt_x' = z.MkLt(n, x')
             let ceil_assert = z.MkAnd([|x_leq_n;n_lt_x'|])
             (ceil_assert::a1, n)
         | Floor e1 -> // TODO: CHECK WITH SAMIN
             let (a1,x) = tr e1
-            let x' = z.MkSub(x, z.MkRealNumeral(1))
+            let x' = z.MkSub(x, z.MkReal(1))
             let m =
                 let m = gensym "floor"
-                z.MkToReal(make_z3_int_var m z)
+                z.MkInt2Real(make_z3_int_var m z)
             let x'_lt_m = z.MkLt(x', m)
             let m_le_x = z.MkLe(m, x)
             let floor_assert = z.MkAnd([|x'_lt_m; m_le_x|])
             (floor_assert::a1, m)
         | Abs e1 ->
             let (a1,x) = tr e1
-            let zero = z.MkRealNumeral(0)
+            let zero = z.MkReal(0)
             let x_neg = z.MkSub(zero,x)
 //            let l = 
 //                let l = gensym "abs"
 //                z.MkToReal(z.MkConst(z.MkSymbol l, z.MkRealSort() ))
-//            let zero_lt_l = z.MkLt(z.MkRealNumeral(0),l)
+//            let zero_lt_l = z.MkLt(z.MkReal(0),l)
 //            let both = z.MkOr([|x;x'|]) // Problem -> Or applied to reals
 //            let abs_assert = z.MkAnd([|zero_lt_l;both|])
             let x_gt_zero = z.MkGt(x,zero)
             let x_lt_zero = z.MkLt(x,zero)
-            let abs = z.MkIte(x_gt_zero,x,x_neg)
+            let abs = z.MkITE(x_gt_zero,x,x_neg)
 
 
-            let a' = z.MkToReal(make_z3_int_var (gensym "absolute") z)
+            let a' = z.MkInt2Real(make_z3_int_var (gensym "absolute") z)
             let a_eq_abs = z.MkEq(a',abs)
 //
-//            let zero_lt_l = z.MkLt(z.MkRealNumeral(0),l)
+//            let zero_lt_l = z.MkLt(z.MkReal(0),l)
 //            let both = z.MkSetAdd(x,x')
 //            let abs_assert = z.MkAnd([|zero_lt_l;both|])
             (a_eq_abs::a1, a')//broken- need to manipulate a1? BH
@@ -156,13 +121,13 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
                                        | None -> Some(tr e1)
                                        | Some (a0,z0) ->
                                                 let (a1,z1) = tr e1
-                                                Some(a0@a1, z.MkAdd(z0, z1)))
+                                                Some(a0@a1, z.MkAdd(z0, z1) |> asReal))
                         None
                         es
-            let cnt = z.MkRealNumeral (List.length es)
+            let cnt = z.MkReal (List.length es)
             match sum with
-              | None -> ([], z.MkRealNumeral 0)
-              | Some (a,s) -> (a, z.MkDiv(s, cnt))
+              | None -> ([], upcast z.MkReal 0)
+              | Some (a,s) -> (a, z.MkDiv(s, cnt) |> asReal)
 
 
         | Sum es ->
@@ -171,16 +136,16 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
                                        | None -> Some(tr e1)
                                        | Some (a0,z0) ->
                                                     let (a1,z1) = tr e1
-                                                    Some(a0@a1, z.MkAdd(z0, z1)))
+                                                    Some(a0@a1, z.MkAdd(z0, z1) |> asReal))
                         None
                         es
             match sum with
-              | None -> ([],z.MkRealNumeral 0)
+              | None -> ([],upcast z.MkReal 0)
               | Some (a,s) -> (a,s)
 
     // SI: Garvit's rounding code (see eval_expr too). 
     let (extra_asserts, ze) = tr expr
-    (extra_asserts, z.MkAdd(ze, z.MkDiv(z.MkRealNumeral(1), z.MkRealNumeral(2))))
+    (extra_asserts, z.MkAdd(ze, z.MkDiv(z.MkReal(1), z.MkReal(2))) |> asReal)
 
 ///////////////////////////////////////////////////////////////////////////////
 // unroll_qn
@@ -189,94 +154,69 @@ let expr_to_z3 (qn:QN.node list) (node:QN.node) expr time (z : Context) =
 //assert  (v_t+1 = (v_t + 1) /\ T(v_t) > v_t) \/
 //        (v_t+1 = (v_t)     /\ T(v_t) = v_t) \/
 //        (v_t+1 = (v_t - 1) /\ T(v_t) < v_t)
-let assert_target_function qn (node: QN.node)  bounds start_time end_time (z : Context) =
+let assert_target_function qn (node: QN.node)  bounds start_time end_time (z : Context) (s : Solver) =
     // SI: should be able to use [get_z3_int_var_at_time node] for this too, like we do for next_state_id. 
-    let current_state_id = get_z3_int_var_at_time node start_time
+    let current_state_id = enc_z3_int_var_at_time node start_time
     let current_state = make_z3_int_var current_state_id z
 
-    let next_state_id = get_z3_int_var_at_time node end_time
+    let next_state_id = enc_z3_int_var_at_time node end_time
     let next_state = make_z3_int_var next_state_id z
 
     let (extra_asserts,z_of_f) = expr_to_z3 qn node node.f start_time z
-    let T_applied = z.MkToInt(z_of_f)
+    let T_applied = z.MkReal2Int(z_of_f)
 
     let (lower: int, upper: int) = Map.find node.var bounds
 
-    let up = z.MkEq(next_state, z.MkAdd(current_state, z.MkIntNumeral 1))
+    let up = z.MkEq(next_state, z.MkAdd(current_state, z.MkInt 1))
     let up = z.MkAnd(up, z.MkGt(T_applied, current_state))
-    let up = z.MkAnd(up, z.MkGt(z.MkIntNumeral upper, current_state))
+    let up = z.MkAnd(up, z.MkGt(z.MkInt upper, current_state))
 
     let same = z.MkEq(next_state, current_state)
     let tmpsame = z.MkEq(T_applied, current_state)
-    let tmpsame = z.MkOr(tmpsame, z.MkAnd(z.MkGt(T_applied, current_state), z.MkEq(z.MkIntNumeral upper, current_state)))
-    let tmpsame = z.MkOr(tmpsame, z.MkAnd(z.MkLt(T_applied, current_state), z.MkEq(z.MkIntNumeral lower, current_state)))
+    let tmpsame = z.MkOr(tmpsame, z.MkAnd(z.MkGt(T_applied, current_state), z.MkEq(z.MkInt upper, current_state)))
+    let tmpsame = z.MkOr(tmpsame, z.MkAnd(z.MkLt(T_applied, current_state), z.MkEq(z.MkInt lower, current_state)))
     let same = z.MkAnd(same, tmpsame)
 
-    let dn = z.MkEq(next_state, z.MkSub(current_state, z.MkIntNumeral 1))
+    let dn = z.MkEq(next_state, z.MkSub(current_state, z.MkInt 1))
     let dn = z.MkAnd(dn, z.MkLt(T_applied, current_state))
-    let dn = z.MkAnd(dn, z.MkLt(z.MkIntNumeral lower, current_state))
+    let dn = z.MkAnd(dn, z.MkLt(z.MkInt lower, current_state))
 
     let cnstr = z.MkOr([|up;same;dn|])
 
     List.iter
-        (fun c -> Log.log_debug ("T_" + (string)node.var + "_xtra_assrt: " + z.ToString c))
+        (fun c -> Log.log_debug ("T_" + (string)node.var + "_xtra_assrt: " + c.ToString()))
         extra_asserts
-    z.AssertCnstr (z.MkAnd((Array.ofList extra_asserts)))
+    s.Assert (z.MkAnd((Array.ofList extra_asserts)))
 
-    Log.log_debug ("T_" + (string)node.var + ":" + z.ToString cnstr)
-    z.AssertCnstr cnstr
+    Log.log_debug ("T_" + (string)node.var + ":" + cnstr.ToString())
+    s.Assert cnstr
 
 // assert  lower <= v_t <= upper
-let assert_bound (node : QN.node) ((lower,upper) : (int*int)) time (z : Context) =
-    let var_name = get_z3_int_var_at_time node time
+let assert_bound (node : QN.node) ((lower,upper) : (int*int)) time (z : Context) (s : Solver) =
+    let var_name = enc_z3_int_var_at_time node time
     let v = make_z3_int_var var_name z
 
     let simplify =  id // z.Simplify
-    let lower_bound = simplify (z.MkGe(v, z.MkIntNumeral lower))
-    let upper_bound = simplify (z.MkLe(v, z.MkIntNumeral upper))
+    let lower_bound = simplify (z.MkGe(v, z.MkInt lower))
+    let upper_bound = simplify (z.MkLe(v, z.MkInt upper))
 
     Log.log_debug ("// " + var_name + "_lower_bound >= " + (string)lower)
-    Log.log_debug (var_name + "_lower_bound:" + z.ToString lower_bound)
-    z.AssertCnstr lower_bound
+    Log.log_debug (var_name + "_lower_bound:" + lower_bound.ToString() )
+    s.Assert lower_bound
 
     Log.log_debug ("// " + var_name + "_upper_bound <=" + (string)upper)
-    Log.log_debug (var_name + "_upper_bound:" + z.ToString upper_bound)
-    z.AssertCnstr upper_bound
+    Log.log_debug (var_name + "_upper_bound:" + upper_bound.ToString())
+    s.Assert upper_bound
 
-//let get_z3_int_var_at_time (node : QN.node) time = sprintf "v%d^%d" node.var time
-//let make_z3_int_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkIntSort())
-let specify_state (state:Map<int,int>) (z:Context) time =
-    let state = Map.toArray state
-    //for (variableID,value) in state do
-    let t = Array.map (fun (variableID,(value:int)) ->  let var_name = sprintf "v%d^%d" variableID time
-                                                        let var_state = z.MkConst(z.MkSymbol(var_name),z.MkIntSort())
-                                                        let specify = id (z.MkEq(var_state, z.MkIntNumeral value))
-                                                        specify) state
-    z.MkAnd(t)
-
-let any_state states z time =
-    List.toArray states
-    |> Array.map (fun state -> specify_state state z time)
-    |> (fun t -> z.MkOr(t))
-
-let none_of_these_states states (z:Context) time =
-    z.MkNot(any_state states z time)
-
-let assert_any_one_of_these_states states (z:Context) time = 
-    z.AssertCnstr (any_state states z time)
-
-let assert_none_of_these_states states (z:Context) time = 
-    z.AssertCnstr (none_of_these_states states z time)
-
-let unroll_qn qn bounds start_time end_time z =
+let unroll_qn qn bounds start_time end_time z s =
     // Assert the target functions...
     for node in qn do
-        assert_target_function qn node  bounds start_time end_time z
+        assert_target_function qn node  bounds start_time end_time z s
 
     // Now assert the bounds...
     for node in qn do
-        assert_bound node (Map.find node.var bounds) start_time z
-        assert_bound node (Map.find node.var bounds) end_time z
+        assert_bound node (Map.find node.var bounds) start_time z s
+        assert_bound node (Map.find node.var bounds) end_time z s
 
 
 
@@ -284,26 +224,13 @@ let unroll_qn qn bounds start_time end_time z =
 // model to fixpoint
 ///////////////////////////////////////////////////////////////////////////////
 
-// Return [model] constants as a Map<string,int>.
-let model_to_fixpoint (model : Model) =
-    let mutable fixpoint = Map.empty
-
-    for var in model.GetModelConstants() do
-        let lhs = var.GetDeclName()
-        let rhs = model.Eval(var, Array.empty).GetNumeralString()
-        let value = int rhs
-
-        fixpoint <- Map.add lhs value fixpoint
-
-    fixpoint
-
 // Given the naming convention for Z3 vars, use [get_qn_var_at_t_from_z3_var]
 // to filter out only valid QN vars. 
 let fixpoint_to_env (fixpoint : Map<string, int>) =
     Map.fold
         (fun newMap name value ->
             try 
-                let (id,t) = get_qn_var_at_t_from_z3_var name
+                let (id,t) = dec_qn_var_at_t_from_z3_var name
                 Map.add (enc_for_env_qn_id_at_t id t) value newMap
             with
                 | exn -> newMap )
@@ -403,140 +330,37 @@ let extract_cycle_from_model (env : Map<string, int>) =
 // fixpoint
 ///////////////////////////////////////////////////////////////////////////////
 
+let convertMapToInt map =
+    map |> Map.map(fun _ -> System.Int32.Parse)
+
 let find_fixpoint (network : QN.node list) range =
-    let cfg = new Config()
-    cfg.SetParamValue("MODEL", "true")
-    let ctx = new Context(cfg)
-
     // time "0" is just an arbitrary time here.
-    unroll_qn network range 0 0 ctx
-
-    let model = ref null
-    let sat = ctx.CheckAndGetModel (model)
-
-    // Did we find a fixpoint?
-    let res = if sat = LBool.True then
-                    let env = fixpoint_to_env (model_to_fixpoint !model)
-                    Some(env)
-              else
-                    None
-
-    if (!model) <> null then (!model).Dispose()
-    ctx.Dispose()
-    cfg.Dispose()
-
-    res
+    Z3Util.find_fixpoint (unroll_qn network range 0 0)
+    |> Option.map convertMapToInt
+    |> Option.map fixpoint_to_env
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // bifurcation
 ///////////////////////////////////////////////////////////////////////////////
 
-let assert_not_model (model : Model) (z : Context) =
-    let mutable not_model = z.MkFalse()
-
-    for decl in model.GetModelConstants() do
-        let lhs = z.MkConst decl
-        let rhs = model.Eval(lhs)
-        let new_val = z.MkNot (z.MkEq(lhs, rhs))
-        not_model <- z.MkOr(not_model, new_val)
-
-    Log.log_debug ("not_model: " + z.ToString not_model)
-    z.AssertCnstr not_model
-
 let find_bifurcation (network : QN.node list) range =
-    let cfg = new Config()
-    cfg.SetParamValue("MODEL", "true")
-    let ctx = new Context(cfg)
-
-    // time "0" is just an arbitrary time here.
-    unroll_qn network range 0 0 ctx
-
-    let model = ref null
-    let sat = ctx.CheckAndGetModel (model)
-
-    // Did we find a fixpoint?
-    if sat = LBool.True then
-        assert_not_model !model ctx
-    else
-        Log.log_debug "No initial fixpoint when looking for bifurcation"
-
-    let model2 = ref null
-    let sat2 = ctx.CheckAndGetModel(model2)
-
-    let res = if sat2 = LBool.True then
-                let env1 = fixpoint_to_env (model_to_fixpoint !model) 
-                let env2 = fixpoint_to_env (model_to_fixpoint !model2)
-                Some((env1, env2))
-              else
-                None
-
-    if (!model) <> null then (!model).Dispose()
-    if (!model2) <> null then (!model2).Dispose()
-    ctx.Dispose()
-    cfg.Dispose()
-
-    res
+    Z3Util.find_bifurcation (unroll_qn network range 0 0) 
+    |> Option.map(fun (fix1, fix2) -> 
+        (fix1 |> convertMapToInt |> fixpoint_to_env), (fix2 |> convertMapToInt |> fixpoint_to_env))
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // cycle
 ///////////////////////////////////////////////////////////////////////////////
 
-let assert_states_equal (qn : QN.node list) start_time end_time (ctx : Context) =
-    let mutable equal_condition = ctx.MkTrue()
-
-    for node in qn do
-        let start_name = get_z3_int_var_at_time node start_time
-        let end_name = get_z3_int_var_at_time node end_time
-        let start_var = make_z3_int_var start_name ctx
-        let end_var = make_z3_int_var end_name ctx
-        let eq = ctx.MkEq(start_var, end_var)
-        equal_condition <- ctx.MkAnd(equal_condition, eq)
-
-    equal_condition
-
 let find_cycle (network: QN.node list) bounds length =
-    let cfg = new Config()
-    cfg.SetParamValue("MODEL", "true")
-    let ctx = new Context(cfg)
-
-    Log.log_debug ("Searching for a cycle of length " + (string)length)
-
-    // Unroll the model k-times
-    for time in [0..length] do
-        unroll_qn network bounds  time (time+1) ctx
-
-    // Assert that we get a repetition somewhere...
-    let mutable loop_condition = ctx.MkFalse()
-    for time in [2..length] do
-        let k_loop = assert_states_equal network 0 time ctx
-        loop_condition <- ctx.MkOr(loop_condition, k_loop)
-
-    ctx.AssertCnstr loop_condition
-
-    // Assert that the start of the loop (at an arbitrary time 0 and 1) is _not_ a fixpoint
-    let not_fixpoint = ctx.MkNot (assert_states_equal network 0 1 ctx)
-    ctx.AssertCnstr not_fixpoint
-
-    // Now go find that cycle!
-    let model = ref null
-
-    let sat = ctx.CheckAndGetModel (model)
-
-    // Did we find a loop?
-    let res =
-        if sat = LBool.True then
-            let env = fixpoint_to_env (model_to_fixpoint !model)
-            Some(env)
-        else
-                 None
-
-    if (!model) <> null then (!model).Dispose()
-    ctx.Dispose()
-    cfg.Dispose()
-
-    res
+    Z3Util.find_cycle
+        length
+        (unroll_qn network bounds)
+        (Z3Util.condition_states_equal network)
+    |> Option.map convertMapToInt
+    |> Option.map fixpoint_to_env
 
 
 let find_cycle_steps network diameter bounds =
@@ -668,12 +492,16 @@ let find_frustrated_endpoints network bounds initiator =
     cfg.Dispose()
     endComponent
 
+<<<<<<< HEAD
 let find_frustrated_fixpoints network bounds =
     find_frustrated_endpoints network bounds initiate_paths_to_fixpoint
 
 let find_frustrated_cycles network bounds states =
     find_frustrated_endpoints network bounds (initiate_paths_to_cycle states)
 // Finds a cycle and returns it. I f no cycle is found returns None
+=======
+// Finds a cycle and returns it. If no cycle is found returns None
+>>>>>>> 132bea3eeeccc85dbe1a59bfaac4bc71146fdeac
 // 
 // The search for cycles proceeds as follows:
 // For increasing lengths, make sure that there is a path of this length
@@ -687,22 +515,28 @@ let find_frustrated_cycles network bounds states =
 // Postcondition:
 // The returned cycle has the last state and one of the states in the first
 // half of the path the same!
+<<<<<<< HEAD
 let find_cycle_steps_optimized network bounds synchronous = 
     let mutable cycle = None
     let rec find_cycle_of_length length (ctx : Context) =      
         let model = ref null
+=======
+let find_cycle_steps_optimized network bounds = 
+>>>>>>> 132bea3eeeccc85dbe1a59bfaac4bc71146fdeac
 
-        // add to ctx the constratints to increase the path to 0..length:
+    let rec find_cycle_of_length length (ctx : Context) (s : Solver) =      
+        // add to solver the constraints to increase the path to 0..length:
 
         // Unroll the model (length/2)-times
         for time = (length/2) to (length-1) do
-            unroll_qn network bounds (time) (time+1) ctx
+            unroll_qn network bounds (time) (time+1) ctx s
 
         // Check that the last step is different than the one before it (fix point would come up here)
-        let last_identical = assert_states_equal network (length-1) length ctx
+        let last_identical = Z3Util.condition_states_equal network (length-1) length ctx
         let last_not_identical = ctx.MkNot(last_identical)
-        ctx.AssertCnstr last_not_identical
+        s.Assert last_not_identical
 
+<<<<<<< HEAD
         let sat = ctx.CheckAndGetModel (model)
         if (!model) <> null then (!model).Dispose()
 
@@ -712,29 +546,38 @@ let find_cycle_steps_optimized network bounds synchronous =
                 None
         // A path of the requested length exists, Check for a synchronous cycle in the range: length/2..length  
         | (LBool.True,true) -> 
+=======
+        match s.Check() with
+        // A path of the requested length does not exists in the model, may stop the earsch now
+        | Status.UNSATISFIABLE ->                 
+            None
+        // A path of the requested length exists, Check for a cycle in the range: length/2..length  
+        | Status.SATISFIABLE -> 
+>>>>>>> 132bea3eeeccc85dbe1a59bfaac4bc71146fdeac
 
-            ctx.Push()
+            s.Push()
            
             // Assert that we get a repetition (cycle) in the range : length/2..length  
             let mutable loop_condition = ctx.MkFalse()
             for time in [0..((length/2)-1)] do 
-                let k_loop = assert_states_equal network time length ctx
+                let k_loop = Z3Util.condition_states_equal network time length ctx
                 loop_condition <- ctx.MkOr(loop_condition, k_loop)
                 
-            ctx.AssertCnstr loop_condition
+            s.Assert loop_condition
 
-            // Now go find that cycle
-            let model = ref null
-            let sat = ctx.CheckAndGetModel (model)
-            ctx.Pop()
+            // Now go find that cycle            
+            let sat = s.Check()
+            s.Pop()
         
             match sat with
-            | LBool.False -> 
-                find_cycle_of_length (length*2) ctx
-            | LBool.True -> 
+            | Status.UNSATISFIABLE -> 
+                find_cycle_of_length (length*2) ctx s
+            | Status.SATISFIABLE -> 
+                use model = s.Model
                 // update cycle with the information from model
-                let env = fixpoint_to_env (model_to_fixpoint !model)
+                let env = Z3Util.model_to_fixpoint model |> convertMapToInt |> fixpoint_to_env
                 let smallenv = extract_cycle_from_model env
+<<<<<<< HEAD
                 let res = Some(smallenv)
                 if (!model) <> null then (!model).Dispose()
                 res
@@ -806,19 +649,21 @@ let find_cycle_steps_optimized network bounds synchronous =
             asyncLoop ctx []
         
         | (LBool.Undef,_) -> None
+=======
+                Some smallenv
+        | Status.UNKNOWN -> None
+>>>>>>> 132bea3eeeccc85dbe1a59bfaac4bc71146fdeac
      
-    let cfg = new Config()
-    cfg.SetParamValue("MODEL", "true")
-    let ctx = new Context(cfg)
+    let cfg = System.Collections.Generic.Dictionary()
+    cfg.Add("MODEL", "true")
+    
+    use ctx = new Context(cfg)
+    use s = ctx.MkSolver()
 
     // Prepare the first step - cannot contain a loop yet, and a fix point will be found via states 0==2
     let length=1    
-    unroll_qn network bounds 0 length ctx   
-    cycle <- find_cycle_of_length (length+1) ctx
+    
+    unroll_qn network bounds 0 length ctx s 
 
-    ctx.Dispose()
-    cfg.Dispose()
-
+    let cycle = find_cycle_of_length (length+1) ctx s
     cycle
-
-

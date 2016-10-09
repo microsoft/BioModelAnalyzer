@@ -88,6 +88,7 @@ declare var InteractiveDataDisplay: any;
 
             var svgPlot = that._plot.get(svgPlotDiv[0]);
             this._svgPlot = svgPlot;
+            //this._svgPlot.IsAutomaticSizeUpdate = false;
 
             var lightSvgPlot = that._plot.get(svgPlotDiv2[0]);
             this._lightSvgPlot = lightSvgPlot;

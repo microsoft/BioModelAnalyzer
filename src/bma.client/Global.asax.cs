@@ -2,6 +2,7 @@
 using Microsoft.Practices.Unity;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,6 +19,58 @@ using System.Xml.Linq;
 
 namespace bma.client
 {
+    public class VersionController : ApiController
+    {
+        // POST api/Version
+        public JObject Get()
+        {
+            JObject version;
+
+            //Client version
+            try { 
+                version = JObject.Parse(File.ReadAllText(HttpContext.Current.Server.MapPath("/version.txt")));
+            } 
+            catch
+            {
+                version = new JObject();
+                version.Add("major", 0);
+                version.Add("minor", 0);
+                version.Add("build", 0);
+            }
+
+            //Math service URL
+            try { 
+                version.Add("computeServiceUrl", RoleEnvironment.GetConfigurationSettingValue("ComputeServiceUrl"));
+            }
+            catch
+            {
+                version.Add("computeServiceUrl", "");
+            }
+
+            //OneDrive App ID
+            try
+            {
+                version.Add("onedriveappid", RoleEnvironment.GetConfigurationSettingValue("OneDriveAppId"));
+            }
+            catch
+            {
+                version.Add("onedriveappid", "");
+            }
+
+            //OneDrive redirect URL
+            try
+            {
+                version.Add("onedriveredirecturl", RoleEnvironment.GetConfigurationSettingValue("OneDriveRedirectUrl"));
+            }
+            catch
+            {
+                version.Add("onedriveredirecturl", "");
+            }
+
+            return version;
+        }
+    }
+
     public class Global : System.Web.HttpApplication
     {
         protected void Application_Start(object sender, EventArgs e)

@@ -6,14 +6,14 @@
     $.widget("BMA.containernameeditor", {
         options: {
             name: "name",
-            oneditorclosing: undefined
+            oneditorclosing: undefined,
+            placeholder: "Container Name"
         },
         
         _create: function () {
             var that = this;
             var closediv = $('<div></div>').addClass('close-icon').appendTo(that.element);
-            var closing = $('<img src="../../images/close.png">').appendTo(closediv);
-            closing.bind("click", function () {
+            closediv.bind("click", function () {
                 that.element.hide();
                 if (that.options.oneditorclosing !== undefined) {
                     that.options.oneditorclosing();
@@ -26,7 +26,7 @@
             this.name = $('<input>')
                 .attr("type", "text")
                 .attr("size", 15)
-                .attr("placeholder", "Container Name")
+                .attr("placeholder", this.options.placeholder)
                 .appendTo(that.element);
             this.name.bind("input change", function () {
                 that.options.name = that.name.val();
@@ -40,6 +40,8 @@
             if (key === "name") {
                 this.options.name = value;
                 this.name.val(value);
+            } else if (key === "placeholder") {
+                this.name.attr("placeholder", value);
             }
 
             $.Widget.prototype._setOption.apply(this, arguments);

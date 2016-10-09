@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Lineage</title>
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="app.js"></script>
+</head>
+<body>
+    <h1>Lineage</h1>
+
+    <!-- data input -->
+    <div id="data_input">
+        <textarea id="pgm" , rows="10" cols="80" placeholder="Type a program or upload it ..."></textarea><br/>
+        <div id="browse_and_upload">
+            <input type="file" id="file_chooser" size="50">
+        </div>
+    </div>
+
+    <!-- control input -->
+    <div id="ctrl_input" style="display:none;">
+
+        <!--function: simulate-->
+        <label for="simulate_label">Simulate</label>
+        <input type="radio" name="function" id="simulate" value="simulate" />
+        <div id="ctrl_simulate_subctrl" style="display:none;">
+            <select id="simulation_select" onchange='addRadioButtons("simulation_select","simulation_radio_list","name_of_radio_button");'></select>
+            <div id="simulation_radio_list" style="display:none;"></div>
+        </div>
+
+        <br id="simulate_br" style="display:block;" /> 
+        <!--function: overlap -->
+        <label for="overlap">Overlap</label>
+        <input type="radio" name="function" id="overlap" value="overlap" />
+
+        <br />
+        <!--function: overlap-raw -->
+        <label for="overlap_raw">OverlapRaw</label>
+        <input type="radio" name="function" id="overlap_raw" value="overlap_raw" />
+
+        <br />
+        <!--function: existence -->
+        <label for="existence">Existence</label>
+        <input type="radio" name="function" id="existence" value="existence" />
+
+        <br />
+        <!--function: abnormal-simulate -->
+        <label for="absim_label">AbnormalSimulate</label>
+        <input type="radio" name="function" id="abnormal_simulate" value="abnormal_simulate" />
+        <div id="ctrl_abnrml_simulate_subctrl" style="display:none;">
+            some dummy text 
+<!--            <label for="sperm_left">SPERM LEFT</label>
+             <input type="radio" name="a_s_condition" id="sperm_left" value="SPERM_LEFT" />
+            <label for="sperm_right">SPERM RIGHT</label>
+            <input type="radio" name="a_s_condition" id="sperm_rigth" value="SPERM_RIGHT" /> --> 
+        </div>
+
+    </div>
+
+    <!-- run -->
+    <div id="run_button_area" style="display:none;">
+        <button id="run" onclick="run_clicked()">Run</button><br />
+    </div>
+
+
+    <!-- output -->
+    <div id="output_area" style="display:none;">
+        <textarea id="output" rows="10" cols="80" readonly></textarea>
+        <br />
+        <textarea id="log" rows="10" cols="80" readonly></textarea>
+    </div>
+
+    <!-- tick tock -->
+    <div id="content"></div>
+</body>
+</html>

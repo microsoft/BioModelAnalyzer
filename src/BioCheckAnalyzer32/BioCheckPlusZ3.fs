@@ -2,40 +2,19 @@
 
 (* 
 
-    New Z3 manipulation functions requird for BioCheckPlus
+    New Z3 manipulation functions required for BioCheckPlus
 
 *)
 
 module BioCheckPlusZ3
 
 open Microsoft.Z3
+open VariableEncoding
 
 open Expr
 open QN
 
 type VariableRange = Map<QN.var, int list>
-
-// Naming convension for Z3 variables
-// Some of these functions appear also in Z.fs and BioCheckZ3.fs
-let get_z3_int_var_at_time (node : QN.node) time = sprintf "v%d^%d" node.var time
-
-let get_z3_bool_var_at_time_in_val_from_var variable time value = sprintf "v%d^%d^%d" variable time value
-
-let get_z3_bool_var_at_time_in_val (node : QN.node) time value =  get_z3_bool_var_at_time_in_val_from_var node.var time value
-
-// let get_z3_bool_var_trans_of_var_at_time (node : QN.node) time = sprintf "tv%d^%d" node.var time
-
-let get_z3_bool_var_formula_in_location_at_time (location : int list) time =
-    let f_with_location = List.fold (fun name value -> sprintf "%s^%d" name value) "f" location
-    sprintf "%s^^%d" f_with_location time
-
-let get_z3_bool_var_loop_at_time time = sprintf "l^%d" time
-
-let get_z3_bool_var_trans_of_var_from_time_to_time_in_val (node : QN.node) from_time to_time value = sprintf "tv%d^%d^%d^%d" node.var from_time to_time value
-
-let make_z3_bool_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkBoolSort())
-let make_z3_int_var (name : string) (z : Context) = z.MkConst(z.MkSymbol(name),z.MkIntSort())
-
 
 // A variable ranging over values i_1,...,i_n can be encoded by n-1 Boolean variables with
 // unary encoding.
@@ -100,7 +79,7 @@ let rec expr_to_real (qn : QN.node list) (node : QN.node) expr var_values =
 
 // Allocate Bollean variables per all the values except the last one
 let allocate_bool_vars (node : QN.node) (list_of_poss_values : int list) (time :int) (z : Context) =
-    let make_var_name item = get_z3_bool_var_at_time_in_val node time item
+    let make_var_name item = enc_z3_bool_var_at_time_in_val node time item
     let allocate_z3_bool_var item =  make_z3_bool_var (make_var_name(item)) z
     if list_of_poss_values.IsEmpty then 
         []
@@ -114,31 +93,32 @@ let allocate_loop_vars (z : Context) length =
         []
     else
         let times  = [ 0 .. length-2 ]
-        let allocate_z3_bool_var item =  make_z3_bool_var (get_z3_bool_var_loop_at_time(item)) z
+        let allocate_z3_bool_var item =  make_z3_bool_var (enc_z3_bool_var_loop_at_time(item)) z
         List.map allocate_z3_bool_var times
         
 
-let assert_values_for_bool_vars list_of_bool_vars list_of_bool_vals (z : Context) = 
+let assert_values_for_bool_vars list_of_bool_vars list_of_bool_vals (z : Context) (s : Solver) = 
     if ((List.length list_of_bool_vars) < 2) then
         ()
     else
         let create_assignment variable truth_val =
             if truth_val then
-                z.AssertCnstr(variable)
+                s.Assert [|variable|]
             else 
-                z.AssertCnstr(z.MkNot(variable))
-        ignore(List.iter2 create_assignment list_of_bool_vars list_of_bool_vals)
+                s.Assert(z.MkNot(variable))
+        List.iter2 create_assignment list_of_bool_vars list_of_bool_vals
 
 // For every pair of Boolean variables in the list add the constraint that the
 // first implies the second
-let create_implication_for_bool_vars list_of_bool_vars (z : Context) = 
+let create_implication_for_bool_vars list_of_bool_vars (z : Context) (s : Solver) = 
     if ((List.length list_of_bool_vars) < 2) then
         ()
     else 
         let create_implication_and_return_second item1 item2 =
-            z.AssertCnstr(z.MkImplies(item1, item2))
+            s.Assert(z.MkImplies(item1, item2))
             item2
-        ignore (List.reduce create_implication_and_return_second list_of_bool_vars)
+        List.reduce create_implication_and_return_second list_of_bool_vars
+        |> ignore
     
 // Create the list of Z3 constraints that correspond to the variable
 // having a certain value.
@@ -179,11 +159,11 @@ let constraint_for_valuation_of_vars_is_equivalent (range1 : VariableRange) time
     let value_of_var_at_time_is_val varname time prev curr last = 
         match prev with
         | -1 -> if curr = last then z.MkTrue() 
-                else make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time curr) z
-        | _ -> if curr = last then z.MkNot(make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time prev) z)
+                else make_z3_bool_var (enc_z3_bool_var_at_time_in_val_from_var varname time curr) z
+        | _ -> if curr = last then z.MkNot(make_z3_bool_var (enc_z3_bool_var_at_time_in_val_from_var varname time prev) z)
                else
-                    let z3_var = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time curr) z
-                    let z3_var_prev = make_z3_bool_var (get_z3_bool_var_at_time_in_val_from_var varname time prev) z
+                    let z3_var = make_z3_bool_var (enc_z3_bool_var_at_time_in_val_from_var varname time curr) z
+                    let z3_var_prev = make_z3_bool_var (enc_z3_bool_var_at_time_in_val_from_var varname time prev) z
                     z.MkAnd( z.MkNot(z3_var_prev), z3_var)
 
     let value_of_var_at_time_is_not_val varname time prev curr last = 
@@ -225,7 +205,7 @@ let constraint_for_valuation_of_vars_is_equivalent (range1 : VariableRange) time
 
     let constraints_list_list = List.map2 (pair_of_ranges_to_constraint_list) variables variable_ranges
     let constraints_list = List.fold (fun target_list source_list -> List.append target_list source_list) ([]) constraints_list_list
-    let final_constraint = List.fold (fun (t1 : Term) (t2 : Term) -> z.MkAnd(t1, t2)) (z.MkTrue()) constraints_list
+    let final_constraint = List.fold (fun t1 t2 -> z.MkAnd(t1, t2)) (z.MkTrue()) constraints_list
     final_constraint
 
 // The inputs are:
@@ -236,99 +216,109 @@ let constraint_for_valuation_of_vars_is_equivalent (range1 : VariableRange) time
 // current - current time step
 // prev -  previous time step
 // z - the Z3 context
-let constraint_for_target_function_boolean (qn:QN.node list) (node : QN.node) inputnodes listOfValues previousRange current prev (z : Context) = 
-    if ((List.length listOfValues) < 2) then
-        z.MkTrue ()
-    else
-        // 1. Prepare constraints for the node in current time:
-        // ====================================================
-        // prepare a map from the possible values of node
-        // to the constraints that describe that this node gets this value in the current time step
-        let bool_vars_for_output = allocate_bool_vars node listOfValues current z
-        let value_constraints_for_output = create_value_constraint_list bool_vars_for_output z
-        let map_output_values_to_constraints = Map.ofList(List.zip listOfValues value_constraints_for_output)
+let constraint_for_target_function_boolean (qn:QN.node list) (node : QN.node) inputnodes listOfValues previousRange current prev (z : Context) (s : Solver) = 
+    // 1. Prepare constraints for the node in current time:
+    // ====================================================
+    // prepare a map from the possible values of node
+    // to the constraints that describe that this node gets this value in the current time step
+    let bool_vars_for_output = allocate_bool_vars node listOfValues current z
+    let value_constraints_for_output = create_value_constraint_list bool_vars_for_output z
+    let map_output_values_to_constraints = Map.ofList(List.zip listOfValues value_constraints_for_output)
 
-        // 2. Prepare constraints for the inputs and the node in previous time
-        // ===================================================================
+    // 2. Prepare constraints for the inputs and the node in previous time
+    // ===================================================================
 
-        // A funtion getting a node and returning a map from the possible values of that node
-        // in the previous time step to the constraints that describe that the variable
-        // takes that value in the previous time step
-        let create_map_from_elem (elem : QN.node) = 
-            let range = Map.find elem.var previousRange // Find the possible ranges of the variable
-            let bool_vars = allocate_bool_vars elem range prev z // find the names of boolean variables corresnoding to these values
-            let constraints = create_value_constraint_list bool_vars z // create a list of the constraints corresponding to these values
-            Map.ofList(List.zip range constraints)
+    // A funtion getting a node and returning a map from the possible values of that node
+    // in the previous time step to the constraints that describe that the variable
+    // takes that value in the previous time step
+    let create_map_from_elem (elem : QN.node) = 
+        let range = Map.find elem.var previousRange // Find the possible ranges of the variable
+        let bool_vars = allocate_bool_vars elem range prev z // find the names of boolean variables corresnoding to these values
+        let constraints = create_value_constraint_list bool_vars z // create a list of the constraints corresponding to these values
+        Map.ofList(List.zip range constraints)
 
-        // Create a list of the maps from possible values of variables to the constraints describing these values
-        let list_of_maps_of_constraints = 
-            List.map 
-                (fun elem -> create_map_from_elem elem) inputnodes
-        let map_of_input_vars_to_map_of_values_to_constraints = Map.ofList(List.zip inputnodes list_of_maps_of_constraints)
+    // Create a list of the maps from possible values of variables to the constraints describing these values
+    let list_of_maps_of_constraints = 
+        List.map 
+            (fun elem -> create_map_from_elem elem) inputnodes
+    let map_of_input_vars_to_map_of_values_to_constraints = Map.ofList(List.zip inputnodes list_of_maps_of_constraints)
 
-        // 3. Prepare the list of all possible input values and all possible target values matching them
-        //    and all the actual next values matching them
-        // =============================================================================================
-        // Create a list containing all possible ranges for all inputs
-        let nodevar = node.var
-        let nodetargetf = node.f
-        let list_of_ranges = List.fold (fun acc node -> (Map.find node.var previousRange)::acc) [] inputnodes
-        // Create a list of all possible combinations of values for all inputs
-        let list_of_possible_combinations = 
-            List.rev list_of_ranges |> Seq.fold (fun acc xs -> [for x in xs do for ac in acc -> List.rev(x::(List.rev ac))]) [[]]  
+    // 3. Prepare the list of all possible input values and all possible target values matching them
+    //    and all the actual next values matching them
+    // =============================================================================================
+    // Create a list containing all possible ranges for all inputs
+    let nodevar = node.var
+    let nodetargetf = node.f
+    let list_of_ranges = List.fold (fun acc node -> (Map.find node.var previousRange)::acc) [] inputnodes
+    // Create a list of all possible combinations of values for all inputs
+    let list_of_possible_combinations = 
+        List.rev list_of_ranges |> Seq.fold (fun acc xs -> [for x in xs do for ac in acc -> List.rev(x::(List.rev ac))]) [[]]  
               
 
-        // Get a list of variables and list of values and create a map from variables to values
-        let create_map_from_var_to_values list_of_nodes (list_of_values : int list) = 
-            let node_to_var (node : QN.node) = node.var
-            let convert_node_list_to_var_list node_list = List.map node_to_var node_list
-            List.zip (convert_node_list_to_var_list list_of_nodes) list_of_values |> Map.ofList
+    // Get a list of variables and list of values and create a map from variables to values
+    let create_map_from_var_to_values list_of_nodes (list_of_values : int list) = 
+        let node_to_var (node : QN.node) = node.var
+        let convert_node_list_to_var_list node_list = List.map node_to_var node_list
+        List.zip (convert_node_list_to_var_list list_of_nodes) list_of_values |> Map.ofList
 
-        let list_of_targets = 
-            List.map (fun elem -> expr_to_real qn node nodetargetf (create_map_from_var_to_values inputnodes elem)) list_of_possible_combinations 
-        let list_of_int_targets = 
-            List.map my_round list_of_targets
-        let list_of_actual_next_vals = 
-            let compute_actual_next_val target_val inputs_vals = 
-                let min,max = node.range
-                apply_target_function (List.head inputs_vals) target_val min max 
-            List.map2 compute_actual_next_val list_of_int_targets list_of_possible_combinations
+    let list_of_targets = 
+        List.map (fun elem -> expr_to_real qn node nodetargetf (create_map_from_var_to_values inputnodes elem)) list_of_possible_combinations 
+    let list_of_int_targets = 
+        List.map my_round list_of_targets
+    let list_of_actual_next_vals = 
+        let compute_actual_next_val target_val inputs_vals = 
+            let min,max = node.range
+            apply_target_function (List.head inputs_vals) target_val min max 
+        List.map2 compute_actual_next_val list_of_int_targets list_of_possible_combinations
 
-        // 4. Create the actual constraints that say that the values of variables respect the "follow the target function" in their changes.
-        // ==================================================================================================================================
-        let gensym =
-            let x = ref 0 
-            (fun () -> incr x; !x)
-
-        // Create the constraint corresponding to one entry in the table of the target function
-        // Allocate a Boolean variable for this constraint
-        // Assert the constraint
-        // return the new Bool var
-        let create_transition_option_var list_of_vals next_val = 
-            // Allocate a Boolean z3 variable for this transitions
-            let make_var_name item = get_z3_bool_var_trans_of_var_from_time_to_time_in_val node prev current item
-            let allocate_z3_bool_var item =  make_z3_bool_var (make_var_name(item)) z
-            let new_var = allocate_z3_bool_var (gensym ())
+    // 4. Create the actual constraints that say that the values of variables respect the "follow the target function" in their changes.
+    // ==================================================================================================================================
+    // Create the constraint corresponding to one entry in the table of the target function
+    // Allocate a Boolean variable for this constraint
+    // Assert the constraint
+    // return the new Bool var
+    let create_transition_option_var list_of_vals next_val = 
+        // Allocate a Boolean z3 variable for this transitions
+        let make_var_name item = enc_z3_bool_var_trans_of_var_from_time_to_time_uniqueid node prev current item
+        let allocate_z3_bool_var item =  make_z3_bool_var (make_var_name(item)) z
+        let new_var = allocate_z3_bool_var (gensym "")
         
-            // Create a list of constraints corresponding to the values of the inputs in previous time step
-            let constraint_from_input_and_val (input : QN.node) value = Map.find value (Map.find input map_of_input_vars_to_map_of_values_to_constraints)
-            let list_of_input_constraints = List.fold2 (fun previous_list input value -> (constraint_from_input_and_val input value)::previous_list) [] inputnodes list_of_vals 
+        // Create a list of constraints corresponding to the values of the inputs in previous time step
+        let constraint_from_input_and_val (input : QN.node) value = Map.find value (Map.find input map_of_input_vars_to_map_of_values_to_constraints)
+        let list_of_input_constraints = List.fold2 (fun previous_list input value -> (constraint_from_input_and_val input value)::previous_list) [] inputnodes list_of_vals 
 
-            // Create a constraint corresponding to the value of the output in current time step
-            let constraint_on_output_from_val value = try Map.find value map_output_values_to_constraints with _ -> z.MkFalse() 
-            let output_constraint = constraint_on_output_from_val next_val
+        // Create a constraint corresponding to the value of the output in current time step
+        let constraint_on_output_from_val value = try Map.find value map_output_values_to_constraints with _ -> z.MkFalse() 
+        let output_constraint = constraint_on_output_from_val next_val
 
-            // List of all the constraints on output and inputs
-            let joint_list = output_constraint :: list_of_input_constraints
+        // List of all the constraints on output and inputs
+        let joint_list = output_constraint :: list_of_input_constraints
  
-            // Add the implication, assert it, and return the new variable
-            let implication = z.MkImplies(new_var,z.MkAnd(Array.ofList joint_list))
-            z.AssertCnstr(implication)
-            new_var
+        // Add the implication, assert it, and return the new variable
+        let implication = z.MkImplies(new_var,z.MkAnd(Array.ofList joint_list))
+        s.Assert(implication)
+        new_var
 
-        let list_of_new_transition_option_vars = 
-            List.map2 create_transition_option_var list_of_possible_combinations list_of_actual_next_vals
-        z.MkOr(Array.ofList list_of_new_transition_option_vars)
+    let list_of_new_transition_option_vars = 
+        List.map2 create_transition_option_var list_of_possible_combinations list_of_actual_next_vals
+
+    // Reduce the list of constraints to thos that are required:
+    // If the list of possible next values does not match the range of possible values
+    // then reduce the list of constraints to those that match possible values and take the disjunction of those
+    // Otherwise -- the list of possible next values matches the range of possible values --
+    // If there is just one possible value then add no constraints
+    // If there are multiple possible values then add their disjunction 
+    let vals_in_list = List.sort (list_of_actual_next_vals |> Seq.distinct |> List.ofSeq)
+    if not ((List.length vals_in_list) = (List.length listOfValues)) || (List.exists2 (fun i j -> not (i=j)) vals_in_list listOfValues) then
+        let comb_list = List.zip list_of_new_transition_option_vars list_of_actual_next_vals
+        let short_comb_list = List.filter (fun (c, v) -> List.exists (fun lv -> lv=v) listOfValues) comb_list
+        let short_constraint_list = List.map (fun (c, v) -> c) short_comb_list
+        z.MkOr(Array.ofList short_constraint_list)
+    else 
+        if List.length vals_in_list = 1 then
+            z.MkTrue()
+        else
+            z.MkOr(Array.ofList list_of_new_transition_option_vars)
 
 // If time and last are the same then there
 // is one time point on the loop and the loop must
@@ -343,13 +333,13 @@ let constraint_for_loop_at_time time last (z : Context) =
         if (time = last) then
             z.MkTrue ()
         else 
-            let loop_var_t = get_z3_bool_var_loop_at_time time
+            let loop_var_t = enc_z3_bool_var_loop_at_time time
             make_z3_bool_var loop_var_t z
 
     if (time = 0) then
         z3_loop_var_t
     else 
-        let loop_var_t_min_1 = get_z3_bool_var_loop_at_time (time-1)
+        let loop_var_t_min_1 = enc_z3_bool_var_loop_at_time (time-1)
         let z3_loop_var_t_min_1 =  make_z3_bool_var loop_var_t_min_1 z
         let not_z3_loop_var_t_min_1 = z.MkNot(z3_loop_var_t_min_1)
         z.MkAnd(not_z3_loop_var_t_min_1,z3_loop_var_t)
@@ -360,7 +350,7 @@ let constraint_for_time_is_part_of_loop time last (z : Context) =
         if (time = last) then
             z.MkTrue()
         else
-            let loop_var_t = get_z3_bool_var_loop_at_time time
+            let loop_var_t = enc_z3_bool_var_loop_at_time time
             make_z3_bool_var loop_var_t z
     z3_loop_var_t
 
@@ -370,7 +360,7 @@ let constraint_for_loop_closes_at_last time (z : Context) =
     if time = 0 then
         z.MkTrue()
     else
-        let loop_var_t_minus_1 = get_z3_bool_var_loop_at_time (time - 1)
+        let loop_var_t_minus_1 = enc_z3_bool_var_loop_at_time (time - 1)
         let z3_loop_var_t_minus_1 = make_z3_bool_var loop_var_t_minus_1 z
         z.MkNot(z3_loop_var_t_minus_1)
 
@@ -429,49 +419,43 @@ let string_to_BoolVarType (s : string) =
     else
         BadEncode
 
+let convertMapToBool map =
+    map |> Map.map(fun _ -> System.Boolean.Parse)
+
 let z3_model_to_loop (model : Model) (paths : Map<QN.var,int list> list) = 
-    // Initialize variables
-    // ====================
-    // loop is a map from times to bool
-    // The value of loop[time] is the truth value of 'l'time
-    let loop = ref Map.empty
-
-    // vars is a map from times to map from varid to map from value to truth values
-    // The value of ((vars[time])[id])[value] is the truth value of 'v'id^time^value
-    let vars = ref Map.empty
-
-    // Analyze the model and build the maps prepared above
+    // Analyze the model
     // ===================================================
-    for var in model.GetModelConstants() do
-        let z3_var_name = var.GetDeclName()
-        let truth_val = if (model.Eval(var, Array.empty).GetNumeralString() = "1") then
-                            true
-                        else
-                            false
 
-        match (string_to_BoolVarType z3_var_name) with 
-        | TransEncode (id, from_time ,to_time , value) -> 
-            ()
-        | VarEncode (id, time, value)  -> 
-            let map_of_var = 
-                if (Map.containsKey time !vars) then
-                    Map.find time !vars
-                else
-                    Map.empty
-            let map_of_val = 
-                if (Map.containsKey id map_of_var) then
-                    Map.find id map_of_var
-                else
-                    Map.empty
-            let new_map_of_val = Map.add value truth_val map_of_val
-            let new_map_of_var = Map.add id new_map_of_val map_of_var
-            vars := Map.add time new_map_of_var !vars
-            ()
-        | LoopEncode (time) -> 
-            loop := Map.add time truth_val !loop
-            ()
-        | BadEncode | _ -> 
-            ()
+    // *loop* is a map from times to bool
+    // The value of loop[time] is the truth value of 'l'time
+    // *vars* is a map from times to map from varid to map from value to truth values
+    // The value of ((vars[time])[id])[value] is the truth value of 'v'id^time^value    
+    let fixpoint = Z3Util.model_to_fixpoint model |> convertMapToBool
+    let loop, vars =
+        fixpoint 
+        |> Map.fold(fun (loop,vars) z3_var_name truth_val ->
+            match string_to_BoolVarType z3_var_name with 
+            | BadEncode _
+            | TransEncode _
+            | FormulaEncode _ -> loop, vars
+
+            | VarEncode (id, time, value)  -> 
+                let map_of_var = 
+                    match vars |> Map.tryFind time with
+                    | Some m -> m
+                    | None -> Map.empty
+                let map_of_val = 
+                    match map_of_var |> Map.tryFind id with
+                    | Some m -> m
+                    | None -> Map.empty
+                let new_map_of_val = map_of_val |> Map.add value truth_val 
+                let new_map_of_var = map_of_var |> Map.add id new_map_of_val 
+                loop, vars |> Map.add time new_map_of_var
+
+            | LoopEncode (time) -> 
+                loop |> Map.add time truth_val, vars
+                
+            ) (Map.empty, Map.empty)
     
     // Analyze the maps consructed above
     // =================================
@@ -488,9 +472,9 @@ let z3_model_to_loop (model : Model) (paths : Map<QN.var,int list> list) =
             // Notice that the model is not necessarily comprehensive
             // If a truth value of some var does not appear in the model I decide
             // to assign this var false
-            if not (Map.containsKey i !loop) then
+            if not (Map.containsKey i loop) then
                 incr loop_close
-            elif not (Map.find i !loop) then
+            elif not (Map.find i loop) then
                 incr loop_close
         ()
     
@@ -500,10 +484,10 @@ let z3_model_to_loop (model : Model) (paths : Map<QN.var,int list> list) =
     for path in paths do
         let current_map = 
             // The model does not contain information for this time
-            if not (Map.containsKey !time !vars) then
+            if not (Map.containsKey !time vars) then
                 Map.empty
             else
-                Map.find !time !vars
+                Map.find !time vars
         let map_of_var_to_value = ref Map.empty
         for entry in path do
             let ((var : QN.var), (l: int list)) = (entry.Key,entry.Value)

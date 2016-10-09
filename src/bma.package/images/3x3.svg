@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
+    <title>3x3</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Drawing-Canvas" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="3x3" sketch:type="MSArtboardGroup" fill="#606060">
+            <rect id="Rectangle-8" sketch:type="MSShapeGroup" x="2" y="2" width="4" height="4"></rect>
+            <rect id="Rectangle-8" sketch:type="MSShapeGroup" x="2" y="8" width="4" height="4"></rect>
+            <rect id="Rectangle-8" sketch:type="MSShapeGroup" x="2" y="14" width="4" height="4"></rect>
+            <rect id="Rectangle-8" sketch:type="MSShapeGroup" x="8" y="2" width="4" height="4"></rect>
+            <rect id="Rectangle-8" sketch:type="MSShapeGroup" x="8" y="8" width="4" height="4"></rect>
+            <rect id="Rectangle-8" sketch:type="MSShapeGroup" x="8" y="14" width="4" height="4"></rect>
+            <rect id="Rectangle-8" sketch:type="MSShapeGroup" x="14" y="2" width="4" height="4"></rect>
+            <rect id="Rectangle-8" sketch:type="MSShapeGroup" x="14" y="8" width="4" height="4"></rect>
+            <rect id="Rectangle-8" sketch:type="MSShapeGroup" x="14" y="14" width="4" height="4"></rect>
+        </g>
+    </g>
+</svg>

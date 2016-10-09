@@ -15,6 +15,9 @@
       <Setting name="StorageConnectionString" />
       <Setting name="ComputeTimeLimit" />
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
+      <Setting name="ComputeServiceUrl" />
+      <Setting name="OneDriveAppId" />
+      <Setting name="OneDriveRedirectUrl" />
     </ConfigurationSettings>
   </WebRole>
 </ServiceDefinition>

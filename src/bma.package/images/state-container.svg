@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="35px" height="35px" viewBox="0 0 35 35" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.3 (12072) - http://www.bohemiancoding.com/sketch -->
+    <title>state-container</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="State-Editor" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="state-container" sketch:type="MSArtboardGroup" fill="#FAAF40">
+            <path d="M18.566522,31.5467501 C12.4022469,31.5467501 7.38719498,25.2454586 7.38719498,17.5003633 C7.38719498,9.75454141 12.4022469,3.45324989 18.566522,3.45324989 C24.730081,3.45324989 29.7444169,9.75454141 29.7444169,17.5003633 C29.7444169,25.2454586 24.730081,31.5467501 18.566522,31.5467501 M18.566522,2 C10.4231488,2 3.82352941,8.94072147 3.82352941,17.5003633 C3.82352941,26.0600052 10.4231488,33 18.566522,33 C25.529883,33 31.1764706,26.0600052 31.1764706,17.5003633 C31.1764706,8.94072147 25.529883,2 18.566522,2" id="container-copy-2" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

@@ -1,8 +1,3 @@
-/// <binding AfterBuild='default' />
-/// <vs AfterBuild='default' />
-/// <binding AfterBuild='default' />
-/// <vs AfterBuild='default' />
-/// <binding AfterBuild='default' />
 /*
 This file in the main entry point for defining grunt tasks and using grunt plugins.
 Click here to learn more. http://go.microsoft.com/fwlink/?LinkID=513275&clcid=0x409
@@ -19,6 +14,7 @@ module.exports = function (grunt) {
                     "js/svgplot.js",
                     "js/scalablegridlinesplot.js",
                     "Scripts/formulaParser.js",
+                    "Scripts/targetFuncParser.js",
                     "script/XmlModelParser.js" ,
                     "script/SVGHelper.js",
                     "script/LTLHelper.js",
@@ -28,7 +24,9 @@ module.exports = function (grunt) {
                     "script/functionsregistry.js",
                     "script/keyframesregistry.js",
                     "script/localRepository.js",
-                    "script/changeschecker.js", 
+                    "script/changeschecker.js",
+                    "script/onedrive/OneDriveRepository.js",
+                    "script/onedrive/OneDrive.js",
                     "script/model/biomodel.js",
                     "script/model/model.js",
                     "script/model/analytics.js",  
@@ -46,6 +44,8 @@ module.exports = function (grunt) {
                     "script/presenters/formulavalidationpresenter.js",
                     "script/presenters/furthertestingpresenter.js",
                     "script/presenters/localstoragepresenter.js",
+                    "script/presenters/storagepresenter.js",
+                    "script/presenters/onedrivestoragepresenter.js",
                     "script/UserLog.js",
                     "script/widgets/accordeon.js",
                     "script/widgets/bmaslider.js",
@@ -56,6 +56,8 @@ module.exports = function (grunt) {
                     "script/widgets/proofresultviewer.js",
                     "script/widgets/furthertestingviewer.js",
                     "script/widgets/localstoragewidget.js",
+                    "script/widgets/modelstoragewidget.js",
+                    "script/widgets/onedrivestoragewidget.js",
                     "script/widgets/resultswindowviewer.js",
                     "script/widgets/simulationplot.js",
                     "script/widgets/simulationexpanded.js",
@@ -64,6 +66,7 @@ module.exports = function (grunt) {
                     "script/widgets/variablesOptionsEditor.js",
                     "script/widgets/visibilitysettings.js",
                     "script/widgets/formulaeditor.js",
+                    "script/widgets/tftexteditor.js",
                     "script/widgets/ltl/keyframetable.js",
                     "script/widgets/ltl/keyframecompact.js",
                     "script/widgets/ltl/ltlstatesviewer.js",
@@ -102,6 +105,7 @@ module.exports = function (grunt) {
                     { src: 'tool.min.js', dest: '../bma.client/tool.min.js' },
                     { src: 'app.js', dest: '../bma.client/app.js' },
                     { src: 'css/bma.css', dest: '../bma.client/css/bma.css' },
+                    { src: 'script/widgets/codeeditor.js', dest: '../bma.client/codeeditor.js' },
                     { src: 'js/idd.js', dest: '../bma.client/js/idd.js' },
                     { src: 'js/jquery.ui-contextmenu.min.js', dest: '../bma.client/js/jquery.ui-contextmenu.min.js' },
                     { src: 'js/jquery.ui-contextmenu.js', dest: '../bma.client/js/jquery.ui-contextmenu.js' }

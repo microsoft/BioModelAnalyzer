@@ -1,83 +1,80 @@
-﻿//var Parser = require("jison").Parser;
-
-////Formula -> (DoubleLTLOperator Formula Formula) | (SingleLTLOperator Formula)
-////Formula -> State
-////State -> A|B|C...
-////DoubleLTLOperator ->  AND | OR | IMPLIES | UPTO | WEAKUNTIL | UNTIL | RELEASE
-////SingleLTLOperator -> NEXT | NOT | ALWAYS | EVENTUALLY
-
-//
-//%lex
+﻿//%lex
 //%%
 
 //\s+                  { /* skip whitespace */}
 //"("                  { return '('; }
 //")"                  { return ')'; }
-//"AND"               { return 'DOUBLELTLOPERATOR'; }
-//"OR"                { return 'DOUBLELTLOPERATOR'; }
-//"IMPLIES"           { return 'DOUBLELTLOPERATOR'; }
-//"UPTO"              { return 'DOUBLELTLOPERATOR'; }
-//"WEAKUNTIL"         { return 'DOUBLELTLOPERATOR'; }
-//"UNTIL"             { return 'DOUBLELTLOPERATOR'; }
-//"RELEASE"           { return 'DOUBLELTLOPERATOR'; }
-//"NEXT"              { return 'SINGLELTLOPERATOR'; }
-//"NOT"               { return 'SINGLELTLOPERATOR'; }
-//"ALWAYS"            { return 'SINGLELTLOPERATOR'; }
-//"EVENTUALLY"        { return 'SINGLELTLOPERATOR'; }
-//[a-zA-z0-9]+         { return 'STATE'; }
-//<<EOF>>         {return 'EOF';}
+//">="                 { return '>=';}
+//"<="                 { return '<=';}
+//">"                  { return '>';}
+//"<"                  { return '<';}
+//"="                  { return '=';}
+//"!="                 { return '!=';}
+//"AND"                { return 'AND'; }
+//"OR"                 { return 'OR'; }
+//"IMPLIES"            { return 'IMPLIES'; }
+//"UPTO"               { return 'UPTO'; }
+//"WEAKUNTIL"          { return 'WEAKUNTIL'; }
+//"UNTIL"              { return 'UNTIL'; }
+//"RELEASE"            { return 'RELEASE'; }
+//"NEXT"               { return 'NEXT'; }
+//"NOT"                { return 'NOT'; }
+//"ALWAYS"             { return 'ALWAYS'; }
+//"EVENTUALLY"         { return 'EVENTUALLY'; }
+//[0-9]+               { return 'CONST'; }
+//[a-zA-Z0-9]+         { return 'VARIABLE'; }
+//<<EOF>>              {return 'EOF';}
 
 ///lex
 
+//%right 'IMPLIES'
+//%left 'OR'
+//%left 'AND'
+//%left 'UNTIL' 'RELEASE' 'WEAKUNTIL' 'UPTO' 
+//%right 'NEXT' 'ALWAYS' 'EVENTUALLY' 'NOT'
+//%right SINGLELTLOPERATOR
+
 //%%
-//EXPRESSION
-//    : FORMULA EOF { print($1);    return $1;};
+//e
+//    : FORMULA EOF { return $1;};
 
 //FORMULA
-//    : "(" DOUBLELTLOPERATOR FORMULA FORMULA ")" { $$ =  { operator: $2, operand1: $3, operand2: $4}; }  
-//    | "(" SINGLELTLOPERATOR FORMULA ")"    { $$ = { operator: $2, operand: $3 }; }
-//    | STATE    { $$ = { state: $1} }    ;
+//    : "(" FORMULA ")" { $$ = $2; }
+//| FORMULA 'AND' FORMULA { $$ =  { operator: $2, operands: [$1, $3] }; }  
+//| FORMULA 'OR' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; }  
+//| FORMULA 'UNTIL' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; }  
+//| FORMULA 'RELEASE' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; }  
+//| FORMULA 'WEAKUNTIL' FORMULA { $$ =  { operator: $2, operands: [$1, $3]};}  
+//| FORMULA 'UPTO' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; }  
+//| FORMULA 'IMPLIES' FORMULA { $$ =  { operator: $2, operands: [$1, $3]}; } 
+//| SINGLELTLOPERATOR FORMULA    
+//{ $$ = { operator: $1, operands: [$2] }; }
+//| VARIABLE RIGHTPART
+//{ $$ = { state: $2==null ? $1: { variable: $1, operator: $2.operator, const: $2.const } };}
+//;
 
+//RIGHTPART
+//    : 
+//    | '<=' CONST 
+//{$$ = { operator: $1, const: $2 };}
+//| '>=' CONST
+//{$$ = { operator: $1, const: $2 };}
+//| '!=' CONST
+//{$$ = { operator: $1, const: $2 };}
+//| '=' CONST
+//{$$ = { operator: $1, const: $2 };}
+//| '<' CONST 
+//{$$ = { operator: $1, const: $2 };}
+//| '>' CONST
+//{$$ = { operator: $1, const: $2 };}
+//;
 
-
-//var grammar = {
-//    "lex": {
-//        "rules": [
-//           ["\\s+",                    "/* skip whitespace */"],
-//           ["\\(",                     "return '(';"],
-//           ["\\)",                     "return ')';"],
-//           ["AND\\b",                  "return 'DOUBLELTLOPERATOR';"],
-//           ["OR\\b",                   "return 'DOUBLELTLOPERATOR';"],
-//           ["IMPLIES\\b",              "return 'DOUBLELTLOPERATOR';"],
-//           ["UPTO\\b",                 "return 'DOUBLELTLOPERATOR';"],
-//           ["WEAKUNTIL\\b",            "return 'DOUBLELTLOPERATOR';"],
-//           ["UNTIL\\b",                "return 'DOUBLELTLOPERATOR';"],
-//           ["RELEASE\\b",              "return 'DOUBLELTLOPERATOR';"],
-//           ["NEXT\\b",                 "return 'SINGLELTLOPERATOR';"],
-//           ["NOT\\b",                  "return 'SINGLELTLOPERATOR';"],
-//           ["ALWAYS\\b",               "return 'SINGLELTLOPERATOR';"],
-//           ["EVENTUALLY\\b",           "return 'SINGLELTLOPERATOR';"],
-//           ["[a-zA-z0-9]+\\b",         "return 'STATE';"],
-//           ["$",                       "return 'EOF';"]
-//        ]
-//    },
-
-//    "bnf": {
-//        "expressions" :[[ "formula EOF",
-//                           "print($1); return $1;"  ]],
-
-//        "formula" :[[ "( DOUBLELTLOPERATOR FORMULA FORMULA )",  
-//                 "$$ = { operator: $2, operand1: $3, operand2: $4};" ],
-//              [ "( SINGLELTLOPERATOR FORMULA )",
-//                 "$$ = { operator: $2, operand: $3 };" ],
-//              [ "STATE",
-//                 "$$ = { state: $1 }"]]
-//    }
-//};
-
-//var parser = new Parser(grammar);
-
-//var parserSource = parser.generate();
+//SINGLELTLOPERATOR
+//    : 'NEXT' { $$ = $1; }
+//| 'NOT' { $$ = $1; }
+//| 'ALWAYS' { $$ = $1; }
+//| 'EVENTUALLY' { $$ = $1; }
+//;
 
 /* parser generated by jison 0.4.13 */
 /*
@@ -158,9 +155,9 @@ var BMA;
         var parser = {
             trace: function trace() { },
             yy: {},
-            symbols_: { "error": 2, "EXPRESSION": 3, "FORMULA": 4, "EOF": 5, "(": 6, "DOUBLELTLOPERATOR": 7, ")": 8, "SINGLELTLOPERATOR": 9, "STATE": 10, "$accept": 0, "$end": 1 },
-            terminals_: { 2: "error", 5: "EOF", 6: "(", 7: "DOUBLELTLOPERATOR", 8: ")", 9: "SINGLELTLOPERATOR", 10: "STATE" },
-            productions_: [0, [3, 2], [4, 5], [4, 4], [4, 1]],
+            symbols_: { "error": 2, "e": 3, "FORMULA": 4, "EOF": 5, "(": 6, ")": 7, "AND": 8, "OR": 9, "UNTIL": 10, "RELEASE": 11, "WEAKUNTIL": 12, "UPTO": 13, "IMPLIES": 14, "SINGLELTLOPERATOR": 15, "VARIABLE": 16, "RIGHTPART": 17, "<=": 18, "CONST": 19, ">=": 20, "!=": 21, "=": 22, "<": 23, ">": 24, "NEXT": 25, "NOT": 26, "ALWAYS": 27, "EVENTUALLY": 28, "$accept": 0, "$end": 1 },
+            terminals_: { 2: "error", 5: "EOF", 6: "(", 7: ")", 8: "AND", 9: "OR", 10: "UNTIL", 11: "RELEASE", 12: "WEAKUNTIL", 13: "UPTO", 14: "IMPLIES", 16: "VARIABLE", 18: "<=", 19: "CONST", 20: ">=", 21: "!=", 22: "=", 23: "<", 24: ">", 25: "NEXT", 26: "NOT", 27: "ALWAYS", 28: "EVENTUALLY" },
+            productions_: [0, [3, 2], [4, 3], [4, 3], [4, 3], [4, 3], [4, 3], [4, 3], [4, 3], [4, 3], [4, 2], [4, 2], [17, 0], [17, 2], [17, 2], [17, 2], [17, 2], [17, 2], [17, 2], [15, 1], [15, 1], [15, 1], [15, 1]],
             performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */
                 /**/) {
                 /* this == yyval */
@@ -169,16 +166,50 @@ var BMA;
                 switch (yystate) {
                     case 1: return $$[$0 - 1];
                         break;
-                    case 2: this.$ = { operator: $$[$0 - 3], operand1: $$[$0 - 2], operand2: $$[$0 - 1] };
+                    case 2: this.$ = $$[$0 - 1];
                         break;
-                    case 3: this.$ = { operator: $$[$0 - 2], operand: $$[$0 - 1] };
+                    case 3: this.$ = { operator: $$[$0 - 1], operands: [$$[$0 - 2], $$[$0]] };
                         break;
-                    case 4: this.$ = { state: $$[$0] }
+                    case 4: this.$ = { operator: $$[$0 - 1], operands: [$$[$0 - 2], $$[$0]] };
+                        break;
+                    case 5: this.$ = { operator: $$[$0 - 1], operands: [$$[$0 - 2], $$[$0]] };
+                        break;
+                    case 6: this.$ = { operator: $$[$0 - 1], operands: [$$[$0 - 2], $$[$0]] };
+                        break;
+                    case 7: this.$ = { operator: $$[$0 - 1], operands: [$$[$0 - 2], $$[$0]] };
+                        break;
+                    case 8: this.$ = { operator: $$[$0 - 1], operands: [$$[$0 - 2], $$[$0]] };
+                        break;
+                    case 9: this.$ = { operator: $$[$0 - 1], operands: [$$[$0 - 2], $$[$0]] };
+                        break;
+                    case 10: this.$ = { operator: $$[$0 - 1], operands: [$$[$0]] };
+                        break;
+                    case 11: this.$ = { state: $$[$0] == null ? $$[$0 - 1] : { variable: $$[$0 - 1], operator: $$[$0].operator, const: $$[$0].const } };
+                        break;
+                    case 13: this.$ = { operator: $$[$0 - 1], const: $$[$0] };
+                        break;
+                    case 14: this.$ = { operator: $$[$0 - 1], const: $$[$0] };
+                        break;
+                    case 15: this.$ = { operator: $$[$0 - 1], const: $$[$0] };
+                        break;
+                    case 16: this.$ = { operator: $$[$0 - 1], const: $$[$0] };
+                        break;
+                    case 17: this.$ = { operator: $$[$0 - 1], const: $$[$0] };
+                        break;
+                    case 18: this.$ = { operator: $$[$0 - 1], const: $$[$0] };
+                        break;
+                    case 19: this.$ = $$[$0];
+                        break;
+                    case 20: this.$ = $$[$0];
+                        break;
+                    case 21: this.$ = $$[$0];
+                        break;
+                    case 22: this.$ = $$[$0];
                         break;
                 }
             },
-            table: [{ 3: 1, 4: 2, 6: [1, 3], 10: [1, 4] }, { 1: [3] }, { 5: [1, 5] }, { 7: [1, 6], 9: [1, 7] }, { 5: [2, 4], 6: [2, 4], 8: [2, 4], 10: [2, 4] }, { 1: [2, 1] }, { 4: 8, 6: [1, 3], 10: [1, 4] }, { 4: 9, 6: [1, 3], 10: [1, 4] }, { 4: 10, 6: [1, 3], 10: [1, 4] }, { 8: [1, 11] }, { 8: [1, 12] }, { 5: [2, 3], 6: [2, 3], 8: [2, 3], 10: [2, 3] }, { 5: [2, 2], 6: [2, 2], 8: [2, 2], 10: [2, 2] }],
-            defaultActions: { 5: [2, 1] },
+            table: [{ 3: 1, 4: 2, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 1: [3] }, { 5: [1, 10], 8: [1, 11], 9: [1, 12], 10: [1, 13], 11: [1, 14], 12: [1, 15], 13: [1, 16], 14: [1, 17] }, { 4: 18, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 19, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 5: [2, 12], 7: [2, 12], 8: [2, 12], 9: [2, 12], 10: [2, 12], 11: [2, 12], 12: [2, 12], 13: [2, 12], 14: [2, 12], 17: 20, 18: [1, 21], 20: [1, 22], 21: [1, 23], 22: [1, 24], 23: [1, 25], 24: [1, 26] }, { 6: [2, 19], 16: [2, 19], 25: [2, 19], 26: [2, 19], 27: [2, 19], 28: [2, 19] }, { 6: [2, 20], 16: [2, 20], 25: [2, 20], 26: [2, 20], 27: [2, 20], 28: [2, 20] }, { 6: [2, 21], 16: [2, 21], 25: [2, 21], 26: [2, 21], 27: [2, 21], 28: [2, 21] }, { 6: [2, 22], 16: [2, 22], 25: [2, 22], 26: [2, 22], 27: [2, 22], 28: [2, 22] }, { 1: [2, 1] }, { 4: 27, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 28, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 29, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 30, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 31, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 32, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 4: 33, 6: [1, 3], 15: 4, 16: [1, 5], 25: [1, 6], 26: [1, 7], 27: [1, 8], 28: [1, 9] }, { 7: [1, 34], 8: [1, 11], 9: [1, 12], 10: [1, 13], 11: [1, 14], 12: [1, 15], 13: [1, 16], 14: [1, 17] }, { 5: [2, 10], 7: [2, 10], 8: [2, 10], 9: [2, 10], 10: [2, 10], 11: [2, 10], 12: [2, 10], 13: [2, 10], 14: [2, 10] }, { 5: [2, 11], 7: [2, 11], 8: [2, 11], 9: [2, 11], 10: [2, 11], 11: [2, 11], 12: [2, 11], 13: [2, 11], 14: [2, 11] }, { 19: [1, 35] }, { 19: [1, 36] }, { 19: [1, 37] }, { 19: [1, 38] }, { 19: [1, 39] }, { 19: [1, 40] }, { 5: [2, 3], 7: [2, 3], 8: [2, 3], 9: [2, 3], 10: [1, 13], 11: [1, 14], 12: [1, 15], 13: [1, 16], 14: [2, 3] }, { 5: [2, 4], 7: [2, 4], 8: [1, 11], 9: [2, 4], 10: [1, 13], 11: [1, 14], 12: [1, 15], 13: [1, 16], 14: [2, 4] }, { 5: [2, 5], 7: [2, 5], 8: [2, 5], 9: [2, 5], 10: [2, 5], 11: [2, 5], 12: [2, 5], 13: [2, 5], 14: [2, 5] }, { 5: [2, 6], 7: [2, 6], 8: [2, 6], 9: [2, 6], 10: [2, 6], 11: [2, 6], 12: [2, 6], 13: [2, 6], 14: [2, 6] }, { 5: [2, 7], 7: [2, 7], 8: [2, 7], 9: [2, 7], 10: [2, 7], 11: [2, 7], 12: [2, 7], 13: [2, 7], 14: [2, 7] }, { 5: [2, 8], 7: [2, 8], 8: [2, 8], 9: [2, 8], 10: [2, 8], 11: [2, 8], 12: [2, 8], 13: [2, 8], 14: [2, 8] }, { 5: [2, 9], 7: [2, 9], 8: [1, 11], 9: [1, 12], 10: [1, 13], 11: [1, 14], 12: [1, 15], 13: [1, 16], 14: [1, 17] }, { 5: [2, 2], 7: [2, 2], 8: [2, 2], 9: [2, 2], 10: [2, 2], 11: [2, 2], 12: [2, 2], 13: [2, 2], 14: [2, 2] }, { 5: [2, 13], 7: [2, 13], 8: [2, 13], 9: [2, 13], 10: [2, 13], 11: [2, 13], 12: [2, 13], 13: [2, 13], 14: [2, 13] }, { 5: [2, 14], 7: [2, 14], 8: [2, 14], 9: [2, 14], 10: [2, 14], 11: [2, 14], 12: [2, 14], 13: [2, 14], 14: [2, 14] }, { 5: [2, 15], 7: [2, 15], 8: [2, 15], 9: [2, 15], 10: [2, 15], 11: [2, 15], 12: [2, 15], 13: [2, 15], 14: [2, 15] }, { 5: [2, 16], 7: [2, 16], 8: [2, 16], 9: [2, 16], 10: [2, 16], 11: [2, 16], 12: [2, 16], 13: [2, 16], 14: [2, 16] }, { 5: [2, 17], 7: [2, 17], 8: [2, 17], 9: [2, 17], 10: [2, 17], 11: [2, 17], 12: [2, 17], 13: [2, 17], 14: [2, 17] }, { 5: [2, 18], 7: [2, 18], 8: [2, 18], 9: [2, 18], 10: [2, 18], 11: [2, 18], 12: [2, 18], 13: [2, 18], 14: [2, 18] }],
+            defaultActions: { 10: [2, 1] },
             parseError: function parseError(str, hash) { if (hash.recoverable) { this.trace(str) } else { throw new Error(str) } },
             parse: function parse(input) {
                 var self = this, stack = [0], vstack = [null], lstack = [], table = this.table, yytext = '', yylineno = 0, yyleng = 0, recovering = 0, TERROR = 2, EOF = 1;
@@ -382,38 +413,52 @@ var BMA;
                             break;
                         case 1: return 6;
                             break;
-                        case 2: return 8;
+                        case 2: return 7;
                             break;
-                        case 3: return 7;
+                        case 3: return 20;
                             break;
-                        case 4: return 7;
+                        case 4: return 18;
                             break;
-                        case 5: return 7;
+                        case 5: return 24;
                             break;
-                        case 6: return 7;
+                        case 6: return 23;
                             break;
-                        case 7: return 7;
+                        case 7: return 22;
                             break;
-                        case 8: return 7;
+                        case 8: return 21;
                             break;
-                        case 9: return 7;
+                        case 9: return 8;
                             break;
                         case 10: return 9;
                             break;
-                        case 11: return 9;
+                        case 11: return 14;
                             break;
-                        case 12: return 9;
+                        case 12: return 13;
                             break;
-                        case 13: return 9;
+                        case 13: return 12;
                             break;
                         case 14: return 10;
                             break;
-                        case 15: return 5;
+                        case 15: return 11;
+                            break;
+                        case 16: return 25;
+                            break;
+                        case 17: return 26;
+                            break;
+                        case 18: return 27;
+                            break;
+                        case 19: return 28;
+                            break;
+                        case 20: return 19;
+                            break;
+                        case 21: return 16;
+                            break;
+                        case 22: return 5;
                             break;
                     }
                 },
-                rules: [/^(?:\s+)/, /^(?:\()/, /^(?:\))/, /^(?:AND\b)/i, /^(?:OR\b)/i, /^(?:IMPLIES\b)/i, /^(?:UPTO\b)/i, /^(?:WEAKUNTIL\b)/i, /^(?:UNTIL\b)/i, /^(?:RELEASE\b)/i, /^(?:NEXT\b)/i, /^(?:NOT\b)/i, /^(?:ALWAYS\b)/i, /^(?:EVENTUALLY\b)/i, /^(?:[a-zA-z0-9]+)/, /^(?:$)/],
-                conditions: { "INITIAL": { "rules": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], "inclusive": true } }
+                rules: [/^(?:\s+)/, /^(?:\()/, /^(?:\))/, /^(?:>=)/, /^(?:<=)/, /^(?:>)/, /^(?:<)/, /^(?:=)/, /^(?:!=)/, /^(?:AND\b)/i, /^(?:OR\b)/i, /^(?:IMPLIES\b)/i, /^(?:UPTO\b)/i, /^(?:WEAKUNTIL\b)/i, /^(?:UNTIL\b)/i, /^(?:RELEASE\b)/i, /^(?:NEXT\b)/i, /^(?:NOT\b)/i, /^(?:ALWAYS\b)/i, /^(?:EVENTUALLY\b)/i, /^(?:[0-9]+)/, /^(?:[a-zA-Z0-9]+)/, /^(?:$)/],
+                conditions: { "INITIAL": { "rules": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22], "inclusive": true } }
             };
             return lexer;
         })();

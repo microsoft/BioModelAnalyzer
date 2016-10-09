@@ -125,6 +125,8 @@ module BMA {
         export class VariableEditorDriver implements IVariableEditor {
             private variableEditor: JQuery;
             private onclosingCallback: Function;
+            private onvariablechangedcallback: Function;
+            private onformulachangedcallback: Function;
 
             constructor(variableEditor: JQuery) {
                 this.variableEditor = variableEditor;
@@ -134,12 +136,13 @@ module BMA {
                 this.variableEditor.click(function (e) { e.stopPropagation(); });
             }
 
-            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number } {
+            public GetVariableProperties(): { name: string; formula: string; rangeFrom: number; rangeTo: number; TFdescription: string } {
                 return {
                     name: this.variableEditor.bmaeditor('option', 'name'),
-                    formula: this.variableEditor.bmaeditor('option', 'formula'),
+                    formula: this.variableEditor.bmaeditor('getFormula'),//'option', 'formula'),
                     rangeFrom: this.variableEditor.bmaeditor('option', 'rangeFrom'),
-                    rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo')
+                    rangeTo: this.variableEditor.bmaeditor('option', 'rangeTo'),
+                    TFdescription: this.variableEditor.bmaeditor('option', 'TFdescription'),
                 };
             }
 
@@ -147,27 +150,28 @@ module BMA {
                 this.variableEditor.bmaeditor("SetValidation", val, message);
             }
 
-            public Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel) {
+            public Initialize(variable: BMA.Model.Variable, model: BMA.Model.BioModel, layout: BMA.Model.Layout) {
                 this.variableEditor.bmaeditor('option', 'name', variable.Name);
                 var options = [];
                 var id = variable.Id;
                 for (var i = 0; i < model.Relationships.length; i++) {
                     var rel = model.Relationships[i];
                     if (rel.ToVariableId === id) {
-                        options.push(model.GetVariableById(rel.FromVariableId).Name);
+                        options.push(model.GetVariableById(rel.FromVariableId));
                     }
                 }
                 this.variableEditor.bmaeditor('option', 'inputs', options);
                 this.variableEditor.bmaeditor('option', 'formula', variable.Formula);
                 this.variableEditor.bmaeditor('option', 'rangeFrom', variable.RangeFrom);
                 this.variableEditor.bmaeditor('option', 'rangeTo', variable.RangeTo);
-
+                this.variableEditor.bmaeditor('option', 'TFdescription', layout.GetVariableById(variable.Id).TFDescription);
 
             }
 
             public Show(x: number, y: number) {
                 this.variableEditor.show();
                 this.variableEditor.css("left", x).css("top", y);
+                this.variableEditor.bmaeditor("updateLayout");
             }
 
             public Hide() {
@@ -180,6 +184,20 @@ module BMA {
             public SetOnClosingCallback(callback: Function) {
                 this.onclosingCallback = callback;
                 this.variableEditor.bmaeditor({ oneditorclosing: callback });
+            }
+
+            public SetOnVariableEditedCallback(callback: Function) {
+                this.onvariablechangedcallback = callback;
+                this.variableEditor.bmaeditor({
+                    onvariablechangedcallback: callback
+                });
+            }
+
+            public SetOnFormulaEditedCallback(callback: Function) {
+                this.onformulachangedcallback = callback;
+                this.variableEditor.bmaeditor({
+                    onformulachangedcallback: callback
+                });
             }
         }
 
@@ -372,7 +390,7 @@ module BMA {
             public SetOnCreateStateRequested(callback) {
                 if (this.viewer !== undefined) {
                     this.viewer.simulationexpanded({
-                        columnContextMenuItems: [{ title: "Create State", cmd: "CreateState" }],
+                        columnContextMenuItems: [{ title: "Create LTL State", cmd: "CreateState" }],
                         createStateRequested: callback
                     });
                 } else {
@@ -384,6 +402,10 @@ module BMA {
                 var table = this.CreateExpandedTable(data.variables, data.colors);
                 var interval = this.CreateInterval(data.variables);
                 this.viewer.simulationexpanded({ variables: table, init: data.init, interval: interval, data: undefined });
+            }
+
+            public SetNumberOfSteps(num) {
+                this.viewer.simulationexpanded({ num: num });
             }
 
             public SetData(data) {
@@ -486,14 +508,153 @@ module BMA {
         }
 
         export class LocalStorageDriver implements ILocalStorageDriver {
-            private widget: JQuery;
+            private widget;
 
             constructor(widget: JQuery) {
                 this.widget = widget;
             }
 
-            public AddItem(key, item) {
+            public AddItem(key) {
                 this.widget.localstoragewidget("AddItem", key);
+            }
+
+            public SetActiveModel(modelName) {
+                this.widget.localstoragewidget("SetActiveModel", modelName);
+            }
+
+            public SetOnUnselect() {
+                this.widget.localstoragewidget("CancelSelection");
+            }
+
+            public SetOnEnableContextMenu(enable: boolean) {
+                this.widget.localstoragewidget({
+                    enableContextMenu: enable
+                });
+            }
+
+            public SetItems(keys) {
+                this.widget.localstoragewidget({ items: keys });
+            }
+
+            public SetOnRequestLoadModel(callback: Function) {
+                this.widget.localstoragewidget({
+                    onloadmodel: callback
+                });
+            }
+
+            public SetOnRemoveModel(callback: Function) {
+                this.widget.localstoragewidget({
+                    onremovemodel: callback
+                });
+            }
+
+            public SetOnCopyToOneDriveCallback(callback: Function) {
+                this.widget.localstoragewidget({
+                    setoncopytoonedrive: callback
+                });
+            }
+
+            //public Show() {
+            //    this.widget.show();
+            //}
+
+            //public Hide() {
+            //    this.widget.hide();
+            //}
+
+            public Message(msg: string) {
+                this.widget.localstoragewidget("Message", msg);
+            }
+        }
+
+        export class OneDriveStorageDriver implements IOneDriveDriver {
+            private widget;
+
+            constructor(widget: JQuery) {
+                this.widget = widget;
+            }
+
+            public AddItem(key) {
+                this.widget.onedrivestoragewidget("AddItem", key);
+            }
+
+            public SetItems(keys) { //keys = { id, name }
+                this.widget.onedrivestoragewidget({ items: keys });
+            }
+
+            public SetActiveModel(modelName) {
+                this.widget.onedrivestoragewidget("SetActiveModel", modelName);
+            }
+
+            public SetOnLoading(flag: boolean) {
+                this.widget.onedrivestoragewidget({ loading: flag });
+            }
+
+            public SetOnUnselect() {
+                this.widget.onedrivestoragewidget("CancelSelection");
+            }
+
+            public SetOnRequestLoadModel(callback: Function) {
+                this.widget.onedrivestoragewidget({
+                    onloadmodel: callback
+                });
+            }
+
+            public SetOnRemoveModel(callback: Function) {
+                this.widget.onedrivestoragewidget({
+                    onremovemodel: callback
+                });
+            }
+
+            //public Show() {
+            //    this.widget.show();
+            //}
+
+            //public Hide() {
+            //    this.widget.hide();
+            //}
+
+            public Message(msg: string) {
+                this.widget.onedrivestoragewidget("Message", msg);
+            }
+
+            public SetOnShareCallback(callback: Function) {
+                this.widget.onedrivestoragewidget({
+                    setonsharecallback: callback
+                });
+            }
+
+            public SetOnActiveShareCallback(callback: Function) {
+                this.widget.onedrivestoragewidget({
+                    setonactivesharecallback: callback
+                });
+            }
+
+            public SetOnOpenBMALink(callback: Function) {
+                this.widget.onedrivestoragewidget({
+                    setonopenbmalink: callback
+                });
+            }
+
+            public SetOnCopyToLocalCallback(callback: Function) {
+                this.widget.onedrivestoragewidget({
+                    setoncopytolocal: callback
+                });
+            }
+            
+        }
+
+        export class ModelStorageDriver implements IModelStorageDriver {
+            private ldriver: LocalStorageDriver;
+            private oddriver: OneDriveStorageDriver;
+            private widget;
+            private mode: string = "local";
+
+            constructor(widget: JQuery, ldriver: LocalStorageDriver, oddriver: OneDriveStorageDriver) {
+                this.widget = widget;
+
+                this.ldriver = ldriver;
+                this.oddriver = oddriver;
             }
 
             public Show() {
@@ -504,15 +665,29 @@ module BMA {
                 this.widget.hide();
             }
 
-            public SetItems(keys) {
-                this.widget.localstoragewidget({ items: keys });
+            public SetAuthorizationStatus(status: boolean) {
+                this.widget.modelstoragewidget({ isAuthorized: status });
             }
 
-            public Message(msg: string) {
-                this.widget.localstoragewidget("Message", msg);
+            public SetOnUpdateModelList(callback: Function) {
+                this.widget.modelstoragewidget({
+                    updatemodellistcallback: callback
+                });
             }
+
+            //public SetOnSignInCallback(callback: Function) {
+            //    this.widget.modelstoragewidget({
+            //        onsigninonedrive: callback
+            //    });
+            //}
+
+            //public SetOnSignOutCallback(callback: Function) {
+            //    this.widget.modelstoragewidget({
+            //        onsignoutonedrive: callback
+            //    });
+            //}
+
         }
-
 
         export class ModelFileLoader implements IFileLoader {
             private fileInput: JQuery;
@@ -599,13 +774,27 @@ module BMA {
 
             public Invoke(data): JQueryPromise<any> {
                 var that = this;
-                return $.ajax({
+                var result = $.Deferred();
+
+                $.ajax({
                     type: "POST",
                     url: that.serviceURL,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
-                    dataType: "json"
+                    dataType: "json",
+                    statusCode: {
+                        200: function (res) {
+                            result.resolve(res);
+                        },
+                        204: function (res) {
+                            result.reject({}, "Operation was not competed within time limit", "Processing Timeout");
+                        }
+                    }
+                }).fail(function (xhr, textStatus, errorThrown) {
+                    result.reject(xhr, textStatus, errorThrown);
                 });
+
+                return result.promise();
             }
         }
 
@@ -621,46 +810,107 @@ module BMA {
             public Invoke(data): JQueryPromise<any> {
                 var that = this;
                 var result = $.Deferred();
+                var promise = result.promise();
+                (<any>promise).abort = function () {
+                };
+
+                result.progress(function (res) {
+                    return res;
+                });
 
                 $.ajax({
                     type: "POST",
                     url: that.serviceURL + that.userID,
                     data: JSON.stringify(data),
                     contentType: "application/json; charset=utf-8",
-                    dataType: "json"
+                    dataType: "json",
                 }).done(function (id) {
+                    (<any>promise).abort = function () {
+                        console.log("Canceled");
+                        that.CancelRequest(id);
+                        result.reject();
+                    };
                     that.CheckStatusOfRequest(id, result);
                 }).fail(function (xhr, textStatus, errorThrown) {
                     result.reject(xhr, textStatus, errorThrown);
                 });
 
-                return result.promise();
+                return promise;
+            }
+
+            private CancelRequest(id) {
+                var that = this;
+                $.ajax({
+                    type: "DELETE",
+                    url: that.serviceURL + that.userID + "/?jobId=" + id,
+                });
             }
 
             private CheckStatusOfRequest(id, result) {
                 var that = this;
-                console.log("polling to LRA service ... ");
-                $.ajax({
-                    type: "GET",
-                    url: that.serviceURL + that.userID + "/?jobId=" + id,
-                }).done(function (res) {
-                    console.log("job status: " + res);
-                    if (res == "Succeeded") {
-                        $.ajax({
-                            type: "GET",
-                            url: that.serviceURL + that.userID + "/result?jobId=" + id,
-                        }).done(function (res) {
-                            result.resolve(JSON.parse(res));
-                        }).fail(function (xhr, textStatus, errorThrown) {
-                            result.reject(xhr, textStatus, errorThrown);
-                        });
-                    } else {
-                        setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
-                    }
-                }).fail(function (xhr, textStatus, errorThrown) {
-                    result.reject(xhr, textStatus, errorThrown);
-                })
+                if (result.state() == "pending") {
+                    console.log("polling to LRA service ... ");
+                    $.ajax({
+                        type: "GET",
+                        url: that.serviceURL + that.userID + "/?jobId=" + id,
+                        statusCode: {
+                            200: function (res) {
+                                $.ajax({
+                                    type: "GET",
+                                    url: that.serviceURL + that.userID + "/result?jobId=" + id,
+                                    statusCode: {
+                                        200: function (res) {
+                                            result.resolve(res);
+                                        },
+                                        404: function (xhr, textStatus, errorThrown) {
+                                            result.reject(xhr, textStatus, errorThrown);
+                                        }
+                                    }
+                                });
+                            },
+                            201: function (res) {
+                                var notification = "Number ";
+                                var number = parseFloat(res) + 1;
+                                if (number !== NaN && number > 0)
+                                    notification += number + " in queue";
+                                else notification = "Queued";
+                                result.notify(notification);
+                                setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
+                            },
+                            202: function (res) {
+                                var notification = "Executing ";
+                                var timemls = parseFloat(res.elapsed);
+                                if (timemls < 0) throw "Server Error: Elapsed time cannot be negative";
+                                if (timemls) {
+                                    var executingTime = Math.floor(timemls / 1000);
+                                    if (executingTime < 60)
+                                        notification += "since " + executingTime + " second" + (Math.abs(executingTime) > 1 ? "s" : "");
+                                    else {
+                                        executingTime = Math.floor(executingTime / 60);
+                                        if (executingTime > 60) {
+                                            executingTime = Math.floor(executingTime / 60);
+                                            notification += "since " + executingTime + " hour" + (Math.abs(executingTime) > 1 ? "s": "");
+                                        } else
+                                            notification += "since " + executingTime + " min" + (Math.abs(executingTime) > 1 ? "s" : "");
+                                    }
+                                }
+                                result.notify(notification);
+                                setTimeout(() => { that.CheckStatusOfRequest(id, result); }, 10000);
+                            },
+                            203: function (xhr, textStatus, errorThrown) {
+                                result.reject(xhr, textStatus, errorThrown);
+                            },
+                            404: function (xhr, textStatus, errorThrown) {
+                                result.reject(xhr, textStatus, errorThrown);
+                            },
+                            501: function (res) {
+                                result.notify(res);
+                            }
+                        }
+                    });
+                }
             }
+
         }
 
         export class LTLAnalyzeService implements IServiceDriver {
@@ -696,11 +946,19 @@ module BMA {
                             url: that.url,
                             data: JSON.stringify(request.data),
                             contentType: "application/json; charset=utf-8",
-                            dataType: "json"
-                        }).done(function (res) {
-                            that.currentActiveRequestCount--;
-                            that.ShiftRequest();
-                            request.deferred.resolve(res);
+                            dataType: "json",
+                            statusCode: {
+                                200: function (res) {
+                                    that.currentActiveRequestCount--;
+                                    that.ShiftRequest();
+                                    request.deferred.resolve(res);
+                                },
+                                204: function (res) {
+                                    that.currentActiveRequestCount--;
+                                    that.ShiftRequest();
+                                    request.deferred.reject({}, "Operation was not competed within time limit", "Processing Timeout");
+                                }
+                            }
                         }).fail(function (xhr, textStatus, errorThrown) {
                             that.currentActiveRequestCount--;
                             that.ShiftRequest();

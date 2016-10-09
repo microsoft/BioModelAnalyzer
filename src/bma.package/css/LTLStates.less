@@ -888,14 +888,24 @@
 		    }
 	    }
     }
-}
-
-.LTL-test-results {
 
     img {
         display:inline-block;
         vertical-align:middle;
     }
+
+    
+    .number-of-steps{
+        display: inline-block;
+        width: 55px;
+
+        input {
+            &:hover{
+                cursor:pointer;
+            }
+        }
+    }
+
     &.default{
         background-color: transparent;
 		border: none;
@@ -903,7 +913,18 @@
         
         .red{
             color:@darkred;
+
+            &.errorMessage{
+                max-height: 50px;
+                overflow-y: hidden;
+                text-overflow: ellipsis;
+
+                &:hover{
+                    cursor:pointer;
+                }
+            }
         }
+
 	}
 }
 
@@ -1037,9 +1058,291 @@
 
 .action-button-small{
     &.grey {
+        margin-right:5px;
         &.spin{
+            margin-right:5px;
+            background-color:white;
             &:hover{
-                background-color: @midgrey;
+                //background-color: @midgrey;
+            }
+            
+        }
+        .cancel-button{
+            display:inline-block;
+            &:hover {
+                color:white;
+            }
+        }
+    }
+}
+
+.window.variable-editor{
+    height:404px;
+}
+
+.variable-editor{
+
+    .editor-namerange-container {
+        width:100%;
+
+        .variable-name-div{
+            width:calc(~"100%-165px");
+        }
+    }
+    .variable-name{
+        width:100%;
+    }
+
+    &.bmaeditor-expanded {
+        height: 434px;
+    }
+
+    &.bmaeditor-expanded-horizontaly {
+        width:485px;
+        height:700px;
+    }
+    .target-function {
+        .formula-text-area{
+            width: calc(~"100% - 2px");
+		    height:150px;
+        }
+        .formula-validation-message {
+            color:@darkred;
+        }
+    }
+
+    .description {
+        /*margin-top:20px;*/
+         margin-bottom:20px;
+         width:368px;
+        
+        .description-input{
+            width:100%;
+            padding:0 5px;
+            height: 30px;
+        }
+    }
+}
+
+.tfswitcher{
+    margin-top: 20px;
+    width: 65px;
+    
+    .tfswitch{
+        display:inline-block;
+        text-align: center;
+        vertical-align:middle;
+        width: 27px;
+        height:23px;
+        margin-right:5px;
+        border-radius: 15px;
+        background-color:@lightgrey;
+
+        &.selected{
+            background-color:@midgrey;
+            color:white;
+        }
+
+        &:hover{
+            background-color:@darkgrey;
+            color:white;
+            cursor:pointer;
+        }
+
+        &:first-child{
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+
+        &:last-child{
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+        }
+
+        &.disabled{
+            &:hover{
+                background-color:@lightgrey;
+                color:@darkgrey;
+            }
+        }
+    }
+}
+
+.model-repository{
+    .refresh {
+        display:inline-block;
+        background:url("../images/random2.png") no-repeat;
+        background-size: 25px 25px;
+        height:30px;
+        width:30px;
+        cursor:pointer;
+        padding-bottom:5px;
+        vertical-align:middle;
+    }
+    .close-icon{
+        display:inline-block;
+    }
+    ol {
+        li {
+            div {
+                display:inline-block;
+                height:20px;
+                max-width: 205px;
+                overflow:hidden;
+                text-overflow:ellipsis;
+            }
+        }
+    }
+    
+    .share-icon{
+        display: inline-block;
+        height: 20px;
+        width: 20px;
+        border: 1px solid @green;
+        border-radius: 100px;
+        color:white;
+        background-color:@green;
+        text-align: center;
+        line-height: 20px;
+        float: right;
+    }
+
+    .repository-switcher{
+        background-color:@midgrey;
+        color:white;
+        border-radius:15px;
+        width: 200px;
+        height: 20px;
+        margin-left: auto;
+        margin-right: auto;
+
+        .repository-bttn{
+            display:inline-block;
+            text-align: center;
+            line-height: 20px;
+            width: 100px;
+            height: 20px;
+            border-radius: 15px;
+
+            &:hover{
+                cursor:pointer;
+            }
+
+            &:first-child{
+                border-top-right-radius: 0px;
+                border-bottom-right-radius: 0px;
+            }
+
+            &:last-child{
+                border-top-left-radius: 0px;
+                border-bottom-left-radius: 0px;
+            }
+
+            &.active{
+                background-color:@green;
+            }
+        }
+
+    }
+
+    .signin{
+        text-align:right;
+        cursor:pointer;
+    }
+}
+
+.repository-popup-menu{
+    width:150px;
+
+    .repository-menu-item{
+        display:inline-block;
+        margin: 0px 5px 5px 0px;
+        vertical-align: middle;
+        cursor:pointer;
+
+        &.repository-menu-item-icon{
+            background-color:@midgrey;
+            width: 20px;
+            height:20px;
+            border:1px solid @midgrey;
+            border-radius:100%;
+
+            &.active{
+                background-color:white;
+            }
+        }
+
+    }
+
+    .repository-readonly-bttn{
+        background-color: @midgrey;
+        color: white;
+        border: 1px solid @midgrey;
+        border-radius: 15px;
+        width: 80px;
+        height: 20px;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+        cursor:pointer;
+
+        &.selected{
+            background-color: @green;
+            border-color:@green;
+        }
+    }
+}
+
+.ui-tooltip-content {
+   
+	.operators-info{
+        width:258px;
+        font-family: 'Segoe-UI';
+        font-size:13px;
+        line-height: 17px;
+        color: #606060;
+
+        h3 {
+            margin-top:0;
+        }
+
+        p {
+            margin: 0;
+            padding: 0;
+            width: 95%;
+        }
+	}
+}
+.model-toolbar {
+    .model-icons {
+        .onedrive-switch-btn {
+            background:url("../images/onedrive-logout.png") no-repeat;
+            background-size: 60px 60px;
+            background-position:0% 30%;
+            &.logged-in{
+                background:url("../images/onedrive-login.png") no-repeat;
+                background-size: 60px 60px;
+                background-position:0% 30%;
+            }
+        }
+    }
+}
+
+.tooltip-red{
+    color:@darkred;
+}
+
+.simulation-popout {
+    .steps-container {
+        ul.button-list {
+            li.disabled {
+                &:hover{
+                    background-color: @darkgrey;
+                    button {
+                        color:white;
+                    }
+                }
             }
         }
     }

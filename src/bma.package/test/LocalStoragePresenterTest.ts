@@ -27,12 +27,14 @@
     appModel.BioModel = biomodel;
     appModel.Layout = layout;
 
-    var localStorageTestDriver = new BMA.Test.LocalStorageTestDriver();
+    var localStorageWidget = $('<div></div>').localstoragewidget();
+    var localStorageTestDriver = new BMA.Test.LocalStorageTestDriver(localStorageWidget);
     var modelRepositoryTest = new BMA.Test.ModelRepositoryTest();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
     var checker = new BMA.ChangesChecker();
     var logService = new BMA.SessionLog();
-    
+
+    modelRepositoryTest.SaveModel("user." + name, JSON.parse(appModel.Serialize()));
 
     it("should be defined", () => {
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
@@ -41,27 +43,30 @@
 
     it("should GetModelList and SetItems on 'LocalStorageChanged' command", () => {
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
-        spyOn(modelRepositoryTest, "GetModelList");
+        spyOn(modelRepositoryTest, "GetModelList").and.callThrough();
         spyOn(localStorageTestDriver, "SetItems");
         window.Commands.Execute("LocalStorageChanged", {});
-        expect(modelRepositoryTest.GetModelList).toHaveBeenCalledWith();
-        var keys = modelRepositoryTest.GetModelList();
+        expect(modelRepositoryTest.GetModelList).toHaveBeenCalled();
+        var keys;
+        modelRepositoryTest.GetModelList().done(function (result) { keys = result; });
         expect(localStorageTestDriver.SetItems).toHaveBeenCalledWith(keys);
     });
 
     it("should RemoveModel on 'LocalStorageRemoveModel' command", () => {
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
         spyOn(modelRepositoryTest, "RemoveModel");
-        var key = "3";
-        window.Commands.Execute("LocalStorageRemoveModel", key);
-        expect(modelRepositoryTest.RemoveModel).toHaveBeenCalledWith(key);
+        var list = localStorageWidget.find("ol").children("li");
+        list.eq(0).children("button").click();
+        //window.Commands.Execute("LocalStorageRemoveModel", key);
+        expect(modelRepositoryTest.RemoveModel).toHaveBeenCalled();
     });
 
-    it("should Show storage viewer on 'LocalStorageRequested' command", () => {
+    it("should Show storage viewer with updated model list on 'LocalStorageRequested' command", () => {
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
-        spyOn(localStorageTestDriver, "Show");
+        spyOn(localStorageTestDriver, "SetItems");
+        //spyOn(localStorageTestDriver, "Show");
         window.Commands.Execute("LocalStorageRequested", {});
-        expect(localStorageTestDriver.Show).toHaveBeenCalledWith();
+        expect(localStorageTestDriver.SetItems).toHaveBeenCalled();
     });
 
     it("should SaveModel on 'LocalStorageSaveModel' command", () => {
@@ -71,20 +76,19 @@
         expect(modelRepositoryTest.SaveModel).toHaveBeenCalledWith(name, JSON.parse(appModel.Serialize()));
     });
 
-    xit("should Reset appModel on 'LocalStorageLoadModel' command when id is correct", () => {
+    it("should reset appModel when item from list was selected", () => {
         var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
-        spyOn(appModel, "Reset");
-        //var key = '4';
-        window.Commands.Execute("LocalStorageSaveModel", {});
-        window.Commands.Execute("LocalStorageLoadModel", "user." + name);
-        expect(appModel.Deserialize).toHaveBeenCalledWith(JSON.stringify(modelRepositoryTest.LoadModel(name)));
+        localStorageTestPresenter.SetOnRequestLoad(function (key) {
+            localStorageTestPresenter.LoadModel(key);
+        });
+        spyOn(appModel, "Deserialize");
+        var ol = localStorageWidget.find("ol").eq(0);
+        var li = ol.children().eq(0);
+        li.click();
+        //ol.children().eq(0).addClass("ui-selected");
+        //var st = ol.selectable("option", "stop");
+        //st();
+        expect(appModel.Deserialize).toHaveBeenCalled();
     });
-
-    xit("shouldn't Reset appModel on 'LocalStorageLoadModel' command when id is not correct", () => {
-        var localStorageTestPresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageTestDriver, modelRepositoryTest, messagebox, checker, logService, testWaitScreen);
-        spyOn(appModel, "Reset");
-        var key = 'testkey';
-        window.Commands.Execute("LocalStorageLoadModel", key);
-        expect(appModel.Deserialize).not.toHaveBeenCalled();
-    });
+    
 }); 

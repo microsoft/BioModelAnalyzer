@@ -454,7 +454,6 @@
             _type: "Operation",
             operator: {
                 name: operation.Operator.Name,
-                operandsCount: operation.Operator.OperandsCount
             },
             operands: []
         };
@@ -505,7 +504,6 @@
             _type: "Operation",
             operator: {
                 name: operation1.Operator.Name,
-                operandsCount: operation1.Operator.OperandsCount
             },
             operands: [resultKeyframe]
         };
@@ -518,7 +516,6 @@
             _type: "Operation",
             operator: {
                 name: operation2.Operator.Name,
-                operandsCount: operation2.Operator.OperandsCount
             },
             operands: [resultKeyframe]
         };
@@ -531,7 +528,6 @@
             _type: "Operation",
             operator: {
                 name: operation.Operator.Name,
-                operandsCount: operation.Operator.OperandsCount
             },
             operands: [resultOP1, resultOP2]
         };
@@ -558,7 +554,6 @@
             _type: "Operation",
             operator: {
                 name: operation1.Operator.Name,
-                operandsCount: operation1.Operator.OperandsCount
             },
             operands: [resultKeyframe]
         };
@@ -571,7 +566,6 @@
             _type: "Operation",
             operator: {
                 name: operation2.Operator.Name,
-                operandsCount: operation2.Operator.OperandsCount
             },
             operands: [resultKeyframe]
         };
@@ -584,7 +578,6 @@
             _type: "Operation",
             operator: {
                 name: operation.Operator.Name,
-                operandsCount: operation.Operator.OperandsCount
             },
             operands: [resultOP1, resultOP2]
         };
@@ -655,7 +648,6 @@
             _type: "Operation",
             operator: {
                 name: operation.Operator.Name,
-                operandsCount: operation.Operator.OperandsCount
             },
             operands: [resultKeyframe]
         };
@@ -703,7 +695,6 @@
             _type: "Operation",
             operator: {
                 name: operation.Operator.Name,
-                operandsCount: operation.Operator.OperandsCount
             },
             operands: [resultKeyframe]
         };
@@ -734,7 +725,6 @@
             _type: "Operation",
             operator: {
                 name: operation.Operator.Name,
-                operandsCount: operation.Operator.OperandsCount
             },
             operands: [resultKeyframe]
         };
@@ -760,7 +750,6 @@
             _type: "Operation",
             operator: {
                 name: operation.Operator.Name,
-                operandsCount: operation.Operator.OperandsCount
             },
             operands: [resultKeyframe]
         };
@@ -785,7 +774,6 @@
             _type: "Operation",
             operator: {
                 name: operation.Operator.Name,
-                operandsCount: operation.Operator.OperandsCount
             },
             operands: [resultKeyframe]
         };
@@ -810,7 +798,6 @@
             _type: "Operation",
             operator: {
                 name: operation.Operator.Name,
-                operandsCount: operation.Operator.OperandsCount
             },
             operands: [resultKeyframe]
         };
@@ -860,7 +847,6 @@
             _type: "Operation",
             operator: {
                 name: operation1.Operator.Name,
-                operandsCount: operation1.Operator.OperandsCount
             },
             operands: [{
                 _type: "Keyframe",
@@ -876,7 +862,6 @@
             _type: "Operation",
             operator: {
                 name: operation2.Operator.Name,
-                operandsCount: operation2.Operator.OperandsCount
             },
             operands: [{
                 _type: "Keyframe",
@@ -892,7 +877,6 @@
             _type: "Operation",
             operator: {
                 name: operation.Operator.Name,
-                operandsCount: operation.Operator.OperandsCount
             },
             operands: [resultOP1, resultOP2]
         };
@@ -986,7 +970,6 @@
             _type: "Operation",
             operator: {
                 name: operation1.Operator.Name,
-                operandsCount: operation1.Operator.OperandsCount
             },
             operands: [{
                 _type: "Keyframe",
@@ -1002,7 +985,6 @@
             _type: "Operation",
             operator: {
                 name: operation2.Operator.Name,
-                operandsCount: operation2.Operator.OperandsCount
             },
             operands: [{
                 _type: "Keyframe",
@@ -1018,7 +1000,6 @@
             _type: "Operation",
             operator: {
                 name: operation.Operator.Name,
-                operandsCount: operation.Operator.OperandsCount
             },
             operands: [resultOP1, resultOP2]
         };

@@ -19,6 +19,9 @@
 /// <reference path="script\presenters\furthertestingpresenter.ts"/>
 /// <reference path="script\presenters\simulationpresenter.ts"/>
 /// <reference path="script\presenters\formulavalidationpresenter.ts"/>
+/// <reference path="script\presenters\onedrivestoragepresenter.ts"/>
+/// <reference path="script\presenters\storagepresenter.ts"/>
+/// <reference path="script\presenters\localstoragepresenter.ts"/>
 /// <reference path="script\SVGHelper.ts"/>
 /// <reference path="script\changeschecker.ts"/>
 /// <reference path="script\widgets\drawingsurface.ts"/>
@@ -35,6 +38,8 @@
 /// <reference path="script\widgets\proofresultviewer.ts"/>
 /// <reference path="script\widgets\furthertestingviewer.ts"/>
 /// <reference path="script\widgets\localstoragewidget.ts"/>
+/// <reference path="script\widgets\modelstoragewidget.ts"/>
+/// <reference path="script\widgets\onedrivestoragewidget.ts"/>
 /// <reference path="script\widgets\ltl\keyframecompact.ts"/>
 /// <reference path="script\widgets\ltl\keyframetable.ts"/>
 /// <reference path="script\widgets\ltl\ltlstatesviewer.ts"/>
@@ -44,6 +49,7 @@
 /// <reference path="script\widgets\resultswindowviewer.ts"/>
 /// <reference path="script\widgets\coloredtableviewer.ts"/>
 /// <reference path="script\widgets\containernameeditor.ts"/>
+/// <reference path="script\widgets\tftexteditor.ts"/>
 /// <reference path="script\jisonparser.ts"/>
 
 declare var saveTextAs: any;
@@ -151,7 +157,6 @@ function popup_position() {
 
 $(document).ready(function () {
     //InteractiveDataDisplay.ZIndexDOMMarkers = undefined;
-
     var snipper = $('<div></div>').addClass('spinner').appendTo($('.loading-text'));
     for (var i = 1; i < 4; i++) {
         $('<div></div>').addClass('bounce' + i).appendTo(snipper);
@@ -209,7 +214,8 @@ function versionCheck(version) {
             }
         } else {
             console.log("server version was succesfully checked: client is up to date");
-            userDialog.detach();
+            if (userDialog !== undefined)
+                userDialog.detach();
         }
     }).fail(function (err) {
         console.log("there was an error while trying to check server version: " + err);
@@ -219,7 +225,7 @@ function versionCheck(version) {
 function loadVersion(): JQueryPromise<Object> {
     var d = $.Deferred();
     $.ajax({
-        url: "version.txt",
+        url: "/api/version", //"version.txt",
         dataType: "text",
         success: function (data) {
             var version = JSON.parse(data);
@@ -242,14 +248,14 @@ function loadScript(version) {
 
     //Defining processing service URL
     // To test locally, change to "" (empty string)
-    window.BMAServiceURL = "http://bmamathnew.cloudapp.net";
+    window.BMAServiceURL = version.computeServiceUrl; //"http://bmamathnew.cloudapp.net";
 
     //Creating ElementsRegistry
     window.ElementRegistry = new BMA.Elements.ElementsRegistry();
 
     //Creating FunctionsRegistry
     window.FunctionsRegistry = new BMA.Functions.FunctionsRegistry();
-      
+
     //Creating KeyframesRegistry
     window.KeyframesRegistry = new BMA.Keyframes.KeyframesRegistry();
     window.OperatorsRegistry = new BMA.LTLOperations.OperatorsRegistry();
@@ -443,14 +449,18 @@ function loadScript(version) {
     $("#button-undo").click(() => { window.Commands.Execute("Undo", undefined); });
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
 
+    $("#btn-onedrive-switcher").click(function (args) {
+        $("#signin :button").click();
+        //window.Commands.Execute("SwitchOneDrive", undefined);
+    });
     $("#btn-local-save").click(function (args) {
-        window.Commands.Execute("LocalStorageSaveModel", undefined);
+        window.Commands.Execute("SaveModel", undefined);
     });
     $("#btn-new-model").click(function (args) {
         window.Commands.Execute("NewModel", undefined);
     });
     $("#btn-local-storage").click(function (args) {
-        window.Commands.Execute("LocalStorageRequested", undefined);
+        window.Commands.Execute("ModelStorageRequested", undefined);
     });
     $("#btn-import-model").click(function (args) {
         window.Commands.Execute("ImportModel", undefined);
@@ -461,9 +471,17 @@ function loadScript(version) {
     });
 
     var localStorageWidget = $('<div></div>')
+        //.appendTo('#drawingSurceContainer')
+        .localstoragewidget();
+    var oneDriveStorageWidget = $("<div></div>")
+        /*.appendTo('#drawingSurceContainer')*/.onedrivestoragewidget();
+    var modelStorageWidget = $('<div></div>')
         .addClass('window')
         .appendTo('#drawingSurceContainer')
-        .localstoragewidget();
+        .modelstoragewidget({
+            localStorageWidget: localStorageWidget,
+            oneDriveWidget: oneDriveStorageWidget
+        });
 
     $("#editor").bmaeditor();
 
@@ -479,10 +497,18 @@ function loadScript(version) {
     popup.draggable({ handle: ".analysis-title", scroll: false });
 
     var expandedSimulation = $('<div></div>').simulationexpanded();
-    
+
     //Visual Settings Presenter
     var visualSettings = new BMA.Model.AppVisualSettings();
     (<any>window).VisualSettings = visualSettings;
+
+    window.Commands.On("OneDriveLoggedIn", () => {
+        $("#btn-onedrive-switcher").addClass("logged-in");
+    });
+
+    window.Commands.On("OneDriveLoggedOut", () => {
+        $("#btn-onedrive-switcher").removeClass("logged-in");
+    });
 
     window.Commands.On("Commands.ToggleLabels", function (param) {
         visualSettings.TextLabelVisibility = param;
@@ -516,7 +542,7 @@ function loadScript(version) {
         svgPlotDriver.SetGridVisibility(param);
     });
 
-    window.Commands.On("ZoomSliderBind",(value) => {
+    window.Commands.On("ZoomSliderBind", (value) => {
         $("#zoomslider").bmazoomslider({ value: value });
     });
 
@@ -524,7 +550,7 @@ function loadScript(version) {
     //    $("#zoomslider").bmazoomslider({ min: value.min, max: value.max });
     //});
 
-    window.Commands.On('SetPlotSettings',(value) => {
+    window.Commands.On('SetPlotSettings', (value) => {
 
         if (value.MaxWidth !== undefined) {
             window.PlotSettings.MaxWidth = value.MaxWidth;
@@ -535,7 +561,7 @@ function loadScript(version) {
         }
     });
 
-    window.Commands.On("AppModelChanged",() => {
+    window.Commands.On("AppModelChanged", () => {
         if (changesCheckerTool.IsChanged) {
             popupDriver.Hide();
             accordionHider.Hide();
@@ -564,11 +590,23 @@ function loadScript(version) {
     var contextMenuDriver = new BMA.UIDrivers.ContextMenuDriver($("#drawingSurceContainer"));
     var accordionHider = new BMA.UIDrivers.AccordionHider($("#analytics"));
     var localStorageDriver = new BMA.UIDrivers.LocalStorageDriver(localStorageWidget);
+    var oneDriveStorageDriver = new BMA.UIDrivers.OneDriveStorageDriver(oneDriveStorageWidget);
+    var modelStorageDriver = new BMA.UIDrivers.ModelStorageDriver(modelStorageWidget, localStorageDriver, oneDriveStorageDriver);
     //var ajaxServiceDriver = new BMA.UIDrivers.AjaxServiceDriver();
     var messagebox = new BMA.UIDrivers.MessageBoxDriver();
     //var keyframecompactDriver = new BMA.UIDrivers.KeyframesList($('#tabs-3').find('.keyframe-compact'));
     var ltlDriver = new BMA.UIDrivers.LTLViewer($("#analytics"), $('#tabs-3'));
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
+
+    //var localSettings = new BMA.OneDrive.OneDriveSettings("79832916-6a39-4c73-b13e-ee28c25d46a7", "http://localhost:81/html/callback.html", "signin");
+    //var bmaNewSettings = new BMA.OneDrive.OneDriveSettings("000000004C12BD9C", "http://bmanew.cloudapp.net/html/callback.html", "signin");
+    //var productionSettings = new BMA.OneDrive.OneDriveSettings("c18205a1-8587-4a03-9274-85845cbbcbb0", "http://biomodelanalyzer.research.microsoft.com/html/callback.html", "signin");
+
+    var oneDriveSettings = new BMA.OneDrive.OneDriveSettings(version.onedriveappid, version.onedriveredirecturl, "signin");
+
+    var connector = new BMA.OneDrive.OneDriveConnector(oneDriveSettings);
+
+    var oneDriveRepositoryTool = new BMA.LocalRepositoryTool(messagebox);//new BMA.OneDrive.OneDriveRepository;
     var changesCheckerTool = new BMA.ChangesChecker();
     changesCheckerTool.Snapshot(appModel);
 
@@ -582,10 +620,10 @@ function loadScript(version) {
 
     //Loaing ServiсeDrivers 
     var exportService = new BMA.UIDrivers.ExportService();
-    var formulaValidationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Validate"); 
-    var furtherTestingServiсe = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/FurtherTesting"); 
-    var proofAnalyzeService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Analyze"); 
-    var simulationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Simulate"); 
+    var formulaValidationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Validate");
+    var furtherTestingServiсe = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/FurtherTesting");
+    var proofAnalyzeService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Analyze");
+    var simulationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Simulate");
     var ltlSimulationService = new BMA.UIDrivers.LTLAnalyzeService(window.BMAServiceURL + "/api/AnalyzeLTLSimulation", 1);
     var ltlPolarityService = new BMA.UIDrivers.LTLAnalyzeService(window.BMAServiceURL + "/api/AnalyzeLTLPolarity", 1);
     var lratestservice = new BMA.UIDrivers.BMALRAProcessingService(window.BMAServiceURL + "/api/lra/", logService.UserID);
@@ -601,11 +639,12 @@ function loadScript(version) {
     var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, accordionHider, fullSimulationViewer, simulationViewer, popupDriver, simulationService, logService, exportService, messagebox);
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService, waitScreen);
     var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
-    var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
-
+    //var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
+    //var oneDriveStoragePresenter = new BMA.Presenters.OneDriveStoragePresenter(appModel, oneDriveStorageDriver, oneDriveRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
+    var mStoragePresenter = new BMA.Presenters.StoragePresenter(appModel, modelStorageDriver, localStorageDriver, oneDriveStorageDriver, connector, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
     //LTL Presenters
     var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlSimulationService, ltlPolarityService, lratestservice, popupDriver, exportService, fileLoaderDriver, logService);
-    
+
     //Loading model from URL
     var reserved_key = "InitialModel";
 

@@ -8,12 +8,23 @@
         var _svgCnt = undefined;
         var _svg = undefined;
 
+        var _isAutomaticSizeUpdate = true;
+
         Object.defineProperty(this, "svg", {
             get: function () {
                 return _svg;
             },
         });
 
+        Object.defineProperty(this, "IsAutomaticSizeUpdate", {
+            get: function () {
+                return _isAutomaticSizeUpdate;
+            },
+            set: function (value) {
+                _isAutomaticSizeUpdate = value;
+                that.master.requestUpdateLayout();
+            }
+        });
 
         this.computeLocalBounds = function () {
             var _bbox = undefined;
@@ -42,6 +53,14 @@
             return (y - (plotRect.y + plotRect.height / 2)) * (-1) + plotRect.y + plotRect.height / 2;
         }
 
+        this.setSVGScreenSize = function (sizeToSet) {
+            _svgCnt.width(finalRect.width).height(finalRect.height);
+            _svg.configure({
+                width: _svgCnt.width(),
+                height: _svgCnt.height()
+            }, false);
+        }
+
         this.arrange = function (finalRect) {
             InteractiveDataDisplay.CanvasPlot.prototype.arrange.call(this, finalRect);
 
@@ -51,14 +70,17 @@
                 _svgCnt.svg({ onLoad: svgLoaded });
             }
 
-            var sizeChanged = _svgCnt.width() !== finalRect.width || _svgCnt.height() !== finalRect.height;
-            if (sizeChanged) {
-                _svgCnt.width(finalRect.width).height(finalRect.height);
+            var sizeChanged = false;
+            if (_isAutomaticSizeUpdate) {
+                sizeChanged = _svgCnt.width() !== finalRect.width || _svgCnt.height() !== finalRect.height;
+                if (sizeChanged) {
+                    _svgCnt.width(finalRect.width).height(finalRect.height);
+                }
             }
 
             if (_svg !== undefined) {
                 var plotRect = that.visibleRect;
-                if (sizeChanged) {
+                if (_isAutomaticSizeUpdate && sizeChanged) {
                     _svg.configure({
                         width: _svgCnt.width(),
                         height: _svgCnt.height()

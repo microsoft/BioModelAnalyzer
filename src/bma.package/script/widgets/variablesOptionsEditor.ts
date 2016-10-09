@@ -10,12 +10,15 @@
             rangeFrom: 0,
             rangeTo: 0,
             functions: ["VAR", "CONST"],//, "POS", "NEG"],//],
-            operators1: ["+", "-", "*", "/"], 
+            operators1: ["+", "-", "*", "/"],
             operators2: ["AVG", "MIN", "MAX", "CEIL", "FLOOR"],
             inputs: [],
+            TFdescription: "",
             formula: "",
             approved: undefined,
-            oneditorclosing: undefined
+            oneditorclosing: undefined,
+            onvariablechangedcallback: undefined,
+            onformulachangedcallback: undefined,
         },
 
         resetElement: function () {
@@ -23,75 +26,37 @@
             this.name.val(that.options.name);
             this.rangeFrom.val(that.options.rangeFrom);
             this.rangeTo.val(that.options.rangeTo); 
-            this.listOfInputs.empty();
-            var inputs = this.options.inputs;
-            inputs.forEach(function (val, ind) {
-                var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
-                item.bind("click", function () {
-                    that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
-                    that.listOfInputs.hide();
-                });
-            });
-
-            this.formulaTextArea.val(that.options.formula);
-            window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: that._inputsArray() });
+            //this.description.val(that.options.TFdescription);
         },
 
         SetValidation: function (result: boolean, message: string) {
-            this.options.approved = result;
-            var that = this;
-            
-            if (this.options.approved === undefined) {
-                that.element.removeClass('bmaeditor-expanded');
-                that.prooficon.removeClass("formula-failed-icon");
-                that.prooficon.removeClass("formula-validated-icon");
-                this.formulaTextArea.removeClass("formula-failed-textarea");
-                this.formulaTextArea.removeClass("formula-validated-textarea");
-            }
-            else {
-
-                if (this.options.approved === true) {
-                    that.prooficon.removeClass("formula-failed-icon").addClass("formula-validated-icon");
-                    this.formulaTextArea.removeClass("formula-failed-textarea").addClass("formula-validated-textarea");
-                    that.element.removeClass('bmaeditor-expanded');
-                }
-                else if (this.options.approved === false) {
-                    that.prooficon.removeClass("formula-validated-icon").addClass("formula-failed-icon");
-                    this.formulaTextArea.removeClass("formula-validated-textarea").addClass("formula-failed-textarea");
-                    that.element.addClass('bmaeditor-expanded');
-                }
-
-            }
-            that.errorMessage.text(message);
-            
+            var newmessage = this.ParseErrorMessage(message);
+            this.texteditor.tftexteditor("SetValidation", result, newmessage);
         },
 
-
-        getCaretPos: function (jq)
-        {
-            var obj = jq[0];
-            obj.focus();
-
-            if (obj.selectionStart) return obj.selectionStart; //Gecko
-            else if ((<any>document).selection)  //IE
-            {
-                var sel = (<any>document).selection.createRange();
-                var clone = sel.duplicate();
-                sel.collapse(true);
-                clone.moveToElementText(obj);
-                clone.setEndPoint('EndToEnd', sel);
-                return clone.text.length;
-            }
-
-            return 0;
+        ParseErrorMessage: function (message) {
+            var newmessage = "";
+            if (!message) return newmessage;
+            if (message.message) {
+                var splitedMessage = message.message.split("Expecting");
+                var errorPlace = splitedMessage[0];
+                var missingPart = splitedMessage[1];
+                if (missingPart === undefined) {
+                    splitedMessage = message.stack.split("Unexpected");
+                } else {
+                    missingPart = missingPart.split(" got")[0].toLowerCase().replace(/'eof',/g, "");
+                    if (missingPart.endsWith(",")) missingPart = missingPart.slice(0, missingPart.length - 1);
+                    newmessage += "Expecting: " + missingPart;
+                }
+            } else newmessage = message;
+            return newmessage;
         },
-
+        
         _create: function () {
             var that = this;
             this.element.addClass("variable-editor");
-            this.element.draggable({ containment: "parent", scroll: false  });
+            this.element.draggable({ containment: "parent", scroll: false });
             this._appendInputs();
-            this._processExpandingContent();
             this._bindExpanding();
             this.resetElement();
         },
@@ -99,8 +64,12 @@
         _appendInputs: function () {
             var that = this;
             var div = $('<div></div>').addClass("close-icon").appendTo(that.element);
-            var closing = $('<img src="../../images/close.png">').appendTo(div);
-            closing.bind("click", function () {
+            //var closing = $('<img src="../../images/close.png">').appendTo(div);
+            div.bind("click", function () {
+                that.options.formula = that.getFormula();
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
                 that.element.hide();
                 if (that.options.oneditorclosing !== undefined) {
                     that.options.oneditorclosing();
@@ -117,7 +86,7 @@
 
             var rangeDiv = $('<div></div>').appendTo(namerangeDiv);
             var rangeLabel = $('<span></span>')
-                //.addClass("labels-in-variables-editor variables-editor-headers")
+            //.addClass("labels-in-variables-editor variables-editor-headers")
                 .text("Range")
                 .appendTo(rangeDiv);
             this.rangeFrom = $('<input type="text" min="0" max="100" size="1">')
@@ -129,13 +98,19 @@
             upfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
                 that._setOption("rangeFrom", valu + 1);
-                window.Commands.Execute("VariableEdited", {});
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
+                //window.Commands.Execute("VariableEdited", {});
             });
             var downfrom = $('<div></div>').addClass("triangle-down").appendTo(divtriangles1);
             downfrom.bind("click", function () {
                 var valu = Number(that.rangeFrom.val());
                 that._setOption("rangeFrom", valu - 1);
-                window.Commands.Execute("VariableEdited", {});
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
+                //window.Commands.Execute("VariableEdited", {});
             });
 
             this.rangeTo = $('<input type="text" min="0" max="100" size="1">')
@@ -147,186 +122,219 @@
             upto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
                 that._setOption("rangeTo", valu + 1);
-                window.Commands.Execute("VariableEdited", {});
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
+                //window.Commands.Execute("VariableEdited", {});
             });
             var downto = $('<div></div>').addClass("triangle-down").appendTo(divtriangles2);
             downto.bind("click", function () {
                 var valu = Number(that.rangeTo.val());
                 that._setOption("rangeTo", valu - 1);
-                window.Commands.Execute("VariableEdited", {});
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
+                //window.Commands.Execute("VariableEdited", {});
             });
 
-            var formulaDiv = $('<div></div>')
-                .addClass('target-function')
-                .appendTo(that.element);
-            $('<div></div>')
-                .addClass("window-title")
-                .text("Target Function")
-                .appendTo(formulaDiv);
-            this.formulaTextArea = $('<textarea></textarea>')
-                .attr("spellcheck", "false")
-                .addClass("formula-text-area")
-                .appendTo(formulaDiv);
-            this.prooficon = $('<div></div>')
-                .addClass("validation-icon")
-                .appendTo(formulaDiv);
-            this.errorMessage = $('<div></div>')
-                .addClass("formula-validation-message")
-                .appendTo(formulaDiv);
-        },
+            //var descriptionDiv = $("<div></div>")
+            //    .addClass("description")
+            //    .appendTo(that.element);
+            //$('<div></div>')
+            //    .addClass("window-title")
+            //    .text("Description")
+            //    .appendTo(descriptionDiv);
+            //this.description = $("<input type='text'>")
+            //    .attr("placeholder", "Description")
+            //    .addClass("description-input")
+            //    .appendTo(descriptionDiv);
 
-        _processExpandingContent: function () {
-            var that = this;
+            //!!!!
+            //this.switcher = $("<div></div>").addClass("tfswitcher").appendTo(that.element);
+            //this.textEdButton = $("<div>T</div>").addClass("tfswitch").appendTo(that.switcher).click(function () {
+            //    that.element.removeClass("bmaeditor-expanded").removeClass("bmaeditor-expanded-horizontaly");
+            //    that.switcher.children().removeClass("selected");
+            //    that.textEdButton.addClass("selected");
+            //    if (that.texteditor.css("display") === "none") {
+            //        try {
+            //            that.options.formula = /*BMA.ModelHelper.ConvertTFOperationToString(*/that.formulaeditor.formulaeditor("option", "formula"/*"operation"*/);
+            //            that.texteditor.tftexteditor({ formula: that.options.formula });
+            //            that.texteditor.show();
+            //            that.formulaeditor.hide();
+            //        } catch (ex) {
+            //            console.log(ex);
+            //            that.element.addClass("bmaeditor-expanded").addClass("bmaeditor-expanded-horizontaly");
+            //            that.switcher.children().removeClass("selected");
+            //            that.formulaEdButton.addClass("selected");
+            //        }
+            //    }
+            //    //if (that.options.onvariablechangedcallback !== undefined) {
+            //    //    that.options.onvariablechangedcallback();
+            //    //}
+            //    that.updateLayout();
+            //});
 
-            var inputsDiv = $('<div></div>').addClass('functions').appendTo(that.element);
-            $('<div></div>')
-                .addClass("window-title")
-                .text("Inputs")
-                .appendTo(inputsDiv);
-            var inpUl = $('<ul></ul>').appendTo(inputsDiv);
-            //var div = $('<div></div>').appendTo(that.element);
-            var operatorsDiv = $('<div></div>').addClass('operators').appendTo(that.element);
-            $('<div></div>')
-                .addClass("window-title")
-                .text("Operators")
-                .appendTo(operatorsDiv);
-            var opUl1 = $('<ul></ul>').appendTo(operatorsDiv);
-            var opUl2 = $('<ul></ul>').appendTo(operatorsDiv);
+            //this.formulaEdButton = $("<div>G</div>").addClass("tfswitch").appendTo(that.switcher).click(function () {
+            //    if (!$(this).hasClass("disabled")) {
+            //        that.element.addClass("bmaeditor-expanded").addClass("bmaeditor-expanded-horizontaly");
+            //        that.switcher.children().removeClass("selected");
+            //        that.formulaEdButton.addClass("selected");
+            //        if (that.formulaeditor.css("display") === "none") {
+            //            try {
+            //                that.options.formula = that.texteditor.tftexteditor("option", "formula");
+            //                console.log("everything is ok");
+            //                that.formulaeditor.formulaeditor({
+            //                    formula: that.options.formula
+            //                });
+            //                //that.formulaeditor.formulaeditor({
+            //                //    operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+            //                //});
 
-            this.infoTextArea = $('<div></div>').addClass('operators-info').appendTo(operatorsDiv);
+            //                that.texteditor.hide();
+            //                that.formulaeditor.show();
+            //            } catch (ex) {
+            //                console.log(ex);
+            //                that.element.removeClass("bmaeditor-expanded").removeClass("bmaeditor-expanded-horizontaly");
+            //                that.switcher.children().removeClass("selected");
+            //                that.textEdButton.addClass("selected");
+            //            }
+            //        }
+            //        that.updateLayout();
+            //        //if (that.options.onvariablechangedcallback !== undefined) {
+            //        //    that.options.onvariablechangedcallback();
+            //        //}
+            //    }
+            //}); !!!!
 
-            var functions = this.options.functions;
-            functions.forEach(
-                function (val, ind) {
-                    var item = $('<li></li>').appendTo(inpUl);
-                    var span = $('<button></button>').text(val).appendTo(item);
-                    item.hover(
-                        function () { that._OnHoverFunction($(this).children("button"), that.infoTextArea) },
-                        function () { that._OffHoverFunction($(this).children("button"), that.infoTextArea) }
-                        );
-                    if (ind !== 0) {
-                        item.click(function () {
-                            var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
-                            that._InsertToFormula(about);
-                        })
+            this.texteditor = $("<div></div>").appendTo(that.element);
+            this.formulaeditor = $("<div></div>").css("margin-top", "20px").css("width", "100%").appendTo(that.element);
+
+            this.formulaeditor.formulaeditor(
+                //{
+                //onvariablechangedcallback: () => {
+                //    that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
+                //    that.texteditor.tftexteditor({ formula: that.options.formula });
+                //    if (that.options.onvariablechangedcallback !== undefined) {
+                //        that.options.onvariablechangedcallback();
+                //    }
+                //}
+                //}
+            );
+            this.formulaeditor.hide();
+            //that.textEdButton.addClass("selected");
+            
+            this.texteditor.tftexteditor({
+                onformulachangedcallback: //that.options.onformulachangedcallback,
+                (params) => {
+                    try {
+                        BMA.ModelHelper.ConvertTargetFunctionToOperation(params.formula, that.options.inputs);
+                        that.element.removeClass('bmaeditor-expanded');
+                        //that.formulaEdButton.removeClass("disabled");
+                        that.SetValidation(true, "");
+                    } catch (ex) {
+                        //that.formulaEdButton.addClass("disabled");
+                        that.element.addClass('bmaeditor-expanded');
+                        that.SetValidation(false, ex);
                     }
-                });
-
-            var operators1 = this.options.operators1;
-            operators1.forEach(
-                function (val, ind) {
-                    var item = $('<li></li>').appendTo(opUl1);
-                    var span = $('<button></button>').text(val).appendTo(item);
-                    item.hover(
-                        function () { that._OnHoverFunction($(this).children("button"), that.infoTextArea) },
-                        function () { that._OffHoverFunction($(this).children("button"), that.infoTextArea) }
-                        );
-                    item.click(function () { 
-                        var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
-                        that._InsertToFormula(about);
-                    })
-                });
-
-            var operators2 = this.options.operators2;
-            operators2.forEach(
-                function (val, ind) {
-                    var item = $('<li></li>').appendTo(opUl2);
-                    var span = $('<button></button>').text(val).appendTo(item);
-                    item.hover(
-                        function () { that._OnHoverFunction($(this).children("button"), that.infoTextArea) },
-                        function () { that._OffHoverFunction($(this).children("button"), that.infoTextArea) }
-                        );
-                    item.click(function () {
-                        var about = window.FunctionsRegistry.GetFunctionByName($(this).text());
-                        that._InsertToFormula(about);
-                    })
-                });
-
-            operatorsDiv.width(opUl2.width());
-
-            this.inputsList = inpUl.children().eq(0).addClass("var-button");
-            var inpbttn = this.inputsList.children("button").addClass("inputs-list-header");
-            var expandinputsbttn = $('<div></div>')
-                .addClass('inputs-expandbttn')
-                .appendTo(inpbttn);
-            this.listOfInputs = $('<div></div>')
-                .addClass("inputs-list-content")
-                //.width(this.inputsList.outerWidth())
-                .appendTo(that.inputsList).hide();
-
-
-            this.inputsList.bind("click", function () {
-                if (that.listOfInputs.is(":hidden")) {
-                    that.inputsList.css("border-radius", "15px 15px 0 0");
-                    that.listOfInputs.show();
-                    inpbttn.addClass('inputs-list-header-expanded');
+                },
+                ondescriptionchanged: function (description) {
+                    that.options.TFdescription = description;
                 }
-                else {
-                    that.inputsList.css("border-radius", "15px");
-                    that.listOfInputs.hide();
-                    inpbttn.removeClass('inputs-list-header-expanded');
-                }
+                //onvariablechangedcallback: () => {
+                //    that.options.formula = that.texteditor.tftexteditor("option", "formula");
+                //    that.formulaeditor.formulaeditor({
+                //        operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                //    });
+                //    if (that.options.onvariablechangedcallback !== undefined) {
+                //        that.options.onvariablechangedcallback();
+                //    }
+                //}
             });
+
+            if (that.options.formula) {
+                this.texteditor.tftexteditor({
+                    formula: that.options.formula
+                });
+                this.formulaeditor.formulaeditor({
+                    formula: that.options.formula
+                });
+                //this.formulaeditor.formulaeditor({
+                //    operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                //});
+            }
+
+            if (that.options.inputs.length) {
+                this.texteditor.tftexteditor({
+                    inputs: that.options.inputs
+                });
+                var variables = [];
+                for (var i = 0; i < that.options.inputs.length; i++)
+                    variables.push({ Name: that.options.inputs[i].Name, Id: that.options.inputs[i].Id });
+
+                this.formulaeditor.formulaeditor({
+                    variables: variables
+                });
+            }
+            
+        },
+        
+        updateLayout: function () {
+            if (this.formulaeditor !== undefined) {
+                this.formulaeditor.formulaeditor("updateLayout");
+            }
+            this.name.width("calc(100% - 210px)");
         },
 
-        _OnHoverFunction: function (item: JQuery, textarea: JQuery) {
-            var selected = item.addClass("ui-selected");
-            item.parent().children().not(selected).removeClass("ui-selected");
-            this._refreshText(selected, textarea);
-        },
-
-        _OffHoverFunction: function (item: JQuery, textarea: JQuery) {
-            item.parent().children().removeClass("ui-selected");
-            textarea.text("");
-        },
-
-        _InsertToFormula: function (item: BMA.Functions.BMAFunction) {
-            var caret = this.getCaretPos(this.formulaTextArea) + item.Offset;
-            this.formulaTextArea.insertAtCaret(item.InsertText).change();
-            this.formulaTextArea[0].setSelectionRange(caret, caret);
-        },
-
-        _refreshText: function (selected: JQuery,div: JQuery) {
+        getFormula: function () {
             var that = this;
-            div.empty();
-            var fun = window.FunctionsRegistry.GetFunctionByName(selected.text());
-            $('<h3></h3>').text(fun.Head).appendTo(div);
-            $('<p></p>').text(fun.About).appendTo(div);
+            if (that.texteditor.css("display") === "none") {
+                that.options.formula = /*BMA.ModelHelper.ConvertTFOperationToString(*/that.formulaeditor.formulaeditor("option", "formula"/*"operation"*/);//);
+            } else {
+                that.options.formula = that.texteditor.tftexteditor("option", "formula");
+            }
+            return that.options.formula;
         },
+
+        //getOperation: function () {
+        //    var that = this;
+        //    var formula = that.getFormula();
+        //    return BMA.ModelHelper.ConvertTargetFunctionToOperation(formula, that.options.inputs);
+        //},
 
         _bindExpanding: function () {
             var that = this;
 
             this.name.bind("input change", function () {
                 that.options.name = that.name.val();
-                window.Commands.Execute("VariableEdited", {});
+                if (that.options.onvariablechangedcallback !== undefined) {
+                    that.options.onvariablechangedcallback();
+                }
+                //window.Commands.Execute("VariableEdited", {});
             });
 
             this.rangeFrom.bind("input change", function () {
                 that._setOption("rangeFrom", that.rangeFrom.val());
-                window.Commands.Execute("VariableEdited", {});
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
+                //window.Commands.Execute("VariableEdited", {});
             });
 
             this.rangeTo.bind("input change", function () {
                 that._setOption("rangeTo", that.rangeTo.val());
-                window.Commands.Execute("VariableEdited", {});
+                //if (that.options.onvariablechangedcallback !== undefined) {
+                //    that.options.onvariablechangedcallback();
+                //}
+                //window.Commands.Execute("VariableEdited", {});
             });
 
-            this.formulaTextArea.bind("input change propertychange", function () {
-                that._setOption("formula", that.formulaTextArea.val());
-                window.Commands.Execute("VariableEdited", {});
-            });
-
-        },
-
-        _inputsArray() {
-            var inputs = this.options.inputs;
-            var arr = {};
-            for (var i = 0; i < inputs.length; i++) {
-                if (arr[inputs[i]] === undefined) arr[inputs[i]] = 1;
-                else arr[inputs[i]]++;
-            }
-            return arr;
+            //this.description.bind("input change", function () {
+            //    that.options.TFdescription = that.description.val();
+            //    //if (that.options.onvariablechangedcallback !== undefined) {
+            //    //    that.options.onvariablechangedcallback();
+            //    //}
+            //    //window.Commands.Execute("VariableEdited", {});
+            //});
         },
 
         _setOption: function (key, value) {
@@ -350,27 +358,87 @@
                     break;
                 case "formula":
                     that.options.formula = value;
-                    var inparr = that._inputsArray();
-                    if (this.formulaTextArea.val() !== that.options.formula)
-                        this.formulaTextArea.val(that.options.formula);
-                    window.Commands.Execute("FormulaEdited", { formula: that.options.formula, inputs: inparr });
-                    
+                    this.texteditor.tftexteditor({ formula: value });
+                    //if (this.formulaEdButton.hasClass("selected")) {
+                    //    this.formulaeditor.formulaeditor({ formula: value });
+                    //    //try {
+                    //    //    this.formulaeditor.formulaeditor({
+                    //    //        operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                    //    //    });
+                    //    //} catch (ex) {
+                    //    //    console.log(ex);
+                    //    //}
+                    //}
+                    break;
+                case "TFdescription":
+                    that.options.TFdescription = value;
+                    this.texteditor.tftexteditor({
+                        TFdescription: value,
+                        ondescriptionchanged: function (description) {
+                            that.options.TFdescription = description;
+                        }
+                    });
+                    //if (this.description.val() !== that.options.TFdescription)
+                    //    this.description.val(that.options.TFdescription);
                     break;
                 case "inputs": 
                     this.options.inputs = value;
-                    this.listOfInputs.empty();
+                    //this.listOfInputs.empty();
                     var inputs = this.options.inputs;
-                    inputs.forEach(function (val, ind) {
-                        var item = $('<div></div>').text(val).appendTo(that.listOfInputs);
-                        item.bind("click", function () {
-                            that.formulaTextArea.insertAtCaret("var(" + $(this).text() + ")").change();
-                            that.listOfInputs.hide();
-                        });
+                    var variables = [];
+                    for (var i = 0; i < that.options.inputs.length; i++)
+                        variables.push({ Name: that.options.inputs[i].Name, Id: that.options.inputs[i].Id });
+
+                    this.texteditor.tftexteditor({ inputs: variables});
+
+                    this.formulaeditor.formulaeditor({
+                        variables: variables
                     });
                     break;
+                case "onformulachangedcallback":
+                    that.options.onformulachangedcallback = value;
+                    this.texteditor.tftexteditor({
+                        onformulachangedcallback: (params) => {
+                            try {
+                                BMA.ModelHelper.ConvertTargetFunctionToOperation(params.formula, that.options.inputs);
+                                //that.formulaEdButton.removeClass("disabled");
+                                that.element.removeClass('bmaeditor-expanded');
+                                this.SetValidation(true, "");
+                            } catch (ex) {
+                                //this.formulaEdButton.addClass("disabled");
+                                that.element.addClass('bmaeditor-expanded');
+                                this.SetValidation(false, ex);
+                            }
+                        }
+                    });
+                    break;
+                case "onvariablechangedcallback":
+                    that.options.onvariablechangedcallback = value;
+                    //this.formulaeditor.formulaeditor(
+                    //{
+                    //    onvariablechangedcallback: () => {
+                    //        that.options.formula = BMA.ModelHelper.ConvertTFOperationToString(that.formulaeditor.formulaeditor("option", "operation"));
+                    //        that.texteditor.tftexteditor({ formula: that.options.formula });
+                    //        if (that.options.onvariablechangedcallback !== undefined) {
+                    //            that.options.onvariablechangedcallback();
+                    //        }
+                    //    }
+                    //}
+                    //);
+                    //this.texteditor.tftexteditor({
+                    //    onvariablechangedcallback: () => {
+                    //        that.options.formula = that.texteditor.tftexteditor("option", "formula");
+                    //        that.formulaeditor.formulaeditor({
+                    //            operation: BMA.ModelHelper.ConvertTargetFunctionToOperation(that.options.formula, that.options.inputs)
+                    //        });
+                    //        if (that.options.onvariablechangedcallback !== undefined) {
+                    //            that.options.onvariablechangedcallback();
+                    //        }
+                    //    }
+                    //});
+                    break;
             }
-            $.Widget.prototype._setOption.apply(this, arguments);
-            this._super("_setOption", key, value);
+            this._super(key, value);
             //window.Commands.Execute("VariableEdited", {})
             //this.resetElement();
         },
@@ -385,6 +453,7 @@
 
 interface JQuery {
     bmaeditor(): JQuery;
+    bmaeditor(fun: string): string;
     bmaeditor(settings: Object): JQuery;
     bmaeditor(fun: string, param: any, param2: any): any;
     bmaeditor(optionLiteral: string, optionName: string): any;

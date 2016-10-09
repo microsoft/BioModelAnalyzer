@@ -1,0 +1,168 @@
+swagger: '2.0'
+
+info:
+  version: "0.0.1"
+  title: BMA Web API
+  
+basePath: /api
+
+host: bmamathnew.cloudapp.net
+#host: localhost:8223
+
+paths:
+  /AnalyzeLTLPolarity:
+    post:
+      summary: |
+        Checks polarity of an LTL query, if it takes less than 1 minute.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+      responses:
+        200:
+          description: |
+            The check is complete and its result is in the response. 
+            The check could fail and the response can contain errors.
+        504:
+          description: Timeout while waiting for the check to complete.
+
+  /Simulate:
+    post:
+      summary: |
+        Makes simulation of a model, if it takes less than 1 minute.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+      responses:
+        200:
+          description: |
+            The simulation is complete and its result is in the response. 
+            The simulation could fail and the response can contain errors.
+        504:
+          description: Timeout while waiting for the simulation to complete.
+
+  /lra/{appId}:
+    post:
+      summary: |
+        Schedules new job.
+      consumes:
+        - application/json
+      produces:
+        - text/plain
+        - application/json            
+      parameters:
+        - name: appId
+          in: path
+          description: Identifies the application that is sending the job
+          required: true
+          type: string
+          format: guid
+        - name: body
+          in: body
+          required: true
+          description: Describes the job to be done.
+      responses:
+        200:
+          description: The job is scheduled to execute.
+          schema: 
+            description: Job identifier that allows to get status and result of the job.
+            type: string
+            format: guid
+    get:
+      summary: |
+        Gets status of the job.
+      parameters: 
+        - name: jobId
+          in: query
+          description: Identifies the job. This is the identifier that is returned when the job is added
+          required: true
+          type: string
+          format: guid
+        - name: appId
+          in: path
+          description: Identifies the application that is sending the job
+          required: true
+          type: string
+          format: guid
+      produces:
+        - text/plain
+        - application/json
+      responses:
+        # Response code
+        404:
+          description: There is no job with the given job id and application id
+        200:
+          description: Succeeded - the job is succeeded
+        201:
+          description: Queued - the job is queued and awaits to be chosen by a worker
+        202:
+          description: Executing - the job is being executed
+        203:
+          description: Failed - the job is failed
+          schema:
+            description: Description of the failure.
+            type: string
+        501:
+          description: Unknown status
+    delete:
+      summary: |
+        Deletes the job and, if appropriate, cancels the execution.
+      parameters: 
+        - name: jobId
+          in: query
+          description: Identifies the job. This is the identifier that is returned when the job is added
+          required: true
+          type: string
+          format: guid
+        - name: appId
+          in: path
+          description: Identifies the application that is sending the job
+          required: true
+          type: string
+          format: guid 
+      produces:
+        - text/plain
+      responses:
+        200:
+          description: Job is deleted from the scheduler. The workers will not take the job for execution. If the job is already executing, it is requested to cancel but it is still possible that its result will be saved.
+        404:
+          description: Combination of the application and job IDs is not found.
+        500:
+          description: Exceptions occured when deleting the jobs. The scheduler is consistent though it is not guaranteed that the job execution is requested to cancel or the job will no be executed later.
+          schema:
+            description: Description of the failure.
+            type: string
+  /lra/{appId}/result:
+    get:
+      summary: |
+        Gets result of the succeeded job.
+      parameters: 
+        - name: jobId
+          in: query
+          description: Identifies the job. This is the identifier that is returned when the job is added
+          required: true
+          type: string
+          format: guid
+        - name: appId
+          in: path
+          description: Identifies the application that is sending the job
+          required: true
+          type: string
+          format: guid
+      produces:
+        - application/json
+      responses:
+        # Response code
+        404:
+          description: Either there is no job with the given job id and application id, or the job is not succeeded.
+        200:
+          description: The job is succeeded and its result is in the response.

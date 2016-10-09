@@ -5,9 +5,13 @@
         _anims: [],
         _images: [],
 
+        _operationHeights: [],
+
         options: {
             operations: [],
-            padding: { x: 3, y: 5 }
+            padding: { x: 3, y: 5 },
+            showDefaultIcon: true,
+            rightOffset: 80
         },
 
         _create: function () {
@@ -17,8 +21,17 @@
             root.css("overflow-y", "auto").css("overflow-x", "hidden").css("position", "relative");
 
             this.attentionDiv = $("<div></div>").addClass("state-compact").appendTo(root);
-            $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
-            $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
+
+            if (that.options.defaultIcon === undefined) {
+                $("<div>+</div>").addClass("state-button-empty").addClass("new").appendTo(this.attentionDiv);
+                $("<div>start by defining some temporal properties</div>").addClass("state-placeholder").appendTo(this.attentionDiv);
+            } else {
+                that.options.defaultIcon.appendTo(this.attentionDiv);
+            }
+
+            if (!that.options.showDefaultIcon) {
+                that.attentionDiv.hide();
+            }
 
             that.canvasDiv = $("<div></div>").width(root.width()).appendTo(root);
             that._canvas = $("<canvas></canvas>").attr("width", root.width()).attr("height", root.height()).width(root.width()).appendTo(that.canvasDiv);
@@ -44,6 +57,19 @@
             that.refresh();
         },
 
+        getOperationByY: function (y) {
+            var that = this;
+
+            if (that._operationHeights !== undefined && that._operationHeights.length > 0) {
+                for (var i = 0; i < that._operationHeights.length; i++) {
+                    if (y >= that._operationHeights[i].y && y <= that._operationHeights[i].y + that._operationHeights[i].height)
+                        return that._operationHeights[i].operation;
+                }
+            }
+
+            return null;
+        },
+
         refresh: function () {
             var that = this;
             var canvas = <HTMLCanvasElement>(this._canvas[0]);
@@ -51,6 +77,8 @@
             var padding = { x: 5, y: 10 };
             var maxHeight = keyFrameSize * 4;
             var context = canvas.getContext("2d");
+
+            that._operationHeights = [];
 
             var PIXEL_RATIO = (function () {
                 var dpr = window.devicePixelRatio || 1;
@@ -93,7 +121,7 @@
                 var opSize = BMA.LTLOperations.CalcOperationSizeOnCanvas(canvas, op, padding, keyFrameSize);
                 var scale = { x: 1, y: 1 };
 
-                var offset = 80;
+                var offset = that.options.rightOffset;
                 var w = opSize.width + offset;
 
                 if (w > width) {
@@ -106,6 +134,7 @@
                 }
 
                 sizes.push({ size: opSize, offset: offset, scale: scale });
+                
                 height += opSize.height + this.options.padding.y;
             }
             if (PIXEL_RATIO !== 1) {
@@ -171,6 +200,12 @@
                     context.fillText(text, opSize.width + 10, opPosition.y);
                 }
 
+                that._operationHeights.push({
+                    y: height,
+                    height: opSize.height + this.options.padding.y,
+                    operation: operations[i].operation
+                });
+
                 height += opSize.height + this.options.padding.y;
             }
         },
@@ -227,7 +262,7 @@
                 $('<div></div>').addClass('bounce' + i).appendTo(snipper);
             }
             if (islra) {
-                $('<div></div>').css("display", "inline-block").css("margin-left", 5).text("(lra)").appendTo(snipperCnt);
+                $('<div></div>').css("display", "inline-block").css("margin-left", 5).text("(long)").appendTo(snipperCnt);
             }
             return snipperCnt;
         },
@@ -241,11 +276,28 @@
                         that.attentionDiv.hide();
                     } else {
                         that.canvasDiv.hide();
-                        that.attentionDiv.show();
+                        if (that.options.showDefaultIcon) {
+                            that.attentionDiv.show();
+                        }
                     }
                     break;
                 case "padding":
                     //this.refresh();
+                    break;
+                case "showDefaultIcon":
+                    if (!value) {
+                        that.attentionDiv.hide();
+                    } else {
+                        if (that.options.operations === undefined || value.length === 0) {
+                            that.attentionDiv.show();
+                        }
+                    }
+                    break;
+                case "defaultIcon":
+                    this.attentionDiv.empty();
+                    value.appendTo(this.attentionDiv);
+                    break;
+                case "rightOffset":
                     break;
                 default:
                     break;

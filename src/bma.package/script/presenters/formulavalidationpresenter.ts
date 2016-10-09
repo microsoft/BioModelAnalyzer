@@ -9,7 +9,8 @@
                 this.editorDriver = editor;
                 this.ajax = ajax;
 
-                window.Commands.On("FormulaEdited", function (param) {
+                //window.Commands.On("FormulaEdited", function (param) {
+                that.editorDriver.SetOnFormulaEditedCallback((param) => {
                     var formula = param.formula;
                     var inputs = param.inputs;
 
@@ -33,7 +34,7 @@
                     else {
                         that.editorDriver.SetValidation(undefined, '');
                     }
-                })
+                });
             }
         }
     }

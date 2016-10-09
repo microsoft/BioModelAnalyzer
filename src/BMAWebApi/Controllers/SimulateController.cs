@@ -1,5 +1,6 @@
 ﻿using BioCheckAnalyzerCommon;
 using BioModelAnalyzer;
+using bma.BioCheck;
 using BMAWebApi;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage;
@@ -17,84 +18,27 @@ using System.Xml.Serialization;
 
 namespace bma.client.Controllers
 {
-    public class SimulationInput
-    {
-        public Model Model { get; set; }
-
-        public SimulationVariable[] Variables { get; set; }
-
-        public bool EnableLogging { get; set; }
-    }
-
-    public class SimulationOutput
-    {
-        public SimulationVariable[] Variables { get; set; }
-
-        public string[] ErrorMessages { get; set; }
-
-        public string[] DebugMessages { get; set; }
-    }
-
     public class SimulateController : ApiController
     {
-        private readonly IFailureLogger logger;
+        private readonly IFailureLogger faultLogger;
+
 
         public SimulateController(IFailureLogger logger)
         {
-            this.logger = logger;
+            if (logger == null) throw new ArgumentNullException("logger");
+            this.faultLogger = logger;
         }
 
-        // POST api/Analyze
         public SimulationOutput Post([FromBody]SimulationInput input)
-        {           
+        {
             var log = new DefaultLogService();
-
-            try 
-            {         
-                IAnalyzer analyzer = new UIMain.Analyzer();
-
-                var analyisStartTime = DateTime.Now;
-
-                if (!input.EnableLogging)
-                    log.LogDebug("Enable Logging from the Run Proof button context menu to see more detailed logging info.");
-
-                var logger = input.EnableLogging ? log : null;
-                if (logger != null)
-                {
-                    analyzer.LoggingOn(log);
-                }
-                else
-                {
-                    analyzer.LoggingOff();
-                } 
-                
-                // Prepare model for analysis
-                var model = (Model)input.Model;
-
-                var output = Utilities.RunWithTimeLimit(() => analyzer.simulate_tick(model, input.Variables), Utilities.GetTimeLimitFromConfig());
-
-                return new SimulationOutput
-                {
-                    Variables = output,
-                    ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
-                    DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null,
-                };
-
-                //outputData.ErrorMessages = log.ErrorMessages;
-                //outputData.ZippedLog = ZipHelper.Zip(string.Join(Environment.NewLine, log.DebugMessages));
-            }
-            catch (Exception ex)
+            var output = Utilities.RunWithTimeLimit(() => Simulation.Simulate(input), Utilities.GetTimeLimitFromConfig());
+            if (output.ErrorMessages != null && output.ErrorMessages.Length > 0)
             {
-                log.LogError(ex.Message);
-                var version = typeof(AnalyzeController).Assembly.GetName().Version;
-                logger.Add(DateTime.Now, version.ToString(), input, log);
-
-                return new SimulationOutput
-                {
-                    ErrorMessages = log.ErrorMessages.Length > 0 ? log.ErrorMessages.ToArray() : null,
-                    DebugMessages = log.DebugMessages.Length > 0 ? log.DebugMessages.ToArray() : null
-                };
+                var contents = new LogContents(output.DebugMessages, output.ErrorMessages);
+                faultLogger.Add(DateTime.Now, typeof(JobController).Assembly.GetName().Version.ToString(), input, contents);
             }
+            return output;
         }
     }
 }

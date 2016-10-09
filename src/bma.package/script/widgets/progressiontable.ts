@@ -37,7 +37,7 @@
             this.ClearData();
             if (this.options.data !== undefined && this.options.data.length !== 0) {
                 var data = this.options.data;
-                if (data[0].length === this.options.interval.length) 
+                if (data[0].length === this.options.interval.length)
                     for (var i = 0; i < data.length; i++) {
                         this.AddData(data[i]);
                     }
@@ -56,15 +56,15 @@
             var tr0 = $('<tr></tr>').appendTo(table);
 
             if (that.options.header !== undefined)
-                $('<td></td>').width(120).attr("colspan","2").text(that.options.header).appendTo(tr0);
+                $('<td></td>').width(120).attr("colspan", "2").text(that.options.header).appendTo(tr0);
             if (that.options.interval !== undefined) {
                 for (var i = 0; i < that.options.interval.length; i++) {
                     var tr = $('<tr></tr>').appendTo(table);
                     var td = $('<td></td>').appendTo(tr);
                     var input = $('<input type="text">').width("100%").appendTo(td);
-                    
+
                     var init = that.options.init !== undefined ? that.options.init[i] || that.options.interval[i] : that.options.interval[i];
-                    if (Array.isArray(init)) 
+                    if (Array.isArray(init))
                         input.val(init[0]);
                     else
                         input.val(init);
@@ -85,7 +85,14 @@
                         random.bind("click", function () {
                             var prev = parseInt($(this).prev().children("input").eq(0).val());
                             var index = $(this).parent().index() - 1;
-                            var randomValue = that.GetRandomInt(parseInt(that.options.interval[index][0]), parseInt(that.options.interval[index][1]));
+                            var min = parseInt(that.options.interval[index][0]);
+                            var max = parseInt(that.options.interval[index][1]);
+                            var randomValue = that.GetRandomInt(min, max);
+                            if (min !== max) {
+                                while (randomValue === prev) {
+                                    randomValue = that.GetRandomInt(min, max);
+                                }
+                            }
                             $(this).prev().children("input").eq(0).val(randomValue);//randomValue);
                             if (randomValue !== prev)
                                 $(this).parent().addClass('red');
@@ -102,7 +109,7 @@
         FindClone: function (column: JQuery): number {
             var trs = this.data.find("tr");
             var tr0 = trs.eq(0);
-            for (var i = 0; i < tr0.children("td").length-1; i++) {
+            for (var i = 0; i < tr0.children("td").length - 1; i++) {
                 var tds = trs.children("td:nth-child(" + (i + 1) + ")");
                 if (this.IsClone(column, tds)) {
                     if (this.repeat === undefined)
@@ -113,13 +120,13 @@
             return undefined;
         },
 
-        IsClone: function (td1,td2): boolean {
+        IsClone: function (td1, td2): boolean {
             if (td1.length !== td2.length)
                 return false;
             else {
                 var arr = [];
                 for (var i = 0; i < td1.length; i++) {
-                        arr[i] = td1.eq(i).text() + " " + td2.eq(i).text();
+                    arr[i] = td1.eq(i).text() + " " + td2.eq(i).text();
                     if (td1.eq(i).text() !== td2.eq(i).text())
                         return false;
                 }
@@ -138,6 +145,8 @@
 
         ClearData: function () {
             this.data.empty();
+            var rands = this.init.find("tr").not(":first-child").children("td:nth-child(2)");
+            rands.parent().removeClass("red");
         },
 
         AddData: function (data) {
@@ -190,9 +199,9 @@
                     for (var i = 0; i < data.length; i++) {
                         var tr = $('<tr></tr>').appendTo(table);
                         var td = $('<td></td>').text(data[i]).appendTo(tr);
-                        
+
                         //that.createColumnContextMenu(td);
-                        
+
                         //$('<span></span>').text(data[i]).appendTo(td);
                     }
                 }
@@ -204,20 +213,20 @@
                         //$('<span></span>').text(data[ind]).appendTo(td);
                         if (td.text() !== td.prev().text())
                             td.addClass('change')
-                        
+
                         //that.createColumnContextMenu(td);
                     })
                     var last = that.data.find("tr").children("td:last-child");
                     if (that.repeat !== undefined) {
                         if (that.IsClone(that.repeat, last))
-                            that.Highlight(that.data.find("tr:first-child").children("td").length-1);
+                            that.Highlight(that.data.find("tr:first-child").children("td").length - 1);
                         else;
                     }
                     else {
                         var cloneInd = that.FindClone(last);
                         if (cloneInd !== undefined) {
                             that.Highlight(cloneInd);
-                            that.Highlight(that.data.find("tr:first-child").children("td").length-1);
+                            that.Highlight(that.data.find("tr:first-child").children("td").length - 1);
                         }
                     }
                 }
@@ -264,7 +273,7 @@
                 });
             }
         },
-        
+
         _destroy: function () {
             this.element.empty();
         },
@@ -311,7 +320,7 @@ interface JQuery {
     progressiontable(): JQuery;
     progressiontable(settings: Object): JQuery;
     progressiontable(settings: string): any;
-    progressiontable(func: string, param1: any, param2: any ): any;
+    progressiontable(func: string, param1: any, param2?: any): any;
     progressiontable(optionLiteral: string, optionName: string): any;
     progressiontable(optionLiteral: string, optionName: string, optionValue: any): JQuery;
 }   

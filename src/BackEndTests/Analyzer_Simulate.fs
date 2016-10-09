@@ -11,7 +11,7 @@ open BioModelAnalyzer
 [<TestClass>]
 type VMCAISimulateTests() = 
 
-    [<TestMethod>]
+    [<TestMethod; TestCategory("CI")>]
     [<DeploymentItem("ToyModelUnstable.json")>]
     member x.``Unstable model simulated for 10 steps`` () = 
         let jobj = JObject.Parse(System.IO.File.ReadAllText("ToyModelUnstable.json"))
