@@ -24,7 +24,7 @@ let find_cex_cycle (net : QN.node list) (bounds : Map<QN.var, int*int>) =
         // old find cycle (looks for a cycle up to the number of steps in the network): 
 //        let cycle = Z.find_cycle_steps net diameter bounds //range
 
-    let cycle = Z.find_cycle_steps_optimized net bounds true//range
+    let cycle = Z3Util.find_cycle_steps_optimized net bounds true//range
 
     match cycle with
     | Some(x) -> Some(Result.CExCycle(x))
@@ -87,7 +87,7 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) (no_sat : bool
             match concurrencyType with
             | Synchronous ->
                 Log.log_debug "CEx(2): check whether the model cycles."
-                let cycle = Z.find_cycle_steps_optimized net bounds true//range
+                let cycle = Z3Util.find_cycle_steps_optimized net bounds true//range
 
                 match cycle with
                 | Some(x) -> Result.CExCycle(x)
@@ -97,7 +97,7 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) (no_sat : bool
                     // No cycle either... so if there is a fixpoint, it must be unique
                     // and reachable from every other state.
                     Log.log_debug "CEx(3): check whether the model has a fixpoint."
-                    let fix = Z.find_fixpoint net bounds(*was: range*)
+                    let fix = Z3Util.find_fixpoint net bounds(*was: range*)
 
                     match fix with
                     | Some(x) -> Result.CExFixpoint(x)
@@ -117,7 +117,7 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) (no_sat : bool
                 | (_,Lazy(None)) ->
                     Log.log_debug "No endComponent..."
                     Log.log_debug "CEx(3): check whether the model has a fixpoint."
-                    let fix = Z.find_fixpoint net bounds(*was: range*)
+                    let fix = Z3Util.find_fixpoint net bounds(*was: range*)
 
                     match fix with
                     | Some(x) -> Result.CExFixpoint(x)
