@@ -492,16 +492,8 @@ let find_frustrated_endpoints network bounds initiator =
     cfg.Dispose()
     endComponent
 
-<<<<<<< HEAD
-let find_frustrated_fixpoints network bounds =
-    find_frustrated_endpoints network bounds initiate_paths_to_fixpoint
 
-let find_frustrated_cycles network bounds states =
-    find_frustrated_endpoints network bounds (initiate_paths_to_cycle states)
-// Finds a cycle and returns it. I f no cycle is found returns None
-=======
 // Finds a cycle and returns it. If no cycle is found returns None
->>>>>>> 132bea3eeeccc85dbe1a59bfaac4bc71146fdeac
 // 
 // The search for cycles proceeds as follows:
 // For increasing lengths, make sure that there is a path of this length
@@ -515,14 +507,7 @@ let find_frustrated_cycles network bounds states =
 // Postcondition:
 // The returned cycle has the last state and one of the states in the first
 // half of the path the same!
-<<<<<<< HEAD
-let find_cycle_steps_optimized network bounds synchronous = 
-    let mutable cycle = None
-    let rec find_cycle_of_length length (ctx : Context) =      
-        let model = ref null
-=======
 let find_cycle_steps_optimized network bounds = 
->>>>>>> 132bea3eeeccc85dbe1a59bfaac4bc71146fdeac
 
     let rec find_cycle_of_length length (ctx : Context) (s : Solver) =      
         // add to solver the constraints to increase the path to 0..length:
@@ -536,24 +521,12 @@ let find_cycle_steps_optimized network bounds =
         let last_not_identical = ctx.MkNot(last_identical)
         s.Assert last_not_identical
 
-<<<<<<< HEAD
-        let sat = ctx.CheckAndGetModel (model)
-        if (!model) <> null then (!model).Dispose()
-
-        match (sat,synchronous) with
-        // A path of the requested length does not exists in the model, may stop the search now
-        | (LBool.False,_) ->                 
-                None
-        // A path of the requested length exists, Check for a synchronous cycle in the range: length/2..length  
-        | (LBool.True,true) -> 
-=======
         match s.Check() with
         // A path of the requested length does not exists in the model, may stop the earsch now
         | Status.UNSATISFIABLE ->                 
             None
         // A path of the requested length exists, Check for a cycle in the range: length/2..length  
         | Status.SATISFIABLE -> 
->>>>>>> 132bea3eeeccc85dbe1a59bfaac4bc71146fdeac
 
             s.Push()
            
@@ -577,82 +550,8 @@ let find_cycle_steps_optimized network bounds =
                 // update cycle with the information from model
                 let env = Z3Util.model_to_fixpoint model |> convertMapToInt |> fixpoint_to_env
                 let smallenv = extract_cycle_from_model env
-<<<<<<< HEAD
-                let res = Some(smallenv)
-                if (!model) <> null then (!model).Dispose()
-                res
-        // A path of the requested length exists, Check for a synchronous cycle in the range: length/2..length  
-        | (LBool.True,false) -> 
-
-            ctx.Push()
-           
-            // Assert that we get a repetition (cycle) in the range : length/2..length  
-            let mutable loop_condition = ctx.MkFalse()
-            for time in [0..((length/2)-1)] do 
-                let k_loop = assert_states_equal network time length ctx
-                loop_condition <- ctx.MkOr(loop_condition, k_loop)
-                
-            ctx.AssertCnstr loop_condition
-
-            // Now go find that cycle
-            
-            let rec asyncLoop (ctx:Context) acc =
-                let model = ref null
-                let sat = ctx.CheckAndGetModel (model)
-                match sat with
-                | LBool.False -> 
-                    ctx.Pop()
-                    //Exclude the previously found loops in future searches & try look for longer loops
-                    //Need to make this persist across different loop searches!
-                    List.iter (fun model -> assert_not_model !model ctx; (!model).Dispose()) acc 
-                    find_cycle_of_length (length*2) ctx
-                | LBool.True ->
-                    //There is a cycle, but is does it collapse to fix point?
-                    Log.log_debug "Testing for fix point"
-                    //Convert the env to a state and perform a simulation in async space
-                    let env = fixpoint_to_env (model_to_fixpoint !model)
-                    //This could be more efficient- it excludes simulations when we want to exclude all
-                    //cycle states over all times
-                    let acc' = (model::acc)
-                    let smallenv = extract_cycle_from_model env
-                    let states = env_to_QNState_list smallenv
-                    //BH- this code is much slower than just excluding the path! why?
-                    //I never want to see this cycle again
-//                    for time in [0..length] do
-//                        assert_none_of_these_states states ctx time
-                    assert_not_model !model ctx
-                    Log.log_debug (sprintf "Cycle contents %A" states)
-                    //Test every state in the cycle
-                    let endstate = List.fold (fun acc state ->  match acc with
-                                                                | Simulate.FixPoint(n) -> Simulate.dfsAsyncFixPoint network state
-                                                                | _ -> acc
-                                                                ) (Simulate.FixPoint(Map.empty)) states
-                    match endstate with 
-                    | Simulate.EndComponent(n) -> 
-                        //This cycle leads to an endpoint- return the endpoint
-                        //Dispose of all the old models first
-                        List.iter (fun (model:Model ref) -> (!model).Dispose()) acc' 
-                        let r = format_endComponent n
-                        Some(r)
-                    //This cycle collapses- try again until there are no more loops
-                    | Simulate.FixPoint(n) -> 
-                        Log.log_debug (sprintf "Cycle collapsed (fixpoint %A)- checking paths to the cycle" n)
-                        //Now check all the paths to the cycle for endcomponents
-                        let cycle_states = env_to_QNState_list smallenv
-                        let exit = find_frustrated_cycles network bounds cycle_states
-                        match exit with
-                        | None ->
-                                    //No endcomponents on way to cycle- now try for longer cycles
-                                    asyncLoop ctx acc'
-                        | _ -> exit
-
-            asyncLoop ctx []
-        
-        | (LBool.Undef,_) -> None
-=======
                 Some smallenv
         | Status.UNKNOWN -> None
->>>>>>> 132bea3eeeccc85dbe1a59bfaac4bc71146fdeac
      
     let cfg = System.Collections.Generic.Dictionary()
     cfg.Add("MODEL", "true")
