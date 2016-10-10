@@ -376,32 +376,32 @@ let find_cycle_steps network diameter bounds =
 
     cycle
 
-let assert_multivariable_change qn start_time end_time (z:Context) =
-    let mutable one_change = z.MkFalse()
-    let mutable this_change = z.MkTrue()
+// let assert_multivariable_change qn start_time end_time (z:Context) =
+//     let mutable one_change = z.MkFalse()
+//     let mutable this_change = z.MkTrue()
 
-    for node in qn do
-        let current_state_id = enc_z3_int_var_at_time node start_time
-        let current_state = make_z3_int_var current_state_id z
+//     for node in qn do
+//         let current_state_id = enc_z3_int_var_at_time node start_time
+//         let current_state = make_z3_int_var current_state_id z
 
-        let next_state_id = enc_z3_int_var_at_time node end_time
-        let next_state = make_z3_int_var next_state_id z
+//         let next_state_id = enc_z3_int_var_at_time node end_time
+//         let next_state = make_z3_int_var next_state_id z
 
-        this_change <- z.MkNot(z.MkEq(current_state,next_state))
-        //everything else stays the same
-        for node2 in qn do
-            if node2<>node then
-                let current_state_id2 = enc_z3_int_var_at_time node start_time
-                let current_state2 = make_z3_int_var current_state_id2 z
+//         this_change <- z.MkNot(z.MkEq(current_state,next_state))
+//         //everything else stays the same
+//         for node2 in qn do
+//             if node2<>node then
+//                 let current_state_id2 = enc_z3_int_var_at_time node start_time
+//                 let current_state2 = make_z3_int_var current_state_id2 z
 
-                let next_state_id2 = enc_z3_int_var_at_time node end_time
-                let next_state2 = make_z3_int_var next_state_id2 z
+//                 let next_state_id2 = enc_z3_int_var_at_time node end_time
+//                 let next_state2 = make_z3_int_var next_state_id2 z
 
-                this_change <- z.MkAnd(this_change,z.MkEq(current_state2,next_state2))
+//                 this_change <- z.MkAnd(this_change,z.MkEq(current_state2,next_state2))
 
-        one_change <- z.MkOr(one_change,this_change)
+//         one_change <- z.MkOr(one_change,this_change)
     
-    z.AssertCnstr (z.MkNot(one_change))
+//     z.AssertCnstr (z.MkNot(one_change))
 
 //Takes a set of paths and looks to see if their starts are diverted away
 //from a endpoint in async space
@@ -431,18 +431,18 @@ let assert_multivariable_change qn start_time end_time (z:Context) =
 //         if (!model) <> null then (!model).Dispose()
 //         None
 
-let initiate_paths_to_fixpoint network bounds ctx =
-    // get some simulations
-    unroll_qn network bounds 0 0 ctx
-    unroll_qn network bounds -1 0 ctx
-    //assert that the state before the fixpoint is not a fixpoint
-    let not_fixpoint = ctx.MkNot (assert_states_equal network -1 0 ctx)
-    ctx.AssertCnstr not_fixpoint
+// let initiate_paths_to_fixpoint network bounds ctx =
+//     // get some simulations
+//     unroll_qn network bounds 0 0 ctx
+//     unroll_qn network bounds -1 0 ctx
+//     //assert that the state before the fixpoint is not a fixpoint
+//     let not_fixpoint = ctx.MkNot (assert_states_equal network -1 0 ctx)
+//     ctx.AssertCnstr not_fixpoint
 
-let initiate_paths_to_cycle states network bounds ctx =
-    assert_any_one_of_these_states states ctx 0
-    unroll_qn network bounds -1 0 ctx
-    assert_none_of_these_states states ctx -1
+// let initiate_paths_to_cycle states network bounds ctx =
+//     assert_any_one_of_these_states states ctx 0
+//     unroll_qn network bounds -1 0 ctx
+//     assert_none_of_these_states states ctx -1
 
 // Finds states that lead to a fixpoint in synchronous space
 // but don't in asynchronous space (hence "frustrated")
@@ -450,47 +450,47 @@ let initiate_paths_to_cycle states network bounds ctx =
 // Find states that transition to a fixpoint in sync space
 // Test if they transition to a fixpoint in async space
 // Returns either None or an endcomponent
-let find_frustrated_endpoints network bounds initiator =
-    let mutable endComponent = None
-    let cfg = new Config()
-    cfg.SetParamValue("MODEL", "true")
-    let ctx = new Context(cfg)
+// let find_frustrated_endpoints network bounds initiator =
+//     let mutable endComponent = None
+//     let cfg = new Config()
+//     cfg.SetParamValue("MODEL", "true")
+//     let ctx = new Context(cfg)
     
-    let rec find_path_to_fixpoint_of_length network bounds length (ctx:Context) =
-        //first check to see if theres an endcomponent in the last round of transitions
-        let init = 1 - length
-        ctx.Push()
-        Log.log_debug (sprintf "Looking for frustrated fp in paths from t=%d to t=0" init)
-        let res = frustrated_endpoint network ctx init
-        ctx.Pop()
+//     let rec find_path_to_fixpoint_of_length network bounds length (ctx:Context) =
+//         //first check to see if theres an endcomponent in the last round of transitions
+//         let init = 1 - length
+//         ctx.Push()
+//         Log.log_debug (sprintf "Looking for frustrated fp in paths from t=%d to t=0" init)
+//         let res = frustrated_endpoint network ctx init
+//         ctx.Pop()
 
-        match res with
-        | Some(n) -> Some(n)
-        | None ->   //No endcomponents found- add an extra step to the simulation
-                    Log.log_debug (sprintf "Found no fix points- looking for longer paths (length %d)" length)
-                    unroll_qn network bounds (init-1) init ctx
-                    //Do any new simulations of this length exist?
-                    let model = ref null
-                    let sat = ctx.CheckAndGetModel (model)
-                    if sat = LBool.True then 
-                        Log.log_debug "Found longer paths- continuing search"
-                        //Simulations exist- test them for frustrated fp and try increase 
-                        //path length
-                        if (!model) <> null then (!model).Dispose()
-                        find_path_to_fixpoint_of_length network bounds (length+1) ctx
-                    else 
-                        Log.log_debug "No longer simulations available- there are no frustrated fp"
-                        //No more simulations to be found
-                        if (!model) <> null then (!model).Dispose()
-                        None
+//         match res with
+//         | Some(n) -> Some(n)
+//         | None ->   //No endcomponents found- add an extra step to the simulation
+//                     Log.log_debug (sprintf "Found no fix points- looking for longer paths (length %d)" length)
+//                     unroll_qn network bounds (init-1) init ctx
+//                     //Do any new simulations of this length exist?
+//                     let model = ref null
+//                     let sat = ctx.CheckAndGetModel (model)
+//                     if sat = LBool.True then 
+//                         Log.log_debug "Found longer paths- continuing search"
+//                         //Simulations exist- test them for frustrated fp and try increase 
+//                         //path length
+//                         if (!model) <> null then (!model).Dispose()
+//                         find_path_to_fixpoint_of_length network bounds (length+1) ctx
+//                     else 
+//                         Log.log_debug "No longer simulations available- there are no frustrated fp"
+//                         //No more simulations to be found
+//                         if (!model) <> null then (!model).Dispose()
+//                         None
 
-    initiator network bounds ctx 
-    //Could add an additional constraint that >1 variable must change
+//     initiator network bounds ctx 
+//     //Could add an additional constraint that >1 variable must change
 
-    endComponent <- find_path_to_fixpoint_of_length network bounds 2 ctx
-    ctx.Dispose()
-    cfg.Dispose()
-    endComponent
+//     endComponent <- find_path_to_fixpoint_of_length network bounds 2 ctx
+//     ctx.Dispose()
+//     cfg.Dispose()
+//     endComponent
 
 
 // Finds a cycle and returns it. If no cycle is found returns None
