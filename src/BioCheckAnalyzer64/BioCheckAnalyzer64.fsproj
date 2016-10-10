@@ -124,6 +124,9 @@
     <Compile Include="..\BioCheckAnalyzer32\Stabilize.fs">
       <Link>Stabilize.fs</Link>
     </Compile>
+        <Compile Include="..\BioCheckAnalyzer32\Simulate.fs">
+      <Link>Simulate.fs</Link>
+    </Compile>
     <Compile Include="..\BioCheckAnalyzer32\ModelToExcel.fs">
       <Link>ModelToExcel.fs</Link>
     </Compile>
