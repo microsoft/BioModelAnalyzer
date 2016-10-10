@@ -1,0 +1,8 @@
+{
+    "typescript.tsdk": "./node_modules/typescript/lib",
+
+    "codemetrics.basics.CodeLensHiddenUnder" : 8,
+    "codemetrics.basics.ComplexityLevelNormal": 8,
+    "codemetrics.basics.ComplexityLevelHigh": 15,
+    "codemetrics.basics.ComplexityLevelExtreme" : 25
+}

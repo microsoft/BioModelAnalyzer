@@ -1,0 +1,7 @@
+/lib
+/node_modules
+/typings
+/coverage
+/*.log
+/config/local*.json
+/.vscode
