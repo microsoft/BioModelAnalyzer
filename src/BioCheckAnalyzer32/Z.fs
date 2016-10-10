@@ -381,20 +381,20 @@ let assert_multivariable_change qn start_time end_time (z:Context) =
     let mutable this_change = z.MkTrue()
 
     for node in qn do
-        let current_state_id = get_z3_int_var_at_time node start_time
+        let current_state_id = enc_z3_int_var_at_time node start_time
         let current_state = make_z3_int_var current_state_id z
 
-        let next_state_id = get_z3_int_var_at_time node end_time
+        let next_state_id = enc_z3_int_var_at_time node end_time
         let next_state = make_z3_int_var next_state_id z
 
         this_change <- z.MkNot(z.MkEq(current_state,next_state))
         //everything else stays the same
         for node2 in qn do
             if node2<>node then
-                let current_state_id2 = get_z3_int_var_at_time node start_time
+                let current_state_id2 = enc_z3_int_var_at_time node start_time
                 let current_state2 = make_z3_int_var current_state_id2 z
 
-                let next_state_id2 = get_z3_int_var_at_time node end_time
+                let next_state_id2 = enc_z3_int_var_at_time node end_time
                 let next_state2 = make_z3_int_var next_state_id2 z
 
                 this_change <- z.MkAnd(this_change,z.MkEq(current_state2,next_state2))
@@ -408,28 +408,28 @@ let assert_multivariable_change qn start_time end_time (z:Context) =
 //Assumes that the context initially passed has the entrypoint
 //of the endpoint (cycle state or fixpoint) specified as state 0
 //and that state -1 is not part of the endpoint
-let rec frustrated_endpoint network (ctx: Context) (t:int) =
-    //Add an extra constraint to limit the search to paths starting with multivariable transitions
-    assert_multivariable_change network t (t+1) ctx
-    let model = ref null
-    let sat = ctx.CheckAndGetModel (model)
+// let rec frustrated_endpoint network (ctx: Context) (t:int) =
+//     //Add an extra constraint to limit the search to paths starting with multivariable transitions
+//     assert_multivariable_change network t (t+1) ctx
+//     let model = ref null
+//     let sat = ctx.CheckAndGetModel (model)
 
-    // Did we find a transition?
-    if sat = LBool.True then
-        let state = fixpoint_to_env (model_to_fixpoint !model) |> env_to_QNState_t t
-        Log.log_debug (sprintf "Found some transitions %A" (fixpoint_to_env (model_to_fixpoint !model)) )
-        match (Simulate.dfsAsyncFixPoint network state) with
-        | Simulate.FixPoint(n) ->       Log.log_debug "Found a fix point- moving onto next"
-                                        assert_not_model !model ctx
-                                        if (!model) <> null then (!model).Dispose()
-                                        frustrated_endpoint network ctx t
-        | Simulate.EndComponent(n) ->   Log.log_debug "Found an end component"
-                                        if (!model) <> null then (!model).Dispose()
-                                        Some(format_endComponent n) 
-    else
-        Log.log_debug "Found no transitions"
-        if (!model) <> null then (!model).Dispose()
-        None
+//     // Did we find a transition?
+//     if sat = LBool.True then
+//         let state = fixpoint_to_env (model_to_fixpoint !model) |> env_to_QNState_t t
+//         Log.log_debug (sprintf "Found some transitions %A" (fixpoint_to_env (model_to_fixpoint !model)) )
+//         match (Simulate.dfsAsyncFixPoint network state) with
+//         | Simulate.FixPoint(n) ->       Log.log_debug "Found a fix point- moving onto next"
+//                                         assert_not_model !model ctx
+//                                         if (!model) <> null then (!model).Dispose()
+//                                         frustrated_endpoint network ctx t
+//         | Simulate.EndComponent(n) ->   Log.log_debug "Found an end component"
+//                                         if (!model) <> null then (!model).Dispose()
+//                                         Some(format_endComponent n) 
+//     else
+//         Log.log_debug "Found no transitions"
+//         if (!model) <> null then (!model).Dispose()
+//         None
 
 let initiate_paths_to_fixpoint network bounds ctx =
     // get some simulations
