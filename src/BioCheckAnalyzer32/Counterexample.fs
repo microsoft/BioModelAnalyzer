@@ -24,7 +24,7 @@ let find_cex_cycle (net : QN.node list) (bounds : Map<QN.var, int*int>) =
         // old find cycle (looks for a cycle up to the number of steps in the network): 
 //        let cycle = Z.find_cycle_steps net diameter bounds //range
 
-    let cycle = Z3Util.find_cycle_steps_optimized net bounds true//range
+    let cycle = Z.find_cycle_steps_optimized net bounds true//range
 
     match cycle with
     | Some(x) -> Some(Result.CExCycle(x))
@@ -87,7 +87,7 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) (no_sat : bool
             match concurrencyType with
             | Synchronous ->
                 Log.log_debug "CEx(2): check whether the model cycles."
-                let cycle = Z3Util.find_cycle_steps_optimized net bounds true//range
+                let cycle = Z.find_cycle_steps_optimized net bounds true//range
 
                 match cycle with
                 | Some(x) -> Result.CExCycle(x)
@@ -105,23 +105,24 @@ let find_cex (net : QN.node list) (bounds : Map<QN.var, int*int>) (no_sat : bool
                         Log.log_debug "...and no fixpoint???"
                         Result.CExUnknown
             | Asynchronous -> 
-                Log.log_debug "CEx(2): check whether the model has a endcomponent."
-                Log.log_debug "CEx(2a): check whether the model has a frustrated fixpoint."
-                let fix = Z.find_frustrated_fixpoints net bounds
-                //First find a cycle
-                let cycle = lazy (Log.log_debug "CEx(2b): check whether the model has collapsing cycles."; Z.find_cycle_steps_optimized net bounds false)
-                //Test to see if the cycle collapses in async space
-                match (fix,cycle) with
-                | (Some(x),_) -> Result.CExEndComponent(x)
-                | (_,Lazy(Some(x))) -> Result.CExEndComponent(x)
-                | (_,Lazy(None)) ->
-                    Log.log_debug "No endComponent..."
-                    Log.log_debug "CEx(3): check whether the model has a fixpoint."
-                    let fix = Z3Util.find_fixpoint net bounds(*was: range*)
+                failwith "Not implemented yet BAH"
+                // Log.log_debug "CEx(2): check whether the model has a endcomponent."
+                // Log.log_debug "CEx(2a): check whether the model has a frustrated fixpoint."
+                // let fix = Z.find_frustrated_fixpoints net bounds
+                // //First find a cycle
+                // let cycle = lazy (Log.log_debug "CEx(2b): check whether the model has collapsing cycles."; Z.find_cycle_steps_optimized net bounds false)
+                // //Test to see if the cycle collapses in async space
+                // match (fix,cycle) with
+                // | (Some(x),_) -> Result.CExEndComponent(x)
+                // | (_,Lazy(Some(x))) -> Result.CExEndComponent(x)
+                // | (_,Lazy(None)) ->
+                //     Log.log_debug "No endComponent..."
+                //     Log.log_debug "CEx(3): check whether the model has a fixpoint."
+                //     let fix = Z3Util.find_fixpoint net bounds(*was: range*)
 
-                    match fix with
-                    | Some(x) -> Result.CExFixpoint(x)
-                    | None ->
-                        Log.log_debug "...and no fixpoint???"
-                        Result.CExUnknown
+                //     match fix with
+                //     | Some(x) -> Result.CExFixpoint(x)
+                //     | None ->
+                //         Log.log_debug "...and no fixpoint???"
+                //         Result.CExUnknown
 
