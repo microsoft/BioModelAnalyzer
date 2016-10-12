@@ -86,7 +86,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -110,7 +110,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -121,7 +121,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -135,19 +135,62 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\backend\Cell.h" />
+    <ClInclude Include="..\..\backend\CellProgram.h" />
+    <ClInclude Include="..\..\backend\Condition.h" />
+    <ClInclude Include="..\..\backend\Directive\Directive.h" />
+    <ClInclude Include="..\..\backend\Directive\Divide.h" />
+    <ClInclude Include="..\..\backend\Directive\StateTransition.h" />
+    <ClInclude Include="..\..\backend\Event\ChangeState.h" />
+    <ClInclude Include="..\..\backend\Event\Death.h" />
+    <ClInclude Include="..\..\backend\Event\Division.h" />
+    <ClInclude Include="..\..\backend\Event\Event.h" />
+    <ClInclude Include="..\..\backend\Expression\AndExp.h" />
+    <ClInclude Include="..\..\backend\Expression\BoolExp.h" />
+    <ClInclude Include="..\..\backend\Expression\BoolVar.h" />
+    <ClInclude Include="..\..\backend\Expression\EqExp.h" />
+    <ClInclude Include="..\..\backend\Expression\Negation.h" />
+    <ClInclude Include="..\..\backend\Expression\NeqExp.h" />
+    <ClInclude Include="..\..\backend\Happening.h" />
+    <ClInclude Include="..\..\backend\HelperFunctions.h" />
+    <ClInclude Include="..\..\backend\LineageLib.h" />
+    <ClInclude Include="..\..\backend\Simulation.h" />
+    <ClInclude Include="..\..\backend\State.h" />
+    <ClInclude Include="..\..\backend\Variable\BoolType.h" />
+    <ClInclude Include="..\..\backend\Variable\EnumType.h" />
+    <ClInclude Include="..\..\backend\Variable\Type.h" />
+    <ClInclude Include="..\..\backend\Variable\Variable.h" />
     <ClInclude Include="BackEndClassLibrary1.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\backend\Cell.cpp" />
+    <ClCompile Include="..\..\backend\CellProgram.cpp" />
+    <ClCompile Include="..\..\backend\Condition.cpp" />
+    <ClCompile Include="..\..\backend\Directive\Directive.cpp" />
+    <ClCompile Include="..\..\backend\Directive\Divide.cpp" />
+    <ClCompile Include="..\..\backend\Directive\StateTransition.cpp" />
+    <ClCompile Include="..\..\backend\Event\ChangeState.cpp" />
+    <ClCompile Include="..\..\backend\Event\Death.cpp" />
+    <ClCompile Include="..\..\backend\Event\Division.cpp" />
+    <ClCompile Include="..\..\backend\Event\Event.cpp" />
+    <ClCompile Include="..\..\backend\Expression\AndExp.cpp" />
+    <ClCompile Include="..\..\backend\Expression\BoolExp.cpp" />
+    <ClCompile Include="..\..\backend\Expression\BoolVar.cpp" />
+    <ClCompile Include="..\..\backend\Expression\EqExp.cpp" />
+    <ClCompile Include="..\..\backend\Expression\Negation.cpp" />
+    <ClCompile Include="..\..\backend\Expression\NeqExp.cpp" />
+    <ClCompile Include="..\..\backend\Happening.cpp" />
+    <ClCompile Include="..\..\backend\HelperFunctions.cpp" />
+    <ClCompile Include="..\..\backend\LineageLib.cpp" />
+    <ClCompile Include="..\..\backend\Simulation.cpp" />
+    <ClCompile Include="..\..\backend\State.cpp" />
+    <ClCompile Include="..\..\backend\Variable\BoolType.cpp" />
+    <ClCompile Include="..\..\backend\Variable\EnumType.cpp" />
+    <ClCompile Include="..\..\backend\Variable\Type.cpp" />
+    <ClCompile Include="..\..\backend\Variable\Variable.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="BackEndClassLibrary1.cpp" />
-    <ClCompile Include="Stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -157,6 +200,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="app.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\backend\.cproject" />
+    <None Include="..\..\backend\.cproject_linux" />
+    <None Include="..\..\backend\.project" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
