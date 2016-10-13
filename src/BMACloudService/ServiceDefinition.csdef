@@ -5,11 +5,13 @@
       <Site name="Web">
         <Bindings>
           <Binding name="Endpoint1" endpointName="Endpoint1" />
+          <Binding name="HttpsIn" endpointName="HttpsIn" />
         </Bindings>
       </Site>
     </Sites>
     <Endpoints>
       <InputEndpoint name="Endpoint1" protocol="http" port="80" />
+      <InputEndpoint name="HttpsIn" protocol="https" port="443" certificate="biomodelanalyzer2.cloudapp.net" />
     </Endpoints>
     <ConfigurationSettings>
       <Setting name="StorageConnectionString" />
@@ -19,5 +21,11 @@
       <Setting name="OneDriveAppId" />
       <Setting name="OneDriveRedirectUrl" />
     </ConfigurationSettings>
-  </WebRole>
+    <Certificates>
+      <Certificate name="biomodelanalyzer2.cloudapp.net"
+                   storeLocation="LocalMachine"
+                   storeName="My"
+                   permissionLevel="limitedOrElevated" />
+    </Certificates>
+    </WebRole>
 </ServiceDefinition>

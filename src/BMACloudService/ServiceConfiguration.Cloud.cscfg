@@ -5,10 +5,16 @@
     <ConfigurationSettings>
       <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biomodelanalyzer2;AccountKey=***REMOVED***" />
       <Setting name="ComputeTimeLimit" value="90" />
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=bmanew;AccountKey=***REMOVED***" />
+      <!--<Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=bmanew;AccountKey=***REMOVED***" />-->
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biomodelanalyzer2;AccountKey=***REMOVED***" />
       <Setting name="ComputeServiceUrl" value="http://bmamath.cloudapp.net" />
       <Setting name="OneDriveAppId" value="c18205a1-8587-4a03-9274-85845cbbcbb0" />
       <Setting name="OneDriveRedirectUrl" value="https://biomodelanalyzer.research.microsoft.com/html/callback.html" />
     </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="biomodelanalyzer2.cloudapp.net"
+          thumbprint="5C8B0B3B8507405438114366F159A660223C106D"
+          thumbprintAlgorithm="sha1" />
+    </Certificates>
   </Role>
 </ServiceConfiguration>

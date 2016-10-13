@@ -10,5 +10,10 @@
       <Setting name="OneDriveAppId" value="79832916-6a39-4c73-b13e-ee28c25d46a7" />
       <Setting name="OneDriveRedirectUrl" value="http://localhost/html/callback.html" />
     </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="biomodelanalyzer2.cloudapp.net"
+          thumbprint="5C8B0B3B8507405438114366F159A660223C106D"
+          thumbprintAlgorithm="sha1" />
+    </Certificates>
   </Role>
 </ServiceConfiguration>
