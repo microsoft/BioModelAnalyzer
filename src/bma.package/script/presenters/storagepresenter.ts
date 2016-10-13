@@ -116,7 +116,7 @@
                     that.activePresenter = "local";
                     console.error("Login failed: " + failure.error_description);
                 };
-                
+
                 var onLogout = function (logout) {
                     window.Commands.Execute("OneDriveLoggedOut", undefined);
                     that.activePresenter = "local";
@@ -131,7 +131,7 @@
                 };
 
                 connector.Enable(onLogin, onLoginFailed, onLogout);
-                
+
                 //that.driver.SetOnSignInCallback(function () {
                 //});
 
@@ -162,6 +162,15 @@
                         that.localStorageDriver.SetOnUnselect();
                     else that.oneDriveStorageDriver.SetOnUnselect();
                 });
+
+                window.Commands.On("TurnRepository", function (args) {
+
+                });
+
+                window.Commands.On("SwitchRepository", function (args) {
+
+                });
+
             }
 
             public RequestLoadModel() {

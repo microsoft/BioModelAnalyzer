@@ -101,6 +101,7 @@
     <Content Include="css\bma.css" />
     <Content Include="images\onedrive-login.png" />
     <Content Include="images\onedrive-logout.png" />
+    <Content Include="images\onedrive-off.png" />
     <Content Include="js\monaco\editor\base\common\worker\simpleWorker.js" />
     <Content Include="js\monaco\editor\base\common\worker\simpleWorker.nls.js" />
     <Content Include="js\monaco\editor\base\worker\workerMain.js" />

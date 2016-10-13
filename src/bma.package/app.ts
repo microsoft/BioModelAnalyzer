@@ -462,6 +462,7 @@ function loadScript(version) {
         }
         //window.Commands.Execute("SwitchOneDrive", undefined);
     });
+
     $("#btn-local-save").click(function (args) {
         window.Commands.Execute("SaveModel", undefined);
     });
