@@ -449,8 +449,17 @@ function loadScript(version) {
     $("#button-undo").click(() => { window.Commands.Execute("Undo", undefined); });
     $("#button-redo").click(() => { window.Commands.Execute("Redo", undefined); });
 
-    $("#btn-onedrive-switcher").click(function (args) {
-        $("#signin :button").click();
+    //disabling default context menu from browser
+    $("#btn-onedrive-switcher").contextmenu(function () {
+        return false;
+    });
+
+    $("#btn-onedrive-switcher").mousedown(function (args) {
+        if (args.button === 2) {
+            window.Commands.Execute("TurnRepository", { toggleFunc: () => { $("#signin :button").click(); } });
+        } else {
+            window.Commands.Execute("SwitchRepository", undefined);
+        }
         //window.Commands.Execute("SwitchOneDrive", undefined);
     });
     $("#btn-local-save").click(function (args) {
