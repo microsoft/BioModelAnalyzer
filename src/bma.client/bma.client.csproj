@@ -309,6 +309,10 @@
     <Content Include="js\jquery.mousewheel.js" />
     <Content Include="js\jquery.mousewheel.min.js" />
     <Content Include="js\jquery.ui-touchpunch.js" />
+    <None Include="Properties\PublishProfiles\bmademo - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\bmademo - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\bmademofrontend - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\bmademofrontend - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="js\jquery.svganim.js" />
     <Content Include="js\jquery.svganim.min.js" />
@@ -369,14 +373,6 @@
     <Content Include="css\website.css.map">
       <DependentUpon>website.css</DependentUpon>
     </Content>
-    <None Include="Properties\PublishProfiles\bmaclienttest - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\bmaclienttest - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\bmaclienttest.pubxml" />
-    <None Include="Properties\PublishProfiles\bmaclienttest2 - FTP %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\bmaclienttest2 - FTP %283%29.pubxml" />
-    <None Include="Properties\PublishProfiles\bmaclienttest2 - Web Deploy %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\bmaclienttest2 - Web Deploy %283%29.pubxml" />
-    <None Include="Properties\PublishProfiles\bmaclienttest2.pubxml" />
     <Content Include="js\FileSaver.js" />
     <Content Include="js\idd.heatmapworker.js" />
     <Content Include="js\jquery.browser.min.js" />
@@ -394,59 +390,7 @@
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\FSharp 4.3.1.0\FSharp.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\nuget\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Data.Edm, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\nuget\Microsoft.Data.Edm.5.7.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Data.OData, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\nuget\Microsoft.Data.OData.5.7.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Data.Services.Client, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\nuget\Microsoft.Data.Services.Client.5.7.0\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\nuget\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\nuget\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\nuget\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\nuget\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\nuget\Microsoft.WindowsAzure.ConfigurationManager.3.1.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Diagnostics, Version=2.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=2.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Storage, Version=6.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\nuget\WindowsAzure.Storage.6.1.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\ext\nuget\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -485,10 +429,6 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="Unity.ServiceLocator, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\ext\nuget\Unity.ServiceLocator.2.0.0\lib\net45\Unity.ServiceLocator.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Silverlight.js" />
@@ -532,51 +472,7 @@
     </When>
     <Otherwise />
   </Choose>
-  <ItemGroup>
-    <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
-      <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
-      <Name>BioCheckAnalyzer64</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
-      <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>
-      <Name>BioCheckAnalyzerCommon</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BmaBioCheckAnalyzer\BmaBioCheckAnalyzer.csproj">
-      <Project>{573c06c3-ab0d-4db5-a2e2-53a40e1bba57}</Project>
-      <Name>BmaBioCheckAnalyzer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BMAWebApi\BMAWebApi.csproj">
-      <Project>{6652fdab-c878-4661-baad-664cf8327467}</Project>
-      <Name>BMAWebApi</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Jobs\AnalyzeLTL\AnalyzeLTL.csproj">
-      <Project>{f27a4a37-7fde-473e-ac6a-dcb38451bbf4}</Project>
-      <Name>AnalyzeLTL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Jobs\Analyze\Analyze.csproj">
-      <Project>{dffb825c-8482-4cc2-bf67-0b787a9f5e1e}</Project>
-      <Name>Analyze</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Jobs\FurtherTesting\FurtherTesting.csproj">
-      <Project>{31cd1208-f215-40ce-80b9-0093e1b1494b}</Project>
-      <Name>FurtherTesting</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Jobs\SimulateLTL\SimulateLTL.csproj">
-      <Project>{e7535067-7b3d-4e8f-81b9-62e23550b535}</Project>
-      <Name>SimulateLTL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Jobs\Simulate\Simulate.csproj">
-      <Project>{90ff5549-6138-4653-89c7-5a0dfb9034cf}</Project>
-      <Name>Simulate</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UIExpr\UIExpr.fsproj">
-      <Project>{c6745675-ea9f-41f3-bffc-2c3810585b36}</Project>
-      <Name>UIExpr</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="tests\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
