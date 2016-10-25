@@ -458,7 +458,7 @@ function loadScript(version) {
         if (args.button === 2) {
             window.Commands.Execute("TurnRepository", { toggleFunc: () => { $("#signin :button").click(); } });
         } else {
-            window.Commands.Execute("SwitchRepository", undefined);
+            window.Commands.Execute("SwitchRepository", { toggleFunc: () => { $("#signin :button").click(); } });
         }
         //window.Commands.Execute("SwitchOneDrive", undefined);
     });
@@ -513,11 +513,15 @@ function loadScript(version) {
     (<any>window).VisualSettings = visualSettings;
 
     window.Commands.On("OneDriveLoggedIn", () => {
-        $("#btn-onedrive-switcher").addClass("logged-in");
+        $("#btn-onedrive-switcher").addClass("logged-in").removeClass("turned-off");
     });
 
     window.Commands.On("OneDriveLoggedOut", () => {
-        $("#btn-onedrive-switcher").removeClass("logged-in");
+        $("#btn-onedrive-switcher").removeClass("logged-in").removeClass("turned-off");
+    });
+
+    window.Commands.On("OneDriveTurnedOff", () => {
+        $("#btn-onedrive-switcher").removeClass("logged-in").addClass("turned-off");
     });
 
     window.Commands.On("Commands.ToggleLabels", function (param) {

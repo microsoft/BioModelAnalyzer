@@ -13,6 +13,7 @@
             private messagebox: BMA.UIDrivers.IMessageServiсe;
             private checker: BMA.UIDrivers.ICheckChanges;
             private activePresenter: string = "local";
+            private isConnectedToOneDrive: boolean = false;
 
             constructor(
                 appModel: BMA.Model.AppModel,
@@ -59,6 +60,7 @@
                 });
 
                 var onLogin = function (oneDrive) {
+                    that.isConnectedToOneDrive = true;
                     window.Commands.Execute("OneDriveLoggedIn", undefined);
                     that.driver.SetAuthorizationStatus(true);
                     //that.localStorageDriver.SetOnEnableContextMenu(true);
@@ -113,11 +115,13 @@
                 };
 
                 var onLoginFailed = function (failure) {
+                    that.isConnectedToOneDrive = false;
                     that.activePresenter = "local";
                     console.error("Login failed: " + failure.error_description);
                 };
 
                 var onLogout = function (logout) {
+                    that.isConnectedToOneDrive = false;
                     window.Commands.Execute("OneDriveLoggedOut", undefined);
                     that.activePresenter = "local";
                     that.driver.SetAuthorizationStatus(false);
@@ -164,11 +168,25 @@
                 });
 
                 window.Commands.On("TurnRepository", function (args) {
-
+                    args.toggleFunc();
                 });
 
                 window.Commands.On("SwitchRepository", function (args) {
-
+                    if (that.activePresenter === "oneDrive") {
+                        that.activePresenter = "local";
+                        that.driver.SetAuthorizationStatus(false);
+                        window.Commands.Execute("OneDriveTurnedOff", undefined);
+                    }
+                    else
+                    {
+                        if (that.isConnectedToOneDrive) {
+                            that.activePresenter = "oneDrive";
+                            that.driver.SetAuthorizationStatus(true);
+                            window.Commands.Execute("OneDriveLoggedIn", undefined);
+                        } else {
+                            args.toggleFunc();
+                        }
+                    }
                 });
 
             }

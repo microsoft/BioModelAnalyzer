@@ -9,7 +9,7 @@
             items: [],
             onremovemodel: undefined,
             onloadmodel: undefined,
-            enableContextMenu: false,
+            enableContextMenu: true,
         },
 
         _create: function () {
@@ -73,7 +73,7 @@
             //    }
             //});
 
-            //this.createContextMenu();
+            this.createContextMenu();
         },
 
         CancelSelection: function () {
@@ -114,7 +114,8 @@
                 beforeOpen: function (event, ui) {
                     if (that.options.enableContextMenu) {
                         ui.menu.zIndex(50);
-                    } else return false;
+                    } else
+                        return false;
                 },
                 select: function (event, ui) {
                     var args: any = {};

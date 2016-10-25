@@ -171,7 +171,7 @@
             //    }
             //});
 
-            //this.createContextMenu();
+            this.createContextMenu();
         },
 
         Message: function (msg) {
