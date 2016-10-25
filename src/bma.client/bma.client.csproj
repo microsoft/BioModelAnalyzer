@@ -102,6 +102,9 @@
     <Content Include="images\onedrive-login.png" />
     <Content Include="images\onedrive-logout.png" />
     <Content Include="images\onedrive-off.png" />
+    <Content Include="js\monaco\base\common\worker\simpleWorker.js" />
+    <Content Include="js\monaco\base\common\worker\simpleWorker.nls.js" />
+    <Content Include="js\monaco\base\worker\workerMain.js" />
     <Content Include="js\monaco\editor\base\common\worker\simpleWorker.js" />
     <Content Include="js\monaco\editor\base\common\worker\simpleWorker.nls.js" />
     <Content Include="js\monaco\editor\base\worker\workerMain.js" />
@@ -319,6 +322,10 @@
     <Content Include="js\jquery.svganim.js" />
     <Content Include="js\jquery.svganim.min.js" />
     <Content Include="js\monaco\loader.js" />
+    <Content Include="js\vs\base\common\worker\simpleWorker.js" />
+    <Content Include="js\vs\base\common\worker\simpleWorker.nls.js" />
+    <Content Include="js\vs\base\worker\workerMain.js" />
+    <Content Include="js\vs\loader.js" />
     <Content Include="Scripts\formulaParser.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
