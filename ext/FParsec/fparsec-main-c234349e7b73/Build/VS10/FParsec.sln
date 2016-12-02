@@ -1,6 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{59B520A8-A7A4-4017-93F8-2CCDBB0128FF}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\..\..\paket.dependencies = ..\..\..\..\..\paket.dependencies
+	EndProjectSection
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{E2678E0B-F79F-4461-AA53-7E74D12CF6ED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FSharpParsingSample", "FSharpParsingSample", "{8493F4B6-CCE9-4A7B-9798-B567DA6A1367}"

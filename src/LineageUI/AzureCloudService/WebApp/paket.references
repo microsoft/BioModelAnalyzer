@@ -1,0 +1,13 @@
+jquery.TypeScript.DefinitelyTyped
+jqueryui.TypeScript.DefinitelyTyped
+Microsoft.AspNet.WebApi
+Microsoft.AspNet.WebApi.Client
+Microsoft.AspNet.WebApi.Core
+Microsoft.AspNet.WebApi.WebHost
+Microsoft.Data.Edm
+Microsoft.Data.OData
+Microsoft.Data.Services.Client
+Microsoft.WindowsAzure.ConfigurationManager
+Newtonsoft.Json
+System.Spatial
+WindowsAzure.Storage

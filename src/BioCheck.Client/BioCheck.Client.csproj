@@ -77,9 +77,6 @@
     <Reference Include="MvvmFx.Common">
       <HintPath>..\..\ext\Silverlight\MvvmFx\MvvmFx.Common.dll</HintPath>
     </Reference>
-    <Reference Include="SharpZipLib.Silverlight4">
-      <HintPath>..\..\ext\nuget\SharpZipLib.0.86.0\lib\SL4\SharpZipLib.Silverlight4.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows" />
@@ -620,8 +617,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="ViewModel\XML\v3\VersionNotes.txt" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
+    <None Include="paket.references">
     </None>
     <None Include="Properties\AppManifest.xml" />
     <Content Include="ServiceReferences.ClientConfig" />
@@ -650,7 +646,6 @@
     <WCFMetadataStorage Include="Service References\AnalysisService\" />
     <WCFMetadataStorage Include="Service References\LogService\" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -666,4 +661,16 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="..\..\.paket\paket.targets" />
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight' And $(TargetFrameworkVersion) == 'v5.0'">
+      <ItemGroup>
+        <Reference Include="SharpZipLib.Silverlight4">
+          <HintPath>..\..\packages\SharpZipLib\lib\SL4\SharpZipLib.Silverlight4.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
 </Project>

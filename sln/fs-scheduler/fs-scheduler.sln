@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{35747E91-0D58-4DD2-AE62-1AE4045FA8E3}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\paket.dependencies = ..\..\paket.dependencies
+	EndProjectSection
+EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FairShareScheduler.Common", "..\..\src\FairShareScheduler.Common\FairShareScheduler.Common.fsproj", "{850DF26E-27B2-4766-99DE-B815616C0D90}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FairShareWorker", "..\..\src\FairShareWorker\FairShareWorker.fsproj", "{47E591BB-EB9E-41B0-A488-F271177D2616}"

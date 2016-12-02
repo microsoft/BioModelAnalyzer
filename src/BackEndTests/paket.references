@@ -1,0 +1,13 @@
+CommonServiceLocator
+FSharp.Data
+Microsoft.AspNet.WebApi.Client
+Microsoft.AspNet.WebApi.Core
+Microsoft.AspNet.WebApi.Owin
+Microsoft.Owin
+Microsoft.Owin.Diagnostics
+Microsoft.Owin.Host.HttpListener
+Microsoft.Owin.Hosting
+Microsoft.Owin.SelfHost
+Newtonsoft.Json
+Owin
+Unity

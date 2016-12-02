@@ -1,6 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{F8C26871-1A1A-4A08-8507-5E36EF283970}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\paket.dependencies = ..\..\paket.dependencies
+	EndProjectSection
+EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Athene", "..\..\src\Athene\Athene.fsproj", "{9C5F69B7-D600-4BF7-8803-1A4A1504C8B8}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheckAnalyzer64", "..\..\src\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj", "{2975B5B6-78DE-4C9C-9D0C-584864CA590A}"

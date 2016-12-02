@@ -1,0 +1,15 @@
+CommonServiceLocator
+Microsoft.AspNet.Cors
+Microsoft.AspNet.WebApi.Client
+Microsoft.AspNet.WebApi.Core
+Microsoft.AspNet.WebApi.Cors
+Microsoft.AspNet.WebApi.WebHost
+Microsoft.Azure.KeyVault.Core
+Microsoft.Data.Edm
+Microsoft.Data.OData
+Microsoft.Data.Services.Client
+Microsoft.WindowsAzure.ConfigurationManager
+Newtonsoft.Json
+System.Spatial
+Unity
+WindowsAzure.Storage

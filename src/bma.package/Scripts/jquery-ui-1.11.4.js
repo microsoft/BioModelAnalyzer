@@ -6044,7 +6044,7 @@ $.widget("ui.draggable", $.ui.mouse, {
 
 		// Reset helper's right/bottom css if they're set and set explicit width/height instead
 		// as this prevents resizing of elements with right/bottom set (see #7772)
-		//this._normalizeRightBottom(); Temporal fix in firefox
+		this._normalizeRightBottom();
 
 		this._mouseDrag(event, true); //Execute the drag once - this causes the helper not to be visible before getting its correct position
 

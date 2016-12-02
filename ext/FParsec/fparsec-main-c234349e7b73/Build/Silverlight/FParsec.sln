@@ -1,6 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{1106327B-B57F-4B3C-BA3D-0EBEB055BEB7}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\..\..\paket.dependencies = ..\..\..\..\..\paket.dependencies
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FParsecCS", "FParsecCS.csproj", "{DBA4E782-4C37-4B04-A46A-1530C5FE3A3F}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FParsec", "FParsec.fsproj", "{3E3D6787-B336-420B-8832-92F8033DEAC2}"

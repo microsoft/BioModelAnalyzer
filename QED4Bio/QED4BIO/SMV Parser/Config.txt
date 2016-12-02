@@ -1,3 +1,0 @@
-﻿modules VPC AC
-numthread 6
-asyncbound 5

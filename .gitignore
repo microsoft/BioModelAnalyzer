@@ -1,3 +1,9 @@
+#paket
+.paket/paket.exe
+.paket/paket.bootstrap.exe
+packages/
+paket-files/
+
 node_modules
 
 ## Ignore Visual Studio temporary files, build results, and

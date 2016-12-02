@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{FCFABC3C-E55D-48AB-9FF7-52054D5662B8}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\paket.dependencies = ..\..\paket.dependencies
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FParsecCS", "..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsecCS.csproj", "{501423C3-8EA5-4E54-8D9C-EF60272B57FA}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FParsec", "..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj", "{8EA340D3-E9E0-477E-9AC3-FBFDF3BAD41E}"
