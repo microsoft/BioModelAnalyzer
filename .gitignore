@@ -1,6 +1,6 @@
 #paket
 .paket/paket.exe
-.paket/paket.bootstrap.exe
+.paket/paket.bootstrapper.exe
 packages/
 paket-files/
 
