@@ -4,6 +4,13 @@
 packages/
 paket-files/
 
+#dependencies copied by grunt
+src/bma.client/js/monaco
+src/bma.client/js/vs
+src/bma.client/js/script
+src/bma.client/js/idd.js
+src/bma.client/js/idd.heatmapworker.js
+
 node_modules
 
 ## Ignore Visual Studio temporary files, build results, and
