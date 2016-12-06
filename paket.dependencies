@@ -1,3 +1,5 @@
+redirects: on
+
 source https://api.nuget.org/v3/index.json
 
 nuget Chutzpah 4.2.1 framework: >= net452
