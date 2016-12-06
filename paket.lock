@@ -98,3 +98,24 @@ NUGET
       Microsoft.Data.Services.Client (>= 5.6.4) - framework: >= net40
       Newtonsoft.Json (>= 6.0.8) - framework: >= net40, winv4.5, wpv8.0, wpav8.1
     Zlib.Portable (1.11) - framework: portable-net40+sl50+wp80+win80
+GITHUB
+  remote: furf/jquery-ui-touch-punch
+    jquery.ui.touch-punch.min.js (4bc009145202d9c7483ba85f3a236a8f3470354d)
+  remote: ChenWenBrian/FileSaver.js
+    FileSaver.js (ec6eb67080ea703509a74e034226597791f27cb0)
+  remote: kbwood/svg
+    jquery.svg.js (d7a0406f7f68f564cf176089a867c4d20955476c)
+    jquery.svg.min.js (d7a0406f7f68f564cf176089a867c4d20955476c)
+    jquery.svganim.js (d7a0406f7f68f564cf176089a867c4d20955476c)
+    jquery.svganim.min.js (d7a0406f7f68f564cf176089a867c4d20955476c)
+    jquery.svgdom.min.js (d7a0406f7f68f564cf176089a867c4d20955476c)
+  remote: carhartl/jquery-cookie
+    jquery.cookie.js (7f88a4e631aba8a8c688fd8999ce6b9bcfd50718)
+  remote: gabceb/jquery-browser-plugin
+    dist/jquery.browser.min.js (1efa52dee883e8d3e4929b644ff1350bf203a62b)
+  remote: mar10/jquery-ui-contextmenu
+    jquery.ui-contextmenu.js (4f7c86fa03dc47c57f9a30e86f64397f02ff3b40)
+    jquery.ui-contextmenu.min.js (4f7c86fa03dc47c57f9a30e86f64397f02ff3b40)
+  remote: jquery/jquery-mousewheel
+    jquery.mousewheel.js (18e3cc17657237220c4dbd68a3fe4f6abdbf7ef8)
+    jquery.mousewheel.min.js (18e3cc17657237220c4dbd68a3fe4f6abdbf7ef8)

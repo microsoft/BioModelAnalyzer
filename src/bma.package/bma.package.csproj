@@ -19,6 +19,19 @@
     <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="js\FileSaver.js" />
+    <Content Include="js\jquery.browser.min.js" />
+    <Content Include="js\jquery.cookie.js" />
+    <Content Include="js\jquery.mousewheel.js" />
+    <Content Include="js\jquery.mousewheel.min.js" />
+    <Content Include="js\jquery.svg.js" />
+    <Content Include="js\jquery.svg.min.js" />
+    <Content Include="js\jquery.svganim.js" />
+    <Content Include="js\jquery.svganim.min.js" />
+    <Content Include="js\jquery.svgdom.min.js" />
+    <Content Include="js\jquery.ui-contextmenu.js" />
+    <Content Include="js\jquery.ui-contextmenu.min.js" />
+    <Content Include="js\jquery.ui.touch-punch.min.js" />
     <Content Include="Scripts\typings\jasmine\jasmine.d.ts">
       <Paket>True</Paket>
     </Content>
@@ -334,20 +347,9 @@
       <Paket>True</Paket>
     </Content>
     <Content Include="Scripts\formulaParser.js" />
-    <Content Include="js\FileSaver.js" />
     <Content Include="js\idd.heatmapworker.js" />
     <Content Include="js\idd.js" />
     <Content Include="js\idd.transforms.js" />
-    <Content Include="js\jquery.browser.min.js" />
-    <Content Include="js\jquery.cookie.js" />
-    <Content Include="js\jquery.mousewheel.min.js" />
-    <Content Include="js\jquery.svg.js" />
-    <Content Include="js\jquery.svg.min.js" />
-    <Content Include="js\jquery.svganim.js" />
-    <Content Include="js\jquery.svganim.min.js" />
-    <Content Include="js\jquery.svgdom.min.js" />
-    <Content Include="js\jquery.ui-contextmenu.js" />
-    <Content Include="js\jquery.ui-contextmenu.min.js" />
     <Content Include="js\wl.js" />
     <Content Include="package.json" />
     <Content Include="Chutzpah.json" />
