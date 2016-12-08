@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 
 namespace bma.client.Controllers
@@ -27,15 +28,19 @@ namespace bma.client.Controllers
                     basePath = Path.Combine(Environment.GetEnvironmentVariable("RoleRoot"), @"approot\bin");
                     break;
                 }
-            }
-            if (basePath == null) basePath = Environment.CurrentDirectory;
+            }            
+            if (basePath == null)
+                if(HttpContext.Current != null) // if runs as a part of Web Application
+                    basePath = HttpContext.Current.Server.MapPath(@"~\bin");
+                else
+                    basePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location); 
         }
 
         private readonly string executableName;
         private readonly IFailureLogger faultLogger;
 
         public JobController(string executableName, IFailureLogger logger)
-        {
+        {            
             if (executableName == null) throw new ArgumentNullException("executableName");
             if (logger == null) throw new ArgumentNullException("logger");
             this.executableName = executableName;

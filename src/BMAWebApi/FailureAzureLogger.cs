@@ -49,12 +49,17 @@ namespace BMAWebApi
 
         public FailureAzureLogger(CloudStorageAccount account)
         {
+            if (account == null) throw new ArgumentNullException("account");
             tableClient = account.CreateCloudTableClient();
             blobClient = account.CreateCloudBlobClient();
             failuresContainer = blobClient.GetContainerReference("failures");
             failuresContainer.CreateIfNotExists();            
             failuresTable = tableClient.GetTableReference("ServiceFailures");
             failuresTable.CreateIfNotExists();
+        }
+
+        public FailureAzureLogger(string connectionString) : this(CloudStorageAccount.Parse(connectionString))
+        {
         }
 
         public void Add(DateTime dateTime, string backEndVersion, object request, ILogContents log)

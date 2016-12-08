@@ -1,0 +1,82 @@
+swagger: '2.0'
+
+info:
+  version: "0.0.1"
+  title: BMA Web API
+  
+basePath: /api
+
+host: localhost:8223
+
+paths:
+
+  /Simulate:
+    post:
+      summary: Performs simulation of a model, if it takes less than 1 minute.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: model
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            Model:
+              type: object
+              properties:
+                Name:
+                  type: string
+                Variables:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      Name:
+                        type: string
+                      Id:
+                        type: integer
+                      RangeFrom:
+                        type: integer
+                      RangeTo:
+                        type: integer
+                      Formula:
+                        type: string
+                Relationships:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      Name:
+                        type: string
+                      Id:
+                        type: integer
+                      FromVariable:
+                        type: integer
+                      ToVariable:
+                        type: integer
+                      Type:
+                        type: string
+            Variables:
+              type: array
+              items:
+                type: object
+                properties:
+                  Id:
+                    type: integer
+                  Value:
+                    type: integer
+          required:
+          - Model
+          - Variables
+      responses:
+        200:
+          description: |
+            The simulation is either succeeded or failed and its result is in the response. 
+            If the simulation fails, the response contains errors.
+        504:
+          description: Timeout while waiting for the simulation to complete.
+
+ 

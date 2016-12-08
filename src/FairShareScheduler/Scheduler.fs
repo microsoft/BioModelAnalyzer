@@ -79,6 +79,14 @@ type FairShareScheduler(settings : FairShareSchedulerSettings) =
         tableExec.CreateIfNotExists() |> ignore  
         container.CreateIfNotExists() |> ignore
 
+    
+    new (connectionString, maxNumberOfQueues, name:string) = 
+        FairShareScheduler(
+            {
+                StorageAccount = CloudStorageAccount.Parse(connectionString)
+                MaxNumberOfQueues = maxNumberOfQueues
+                Name = name   
+            })
 
     interface IScheduler with
 
