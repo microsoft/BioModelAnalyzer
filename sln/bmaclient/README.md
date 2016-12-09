@@ -1,3 +1,9 @@
+## Unit testing
+
+### Web App scripts tests
+
+### Back-end tests
+
 
 
 ## Deploy on App Service
@@ -26,3 +32,9 @@ Two projects should be deployed:
     <add key="RedirectUrl" value="https://bmainterface.azurewebsites.net/html/callback.html" />   
     <add key="BackEndUrl" value="https://ossbmaapiserver.azurewebsites.net" />
 ```
+
+## Testing the deployment
+
+### WebAPI tests
+
+### E2E tests
