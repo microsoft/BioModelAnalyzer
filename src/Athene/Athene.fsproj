@@ -62,8 +62,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\BioCheckWeb\BioCheckWeb-Main\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
-      <Name>BioCheckAnalyzer64</Name>
+    <ProjectReference Include="..\..\..\BioCheckWeb\BioCheckWeb-Main\BioCheckAnalyzer\BioCheckAnalyzer.fsproj">
+      <Name>BioCheckAnalyzer</Name>
       <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
       <Private>True</Private>
     </ProjectReference>

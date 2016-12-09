@@ -10,7 +10,7 @@
     <Node Id="Client\BioCheck.Client" Label="BioCheck.Client" Category="Project" />
     <Node Id="SharpZipLib 0.86.0" Label="SharpZipLib 0.86.0" Category="Package" />
     <Node Id="Unity 2.1.505.2" Label="Unity 2.1.505.2" Category="Package" />
-    <Node Id="Analysis\BioCheckAnalyzer64" Label="BioCheckAnalyzer64" Category="Project" />
+    <Node Id="Analysis\BioCheckAnalyzer" Label="BioCheckAnalyzer" Category="Project" />
     <Node Id="FSPowerPack.Community 3.0.0.0" Label="FSPowerPack.Community 3.0.0.0" Category="Package" />
     <Node Id="FSPowerPack.Core.Community 3.0.0.0" Label="FSPowerPack.Core.Community 3.0.0.0" Category="Package" />
     <Node Id="FSPowerPack.Linq.Community 3.0.0.0" Label="FSPowerPack.Linq.Community 3.0.0.0" Category="Package" />
@@ -43,11 +43,11 @@
     <Link Source="FSPowerPack.Linq.Community 3.0.0.0" Target="FSPowerPack.Core.Community 3.0.0.0" Category="Package Dependency" />
     <Link Source="FSPowerPack.Metadata.Community 3.0.0.0" Target="FSPowerPack.Core.Community 3.0.0.0" Category="Package Dependency" />
     <Link Source="FSPowerPack.Parallel.Seq.Community 3.0.0.0" Target="FSPowerPack.Core.Community 3.0.0.0" Category="Package Dependency" />
-    <Link Source="Analysis\BioCheckAnalyzer64" Target="FSPowerPack.Community 3.0.0.0" Category="Installed Package" />
-    <Link Source="Analysis\BioCheckAnalyzer64" Target="FSPowerPack.Core.Community 3.0.0.0" Category="Installed Package" />
-    <Link Source="Analysis\BioCheckAnalyzer64" Target="FSPowerPack.Linq.Community 3.0.0.0" Category="Installed Package" />
-    <Link Source="Analysis\BioCheckAnalyzer64" Target="FSPowerPack.Metadata.Community 3.0.0.0" Category="Installed Package" />
-    <Link Source="Analysis\BioCheckAnalyzer64" Target="FSPowerPack.Parallel.Seq.Community 3.0.0.0" Category="Installed Package" />
+    <Link Source="Analysis\BioCheckAnalyzer" Target="FSPowerPack.Community 3.0.0.0" Category="Installed Package" />
+    <Link Source="Analysis\BioCheckAnalyzer" Target="FSPowerPack.Core.Community 3.0.0.0" Category="Installed Package" />
+    <Link Source="Analysis\BioCheckAnalyzer" Target="FSPowerPack.Linq.Community 3.0.0.0" Category="Installed Package" />
+    <Link Source="Analysis\BioCheckAnalyzer" Target="FSPowerPack.Metadata.Community 3.0.0.0" Category="Installed Package" />
+    <Link Source="Analysis\BioCheckAnalyzer" Target="FSPowerPack.Parallel.Seq.Community 3.0.0.0" Category="Installed Package" />
     <Link Source="FSPowerPack.Community 3.0.0.0" Target="FSPowerPack.Linq.Community 3.0.0.0" Category="Package Dependency" />
     <Link Source="FSPowerPack.Community 3.0.0.0" Target="FSPowerPack.Metadata.Community 3.0.0.0" Category="Package Dependency" />
     <Link Source="FSPowerPack.Community 3.0.0.0" Target="FSPowerPack.Parallel.Seq.Community 3.0.0.0" Category="Package Dependency" />

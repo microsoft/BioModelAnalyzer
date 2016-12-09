@@ -101,8 +101,8 @@
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
-      <Name>BioCheckAnalyzer64</Name>
+    <ProjectReference Include="..\BioCheckAnalyzer\BioCheckAnalyzer.fsproj">
+      <Name>BioCheckAnalyzer</Name>
       <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
       <Private>True</Private>
     </ProjectReference>

@@ -241,9 +241,9 @@
     <None Include="Analysis\Xml\fs_2var_unstable.log" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj">
+    <ProjectReference Include="..\BioCheckAnalyzer\BioCheckAnalyzer.fsproj">
       <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
-      <Name>BioCheckAnalyzer64</Name>
+      <Name>BioCheckAnalyzer</Name>
     </ProjectReference>
     <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
       <Project>{61E37D4E-172B-45DD-9289-5C874A8320F0}</Project>
