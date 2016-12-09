@@ -1,9 +1,24 @@
+# Build and test
+
 ## Unit testing
 
 ### Web App scripts tests
 
 ### Back-end tests
 
+
+# Deployment
+
+- Deployment to local IIS/IIS Express or Web Hosting
+- Deployment on Azure App Service
+- Deployment on Azure App Service and Cloud Service
+
+## Setup OneDrive access
+
+
+## Setup acitivity and failure logs locations
+
+Either use local folder or storage account to store failure and activity logs.
 
 
 ## Deploy on App Service
@@ -36,6 +51,8 @@ Two projects should be deployed:
 ### Choosing the platform acrhitecture (32-bit or 64-bit)
 Can be enabled in Basic plans and higher. 
 See Azure Portal, Application Settings, Platform.
+
+
 
 ## Testing the deployment
 
