@@ -1,22 +1,27 @@
-﻿using bma.client;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Table;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using System.Web;
 
 namespace BMAWebApi
 {
     public class FailureFileLogger : IFailureLogger
     {
         private static Mutex mutex = new Mutex(false, "BMAWebApi.FailureFileLogger");
+
+        private static DirectoryInfo ResolveDirectory(string dir, bool tryServerPath)
+        {
+            string basePath;
+            if (tryServerPath && HttpContext.Current != null) // if runs as a part of Web Application
+                basePath = HttpContext.Current.Server.MapPath(@"~\" + dir);
+            else
+                basePath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), dir);
+            return new DirectoryInfo(basePath);
+        }
+
         private readonly StreamWriter failuresFile;
         private readonly DirectoryInfo dir;
         private readonly DirectoryInfo dataDir;
@@ -28,6 +33,10 @@ namespace BMAWebApi
             dir.Create();
             dataDir = dir.CreateSubdirectory("requests");
             failuresFile = PrepareLogFile(dir);
+        }
+
+        public FailureFileLogger(string dir, bool tryServerPath) : this(ResolveDirectory(dir, tryServerPath))
+        {
         }
 
         private static StreamWriter PrepareLogFile(DirectoryInfo dir)

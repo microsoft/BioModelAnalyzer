@@ -33,6 +33,10 @@ Two projects should be deployed:
     <add key="BackEndUrl" value="https://ossbmaapiserver.azurewebsites.net" />
 ```
 
+### Choosing the platform acrhitecture (32-bit or 64-bit)
+Can be enabled in Basic plans and higher. 
+See Azure Portal, Application Settings, Platform.
+
 ## Testing the deployment
 
 ### WebAPI tests

@@ -21,7 +21,7 @@ type WebApiControllersTests() =
         dir.GetDirectories("*", SearchOption.AllDirectories) |> Seq.iter(fun fi -> fi.Delete())
 
         let log version =
-            let logger = new BMAWebApi.FailureFileLogger(dir)
+            let logger = new BMAWebApi.FailureFileLogger("FailureFileLog", false)
             for i in 0..n-1 do
                 let content = bma.client.LogContents([|"debug"|], [|"error"|]);
                 logger.Add(DateTime.Now, version, version, content)
