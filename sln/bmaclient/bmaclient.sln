@@ -47,6 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{CC7BADC4-D
 	ProjectSection(SolutionItems) = preProject
 		..\..\docs\ApiServer.yaml = ..\..\docs\ApiServer.yaml
 		..\..\docs\WebAPI\FairShareScheduler.yaml = ..\..\docs\WebAPI\FairShareScheduler.yaml
+		README.md = README.md
 		..\..\docs\WebAPI\WebApi.yaml = ..\..\docs\WebAPI\WebApi.yaml
 	EndProjectSection
 EndProject

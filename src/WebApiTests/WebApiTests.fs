@@ -8,10 +8,9 @@ open System.Diagnostics
 open Newtonsoft.Json.Linq
 open LTLTests
 
-let urlApi = "http://localhost:8223/api/"
+//let urlApi = "http://localhost:8223/api/"
+let urlApi = "http://ossbmaapiserver.azurewebsites.net/api/"
 let urlLra = sprintf "%slra" urlApi
-//let urlApi = "http://bmamathnew.cloudapp.net/api/"
-//let urlLra = "http://bmamathnew.cloudapp.net/api/lra"
 
 let appId = "CF1B2F01-E2B7-4D34-88B6-9C9078C0D637"
 
