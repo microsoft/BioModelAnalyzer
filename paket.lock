@@ -104,6 +104,7 @@ GITHUB
   remote: ChenWenBrian/FileSaver.js
     FileSaver.js (ec6eb67080ea703509a74e034226597791f27cb0)
   remote: kbwood/svg
+    jquery.svg.css (d7a0406f7f68f564cf176089a867c4d20955476c)
     jquery.svg.js (d7a0406f7f68f564cf176089a867c4d20955476c)
     jquery.svg.min.js (d7a0406f7f68f564cf176089a867c4d20955476c)
     jquery.svganim.js (d7a0406f7f68f564cf176089a867c4d20955476c)

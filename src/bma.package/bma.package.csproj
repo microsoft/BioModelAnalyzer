@@ -19,6 +19,32 @@
     <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="css\jquery.svg.css" />
+    <Content Include="Scripts\rx.aggregates.min.js" />
+    <Content Include="Scripts\rx.compat.js" />
+    <Content Include="Scripts\rx.compat.min.js" />
+    <Content Include="Scripts\rx.js" />
+    <Content Include="Scripts\rx.lite.compat.js" />
+    <Content Include="Scripts\rx.lite.compat.min.js" />
+    <Content Include="Scripts\rx.lite.extras.js" />
+    <Content Include="Scripts\rx.lite.extras.min.js" />
+    <Content Include="Scripts\rx.lite.js" />
+    <Content Include="Scripts\rx.lite.min.js" />
+    <Content Include="Scripts\typings\jasmine\jasmine.d.ts">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Scripts\typings\jquery\jquery.d.ts">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Scripts\typings\jqueryui\jqueryui.d.ts">
+      <Paket>True</Paket>
+    </Content>
     <Content Include="js\FileSaver.js" />
     <Content Include="js\jquery.browser.min.js" />
     <Content Include="js\jquery.cookie.js" />
@@ -32,15 +58,17 @@
     <Content Include="js\jquery.ui-contextmenu.js" />
     <Content Include="js\jquery.ui-contextmenu.min.js" />
     <Content Include="js\jquery.ui.touch-punch.min.js" />
-    <Content Include="Scripts\typings\jasmine\jasmine.d.ts">
+    <TypeScriptCompile Include="Scripts\rx.aggregates.d.ts" />
+    <TypeScriptCompile Include="Scripts\rx.lite.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts">
       <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts">
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts">
       <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts">
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts">
       <Paket>True</Paket>
-    </Content>
+    </TypeScriptCompile>
     <Resource Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png">
       <Paket>True</Paket>
     </Resource>
@@ -83,12 +111,12 @@
     <Content Include="Scripts\jquery-2.1.4-vsdoc.js">
       <Paket>True</Paket>
     </Content>
-    <Content Include="Scripts\typings\jquery\jquery.d.ts">
+    <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts">
       <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\typings\jqueryui\jqueryui.d.ts">
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts">
       <Paket>True</Paket>
-    </Content>
+    </TypeScriptCompile>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
@@ -120,19 +148,6 @@
     <Content Include="Content\themes\base\draggable.css">
       <Paket>True</Paket>
     </Content>
-    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
-    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
-    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
-    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
-    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
-    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
-    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
-    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
-    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
-    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
-    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
-    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
-    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Content\themes\base\menu.css">
       <Paket>True</Paket>
     </Content>
@@ -322,30 +337,6 @@
     <Content Include="images\zoomminus.svg" />
     <Content Include="images\zoomplus.png" />
     <Content Include="images\zoomplus.svg" />
-    <Content Include="Scripts\rx.aggregates.d.ts">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.aggregates.es6.d.ts">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.lite.extras.d.ts">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.lite.extras.es6.d.ts">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.d.ts">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.es6.d.ts">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.lite.d.ts">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.lite.es6.d.ts">
-      <Paket>True</Paket>
-    </Content>
     <Content Include="Scripts\formulaParser.js" />
     <Content Include="js\idd.heatmapworker.js" />
     <Content Include="js\idd.js" />
@@ -374,7 +365,6 @@
     </Content>
     <Content Include="prebuild.cmd" />
     <None Include="postbuild.cmd" />
-    <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.4.js">
       <Paket>True</Paket>
     </Content>
@@ -385,42 +375,6 @@
       <Paket>True</Paket>
     </Content>
     <Content Include="Scripts\jquery-ui-1.11.4.min.js">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.aggregates.js">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.aggregates.min.js">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.compat.js">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.compat.min.js">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.js">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.lite.compat.js">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.lite.compat.min.js">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.lite.extras.js">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.lite.extras.min.js">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.lite.js">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.lite.min.js">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Scripts\rx.min.js">
       <Paket>True</Paket>
     </Content>
     <Content Include="Scripts\targetFuncParser.js" />
@@ -457,13 +411,6 @@
     <TypeScriptCompile Include="script\onedrive\OneDrive.ts" />
     <TypeScriptCompile Include="script\onedrive\OneDriveRepository.ts" />
     <TypeScriptCompile Include="test\ConvertTargetFunctionToOperationTests.ts" />
-    <TypeScriptCompile Include="Scripts\rx.aggregates.d.ts" />
-    <TypeScriptCompile Include="Scripts\rx.lite.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
-    <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="script\changeschecker.ts" />
     <TypeScriptCompile Include="script\Commands.ts" />
     <TypeScriptCompile Include="script\elementsregistry.ts" />

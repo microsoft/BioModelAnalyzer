@@ -2,6 +2,7 @@ CommonServiceLocator
 jQuery
 jquery.TypeScript.DefinitelyTyped
 jQuery.UI.Combined
+jqueryui.TypeScript.DefinitelyTyped
 Microsoft.AspNet.WebApi
 Microsoft.AspNet.WebApi.Client
 Microsoft.AspNet.WebApi.Core
@@ -12,9 +13,6 @@ Microsoft.Data.OData
 Microsoft.Data.Services.Client
 Microsoft.WindowsAzure.ConfigurationManager
 Newtonsoft.Json
-RxJS-Aggregates
-RxJS-Lite
-RxJS-Main
 System.Spatial
 Unity
 WindowsAzure.Storage

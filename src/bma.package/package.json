@@ -4,7 +4,6 @@
   "private": true,
   "main": "Gruntfile.js",
   "devDependencies": {
-    "bower": "^1.4.1",
     "grunt": "^0.4.5",
     "less": "^2.1.2",
     "grunt-cli": "^1.2.0",

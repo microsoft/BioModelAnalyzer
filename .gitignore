@@ -11,7 +11,7 @@ src/bma.client/js/script
 src/bma.client/js/idd.js
 src/bma.client/js/idd.heatmapworker.js
 
-#dependencies copied by paket
+#dependencies copied by paket and grunt
 src/bma.client/js/FileSaver.js
 src/bma.client/js/jquery.browser.min.js
 src/bma.client/js/jquery.cookie.js
@@ -20,6 +20,7 @@ src/bma.client/js/jquery.svg.min.js
 src/bma.client/js/jquery.svganim.js
 src/bma.client/js/jquery.svganim.min.js
 src/bma.client/js/jquery.svgdom.min.js
+src/bma.client/css/jquery.svg.css
 src/bma.client/js/jquery.ui.touch-punch.min.js
 src/bma.client/js/jquery.ui-contextmenu.js
 src/bma.client/js/jquery.ui-contextmenu.min.js
@@ -33,11 +34,56 @@ src/bma.package/js/jquery.svg.min.js
 src/bma.package/js/jquery.svganim.js
 src/bma.package/js/jquery.svganim.min.js
 src/bma.package/js/jquery.svgdom.min.js
+src/bma.package/css/jquery.svg.css
 src/bma.package/js/jquery.ui.touch-punch.min.js
 src/bma.package/js/jquery.ui-contextmenu.js
 src/bma.package/js/jquery.ui-contextmenu.min.js
 src/bma.package/js/jquery.mousewheel.js
 src/bma.package/js/jquery.mousewheel.min.js
+src/bma.client/Content/
+src/bma.client/Scripts/jquery-2.1.4-vsdoc.js
+src/bma.client/Scripts/jquery-2.1.4.js
+src/bma.client/Scripts/jquery-2.1.4.min.js
+src/bma.client/Scripts/jquery-2.1.4.min.map
+src/bma.client/Scripts/jquery-ui-1.11.4.js
+src/bma.client/Scripts/jquery-ui-1.11.4.min.js
+src/bma.client/Scripts/rx.aggregates.d.ts
+src/bma.client/Scripts/rx.aggregates.min.js
+src/bma.client/Scripts/rx.compat.js
+src/bma.client/Scripts/rx.compat.min.js
+src/bma.client/Scripts/rx.js
+src/bma.client/Scripts/rx.lite.compat.js
+src/bma.client/Scripts/rx.lite.compat.min.js
+src/bma.client/Scripts/rx.lite.d.ts
+src/bma.client/Scripts/rx.lite.extras.js
+src/bma.client/Scripts/rx.lite.extras.min.js
+src/bma.client/Scripts/rx.lite.js
+src/bma.client/Scripts/rx.lite.min.js
+src/bma.client/Scripts/typings/
+src/bma.package/Content/
+src/bma.package/Scripts/jasmine-html.js
+src/bma.package/Scripts/jasmine.js
+src/bma.package/Scripts/jquery-2.1.4-vsdoc.js
+src/bma.package/Scripts/jquery-2.1.4.js
+src/bma.package/Scripts/jquery-2.1.4.min.js
+src/bma.package/Scripts/jquery-2.1.4.min.map
+src/bma.package/Scripts/jquery-ui-1.11.4.js
+src/bma.package/Scripts/jquery-ui-1.11.4.min.js
+src/bma.package/Scripts/rx.aggregates.d.ts
+src/bma.package/Scripts/rx.aggregates.min.js
+src/bma.package/Scripts/rx.compat.js
+src/bma.package/Scripts/rx.compat.min.js
+src/bma.package/Scripts/rx.js
+src/bma.package/Scripts/rx.lite.compat.js
+src/bma.package/Scripts/rx.lite.compat.min.js
+src/bma.package/Scripts/rx.lite.d.ts
+src/bma.package/Scripts/rx.lite.extras.js
+src/bma.package/Scripts/rx.lite.extras.min.js
+src/bma.package/Scripts/rx.lite.js
+src/bma.package/Scripts/rx.lite.min.js
+src/bma.package/Scripts/typings/
+src/bma.package/css/jasmine.css
+src/bma.package/css/jquery.svg.css
 
 node_modules
 
