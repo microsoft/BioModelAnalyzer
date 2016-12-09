@@ -427,6 +427,7 @@
     <None Include="Properties\PublishProfiles\bmademofrontend - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmainterface - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmainterface - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\OssBma - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="js\jquery.svganim.js" />
     <Content Include="js\jquery.svganim.min.js" />

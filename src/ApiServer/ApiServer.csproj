@@ -104,6 +104,7 @@
     <Content Include="paket.references" />
     <Content Include="unity.web.config" />
     <Content Include="unity.azure-emulator.config" />
+    <None Include="Properties\PublishProfiles\OssBmaApiServer - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
