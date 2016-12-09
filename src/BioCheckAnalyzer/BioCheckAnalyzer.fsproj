@@ -8,9 +8,9 @@
     <ProjectGuid>{27fcee47-ced8-4629-9989-7e9a490b090e}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>BioCheck.Analyzer.Server</RootNamespace>
-    <AssemblyName>BioCheckAnalyzer32</AssemblyName>
+    <AssemblyName>BioCheckAnalyzer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <Name>BioCheckAnalyzer32</Name>
+    <Name>BioCheckAnalyzer</Name>
     <SccProjectName>SAK</SccProjectName>
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>
@@ -124,14 +124,12 @@
     <Reference Include="FSharp.Core">
       <HintPath>..\Libs\dotNET\FS34\FSharp.Core.dll</HintPath>
     </Reference>
-
     <Reference Include="Microsoft.Z3" Condition="'$(Platform)'!='x64'">
       <HintPath>..\..\ext\z3\z3-4.4.1-x86-win\bin\Microsoft.Z3.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Z3" Condition="'$(Platform)'=='x64'">
       <HintPath>..\..\ext\z3\z3-4.4.1-x64-win\bin\Microsoft.Z3.dll</HintPath>
     </Reference>
-
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />

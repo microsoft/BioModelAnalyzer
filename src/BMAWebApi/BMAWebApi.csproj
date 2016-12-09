@@ -89,9 +89,9 @@
     <Compile Include="UnityResolver.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj">
+    <ProjectReference Include="..\BioCheckAnalyzer\BioCheckAnalyzer.fsproj">
       <Project>{27fcee47-ced8-4629-9989-7e9a490b090e}</Project>
-      <Name>BioCheckAnalyzer32</Name>
+      <Name>BioCheckAnalyzer</Name>
     </ProjectReference>
     <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>

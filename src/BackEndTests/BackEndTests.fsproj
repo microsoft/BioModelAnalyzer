@@ -134,8 +134,8 @@
       <Project>{501423c3-8ea5-4e54-8d9c-ef60272b57fa}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\BioCheckAnalyzer32\BioCheckAnalyzer32.fsproj">
-      <Name>BioCheckAnalyzer32</Name>
+    <ProjectReference Include="..\BioCheckAnalyzer\BioCheckAnalyzer.fsproj">
+      <Name>BioCheckAnalyzer</Name>
       <Project>{27fcee47-ced8-4629-9989-7e9a490b090e}</Project>
       <Private>True</Private>
     </ProjectReference>
