@@ -80,6 +80,19 @@
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="js\FileSaver.js" />
+    <Content Include="js\jquery.browser.min.js" />
+    <Content Include="js\jquery.cookie.js" />
+    <Content Include="js\jquery.mousewheel.js" />
+    <Content Include="js\jquery.mousewheel.min.js" />
+    <Content Include="js\jquery.svg.js" />
+    <Content Include="js\jquery.svg.min.js" />
+    <Content Include="js\jquery.svganim.js" />
+    <Content Include="js\jquery.svganim.min.js" />
+    <Content Include="js\jquery.svgdom.min.js" />
+    <Content Include="js\jquery.ui-contextmenu.js" />
+    <Content Include="js\jquery.ui-contextmenu.min.js" />
+    <Content Include="js\jquery.ui.touch-punch.min.js" />
     <Content Include="Scripts\jquery-2.1.4-vsdoc.js">
       <Paket>True</Paket>
     </Content>
@@ -418,9 +431,6 @@
     <Content Include="index.html" />
     <Content Include="js\monaco\editor\editor.main.js" />
     <Content Include="js\monaco\editor\editor.main.nls.js" />
-    <Content Include="js\jquery.mousewheel.js" />
-    <Content Include="js\jquery.mousewheel.min.js" />
-    <Content Include="js\jquery.ui-touchpunch.js" />
     <None Include="Properties\PublishProfiles\bmademo - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\bmademo - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\bmademofrontend - FTP.pubxml" />
@@ -429,8 +439,6 @@
     <None Include="Properties\PublishProfiles\bmainterface - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\OssBma - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
-    <Content Include="js\jquery.svganim.js" />
-    <Content Include="js\jquery.svganim.min.js" />
     <Content Include="js\monaco\loader.js" />
     <Content Include="js\vs\base\common\worker\simpleWorker.js" />
     <Content Include="js\vs\base\common\worker\simpleWorker.nls.js" />
@@ -512,9 +520,6 @@
     <Content Include="Scripts\targetFuncParser.js" />
     <Content Include="tool.html" />
     <Content Include="js\idd.js" />
-    <Content Include="js\jquery.cookie.js" />
-    <Content Include="js\jquery.ui-contextmenu.js" />
-    <Content Include="js\jquery.ui-contextmenu.min.js" />
     <Content Include="js\script\idd.heatmapworker.js" />
     <Content Include="js\wl.js" />
     <Content Include="paket.references" />
@@ -549,12 +554,7 @@
     <Content Include="css\website.css.map">
       <DependentUpon>website.css</DependentUpon>
     </Content>
-    <Content Include="js\FileSaver.js" />
     <Content Include="js\idd.heatmapworker.js" />
-    <Content Include="js\jquery.browser.min.js" />
-    <Content Include="js\jquery.svg.js" />
-    <Content Include="js\jquery.svg.min.js" />
-    <Content Include="js\jquery.svgdom.min.js" />
     <Content Include="videos\.QT-0d4a-d0f6841e-bffff608-00" />
     <Content Include="videos\BMA.mp4" />
     <Content Include="videos\BMA-trailer.mp4" />
