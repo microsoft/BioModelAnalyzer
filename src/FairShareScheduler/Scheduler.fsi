@@ -32,6 +32,7 @@ type FairShareSchedulerSettings =
 type FairShareScheduler =
     interface IScheduler
     new : FairShareSchedulerSettings -> FairShareScheduler
+    new : connectionString:string * maxNumberOfQueues:int * name:string -> FairShareScheduler
 
     static member CleanAll : name:string -> storageAccount:CloudStorageAccount -> unit
 

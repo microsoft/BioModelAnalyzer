@@ -8,10 +8,9 @@ open System.Diagnostics
 open Newtonsoft.Json.Linq
 open LTLTests
 
-let urlApi = "http://localhost:8223/api/"
+//let urlApi = "http://localhost:8223/api/"
+let urlApi = "http://ossbmaapiserver.azurewebsites.net/api/"
 let urlLra = sprintf "%slra" urlApi
-//let urlApi = "http://bmamathnew.cloudapp.net/api/"
-//let urlLra = "http://bmamathnew.cloudapp.net/api/lra"
 
 let appId = "CF1B2F01-E2B7-4D34-88B6-9C9078C0D637"
 
@@ -51,8 +50,8 @@ let performFurtherTesting = performSR "FurtherTesting"
 
 
 [<Test; Timeout(600000)>]
-[<Category("Deployment")>]
-let ``Long-running LTL polarity checks``() =
+[<Category("Deployment"); Category("CloudService")>]
+let ``LRA - Long-running LTL polarity checks``() =
     checkJob Folders.LTLQueries perform comparePolarityResults ""
 
 [<Test; Timeout(600000)>]
@@ -86,8 +85,8 @@ let ``Find counter examples for a model``() =
     checkJob Folders.CounterExamples performFurtherTesting compareFurtherTestingResults ""
 
 [<Test>]
-[<Category("Deployment")>]
-let ``Check get status response format``() =
+[<Category("Deployment"); Category("CloudService")>]
+let ``LRA - Check get status response format``() =
     let job = "LTLQueries/toymodel.request.json"
 
     let t0 = System.DateTimeOffset.Now
@@ -131,8 +130,8 @@ let ``Check get status response format``() =
 
 
 [<Test>]
-[<Category("Deployment")>]
-let ``Check get failure status response format``() =
+[<Category("Deployment"); Category("CloudService")>]
+let ``LRA - Check get failure status response format``() =
     let job = "incorrect.request.json"
 
     let jobId = (Http.postJsonFile (sprintf "%s/%s" urlLra appId) job |> snd).Trim('"')
