@@ -461,7 +461,6 @@
     <Content Include="tool.html" />
     <Content Include="js\idd.js" />
     <Content Include="js\script\idd.heatmapworker.js" />
-    <Content Include="js\wl.js" />
     <Content Include="paket.references" />
     <Content Include="preloaded\diabetes_new_mod.json" />
     <Content Include="preloaded\ToyModelStable.json" />
@@ -521,7 +520,6 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Silverlight.js" />
     <Content Include="tool.js" />
     <Content Include="tool.min.js" />
     <Content Include="codeeditor.js" />
