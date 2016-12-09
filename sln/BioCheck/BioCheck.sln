@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{8F6C60
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FParsec", "FParsec", "{E1AB4855-2F45-492B-90B3-C46AFA185252}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheckAnalyzer64", "..\..\src\BioCheckAnalyzer64\BioCheckAnalyzer64.fsproj", "{2975B5B6-78DE-4C9C-9D0C-584864CA590A}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheckAnalyzer", "..\..\src\BioCheckAnalyzer\BioCheckAnalyzer.fsproj", "{2975B5B6-78DE-4C9C-9D0C-584864CA590A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioCheckAnalyzerCommon", "..\..\src\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj", "{61E37D4E-172B-45DD-9289-5C874A8320F0}"
 EndProject

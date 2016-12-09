@@ -105,7 +105,11 @@ module.exports = function (grunt) {
                     { src: 'tool.min.js', dest: '../bma.client/tool.min.js' },
                     { src: 'app.js', dest: '../bma.client/app.js' },
                     { src: 'css/bma.css', dest: '../bma.client/css/bma.css' },
-                    { src: 'script/widgets/codeeditor.js', dest: '../bma.client/codeeditor.js' },
+                    { src: 'script/widgets/codeeditor.js', dest: '../bma.client/codeeditor.js' }
+                ]
+            },
+            prebuild: {
+                files: [
                     { src: 'js/idd.js', dest: '../bma.client/js/idd.js' },
                     { src: 'js/idd.heatmapworker.js', dest: '../bma.client/js/idd.heatmapworker.js' },
                     { src: 'js/idd.heatmapworker.js', dest: '../bma.client/js/script/idd.heatmapworker.js' },
@@ -131,10 +135,36 @@ module.exports = function (grunt) {
                     { src: '../../paket-files/kbwood/svg/jquery.svganim.min.js', dest: '../bma.client/js/jquery.svganim.min.js' },
                     { src: '../../paket-files/kbwood/svg/jquery.svgdom.min.js', dest: 'js/jquery.svgdom.min.js' },
                     { src: '../../paket-files/kbwood/svg/jquery.svgdom.min.js', dest: '../bma.client/js/jquery.svgdom.min.js' },
+                    { src: '../../paket-files/kbwood/svg/jquery.svg.css', dest: 'css/jquery.svg.css' },
+                    { src: '../../paket-files/kbwood/svg/jquery.svg.css', dest: '../bma.client/css/jquery.svg.css' },
                     { src: '../../paket-files/mar10/jquery-ui-contextmenu/jquery.ui-contextmenu.js', dest: 'js/jquery.ui-contextmenu.js' },
                     { src: '../../paket-files/mar10/jquery-ui-contextmenu/jquery.ui-contextmenu.js', dest: '../bma.client/js/jquery.ui-contextmenu.js' },
                     { src: '../../paket-files/mar10/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js', dest: 'js/jquery.ui-contextmenu.min.js' },
                     { src: '../../paket-files/mar10/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js', dest: '../bma.client/js/jquery.ui-contextmenu.min.js' },
+                    { src: '../../packages/RxJS-Main/content/Scripts/rx.js', dest: 'Scripts/rx.js' },
+                    { src: '../../packages/RxJS-Main/content/Scripts/rx.js', dest: '../bma.client/Scripts/rx.js' },
+                    { src: '../../packages/RxJS-Main/content/Scripts/rx.compat.js', dest: 'Scripts/rx.compat.js' },
+                    { src: '../../packages/RxJS-Main/content/Scripts/rx.compat.js', dest: '../bma.client/Scripts/rx.compat.js' },
+                    { src: '../../packages/RxJS-Main/content/Scripts/rx.compat.min.js', dest: 'Scripts/rx.compat.min.js' },
+                    { src: '../../packages/RxJS-Main/content/Scripts/rx.compat.min.js', dest: '../bma.client/Scripts/rx.compat.min.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.compat.js', dest: 'Scripts/rx.lite.compat.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.compat.js', dest: '../bma.client/Scripts/rx.lite.compat.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.compat.min.js', dest: 'Scripts/rx.lite.compat.min.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.compat.min.js', dest: '../bma.client/Scripts/rx.lite.compat.min.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.extras.js', dest: 'Scripts/rx.lite.extras.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.extras.js', dest: '../bma.client/Scripts/rx.lite.extras.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.extras.min.js', dest: 'Scripts/rx.lite.extras.min.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.extras.min.js', dest: '../bma.client/Scripts/rx.lite.extras.min.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.js', dest: 'Scripts/rx.lite.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.js', dest: '../bma.client/Scripts/rx.lite.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.min.js', dest: 'Scripts/rx.lite.min.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.min.js', dest: '../bma.client/Scripts/rx.lite.min.js' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.d.ts', dest: 'Scripts/rx.lite.d.ts' },
+                    { src: '../../packages/RxJS-Lite/content/Scripts/rx.lite.d.ts', dest: '../bma.client/Scripts/rx.lite.d.ts' },
+                    { src: '../../packages/RxJS-Aggregates/content/Scripts/rx.aggregates.min.js', dest: 'Scripts/rx.aggregates.min.js' },
+                    { src: '../../packages/RxJS-Aggregates/content/Scripts/rx.aggregates.min.js', dest: '../bma.client/Scripts/rx.aggregates.min.js' },
+                    { src: '../../packages/RxJS-Aggregates/content/Scripts/rx.aggregates.d.ts', dest: 'Scripts/rx.aggregates.d.ts' },
+                    { src: '../../packages/RxJS-Aggregates/content/Scripts/rx.aggregates.d.ts', dest: '../bma.client/Scripts/rx.aggregates.d.ts' },
                     { src: 'node_modules/monaco-editor/min/vs/base/common/worker/simpleWorker.js', dest: '../bma.client/js/monaco/base/common/worker/simpleWorker.js' },
                     { src: 'node_modules/monaco-editor/min/vs/base/common/worker/simpleWorker.nls.js', dest: '../bma.client/js/monaco/base/common/worker/simpleWorker.nls.js' },
                     { src: 'node_modules/monaco-editor/min/vs/base/worker/workerMain.js', dest: '../bma.client/js/monaco/base/worker/workerMain.js' },
@@ -150,7 +180,7 @@ module.exports = function (grunt) {
                     { src: 'node_modules/monaco-editor/min/vs/loader.js', dest: '../bma.client/js/monaco/loader.js' },
                     { src: 'node_modules/monaco-editor/min/vs/loader.js', dest: '../bma.client/js/vs/loader.js' }
                 ]
-            },
+            }
         },
         less: {
             development: {
@@ -185,4 +215,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-less");
 
     grunt.registerTask('default', ['concat:tool', 'less:development', 'uglify:dist', 'copy:main']);
+    grunt.registerTask('prebuild', ['copy:prebuild']);
 };
