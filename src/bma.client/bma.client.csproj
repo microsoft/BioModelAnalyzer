@@ -237,12 +237,8 @@
     <Content Include="css\fonts.min.css">
       <DependentUpon>fonts.css</DependentUpon>
     </Content>
-    <Content Include="css\fonts\segoeui-webfont.svg" />
-    <Content Include="css\fonts\segoeuib-webfont.svg" />
-    <Content Include="css\fonts\segoeuii-webfont.svg" />
     <Content Include="css\idd.css" />
     <Content Include="css\jquery.svg.css" />
-    <Content Include="css\fonts\segoeuil.svg" />
     <Content Include="css\website.css">
       <DependentUpon>website.less</DependentUpon>
     </Content>
@@ -475,19 +471,6 @@
       <DependentUpon>fonts.css</DependentUpon>
     </Content>
     <Content Include="preloaded\VPC.json" />
-    <Content Include="css\fonts\segoeui-webfont.eot" />
-    <Content Include="css\fonts\segoeui-webfont.ttf" />
-    <Content Include="css\fonts\segoeui-webfont.woff" />
-    <Content Include="css\fonts\segoeuib-webfont.eot" />
-    <Content Include="css\fonts\segoeuib-webfont.ttf" />
-    <Content Include="css\fonts\segoeuib-webfont.woff" />
-    <Content Include="css\fonts\segoeuii-webfont.eot" />
-    <Content Include="css\fonts\segoeuii-webfont.ttf" />
-    <Content Include="css\fonts\segoeuii-webfont.woff" />
-    <Content Include="css\fonts\segoeuil.eot" />
-    <Content Include="css\fonts\segoeuil.otf" />
-    <Content Include="css\fonts\segoeuil.ttf" />
-    <Content Include="css\fonts\segoeuil.woff" />
     <Content Include="css\BMA-Styles-LTL.less" />
     <Content Include="css\website.less" />
     <Content Include="css\website.css.map">
