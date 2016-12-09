@@ -122,6 +122,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="vstest.runsettings" />
+    <Compile Include="FailureFileLoggerTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ext\FParsec\fparsec-main-c234349e7b73\Build\VS11\FParsec.fsproj">
