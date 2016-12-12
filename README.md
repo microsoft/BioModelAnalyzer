@@ -15,6 +15,26 @@
 
 ## Setup OneDrive access
 
+1. Register your instance of the BioModelAnalyzer application as OneDrive application at http://dev.onedrive.com. Open 
+`` App Registration`` link and follow instructions.
+
+1. Add Application Id and RedirectUrl to the ``Web.config`` of the project ``bma.client``. By default, 
+you should redirect to the ``html/callback.html`` located at the root of the published ``bma.client``.
+
+```xml
+<configuration>
+  <appSettings>
+    <add key="LiveAppId" value="..." /> <!--Live app ID goes here. Get it from the onedrive reg site-->
+    <add key="RedirectUrl" value="https://.../html/callback.html" />
+    ...
+  </appSettings>
+  ...
+</configuration>
+``` 
+
+There is no need to register a new application if you change to a new deployment site. 
+Only need to update the redirect url (or add a new one at the http://dev.onedrive.com).
+
 
 ## Setup acitivity and failure logs locations
 
