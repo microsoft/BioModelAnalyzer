@@ -8,6 +8,7 @@ Microsoft.Owin.Diagnostics
 Microsoft.Owin.Host.HttpListener
 Microsoft.Owin.Hosting
 Microsoft.Owin.SelfHost
+WindowsAzure.Storage
 Newtonsoft.Json
 Owin
 Unity

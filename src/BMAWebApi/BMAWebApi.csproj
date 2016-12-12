@@ -73,9 +73,10 @@
     <Compile Include="Controllers\LongRunningActionsController.cs" />
     <Compile Include="Controllers\AnalyzeLTLSimulationController.cs" />
     <Compile Include="Controllers\AnalyzeLTLPolarityController.cs" />
-    <Compile Include="FailureFileLogger.cs" />
-    <Compile Include="FailureAzureLogger.cs" />
-    <Compile Include="ActivityAzureLogger.cs" />
+    <Compile Include="Logs\ActivityFileLogger.cs" />
+    <Compile Include="Logs\FailureFileLogger.cs" />
+    <Compile Include="Logs\FailureAzureLogger.cs" />
+    <Compile Include="Logs\ActivityAzureLogger.cs" />
     <Compile Include="Controllers\ActivityLogController.cs" />
     <Compile Include="Controllers\AnalyzeController.cs" />
     <Compile Include="Controllers\ClientIdController.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Logs\DefaultLogService.cs" />
     <Compile Include="Controllers\DownloadController.cs" />
     <Compile Include="Controllers\FurtherTestingController.cs" />
+    <Compile Include="Logs\FileLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\SimulateController.cs" />
     <Compile Include="Controllers\ValidateController.cs" />

@@ -103,7 +103,6 @@
     </None>
     <Content Include="paket.references" />
     <Content Include="unity.web.config" />
-    <Content Include="unity.azure-emulator.config" />
     <None Include="Properties\PublishProfiles\OssBmaApiServer - Web Deploy.pubxml" />
     <Content Include="unity.azure-appservice.config" />
     <None Include="Web.Debug.config">

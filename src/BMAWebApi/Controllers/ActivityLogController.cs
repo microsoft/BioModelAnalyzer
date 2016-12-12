@@ -59,6 +59,14 @@ namespace bma.client.Controllers
 
     public class ActivityLogController : ApiController
     {
+        private readonly IActivityLogger logger;
+
+        public ActivityLogController(IActivityLogger logger)
+        {
+            if (logger == null) throw new ArgumentNullException("logger");
+            this.logger = logger;
+        }
+
         public void Post([FromBody]ActivityRecord record)
         {
             var entity = new ActivityEntity(record.SessionID, record.UserID)
@@ -78,20 +86,11 @@ namespace bma.client.Controllers
                 AnalyzeLTLCount = record.AnalyzeLTLCount,
                 AnalyzeLTLErrorCount = record.AnalyzeLTLErrorCount
             };
-
-            ActivityAzureLogger logger = new ActivityAzureLogger(
-                CloudStorageAccount.Parse(
-                    RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
-                   // CloudConfigurationManager.GetSetting("StorageConnectionString")));
             logger.Add(entity);
         }
 
         public string Get()
         {
-            ActivityAzureLogger logger = new ActivityAzureLogger(
-                CloudStorageAccount.Parse(
-                    RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString")));
-
             return "";
         }
     }
