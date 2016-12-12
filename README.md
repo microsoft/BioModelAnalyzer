@@ -49,8 +49,9 @@ Two projects should be deployed:
 ```
 
 ### Choosing the platform acrhitecture (32-bit or 64-bit)
-Can be enabled in Basic plans and higher. 
-See Azure Portal, Application Settings, Platform.
+The 64-bit platform can be enabled in Basic plans and higher. 
+Open Azure Portal, find and click the deployed web application and then open its `Application Settings` and
+check `Platform`.
 
 
 
