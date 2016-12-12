@@ -10,6 +10,8 @@ src/bma.client/js/vs
 src/bma.client/js/script
 src/bma.client/js/idd.js
 src/bma.client/js/idd.heatmapworker.js
+src/bma.client/css/bma.css
+src/bma.client/css/website.css
 
 #dependencies copied by paket and grunt
 src/bma.client/js/FileSaver.js
@@ -255,7 +257,6 @@ src/bma.client/test/**/*.map
 src/bma.client/test/**/*.html
 src/bma.client/*.js
 src/bma.client/*.js.map
-src/bma.client/css/bma.css
 !src/bma.client/Silverlight.js
 !src/bma.client/css/js/*.js
 src/bma.package/script/**/*.js

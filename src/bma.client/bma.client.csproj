@@ -80,6 +80,7 @@
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="css\website.css" />
     <Content Include="Scripts\rx.aggregates.min.js" />
     <Content Include="Scripts\rx.compat.js" />
     <Content Include="Scripts\rx.compat.min.js" />
@@ -214,12 +215,6 @@
     <Content Include="Content\themes\base\tooltip.css">
       <Paket>True</Paket>
     </Content>
-    <Content Include="css\BMA-Styles.css">
-      <DependentUpon>BMA-Styles.less</DependentUpon>
-    </Content>
-    <Content Include="css\BMA-Styles.min.css">
-      <DependentUpon>BMA-Styles.css</DependentUpon>
-    </Content>
     <Content Include="css\bma.css" />
     <Content Include="images\onedrive-login.png" />
     <Content Include="images\onedrive-logout.png" />
@@ -231,24 +226,8 @@
     <Content Include="js\monaco\editor\base\common\worker\simpleWorker.nls.js" />
     <Content Include="js\monaco\editor\base\worker\workerMain.js" />
     <Content Include="js\monaco\editor\editor.main.css" />
-    <Content Include="css\fonts.css">
-      <DependentUpon>fonts.less</DependentUpon>
-    </Content>
-    <Content Include="css\fonts.min.css">
-      <DependentUpon>fonts.css</DependentUpon>
-    </Content>
-    <Content Include="css\fonts\segoeui-webfont.svg" />
-    <Content Include="css\fonts\segoeuib-webfont.svg" />
-    <Content Include="css\fonts\segoeuii-webfont.svg" />
     <Content Include="css\idd.css" />
     <Content Include="css\jquery.svg.css" />
-    <Content Include="css\fonts\segoeuil.svg" />
-    <Content Include="css\website.css">
-      <DependentUpon>website.less</DependentUpon>
-    </Content>
-    <Content Include="css\website.min.css">
-      <DependentUpon>website.css</DependentUpon>
-    </Content>
     <Content Include="error.html" />
     <Content Include="Global.asax" />
     <Content Include="help.html" />
@@ -466,33 +445,7 @@
     <Content Include="preloaded\ToyModelStable.json" />
     <Content Include="preloaded\ToyModelUnstable.json" />
     <Content Include="preloaded\SkinModel.json" />
-    <Content Include="css\fonts.less" />
-    <Content Include="css\BMA-Styles.less" />
-    <Content Include="css\BMA-Styles.css.map">
-      <DependentUpon>BMA-Styles.css</DependentUpon>
-    </Content>
-    <Content Include="css\fonts.css.map">
-      <DependentUpon>fonts.css</DependentUpon>
-    </Content>
     <Content Include="preloaded\VPC.json" />
-    <Content Include="css\fonts\segoeui-webfont.eot" />
-    <Content Include="css\fonts\segoeui-webfont.ttf" />
-    <Content Include="css\fonts\segoeui-webfont.woff" />
-    <Content Include="css\fonts\segoeuib-webfont.eot" />
-    <Content Include="css\fonts\segoeuib-webfont.ttf" />
-    <Content Include="css\fonts\segoeuib-webfont.woff" />
-    <Content Include="css\fonts\segoeuii-webfont.eot" />
-    <Content Include="css\fonts\segoeuii-webfont.ttf" />
-    <Content Include="css\fonts\segoeuii-webfont.woff" />
-    <Content Include="css\fonts\segoeuil.eot" />
-    <Content Include="css\fonts\segoeuil.otf" />
-    <Content Include="css\fonts\segoeuil.ttf" />
-    <Content Include="css\fonts\segoeuil.woff" />
-    <Content Include="css\BMA-Styles-LTL.less" />
-    <Content Include="css\website.less" />
-    <Content Include="css\website.css.map">
-      <DependentUpon>website.css</DependentUpon>
-    </Content>
     <Content Include="js\idd.heatmapworker.js" />
     <Content Include="videos\.QT-0d4a-d0f6841e-bffff608-00" />
     <Content Include="videos\BMA.mp4" />

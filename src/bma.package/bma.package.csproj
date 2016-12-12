@@ -19,7 +19,14 @@
     <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="css\FontsSample.html" />
     <Content Include="css\jquery.svg.css" />
+    <Content Include="css\js\prism.js" />
+    <Content Include="css\js\X-rayHTML.js" />
+    <Content Include="css\js\X-rayHTML.min.js" />
+    <Content Include="css\partials\prism.css" />
+    <Content Include="css\partials\X-rayHTML.css" />
+    <Content Include="css\Style-Guide.html" />
     <Content Include="Scripts\rx.aggregates.min.js" />
     <Content Include="Scripts\rx.compat.js" />
     <Content Include="Scripts\rx.compat.min.js" />
@@ -364,6 +371,13 @@
       <Paket>True</Paket>
     </Content>
     <Content Include="prebuild.cmd" />
+    <Content Include="css\BMA-Styles-LTL.less" />
+    <Content Include="css\BMA-Styles.less" />
+    <Content Include="css\website.less" />
+    <Content Include="css\partials\style-guide.less" />
+    <Content Include="css\partials\X-rayHTML.less" />
+    <Content Include="css\prism-LICENSE" />
+    <Content Include="css\X-rayHTML-LICENSE" />
     <None Include="postbuild.cmd" />
     <Content Include="Scripts\jquery-2.1.4.js">
       <Paket>True</Paket>
@@ -548,11 +562,11 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>$(ProjectDir)postbuild.cmd "$(DevEnvDir)"</PostBuildEvent>
+    <PostBuildEvent>$(ProjectDir)postbuild.cmd</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)prebuild.cmd "$(DevEnvDir)"</PreBuildEvent>
+    <PreBuildEvent>$(ProjectDir)prebuild.cmd</PreBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
 </Project>
