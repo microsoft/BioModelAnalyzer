@@ -105,6 +105,7 @@ module.exports = function (grunt) {
                     { src: 'tool.min.js', dest: '../bma.client/tool.min.js' },
                     { src: 'app.js', dest: '../bma.client/app.js' },
                     { src: 'css/bma.css', dest: '../bma.client/css/bma.css' },
+                    { src: 'css/website.css', dest: '../bma.client/css/website.css' },
                     { src: 'script/widgets/codeeditor.js', dest: '../bma.client/codeeditor.js' }
                 ]
             },
@@ -185,7 +186,8 @@ module.exports = function (grunt) {
         less: {
             development: {
                 files: {
-                    "css/bma.css": "css/bma.less"
+                    "css/bma.css": "css/bma.less",
+                    "css/website.css": "css/website.less"
                 }
             }
         }
