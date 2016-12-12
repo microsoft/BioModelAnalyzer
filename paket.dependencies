@@ -52,6 +52,7 @@ nuget SharpZipLib 0.86.0 framework: >= sl50
 nuget System.Spatial 5.7.0
 nuget Unity 4.0.1 framework: >= net45
 nuget WindowsAzure.Storage 6.1.0
+nuget Npm.js 2.13.1
 
 github furf/jquery-ui-touch-punch:4bc009145202d9c7483ba85f3a236a8f3470354d jquery.ui.touch-punch.min.js
 github ChenWenBrian/FileSaver.js:ec6eb67080ea703509a74e034226597791f27cb0 FileSaver.js

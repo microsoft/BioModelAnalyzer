@@ -562,11 +562,11 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>$(ProjectDir)postbuild.cmd "$(DevEnvDir)"</PostBuildEvent>
+    <PostBuildEvent>$(ProjectDir)postbuild.cmd</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)prebuild.cmd "$(DevEnvDir)"</PreBuildEvent>
+    <PreBuildEvent>$(ProjectDir)prebuild.cmd</PreBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\.paket\paket.targets" />
 </Project>
