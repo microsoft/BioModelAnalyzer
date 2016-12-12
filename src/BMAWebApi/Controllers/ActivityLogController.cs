@@ -59,7 +59,6 @@ namespace bma.client.Controllers
 
     public class ActivityLogController : ApiController
     {
-        // POST api/Analyze
         public void Post([FromBody]ActivityRecord record)
         {
             var entity = new ActivityEntity(record.SessionID, record.UserID)
