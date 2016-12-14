@@ -3,6 +3,15 @@
 ## Unit testing
 
 ### Web App scripts tests
+ - Download `paket.bootstrapper.exe` into the folder `.paket`. Run `.paket/paket.bootstrapper.exe`. This will download the latest `paket.exe`.
+ - Install all of the required packages from the specified sources: 
+ 
+ `$ .paket/paket.exe install`
+ 
+ - Build **bma.package** 
+ - To run Web App scripts tests in Visual Studio download and install **Chutzpah Test Adapter for Test Explorer** and **Chutzpah Test Runner Context Menu Extension**.
+ - Open solution **bma.client**. In this solution find the project **bma.package**. All Web App scripts tests are in the folder `test`.
+ - Click on the file `Chutzpah.json` and run JS tests (`Chutzpah.json` is a test setting file which allows you to specify which files/folders to use as test files).
 
 ### Back-end tests
 

@@ -91,13 +91,25 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Z3" Condition="'$(Platform)'!='x64'">
+      <HintPath>Microsoft.Z3.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\ext\z3\z3-4.4.1-x64-win\bin\libz3.dll" Condition="'$(Platform)'=='x64'">
+    <None Include="..\..\packages\z3x64win\lib\Microsoft.Z3.dll" Condition="'$(Platform)'=='x64'">
+      <Link>Microsoft.Z3.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\packages\z3x86win\lib\Microsoft.Z3.dll" Condition="'$(Platform)'!='x64'">
+      <Link>Microsoft.Z3.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\packages\z3x64win\libz3.dll" Condition="'$(Platform)'=='x64'">
       <Link>libz3.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\ext\z3\z3-4.4.1-x86-win\bin\libz3.dll" Condition="'$(Platform)'!='x64'">
+    <None Include="..\..\packages\z3x86win\libz3.dll" Condition="'$(Platform)'!='x64'">
       <Link>libz3.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -94,6 +94,8 @@ NUGET
       Microsoft.Data.OData (>= 5.6.4) - framework: >= net40, winv4.5, wpv8.0, wpav8.1
       Microsoft.Data.Services.Client (>= 5.6.4) - framework: >= net40
       Newtonsoft.Json (>= 6.0.8) - framework: >= net40, winv4.5, wpv8.0, wpav8.1
+    z3x64win (4.5.0.1)
+    z3x86win (4.5.0.1)
   remote: http://api.nuget.org/v3/index.json
     Microsoft.Bcl (1.1.10) - framework: portable-wp80+win+wp81+wpa81
       Microsoft.Bcl.Build (>= 1.0.14)

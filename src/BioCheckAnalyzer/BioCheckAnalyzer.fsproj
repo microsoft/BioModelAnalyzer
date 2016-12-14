@@ -79,6 +79,22 @@
     </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\..\packages\z3x64win\lib\Microsoft.Z3.dll" Condition="'$(Platform)'=='x64'">
+      <Link>Microsoft.Z3.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\packages\z3x86win\lib\Microsoft.Z3.dll" Condition="'$(Platform)'!='x64'">
+      <Link>Microsoft.Z3.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\packages\z3x64win\libz3.dll" Condition="'$(Platform)'=='x64'">
+      <Link>libz3.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\packages\z3x86win\libz3.dll" Condition="'$(Platform)'!='x64'">
+      <Link>libz3.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Compile Include="Version.fs" />
     <Compile Include="Log.fs" />
     <Compile Include="Util.fs" />
@@ -125,10 +141,8 @@
       <HintPath>..\Libs\dotNET\FS34\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Z3" Condition="'$(Platform)'!='x64'">
-      <HintPath>..\..\ext\z3\z3-4.4.1-x86-win\bin\Microsoft.Z3.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Z3" Condition="'$(Platform)'=='x64'">
-      <HintPath>..\..\ext\z3\z3-4.4.1-x64-win\bin\Microsoft.Z3.dll</HintPath>
+      <HintPath>Microsoft.Z3.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
     <Reference Include="mscorlib" />
