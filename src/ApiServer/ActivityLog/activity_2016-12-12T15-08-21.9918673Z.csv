@@ -1,3 +1,0 @@
-SessionID, UserID, LogInTime, LogOutTime, RunProofCount, RunSimulationCount, NewModelCount, ImportModelCount, SaveModelCount, FurtherTestingCount, ClientVersion, SimulationErrorCount, FurtherTestingErrorCount, ProofErrorCount, AnalyzeLTLCount, AnalyzeLTLErrorCount
-a0b03693-d3b0-4991-b573-e1718153596b, 1e7c79b0-8a1e-41c9-9c22-a3f5af0e1e61, 12-Dec-16 15:06:56, 12-Dec-16 15:08:18, 0, 0, 0, 0, 0, 0, BMA HTML5 1.4.0409, 0, 0, 0, 0, 0
-03eeb943-c723-4e2d-95f4-97fd5a56e792, 1e7c79b0-8a1e-41c9-9c22-a3f5af0e1e61, 12-Dec-16 15:08:23, 12-Dec-16 15:08:49, 1, 1, 0, 0, 0, 1, BMA HTML5 1.4.0409, 0, 0, 0, 1, 0

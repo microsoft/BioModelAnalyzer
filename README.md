@@ -55,20 +55,26 @@ a message to this endpoint when a user closes the BMA page.
 Also, **ApiServer** stores information about failures during simulations and analysis performed for BMA client.
 It saves the failed request and error message so it is possible to reproduce the error case.
 
-Location and format of logs is determined by the unity config files used by **ApiServer** and depend on
-deployment type.
+Location and format of logs is determined by the Unity config files used by **ApiServer** and depend on
+deployment type. See Unity configuration file samples in following sections.
 
-* **Azure** deployment (both App Service or Cloud Service) should use Storage Account to store logs.
+* **Azure** deployment (both App Service or Cloud Service) should use Storage Account to store logs. To do that 
+register `BMAWebApi.ActivityAzureLogger` and `BMAWebApi.FailureAzureLogger` types in the **ApiServer** 
+Unity configuration file. You will get:
    
    - Activity logs are stored in the `ClientActivity` table of the given Storage Account.
    - Failure logs are stored in the `ServiceFailures` table of the given Storage Account. 
    Table rows reference blobs of the `failures` container which keep both failed request and response.
 
-* **Web hosting** deployment (icnluding local IIS Express) should use local files to store logs.
+* **Web hosting** deployment (icnluding local IIS Express) should use local files to store logs. To do that 
+register `BMAWebApi.ActivityFileLogger` and `BMAWebApi.FailureFileLogger` types in the **ApiServer** 
+Unity configuration file. You will get:
 
-  - Activity logs are stored as a CSV file `activity_*date*.csv` in a folder defined in the web.config. 
-  - Failure logs are stored as a CSV file `failures_*date*.csv` in a folder defined in the web.config. Along with the file, there is a folder
-  `requests` with files keeping the failed requests and referenced from the table.
+  - Activity logs are stored as a CSV file `activity_*date*.csv` in a folder defined in the unity configuration file. 
+  - Failure logs are stored as a CSV file `failures_*date*.csv` in a folder defined in the unity configuration file. 
+  Along with the file, there is a folder
+  `requests` with files keeping the failed requests. The CSV table rows reference these files by names.
+
 
 ## Deploy on App Service
 
@@ -88,6 +94,12 @@ Two projects should be deployed:
        This enables long-running LTL polarity checks to be run programmatically, 
        though it is not supported in the BMA client yet.
 
+       **It is highly advised not to commit the configuration files containing Azure connection strings**. 
+       Otherwise anyone might get an access to your Azure Storage Account. You should add such files to
+       `.gitignore` and keep only locally.
+       In the repository, there is `unity.azure-appservice.template.config` which
+       you can copy to `unity.azure-appservice.config` which is already ignored in `.gitignore`.
+    
 ```xml
 <unity xmlns="http://schemas.microsoft.com/practices/2010/unity">
     <container>
