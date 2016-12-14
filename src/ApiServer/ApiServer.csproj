@@ -114,9 +114,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Content Include="paket.references" />
+    <Content Include="unity.azure-appservice.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="unity.web.config" />
     <None Include="Properties\PublishProfiles\OssBmaApiServer - Web Deploy.pubxml" />
-    <Content Include="unity.azure-appservice.config" />
+    <Content Include="unity.azure-appservice.template.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,6 +1,11 @@
 # Build and test
 
-First, after cloning the repository, please run the powershell script `dl-deps.ps1`. It will download [paket](https://fsprojects.github.io/Paket/index.html) and run it in order to fetch the external dependencies. The rest of building, testing, and deployment processes heavily rely on this first step having been performed. After that code can be built using Visual Studio or msbuild.
+Once after cloning the repository, please **run the powershell script `dl-deps.ps1`**. 
+
+It will download [paket](https://fsprojects.github.io/Paket/index.html) and run it in order to fetch the external dependencies. The rest of building, testing, and deployment processes heavily rely on this first step having been performed. After that code can be built using Visual Studio or msbuild.
+
+Also it will create local file `.\src\ApiServer\unity.azure-appservice.config` with default content.
+This file is added to `.gitignore` and can contain Azure Storage Account connection string.
 
 ## Unit testing
 
@@ -88,7 +93,7 @@ Two projects should be deployed:
 ### 1. Set up **ApiServer** configuration:
 
 
-  * Update `unity.azure-appservice.config` so that 
+  * Set up activity and failure logs. Update `unity.azure-appservice.config` so that 
 
        - it uses `FailureAzureLogger` and `ActivityAzureLogger` to store failures and activities statistics to
        the given Storage Account. See `Activity and failure logs` section in this document for more details.
@@ -99,9 +104,10 @@ Two projects should be deployed:
        **It is highly advised not to commit the configuration files containing Azure connection strings**. 
        Otherwise anyone might get an access to your Azure Storage Account. You should add such files to
        `.gitignore` and keep only locally.
-       In the repository, there is `unity.azure-appservice.template.config` which
-       you can copy to `unity.azure-appservice.config` which is already ignored in `.gitignore`.
-    
+              
+       The file `unity.azure-appservice.config` is already added to `.gitignore` and
+       can be safely used to store connection strings.       
+
 ```xml
 <unity xmlns="http://schemas.microsoft.com/practices/2010/unity">
     <container>
@@ -144,7 +150,9 @@ Two projects should be deployed:
     <add key="RedirectUrl" value="..." />
     <add key="BackEndUrl" value="..." />
 ```
-See  `Setup OneDrive access` in this document for more details. 
+See  `Setup OneDrive access` in this document for more details.
+
+### 3. Publish **ApiServer** and **bma.client** in Azure App Service. 
 
 ## Choosing the platform acrhitecture (32-bit or 64-bit)
 In Visual Studio, change current platform for the solution to either `Any CPU` or `x64`. 
