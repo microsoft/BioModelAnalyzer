@@ -1,20 +1,20 @@
 # Build and test
 
+First, after cloning the repository, please run the powershell script `dl-deps.ps1`. It will download [paket](https://fsprojects.github.io/Paket/index.html) and run it in order to fetch the external dependencies. The rest of building, testing, and deployment processes heavily rely on this first step having been performed. After that code can be built using Visual Studio or msbuild.
+
 ## Unit testing
 
 ### Web App scripts tests
- - Download `paket.bootstrapper.exe` into the folder `.paket`. Run `.paket/paket.bootstrapper.exe`. This will download the latest `paket.exe`.
- - Install all of the required packages from the specified sources: 
- 
- `$ .paket/paket.exe install`
- 
- - Build **bma.package** 
  - To run Web App scripts tests in Visual Studio download and install **Chutzpah Test Adapter for Test Explorer** and **Chutzpah Test Runner Context Menu Extension**.
- - Open solution **bma.client**. In this solution find the project **bma.package**. All Web App scripts tests are in the folder `test`.
- - Click on the file `Chutzpah.json` and run JS tests (`Chutzpah.json` is a test setting file which allows you to specify which files/folders to use as test files).
+ - Open solution **bma.client**. In this solution find and build the project **bma.package**. All Web App scripts tests are in the folder `test`.
+ - Click on the file `Chutzpah.json` and run JS tests (`Chutzpah.json` is a test setting file which allows you to specify which files/folders to use as test files; this option requires **Chutzpah Test Runner Context Menu Extension**).
+ - Alternatively you can just run these tests from Test Explorer (requires **Chutzpah Test Adapter for Test Explorer**)
 
 ### Back-end tests
-
+ - Download and install **NUnit Test Adapter** extension for Visual Studio
+ - Open solution **bma.client** in Visual Studio
+ - Build **BackEndTests** project
+ - In Test Explorer run tests from **BackEndTests** project (requires **NUnit Test Adapter**)
 
 # Deployment
 
@@ -24,27 +24,29 @@
 
 ## Setup OneDrive access
 
-1. Register your instance of the BioModelAnalyzer application as OneDrive application at [http://dev.onedrive.com](http://dev.onedrive.com). 
-For this, open ``App Registration`` link at the site and follow instructions.
+If you want to enable OneDrive functionality (i.e. allow users to use their OneDrive accounts for model storage), you have to register your deployment with OneDrive and modify client app's `Web.config` file accordingly.
+To do so,
 
-1. Add Application Id and RedirectUrl to the ``Web.config`` of the project ``bma.client``. By default, 
-it should redirect to the ``html/callback.html`` located at the root of the published ``bma.client``. Note 
+* Go to [dev.onedrive.com](https://dev.onedrive.com)
+* Go to App Registration
+* Register your app for **OneDrive** (not _OneDrive for Business_) by following the corresponding instructions on the page
+  * Add Web platform with redirect URI of the form "https://_\<domain>_/html/callback.html", where _\<domain>_ is the domain you're deploying the client app on (e.g. bmainterface.azurewebsites.net)
+* Add Application Id and RedirectUrl to the ``Web.config`` of the project ``bma.client``. Note 
 that it is required that `RedirectUrl` uses `https`.
 
 ```xml
 <configuration>
   <appSettings>
     <add key="LiveAppId" value="..." /> <!--Live app ID goes here. Get it from the onedrive reg site-->
-    <add key="RedirectUrl" value="https://.../html/callback.html" />
+    <add key="RedirectUrl" value="https://<domain>/html/callback.html" />
     ...
   </appSettings>
   ...
 </configuration>
 ``` 
 
-There is no need to register a new application if you change to a new deployment site. 
-Only need to update the redirect url or add a new one at the 
-[My applications](https://apps.dev.microsoft.com) portal.
+There is no need to register a new application if you just want to move to a new domain.
+You only need to update the redirect URI (both in the [settings of your OneDrive App](https://apps.dev.microsoft.com) and the `Web.config` file).
 
 
 ## Activity and failure logs
