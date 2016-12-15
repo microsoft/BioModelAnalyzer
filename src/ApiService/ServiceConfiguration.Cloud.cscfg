@@ -1,19 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ServiceConfiguration serviceName="ApiService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
-  <Role name="ApiServer">
-    <Instances count="2" />
-    <ConfigurationSettings>
-      <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biomodelanalyzer2;AccountKey=" />
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biomodelanalyzer2;AccountKey=" />
-      <Setting name="ComputeTimeLimit" value="90" />
-    </ConfigurationSettings>
-  </Role>
   <Role name="LTLCheckRole">
     <Instances count="2" />
     <ConfigurationSettings>
-      <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biomodelanalyzer2;AccountKey=" />
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=biomodelanalyzer2;AccountKey=" />
-      
+      <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=;AccountKey=" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=;AccountKey=" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>
