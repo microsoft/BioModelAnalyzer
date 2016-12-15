@@ -140,7 +140,7 @@
     <Reference Include="FSharp.Core">
       <HintPath>..\Libs\dotNET\FS34\FSharp.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Z3" Condition="'$(Platform)'!='x64'">
+    <Reference Include="Microsoft.Z3">
       <HintPath>Microsoft.Z3.dll</HintPath>
       <Private>False</Private>
     </Reference>

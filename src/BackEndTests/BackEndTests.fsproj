@@ -192,7 +192,7 @@
       <Private>True</Private>
     </ProjectReference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.Z3" Condition="'$(Platform)'!='x64'">
+    <Reference Include="Microsoft.Z3">
       <HintPath>Microsoft.Z3.dll</HintPath>
       <Private>False</Private>
     </Reference>
