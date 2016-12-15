@@ -568,5 +568,4 @@
   <PropertyGroup>
     <PreBuildEvent>$(ProjectDir)prebuild.cmd</PreBuildEvent>
   </PropertyGroup>
-  <Import Project="..\..\.paket\paket.targets" />
 </Project>
