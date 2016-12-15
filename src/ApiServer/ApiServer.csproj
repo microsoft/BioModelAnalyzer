@@ -91,7 +91,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="Microsoft.Z3" Condition="'$(Platform)'!='x64'">
+    <Reference Include="Microsoft.Z3">
       <HintPath>Microsoft.Z3.dll</HintPath>
       <Private>False</Private>
     </Reference>

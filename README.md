@@ -1,23 +1,36 @@
+# Structure 
+
+### `/sln` - Solutions 
+
+* `bmaclient` is a solution containing 2 web applications:
+
+  * `ApiServer` is a REST API App which performs simulation and analysis. It's documented using Swagger, 
+  see `/docs/ApiServer.yaml`.
+  * `bma.client` is a web site which exposes static resources such as html, scripts and images.
+  
+
+### `/src` - Projects
+
 # Build and test
 
 Once after cloning the repository, please **run the powershell script `dl-deps.ps1`**. 
 
 It will download [paket](https://fsprojects.github.io/Paket/index.html) and run it in order to fetch the external dependencies. The rest of building, testing, and deployment processes heavily rely on this first step having been performed. After that code can be built using Visual Studio or msbuild.
 
-Also it will create local file `.\src\ApiServer\unity.azure-appservice.config` with default content.
-This file is added to `.gitignore` and can contain Azure Storage Account connection string.
+Also it will create local file `.\src\ApiServer\unity.azure-appservice.config` with default Azure deployment configuration.
+This file is added to `.gitignore` and can contain Azure Storage Account connection strings.
 
-## Unit testing
+## Unit tests
 
 ### Web App scripts tests
  - To run Web App scripts tests in Visual Studio download and install **Chutzpah Test Adapter for Test Explorer** and **Chutzpah Test Runner Context Menu Extension**.
- - Open solution **bma.client**. In this solution find and build the project **bma.package**. All Web App scripts tests are in the folder `test`.
+ - Open solution **bmaclient**. In this solution find and build the project **bma.package**. All Web App scripts tests are in the folder `test`.
  - Click on the file `Chutzpah.json` and run JS tests (`Chutzpah.json` is a test setting file which allows you to specify which files/folders to use as test files; this option requires **Chutzpah Test Runner Context Menu Extension**).
  - Alternatively you can just run these tests from Test Explorer (requires **Chutzpah Test Adapter for Test Explorer**)
 
 ### Back-end tests
  - Download and install **NUnit Test Adapter** extension for Visual Studio
- - Open solution **bma.client** in Visual Studio
+ - Open solution **bmaclient** in Visual Studio
  - Build **BackEndTests** project
  - In Test Explorer run tests from **BackEndTests** project (requires **NUnit Test Adapter**)
 
