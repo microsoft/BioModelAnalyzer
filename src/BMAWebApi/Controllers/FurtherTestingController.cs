@@ -1,19 +1,6 @@
-﻿using BioCheckAnalyzerCommon;
-using bma.client;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Web.Http;
-using System.Xml.Linq;
-using System.Xml.Serialization;
-using System.Linq;
-using Microsoft.FSharp.Core;
-using BioModelAnalyzer;
-using BMAWebApi;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.ServiceRuntime;
-using System.Threading.Tasks;
+﻿using BMAWebApi;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace bma.client.Controllers
 {

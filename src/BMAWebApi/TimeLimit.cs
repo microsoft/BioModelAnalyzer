@@ -1,5 +1,5 @@
-﻿using Microsoft.WindowsAzure.ServiceRuntime;
-using System;
+﻿using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Threading;
 namespace BMAWebApi
@@ -47,7 +47,9 @@ namespace BMAWebApi
         public static TimeSpan GetTimeLimitFromConfig()
         {
             try {
-                 return TimeSpan.FromSeconds(Int32.Parse(RoleEnvironment.GetConfigurationSettingValue("ComputeTimeLimit")));
+                string timeLimit = ConfigurationManager.AppSettings["ComputeTimeLimit"];
+                if (String.IsNullOrEmpty(timeLimit)) return DefaultTimeLimit;
+                return TimeSpan.FromSeconds(Int32.Parse(timeLimit));
             }
             catch(Exception exc) {
                 Trace.WriteLine("Error reading TimeLimit setting: " + exc.Message);
