@@ -21,8 +21,9 @@ Once after cloning the repository, please **run the powershell script `dl-deps.p
 
 It will download [paket](https://fsprojects.github.io/Paket/index.html) and run it in order to fetch the external dependencies. The rest of building, testing, and deployment processes heavily rely on this first step having been performed. After that code can be built using Visual Studio or msbuild.
 
-Also it will create local file `.\src\ApiServer\unity.azure-appservice.config` with default Azure deployment configuration.
-This file is added to `.gitignore` and can contain Azure Storage Account connection strings.
+Also it will create local files `.\src\ApiServer\unity.azure-appservice.config` and 
+`.\src\ApiService\ServiceConfiguration.Cloud.cscfg` with default Azure deployment configurations.
+These files are added to `.gitignore` files and can contain Azure Storage Account connection strings.
 
 ## Unit tests
 
