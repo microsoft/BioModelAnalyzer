@@ -100,8 +100,8 @@ Unity configuration file. You will get:
 register `BMAWebApi.ActivityFileLogger` and `BMAWebApi.FailureFileLogger` types in the **ApiServer** 
 Unity configuration file. You will get:
 
-  - Activity logs are stored as a CSV file `activity_*date*.csv` in a folder defined in the unity configuration file. 
-  - Failure logs are stored as a CSV file `failures_*date*.csv` in a folder defined in the unity configuration file. 
+  - Activity logs are stored as a CSV file `activity_*date-time*.csv` in a folder defined in the unity configuration file. 
+  - Failure logs are stored as a CSV file `failures_*date-time*.csv` in a folder defined in the unity configuration file. 
   Along with the file, there is a folder
   `requests` with files keeping the failed requests. The CSV table rows reference these files by names.
 
