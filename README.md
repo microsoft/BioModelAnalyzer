@@ -2,7 +2,7 @@
 
 ### `/sln` - Solutions 
 
-* `bmaclient` is a solution containing 2 web applications:
+* `bmaclient` contains 2 web applications:
 
   * `ApiServer` is a REST API App which performs simulation and analysis. It's documented using Swagger, 
   see `/docs/ApiServer.yaml`.
@@ -11,7 +11,12 @@
 * `bmaclient-lra` is an experimental solution which contains Azure Cloud Service `ApiService`. 
   This is a worker role that performs long-running LTL polarity checks. 
   Note that this feature is unsupported by BioModelAnalyzer web client application.
-  Also, this solution requires Microsoft Azure SDK fpr .NET 2.9 to be installed.
+  Also, this solution requires Microsoft Azure SDK for .NET 2.9 to be installed.
+
+* `fs-scheduler` contains implementation of task scheduler based on Azure Storage Account.
+  The scheduler enables fair sharing of computation resources between multiple applications. 
+  An Azure Worker is 
+  used to perform tasks. This scheduler is used in `bmaclient-lra` to perform long-running operations.
 
 ### `/src` - Projects
 
