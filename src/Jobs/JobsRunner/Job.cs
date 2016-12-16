@@ -115,6 +115,7 @@ namespace JobsRunner
             {
                 File.Delete(inputFile);
                 File.Delete(outputFile);
+                File.Delete(errorsFile);
             }
         }
     }

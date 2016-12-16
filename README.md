@@ -25,6 +25,12 @@ This file is added to `.gitignore` and can contain Azure Storage Account connect
 
 ## Unit tests
 
+### BackEndTests
+
+### BmaJobsTests
+
+### WebApiTests
+
 ### Web App scripts tests
  - To run Web App scripts tests in Visual Studio download and install **Chutzpah Test Adapter for Test Explorer** and **Chutzpah Test Runner Context Menu Extension**.
  - Open solution **bmaclient**. In this solution find and build the project **bma.package**. All Web App scripts tests are in the folder `test`.

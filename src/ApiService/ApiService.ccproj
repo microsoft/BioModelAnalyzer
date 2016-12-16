@@ -71,12 +71,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="LTLCheckRoleContent\" />
-    <Folder Include="LTLPolarityCheckRoleContent\" />
     <Folder Include="Profiles" />
   </ItemGroup>
   <ItemGroup>
     <DiagnosticsConfiguration Include="LTLCheckRoleContent\diagnostics.wadcfgx" />
-    <DiagnosticsConfiguration Include="LTLPolarityCheckRoleContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>
