@@ -78,15 +78,14 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HttpPost.fs" />
     <Compile Include="WebApiTests.fs" />
     <None Include="paket.references" />
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BmaJobsTests\BmaJobsTests.fsproj">
-      <Name>BmaJobsTests</Name>
-      <Project>{67b0819b-2840-4515-8a60-9c34070c1168}</Project>
+    <ProjectReference Include="..\BmaTests.Common\BmaTests.Common.fsproj">
+      <Name>BmaTests.Common</Name>
+      <Project>{eeb62272-8814-42ab-9b6c-50321e27aa3d}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\Jobs\AnalyzeLTL\AnalyzeLTL.csproj">

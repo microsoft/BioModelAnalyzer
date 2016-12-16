@@ -2,6 +2,7 @@
     
 open NUnit.Framework
 open CheckOperations
+open Http
 
 let urlApi = "http://localhost:8223/api/"
 //let urlApi = "https://ossbmaapiserver.azurewebsites.net/api/"

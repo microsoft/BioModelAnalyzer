@@ -1,8 +1,8 @@
-﻿module LTLTests
+﻿module CheckOperations
 
 open System.IO
-open FSharp.Collections.ParallelSeq
 open System.Diagnostics
+open FSharp.Collections.ParallelSeq
 open Newtonsoft.Json.Linq
 
 let bothContains (item1 : JToken, item2 : JToken) prop =

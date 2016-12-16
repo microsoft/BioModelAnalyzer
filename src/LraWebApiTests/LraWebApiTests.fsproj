@@ -78,158 +78,19 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HttpPost.fs" />
-    <Compile Include="JobChecking.fs" />
-    <Compile Include="JobsConsoleAppTests.fs" />
-    <Compile Include="WebApiTests.fs" />
+    <Compile Include="LraWebApiTests.fs" />
     <None Include="incorrect.request.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="paket.references" />
     <None Include="App.config" />
-    <None Include="Analysis\toymodel-unstable.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Analysis\toymodel.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Analysis\toymodel.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Analysis\toymodel-unstable.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Analysis\LTLNoPositive.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Analysis\LTLNoPositive.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="CounterExamples\LTLNoPositive.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="CounterExamples\LTLNoPositive.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="CounterExamples\toymodel-unstable.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="CounterExamples\toymodel-unstable.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\EcoliNir.2.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\EcoliNir.2.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\EcoliNir.2.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\EcoliNir.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\EcoliNir.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\EcoliNir.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\EGF-cfos.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\EGF-cfos.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\EGF-cfos.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\LTLNoPositive.19.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\LTLNoPositive.19.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\LTLNoPositive.19.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\LTLNoPositive.20.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\LTLNoPositive.20.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\LTLNoPositive.20.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\EDF-cfos.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\EDF-cfos.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\EDF-cfos.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\Epi-V9.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\Epi-V9.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\Epi-V9.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\Firing neuron.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\Firing neuron.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\Firing neuron.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\Germline v5.2.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\Germline v5.2.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\Germline v5.2.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\toymodel.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\toymodel.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\PhosCas.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\PhosCas.simulation.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\PhosCas.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="LTLQueries\toymodel.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Simulation\LTLNoPositive.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Simulation\LTLNoPositive.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Simulation\toymodel.request.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Simulation\toymodel.response.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BmaTests.Common\BmaTests.Common.fsproj">
+      <Name>BmaTests.Common</Name>
+      <Project>{eeb62272-8814-42ab-9b6c-50321e27aa3d}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Jobs\AnalyzeLTL\AnalyzeLTL.csproj">
       <Name>AnalyzeLTL</Name>
       <Project>{f27a4a37-7fde-473e-ac6a-dcb38451bbf4}</Project>
