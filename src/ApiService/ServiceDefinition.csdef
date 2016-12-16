@@ -5,9 +5,5 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
       <Setting name="StorageConnectionString" />
     </ConfigurationSettings>
-    <!--<Imports>
-      <Import moduleName="RemoteAccess" />
-      <Import moduleName="RemoteForwarder" />
-    </Imports>-->
   </WorkerRole>
 </ServiceDefinition>

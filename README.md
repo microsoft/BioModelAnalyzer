@@ -8,6 +8,9 @@
   see `/docs/ApiServer.yaml`.
   * `bma.client` is a web site which exposes static resources such as html, scripts and images.
   
+* `bmaclient-lra` is an experimental solution which extends `bmaclient` with an Azure Cloud Service `ApiService` which
+  enables long-running LTL polarity checks. Note that this feature is unsupported by BioModelAnalyzer web client application.
+  Also, this solution requires Microsoft Azure SDK fpr .NET 2.9 to be installed.
 
 ### `/src` - Projects
 
