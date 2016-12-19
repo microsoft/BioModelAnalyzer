@@ -10,11 +10,14 @@ Todo:
 
 -------
 
-The BioModelAnalyzer is a tool that allows biologists to easily and quickly build complex models of biological behaviour, and to analyse them using techniques derived from the field of formal verification. Its backend is written in F#, and its graphical frontend in HTML5. It uses the SAT solver Z3 and runs on Azure.
+The BioModelAnalyzer is a tool that allows biologists to easily and quickly build complex models 
+of biological behaviour, and to analyse them using techniques derived from the field of formal 
+verification. Its backend is written in F#, and its graphical frontend in HTML5. 
+It uses the SAT solver Z3 and can run on Microsoft Azure.
 
 This consists of 
-*	An HTML5 user interface designed for rapid model construction and analysis on services hosted on Azure 
-(solution `bmaclient`)
+*	An HTML5 user interface designed for rapid model construction and analysis, and
+corresponding REST API application performing analysis and simulation (solution `bmaclient`). 
 *	A command line tool for access to a wide range of analysis algorithms (solution `biocheckconsole`)
 *	A command line hybrid physical/executable simulator (solution `Athene`), 
 as used in “Emergent stem cell homeostasis in the C. elegans germline is revealed by hybrid modeling” 
@@ -22,11 +25,19 @@ as used in “Emergent stem cell homeostasis in the C. elegans germline is revea
 *	A chat bot intended for user education in linear temporal logic (folder `ChatBot`)
 *	A set of related tools for formally verifying biological models
 
-The goal of the project is to provide access to biologists to powerful, newly developed algorithms without requiring expertise in the underlying computer science. This is achieved by bespoke user interfaces and novel methods of interaction. The aims of the project are to increase the range of modelling and analysis approaches made available through the tool, and to extend the interface to increase the ease of user adoption. 
+The goal of the project is to provide access to biologists to powerful, newly developed algorithms 
+without requiring expertise in the underlying computer science. This is achieved by bespoke user 
+interfaces and novel methods of interaction. The aims of the project are to increase the range of 
+modelling and analysis approaches made available through the tool, and to extend the interface 
+to increase the ease of user adoption. 
 
-The user interface is considered as production quality, whilst all other tools are regarded as prototypes in different stages of readiness.
+The user interface is considered as production quality, whilst all other tools are regarded as 
+prototypes in different stages of readiness.
 
-The three goals on the project roadmap are to add more advanced library and comparison functions to the user interface, to expand the range of concurrency types available in the tool, and to add support for alternative model formats. This are intended to be addressed over the next 2-3 years.
+The three goals on the project roadmap are to add more advanced library and comparison functions 
+to the user interface, to expand the range of concurrency types available in the tool, and 
+to add support for alternative model formats. This are intended to be addressed over the next 
+2-3 years.
 
 Contributions are welcome! Bugs or feature requests should be reported to the team, 
 whilst code contributions should follow the instructions in `CONTRIBUTING.md`.
