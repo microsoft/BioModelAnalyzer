@@ -10,6 +10,29 @@ Todo:
 
 -------
 
+The BioModelAnalyzer is a tool that allows biologists to easily and quickly build complex models of biological behaviour, and to analyse them using techniques derived from the field of formal verification. Its backend is written in F#, and its graphical frontend in HTML5. It uses the SAT solver Z3 and runs on Azure.
+
+This consists of 
+*	An HTML5 user interface designed for rapid model construction and analysis on services hosted on Azure 
+(solution `bmaclient`)
+*	A command line tool for access to a wide range of analysis algorithms (solution `biocheckconsole`)
+*	A command line hybrid physical/executable simulator (solution `Athene`), 
+as used in “Emergent stem cell homeostasis in the C. elegans germline is revealed by hybrid modeling” 
+([https://dx.doi.org/10.1016/j.bpj.2015.06.007](https://dx.doi.org/10.1016/j.bpj.2015.06.007))
+*	A chat bot intended for user education in linear temporal logic (folder `ChatBot`)
+*	A set of related tools for formally verifying biological models
+
+The goal of the project is to provide access to biologists to powerful, newly developed algorithms without requiring expertise in the underlying computer science. This is achieved by bespoke user interfaces and novel methods of interaction. The aims of the project are to increase the range of modelling and analysis approaches made available through the tool, and to extend the interface to increase the ease of user adoption. 
+
+The user interface is considered as production quality, whilst all other tools are regarded as prototypes in different stages of readiness.
+
+The three goals on the project roadmap are to add more advanced library and comparison functions to the user interface, to expand the range of concurrency types available in the tool, and to add support for alternative model formats. This are intended to be addressed over the next 2-3 years.
+
+Contributions are welcome! Bugs or feature requests should be reported to the team, 
+whilst code contributions should follow the instructions in `CONTRIBUTING.md`.
+
+
+
 
 # Structure 
 
@@ -21,9 +44,9 @@ Todo:
   see `/docs/ApiServer.yaml`.
   * `bma.client` is a web site which exposes static resources such as html, scripts and images.
   
-* `bmaclient-lra` is an experimental solution which contains Azure Cloud Service `ApiService`. 
+* `bmaclient-lra` contains Azure Cloud Service `ApiService`. 
   This is a worker role that performs long-running LTL polarity checks. 
-  Note that this feature is unsupported by BioModelAnalyzer web client application.
+  Note that this feature is yet unsupported by the BioModelAnalyzer web client application.
   This solution requires Microsoft Azure SDK for .NET 2.9 to be installed.
 
 * `fs-scheduler` contains implementation of task scheduler based on Azure Storage Account.
