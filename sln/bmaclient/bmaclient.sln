@@ -73,6 +73,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BmaJobsTests", "..\..\src\B
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BmaTests.Common", "..\..\src\BmaTests.Common\BmaTests.Common.fsproj", "{EEB62272-8814-42AB-9B6C-50321E27AA3D}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "bma.localapp", "..\..\src\bma.localapp\bma.localapp.fsproj", "{6D2466FC-FA2A-4822-A049-13F19DFD14F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -357,6 +359,18 @@ Global
 		{EEB62272-8814-42AB-9B6C-50321E27AA3D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EEB62272-8814-42AB-9B6C-50321E27AA3D}.Release|x64.ActiveCfg = Release|Any CPU
 		{EEB62272-8814-42AB-9B6C-50321E27AA3D}.Release|x64.Build.0 = Release|Any CPU
+		{6D2466FC-FA2A-4822-A049-13F19DFD14F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D2466FC-FA2A-4822-A049-13F19DFD14F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D2466FC-FA2A-4822-A049-13F19DFD14F3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6D2466FC-FA2A-4822-A049-13F19DFD14F3}.Debug|x64.Build.0 = Debug|Any CPU
+		{6D2466FC-FA2A-4822-A049-13F19DFD14F3}.nuget|Any CPU.ActiveCfg = Release|Any CPU
+		{6D2466FC-FA2A-4822-A049-13F19DFD14F3}.nuget|Any CPU.Build.0 = Release|Any CPU
+		{6D2466FC-FA2A-4822-A049-13F19DFD14F3}.nuget|x64.ActiveCfg = Release|Any CPU
+		{6D2466FC-FA2A-4822-A049-13F19DFD14F3}.nuget|x64.Build.0 = Release|Any CPU
+		{6D2466FC-FA2A-4822-A049-13F19DFD14F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D2466FC-FA2A-4822-A049-13F19DFD14F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D2466FC-FA2A-4822-A049-13F19DFD14F3}.Release|x64.ActiveCfg = Release|Any CPU
+		{6D2466FC-FA2A-4822-A049-13F19DFD14F3}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

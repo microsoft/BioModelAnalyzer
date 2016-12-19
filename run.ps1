@@ -1,0 +1,1 @@
+﻿Start-Process '.\src\bma.localapp\bin\Release\bma.localapp.exe' -WorkingDirectory '.\src\bma.localapp\bin\Release\'

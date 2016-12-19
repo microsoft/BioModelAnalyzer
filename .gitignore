@@ -12,6 +12,7 @@ src/bma.client/js/idd.js
 src/bma.client/js/idd.heatmapworker.js
 src/bma.client/css/bma.css
 src/bma.client/css/website.css
+src/bma.client/css/fonts.min.css
 
 #dependencies copied by paket and grunt
 src/bma.client/js/FileSaver.js
@@ -86,6 +87,10 @@ src/bma.package/Scripts/rx.lite.min.js
 src/bma.package/Scripts/typings/
 src/bma.package/css/jasmine.css
 src/bma.package/css/jquery.svg.css
+
+#compiled css
+src/bma.package/css/fonts.min.css
+src/bma.package/css/website.css
 
 node_modules
 

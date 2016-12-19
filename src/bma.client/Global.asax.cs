@@ -15,8 +15,9 @@ namespace bma.client
             JObject version;
 
             //Client version
-            try { 
-                version = JObject.Parse(File.ReadAllText(HttpContext.Current.Server.MapPath("/version.txt")));
+            try {
+                var pathToVer = HttpContext.Current != null ? HttpContext.Current.Server.MapPath("/version.txt") : Path.Combine(System.Environment.CurrentDirectory, "version.txt");
+                version = JObject.Parse(File.ReadAllText(pathToVer));
             } 
             catch
             {
