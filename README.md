@@ -18,7 +18,7 @@ It uses the SAT solver Z3 and can run on Microsoft Azure.
 This consists of 
 *	An HTML5 user interface designed for rapid model construction and analysis, and
 corresponding REST API application performing analysis and simulation (solution `bmaclient`). 
-*	A command line tool for access to a wide range of analysis algorithms (solution `biocheckconsole`)
+*	A command line tool for access to a wide range of analysis algorithms (solution `BioCheckConsole`)
 *	A command line hybrid physical/executable simulator (solution `Athene`), 
 as used in “Emergent stem cell homeostasis in the C. elegans germline is revealed by hybrid modeling” 
 ([https://dx.doi.org/10.1016/j.bpj.2015.06.007](https://dx.doi.org/10.1016/j.bpj.2015.06.007))
@@ -231,7 +231,8 @@ See  `Setup OneDrive access` in this document for more details.
 ### 3. Publish **ApiServer** and **bma.client** in Azure App Service. 
 
 ## Choosing the platform acrhitecture (32-bit or 64-bit)
-In Visual Studio, change current platform for the solution to either `Any CPU` or `x64`. 
+In Visual Studio, change current platform for the solution to either `x86` or `x64`. 
+Note that applications built for x86 work on x64 platform, but not vice versa.
 If you deploy it then, this selection must correspond to settings of web hosting or Azure application settings,
 otherwise you will get `Internal Server Error` when trying to access the services. This error is caused by
 `BadImageFormatException` thrown by the web application.

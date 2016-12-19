@@ -26,11 +26,10 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
     <DocumentationFile>bin\Debug\BioCheckConsole.XML</DocumentationFile>
-    <StartArguments>-model model8.json -engine VMCAI -prove model8output.json</StartArguments>
-    <StartWorkingDirectory>
-    </StartWorkingDirectory>
+    <StartArguments>-model EGF.json -engine CAV -formula "(Implies (= EGFR 2) (Eventually (= cfos 2))" -path 10 -outputmodel -proof -ltloutput "output2.json" -mc</StartArguments>
+    <StartWorkingDirectory />
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
@@ -39,13 +38,10 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Release\BioCheckConsole.XML</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup>
-    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -53,20 +49,24 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
     <DocumentationFile>bin\Debug\BioCheckConsole.XML</DocumentationFile>
-    <StartArguments>-model EGF.json -engine CAV -formula "(Implies (= EGFR 2) (Eventually (= cfos 2))" -path 10 -outputmodel -proof -ltloutput "output2.json" -mc</StartArguments>
-    <StartWorkingDirectory />
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <StartArguments>-model EGF.json -engine CAV -formula "(Implies (= EGFR 2) (Eventually (= cfos 2)))" -path 10 -outputmodel -proof -ltloutput "output2.json" -mc</StartArguments>
+    <StartWorkingDirectory>
+    </StartWorkingDirectory>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
     <DocumentationFile>bin\Release\BioCheckConsole.XML</DocumentationFile>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '11.0'">
@@ -91,6 +91,11 @@
     <Content Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BioCheckAnalyzer\BioCheckAnalyzer.fsproj">
+      <Name>BioCheckAnalyzer</Name>
+      <Project>{27fcee47-ced8-4629-9989-7e9a490b090e}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
     </Reference>
@@ -101,11 +106,6 @@
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <ProjectReference Include="..\BioCheckAnalyzer\BioCheckAnalyzer.fsproj">
-      <Name>BioCheckAnalyzer</Name>
-      <Project>{2975b5b6-78de-4c9c-9d0c-584864ca590a}</Project>
-      <Private>True</Private>
-    </ProjectReference>
     <ProjectReference Include="..\BioCheckAnalyzerCommon\BioCheckAnalyzerCommon.csproj">
       <Name>BioCheckAnalyzerCommon</Name>
       <Project>{61e37d4e-172b-45dd-9289-5c874a8320f0}</Project>

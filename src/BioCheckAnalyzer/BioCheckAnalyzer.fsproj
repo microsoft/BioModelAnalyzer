@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{27fcee47-ced8-4629-9989-7e9a490b090e}</ProjectGuid>
@@ -16,7 +16,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,9 +25,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\BioCheck.Analyzer.Server.XML</DocumentationFile>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
@@ -35,7 +35,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Release\BioCheck.Analyzer.Server.XML</DocumentationFile>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
@@ -132,14 +132,23 @@
     <Compile Include="Prover.fs" />
     <Compile Include="Suggest.fs" />
     <Compile Include="UIMain.fs" />
-    <!--<Compile Include="UnitTests.fs" />-->
     <None Include="App.config" />
     <Compile Include="PathFinder.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core">
-      <HintPath>..\Libs\dotNET\FS34\FSharp.Core.dll</HintPath>
-    </Reference>
+    <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <!-- 
+    Multifile assembly consists of managed Microsoft.Z3 and unmanaged libz3.dll.
+    These files are copied to the project folder because they are added as content files from the paket folder, 
+    depending on the solution platform. Here we reference the local copy of Microsoft.Z3.
+    
+    We cannot add reference to Microsoft.Z3 from the paket folder because libz3.dll in the paket folder is located in different folder than Microsoft.Z3
+    and this project will not compile, because it will not find libz3.dll.
+    Next, libz3.dll cannot be added to the same folder as Microsoft.Z3 in nuget package, because in this case adding the package will add the reference to libz3.dll as well,
+    which is unmanged. Also, there are 2 packages, one for x86 and one for x64, so we cannot use paket to add the reference automatically.    
+    
+    Note that nuget package contains init.ps1 which copies libz3.dll to lib/Microsoft.Z3, but paket doesn't run the script when adding the package.
+    -->
     <Reference Include="Microsoft.Z3">
       <HintPath>Microsoft.Z3.dll</HintPath>
       <Private>False</Private>
