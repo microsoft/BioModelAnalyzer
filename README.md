@@ -54,7 +54,12 @@ whilst code contributions should follow the instructions in `CONTRIBUTING.md`.
   * `ApiServer` is a REST API App which performs simulation and analysis. It's documented using Swagger, 
   see `/docs/ApiServer.yaml`.
   * `bma.client` is a web site which exposes static resources such as html, scripts and images.
-  
+
+* `BioCheckConsole` is a command line tool for access to a wide range of analysis algorithms.
+
+* `ClientStat` is a command line tool that reads user activity statistics from Azure Storage Account,
+   writes to CSV files and displays as charts.
+
 * `bmaclient-lra` contains Azure Cloud Service `ApiService`. 
   This is a worker role that performs long-running LTL polarity checks. 
   Note that this feature is yet unsupported by the BioModelAnalyzer web client application.
@@ -148,6 +153,9 @@ Unity configuration file. You will get:
    - Activity logs are stored in the `ClientActivity` table of the given Storage Account.
    - Failure logs are stored in the `ServiceFailures` table of the given Storage Account. 
    Table rows reference blobs of the `failures` container which keep both failed request and response.
+
+   The `/sln/ClientStat` solution builds a command line tool that allows to retrieve statistics from
+   a Storage Account and display it as charts.
 
 * **Web hosting** deployment (icnluding local IIS Express) should use local files to store logs. To do that 
 register `BMAWebApi.ActivityFileLogger` and `BMAWebApi.FailureFileLogger` types in the **ApiServer** 
