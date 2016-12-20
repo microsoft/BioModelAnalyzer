@@ -6,7 +6,7 @@ if ([Environment]::Is64BitOperatingSystem) {
 $msbuild = $pfiles + '\MSBuild\14.0\Bin\MSBuild.exe'
 $solution = '.\sln\bmaclient\bmaclient.sln'
 $config = '/p:Configuration=Release'
-$platform = '/p:Platform="Any CPU"'
+$platform = '/p:Platform="x86"'
 $env:errorLevel = 0
 $proc = Start-Process $msbuild $solution,$config,$platform -NoNewWindow -PassThru
 $proc.WaitForExit()
