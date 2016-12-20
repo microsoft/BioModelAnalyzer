@@ -86,7 +86,6 @@
     <Compile Include="Logs\FileLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\SimulateController.cs" />
-    <Compile Include="Controllers\ValidateController.cs" />
     <Compile Include="TimeLimit.cs" />
     <Compile Include="UnityResolver.cs" />
   </ItemGroup>
@@ -114,10 +113,6 @@
     <ProjectReference Include="..\Jobs\JobsRunner\JobsRunner.csproj">
       <Project>{062c2f38-d571-459a-9e67-43c9b074eb9c}</Project>
       <Name>JobsRunner</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UIExpr\UIExpr.fsproj">
-      <Project>{c6745675-ea9f-41f3-bffc-2c3810585b36}</Project>
-      <Name>UIExpr</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

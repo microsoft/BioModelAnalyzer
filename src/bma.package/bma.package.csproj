@@ -442,7 +442,6 @@
     <TypeScriptCompile Include="script\model\operationlayout.ts" />
     <TypeScriptCompile Include="script\model\visualsettings.ts" />
     <TypeScriptCompile Include="script\operatorsregistry.ts" />
-    <TypeScriptCompile Include="script\presenters\formulavalidationpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
     <TypeScriptCompile Include="script\presenters\localstoragepresenter.ts" />
     <TypeScriptCompile Include="script\presenters\ltl\LTLpresenter.ts" />
@@ -504,7 +503,6 @@
     <TypeScriptCompile Include="test\ExportImportTest.ts" />
     <TypeScriptCompile Include="test\ExportImportLTLTests.ts" />
     <TypeScriptCompile Include="test\FormulaConvertationTests.ts" />
-    <TypeScriptCompile Include="test\FormulaValidationPresenterTest.ts" />
     <TypeScriptCompile Include="test\FurtherTestingTest.ts" />
     <TypeScriptCompile Include="test\KeyframesTest.ts" />
     <TypeScriptCompile Include="test\LocalStoragePresenterTest.ts" />

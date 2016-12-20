@@ -18,7 +18,6 @@
 /// <reference path="script\presenters\presenters.ts"/>
 /// <reference path="script\presenters\furthertestingpresenter.ts"/>
 /// <reference path="script\presenters\simulationpresenter.ts"/>
-/// <reference path="script\presenters\formulavalidationpresenter.ts"/>
 /// <reference path="script\presenters\onedrivestoragepresenter.ts"/>
 /// <reference path="script\presenters\storagepresenter.ts"/>
 /// <reference path="script\presenters\localstoragepresenter.ts"/>
@@ -634,7 +633,6 @@ function loadScript(version) {
 
     //Loaing ServiсeDrivers 
     var exportService = new BMA.UIDrivers.ExportService();
-    var formulaValidationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Validate");
     var furtherTestingServiсe = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/FurtherTesting");
     var proofAnalyzeService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Analyze");
     var simulationService = new BMA.UIDrivers.BMAProcessingService(window.BMAServiceURL + "/api/Simulate");
@@ -652,7 +650,6 @@ function loadScript(version) {
     var furtherTestingPresenter = new BMA.Presenters.FurtherTestingPresenter(appModel, furtherTestingDriver, popupDriver, furtherTestingServiсe, messagebox, logService);
     var simulationPresenter = new BMA.Presenters.SimulationPresenter(appModel, accordionHider, fullSimulationViewer, simulationViewer, popupDriver, simulationService, logService, exportService, messagebox);
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService, waitScreen);
-    var formulaValidationPresenter = new BMA.Presenters.FormulaValidationPresenter(variableEditorDriver, formulaValidationService);
     //var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
     //var oneDriveStoragePresenter = new BMA.Presenters.OneDriveStoragePresenter(appModel, oneDriveStorageDriver, oneDriveRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
     var mStoragePresenter = new BMA.Presenters.StoragePresenter(appModel, modelStorageDriver, localStorageDriver, oneDriveStorageDriver, connector, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);

@@ -41,7 +41,6 @@ module.exports = function (grunt) {
                     "script/presenters/proofpresenter.js",
                     "script/presenters/simulationpresenter.js",
                     "script/presenters/modelstoragepresenter.js",
-                    "script/presenters/formulavalidationpresenter.js",
                     "script/presenters/furthertestingpresenter.js",
                     "script/presenters/localstoragepresenter.js",
                     "script/presenters/storagepresenter.js",

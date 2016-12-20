@@ -148,11 +148,6 @@
       <Project>{90ff5549-6138-4653-89c7-5a0dfb9034cf}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\UIExpr\UIExpr.fsproj">
-      <Name>UIExpr</Name>
-      <Project>{c6745675-ea9f-41f3-bffc-2c3810585b36}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3')">

@@ -173,10 +173,6 @@
       <Project>{90ff5549-6138-4653-89c7-5a0dfb9034cf}</Project>
       <Name>Simulate</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UIExpr\UIExpr.fsproj">
-      <Project>{c6745675-ea9f-41f3-bffc-2c3810585b36}</Project>
-      <Name>UIExpr</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
