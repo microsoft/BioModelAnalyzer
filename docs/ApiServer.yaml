@@ -1,0 +1,480 @@
+swagger: '2.0'
+
+info:
+  version: "0.1.0"
+  title: ApiServer Web API
+  
+basePath: /api
+
+host: localhost:8223
+
+paths:
+
+  /Simulate:
+    post:
+      summary: Simulates one step of a model evolution using given initial values of the model variables. It is limited to 2 minutes.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: model
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/SimulationDefinition'
+            
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/SimulationResult'
+          description: |
+            The simulation is either succeeded or failed and its result is in the response. 
+            If the simulation succeeds, the response contains new values of the variables. 
+            If the simulation fails, the response contains errors.
+        204:
+          description: Timeout while waiting for the simulation to complete.
+          
+  /Analyze:
+    post:
+      summary: Performs proof analysis. It is limited to 2 minutes.
+      description: BMA will check every possible state of the model. After stepping through separate interactions, the model 
+        is stable if it eventually reached a single stable state; otherwise, BMA couldn't find a final stable state and it may require additional analysis.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: model
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/ModelDefinition'
+            
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/AnalysisResult'
+          description: |
+            The analysis is either succeeded or failed and its result is in the response. 
+            If the analysis succeeds, the status indicates if model stability is proved or not.
+            If the analysis fails, the response contains errors.
+        204:
+          description: Timeout while waiting for the analysis to complete.   
+          
+  /FurtherTesting:
+    post:
+      summary: Tries to find counter-examples for a model. It is limited to 2 minutes.
+      description: BMA will try to find counter-examples for models, in particular, bifurcation, cycle or fixpoint.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: model
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/FurtherTestingRequest'
+            
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/FurtherTestingResult'
+          description: |
+            The analysis is either succeeded or failed and its result is in the response. 
+            If the analysis succeeds, there are can be examples of cycle, bifurcation or fixpoint in the response.
+            If the analysis fails, the response contains errors.
+        204:
+          description: Timeout while waiting for the analysis to complete.            
+
+  /AnalyzeLTLSimulation:
+    post:
+      summary: Performs analysis for the given LTL formula. It is limited to 2 minutes.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: model
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/LTLSimulationRequest'
+            
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/LTLSimulationResponse'
+          description: |
+            The simulation is either succeeded or failed and its result is in the response. 
+            - Status 0 indicates that there is no any satisfying simulation.
+            - Status 1 indicates that satisfying simulation found.
+            - Status 2 means that we didn't retrieve any results.
+            
+            If the simulation fails, the response contains errors.
+        204:
+          description: Timeout while waiting for the simulation to complete.
+
+
+  /AnalyzeLTLPolarity:
+    post:
+      summary: Performs analysis for the given LTL formula. It is limited to 2 minutes.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: model
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/LTLAnalysisRequest'
+            
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/LTLAnalysisResponse'
+          description: |
+            The analysis is either succeeded or failed and its result is in the response. 
+            - Status 0 indicates that there is no any satisfying simulation.
+            - Status 1 indicates that satisfying simulation found.
+            - Status 2 means that we didn't retrieve any results.
+            
+            If the analysis fails, the response contains errors.
+        204:
+          description: Timeout while waiting for the simulation to complete.          
+
+  /lra/{appId}:
+    post:
+      description: |
+        Schedules new job.
+      parameters:
+        - name: appId
+          in: path
+          description: Identifies the application that is sending the job
+          required: true
+          type: string
+          format: guid
+      produces:
+        - text/plain
+        - application/json          
+      responses:
+        200:
+          description: The job is scheduled to execute.
+          schema: 
+            description: Job identifier that allows to get status and result of the job.
+            type: string
+            format: guid
+    get:
+      description: |
+        Gets status of the job.
+      parameters: 
+        - name: jobId
+          in: query
+          description: Identifies the job. This is the identifier that is returned when the job is added
+          required: true
+          type: string
+          format: guid
+        - name: appId
+          in: path
+          description: Identifies the application that is sending the job
+          required: true
+          type: string
+          format: guid
+      produces:
+        - text/plain
+        - application/json
+      responses:
+        # Response code
+        404:
+          description: There is no job with the given job id and application id
+        200:
+          description: Succeeded - the job is succeeded
+        201:
+          description: Queued - the job is queued and awaits to be chosen by a worker
+          schema:
+            description: |
+              Approximate position of the job in the queue. Starts with zero. 
+              Negative value indicates that the position couldn't be determined.
+            type: integer
+            format: int32
+        202:
+          description: Executing - the job is being executed
+          schema:
+            description: Additional information.
+            type: object
+            properties:
+              elapsed:
+                description: Time in milliseconds passed since the execution started (at the moment when this response is built).
+                type: integer
+                format: int32
+              started:
+                description: Time when the job started. See rfc 3339.
+                type: string
+                format: date-time
+        203:
+          description: Failed - the job is failed
+          schema:
+            description: Description of the failure.
+            type: string
+        501:
+          description: Unknown status
+    delete:
+      description: |
+        Deletes the job and, if appropriate, cancels the execution.
+      parameters: 
+        - name: jobId
+          in: query
+          description: Identifies the job. This is the identifier that is returned when the job is added
+          required: true
+          type: string
+          format: guid
+        - name: appId
+          in: path
+          description: Identifies the application that is sending the job
+          required: true
+          type: string
+          format: guid 
+      produces:
+        - text/plain
+      responses:
+        200:
+          description: Job is deleted from the scheduler. The workers will not take the job for execution. If the job is already executing, it is requested to cancel but it is still possible that its result will be saved.
+        404:
+          description: Combination of the application and job IDs is not found.
+        500:
+          description: Exceptions occured when deleting the jobs. The scheduler is consistent though it is not guaranteed that the job execution is requested to cancel or the job will no be executed later.
+          schema:
+            description: Description of the failure.
+            type: string
+  /lra/{appId}/result:
+    get:
+      description: |
+        Gets result of the succeeded job.
+      parameters: 
+        - name: jobId
+          in: query
+          description: Identifies the job. This is the identifier that is returned when the job is added
+          required: true
+          type: string
+          format: guid
+        - name: appId
+          in: path
+          description: Identifies the application that is sending the job
+          required: true
+          type: string
+          format: guid
+      produces:
+        - application/json
+      responses:
+        # Response code
+        404:
+          description: Either there is no job with the given job id and application id, or the job is not succeeded.
+        200:
+          description: The job is succeeded and its result is in the response.
+
+definitions:
+
+  VariablesValues:
+    type: array
+    items:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Value:
+          type: integer
+
+  ModelDefinition:
+    type: object
+    properties:
+      Name:
+        type: string
+      Variables:
+        type: array
+        items:
+          type: object
+          properties:
+            Name:
+              type: string
+            Id:
+              type: integer
+            RangeFrom:
+              type: integer
+            RangeTo:
+              type: integer
+            Formula:
+              type: string
+      Relationships:
+        type: array
+        items:
+          type: object
+          properties:
+            Name:
+              type: string
+            Id:
+              type: integer
+            FromVariable:
+              type: integer
+            ToVariable:
+              type: integer
+            Type:
+              type: string
+
+  SimulationDefinition:
+    type: object
+    properties:
+      Model:
+        $ref: '#/definitions/ModelDefinition'
+      Variables:
+        $ref: '#/definitions/VariablesValues'
+    required:
+      - Model
+      - Variables
+    
+  SimulationResult:
+    type: object
+    properties:
+      Variables:
+        $ref: '#/definitions/VariablesValues'
+      ErrorMessages: 
+        type: array
+        items:
+          type: string
+      DebugMessages:
+        type: array
+        items:
+          type: string
+  
+  Ticks:
+    type: array
+    items:
+      type: object
+      properties:
+        Time:
+          type: integer
+        Variables:
+          type: object
+          properties:
+            Id:
+              type: integer
+            Lo: 
+              type: integer
+            Hi:
+              type: integer    
+          
+  AnalysisResult:
+    type: object
+    properties:
+      Time: 
+        type: integer
+      ErrorMessages: 
+        type: array
+        items:
+          type: string
+      DebugMessages:
+        type: array
+        items:
+          type: string
+      Status:
+        type: string
+      Error: 
+        type: string
+      Ticks:
+        $ref: '#/definitions/Ticks'
+          
+  FurtherTestingRequest:
+    type: object
+    properties:
+      Model:
+        $ref: '#/definitions/ModelDefinition'
+      Analysis:
+        $ref: '#/definitions/AnalysisResult'
+
+  FurtherTestingResult: 
+    type: object
+    properties:
+      CounterExamples: 
+        type: array
+        items:
+          type: object
+          properties:
+            Variables:
+              type: object
+              properties:
+                Id: 
+                  type: string
+                Fix1: 
+                  type: integer
+                Fix2: 
+                  type: integer
+                Value:
+                  type: integer
+            Status:
+              type: string
+              enum:
+                - Bifurcation
+                - Cycle
+                - Fixpoint
+      ErrorMessages: 
+        type: array
+        items:
+          type: string
+      DebugMessages:
+        type: array
+        items:
+          type: string
+      Error: 
+        type: string
+
+  LTLSimulationRequest:
+    allOf:
+      - $ref: '#/definitions/ModelDefinition'
+      - type: object
+        properties:
+          Formula:
+            type: string
+          Number_of_steps:
+            type: integer
+          EnableLogging:
+            type: boolean
+            
+  LTLAnalysisRequest:
+    allOf:
+      - $ref: '#/definitions/LTLSimulationRequest'
+      - type: object
+        properties:
+          Polarity:
+            type: integer
+            enum:
+            - 0
+            - 1         
+            
+  LTLSimulationResponse:
+    type: object
+    properties:
+      ErrorMessages: 
+        type: array
+        items:
+          type: string
+      DebugMessages:
+        type: array
+        items:
+          type: string
+      Status:
+        type: integer
+      Error: 
+        type: string
+      Loop: 
+        type: integer
+      Ticks:
+        $ref: '#/definitions/Ticks'
+        
+  LTLAnalysisResponse:
+    type: object
+    properties:
+      Item1: 
+        $ref: '#/definitions/LTLSimulationResponse'
+      Item2: 
+        $ref: '#/definitions/LTLSimulationResponse'

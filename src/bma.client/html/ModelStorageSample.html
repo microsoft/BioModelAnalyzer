@@ -1,0 +1,40 @@
+<!-- Copyright (c) Microsoft Research 2016 -->
+<!-- License: MIT. See LICENSE -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <link rel="stylesheet" href="../css/bma.css" type="text/css" />
+    <script src="../Scripts/jquery-2.1.4.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.11.4.min.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../Scripts/rx.aggregates.min.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../tool.js"></script>
+    <script src="../app.js"></script>
+    <script src="../js/jquery.ui-contextmenu.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            window.Commands = new BMA.CommandRegistry();
+            var ls = $("<div></div>").appendTo('body');
+            ls.localstoragewidget({ items: ["model1", "model2"] });
+            var ods = $("<div></div>");
+            ods.onedrivestoragewidget({items: ["modelOd1", "modelOD2"]});
+            $("#repo").modelstoragewidget({ localStorageWidget: ls/*items: ["model1", "model2"]*/, oneDriveWidget: ods });
+
+            $("#repo").modelstoragewidget({
+                onsigninonedrive: function () {
+                    $("#repo").modelstoragewidget({ isAuthorized: true });
+                }
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <div id="repo" class="window" width="250px" height="500px"></div>
+</body>
+</html>

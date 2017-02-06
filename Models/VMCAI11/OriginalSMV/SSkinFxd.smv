@@ -1,0 +1,217 @@
+-- Generated with BioCheck on Thu Apr 08 19:58:27 BST 2010
+
+module main() {
+
+	wntext4 : 0 .. 3; 
+	deltaext4 : 0 .. 3; 
+	deltaext3 : 0 .. 3; 
+	deltaext2 : 0 .. 3; 
+	deltaext1 : 0 .. 3; 
+	deltaext0 : 0 .. 3; 
+	notchic0 : 0 .. 3; 
+	notchic1 : 0 .. 3; 
+	delta0 : 0 .. 3; 
+	delta1 : 0 .. 3; 
+	delta2 : 0 .. 3; 
+	delta3 : 0 .. 3; 
+	wntext0 : 0 .. 3; 
+	delta4 : 0 .. 3; 
+	wntext1 : 0 .. 3; 
+	wntext2 : 0 .. 3; 
+	wntext3 : 0 .. 3; 
+	wnt2 : 0 .. 3; 
+	wnt1 : 0 .. 3; 
+	wnt4 : 0 .. 3; 
+	wnt3 : 0 .. 3; 
+	notchic4 : 0 .. 3; 
+	wnt0 : 0 .. 3; 
+	notchic3 : 0 .. 3; 
+	notchic2 : 0 .. 3; 
+
+	init(wntext4) := {0,1,2,3};
+	init(deltaext4) := {0,1,2,3};
+	init(deltaext3) := {0,1,2,3};
+	init(deltaext2) := {0,1,2,3};
+	init(deltaext1) := {0,1,2,3};
+	init(deltaext0) := {0,1,2,3};
+	init(notchic0) := {0,1,2,3};
+	init(notchic1) := {0,1,2,3};
+	init(delta0) := {0,1,2,3};
+	init(delta1) := {0,1,2,3};
+	init(delta2) := {0,1,2,3};
+	init(delta3) := {0,1,2,3};
+	init(wntext0) := {0,1,2,3};
+	init(delta4) := {0,1,2,3};
+	init(wntext1) := {0,1,2,3};
+	init(wntext2) := {0,1,2,3};
+	init(wntext3) := {0,1,2,3};
+	init(wnt2) := {0,1,2,3};
+	init(wnt1) := {0,1,2,3};
+	init(wnt4) := {0,1,2,3};
+	init(wnt3) := {0,1,2,3};
+	init(notchic4) := {0,1,2,3};
+	init(wnt0) := {0,1,2,3};
+	init(notchic3) := {0,1,2,3};
+	init(notchic2) := {0,1,2,3};
+
+	if (((wnt3 + 0) > (1 + (2 * wntext4))))
+		next(wntext4) := wntext4 + 1;
+	else if (((wnt3 + 0) < (2 * wntext4)))
+		next(wntext4) := wntext4 - 1;
+	else next(wntext4) := wntext4;
+	if (((delta3 + 2) > (2 * deltaext4)))
+		next(deltaext4) := deltaext4 + 1;
+	else if (((delta3 + 2) < ((2 * deltaext4) - 1)))
+		next(deltaext4) := deltaext4 - 1;
+	else next(deltaext4) := deltaext4;
+	if (((delta2 + delta4) > (2 * deltaext3)))
+		next(deltaext3) := deltaext3 + 1;
+	else if (((delta2 + delta4) < ((2 * deltaext3) - 1)))
+		next(deltaext3) := deltaext3 - 1;
+	else next(deltaext3) := deltaext3;
+	if (((delta1 + delta3) > (2 * deltaext2)))
+		next(deltaext2) := deltaext2 + 1;
+	else if (((delta1 + delta3) < ((2 * deltaext2) - 1)))
+		next(deltaext2) := deltaext2 - 1;
+	else next(deltaext2) := deltaext2;
+	if (((delta0 + delta2) > (2 * deltaext1)))
+		next(deltaext1) := deltaext1 + 1;
+	else if (((delta0 + delta2) < ((2 * deltaext1) - 1)))
+		next(deltaext1) := deltaext1 - 1;
+	else next(deltaext1) := deltaext1;
+	if (((2 + delta1) > (2 * deltaext0)))
+		next(deltaext0) := deltaext0 + 1;
+	else if (((2 + delta1) < ((2 * deltaext0) - 1)))
+		next(deltaext0) := deltaext0 - 1;
+	else next(deltaext0) := deltaext0;
+	if (((1 > notchic0) & (deltaext0 > notchic0)))
+		next(notchic0) := notchic0 + 1;
+	else if (((1 < notchic0) | (deltaext0 < notchic0)))
+		next(notchic0) := notchic0 - 1;
+	else next(notchic0) := notchic0;
+	if (((2 > notchic1) & (deltaext1 > notchic1)))
+		next(notchic1) := notchic1 + 1;
+	else if (((2 < notchic1) | (deltaext1 < notchic1)))
+		next(notchic1) := notchic1 - 1;
+	else next(notchic1) := notchic1;
+	if (((wntext0 + notchic0) > (2 * delta0)))
+		next(delta0) := delta0 + 1;
+	else if (((wntext0 + notchic0) < ((2 * delta0) - 1)))
+		next(delta0) := delta0 - 1;
+	else next(delta0) := delta0;
+	if (((wntext1 + notchic1) > (2 * delta1)))
+		next(delta1) := delta1 + 1;
+	else if (((wntext1 + notchic1) < ((2 * delta1) - 1)))
+		next(delta1) := delta1 - 1;
+	else next(delta1) := delta1;
+	if (((wntext2 + notchic2) > (2 * delta2)))
+		next(delta2) := delta2 + 1;
+	else if (((wntext2 + notchic2) < ((2 * delta2) - 1)))
+		next(delta2) := delta2 - 1;
+	else next(delta2) := delta2;
+	if (((wntext3 + notchic3) > (2 * delta3)))
+		next(delta3) := delta3 + 1;
+	else if (((wntext3 + notchic3) < ((2 * delta3) - 1)))
+		next(delta3) := delta3 - 1;
+	else next(delta3) := delta3;
+	if (((3 + wnt1) > (1 + (2 * wntext0))))
+		next(wntext0) := wntext0 + 1;
+	else if (((3 + wnt1) < (2 * wntext0)))
+		next(wntext0) := wntext0 - 1;
+	else next(wntext0) := wntext0;
+	if (((wntext4 + notchic4) > (2 * delta4)))
+		next(delta4) := delta4 + 1;
+	else if (((wntext4 + notchic4) < ((2 * delta4) - 1)))
+		next(delta4) := delta4 - 1;
+	else next(delta4) := delta4;
+	if (((wnt0 + wnt2) > (1 + (2 * wntext1))))
+		next(wntext1) := wntext1 + 1;
+	else if (((wnt0 + wnt2) < (2 * wntext1)))
+		next(wntext1) := wntext1 - 1;
+	else next(wntext1) := wntext1;
+	if (((wnt1 + wnt3) > (1 + (2 * wntext2))))
+		next(wntext2) := wntext2 + 1;
+	else if (((wnt1 + wnt3) < (2 * wntext2)))
+		next(wntext2) := wntext2 - 1;
+	else next(wntext2) := wntext2;
+	if (((wnt2 + wnt4) > (1 + (2 * wntext3))))
+		next(wntext3) := wntext3 + 1;
+	else if (((wnt2 + wnt4) < (2 * wntext3)))
+		next(wntext3) := wntext3 - 1;
+	else next(wntext3) := wntext3;
+	if (((3 - notchic2) > wnt2))
+		next(wnt2) := wnt2 + 1;
+	else if (((3 - notchic2) < wnt2))
+		next(wnt2) := wnt2 - 1;
+	else next(wnt2) := wnt2;
+	if (((3 - notchic1) > wnt1))
+		next(wnt1) := wnt1 + 1;
+	else if (((3 - notchic1) < wnt1))
+		next(wnt1) := wnt1 - 1;
+	else next(wnt1) := wnt1;
+	if (((3 - notchic4) > wnt4))
+		next(wnt4) := wnt4 + 1;
+	else if (((3 - notchic4) < wnt4))
+		next(wnt4) := wnt4 - 1;
+	else next(wnt4) := wnt4;
+	if (((3 - notchic3) > wnt3))
+		next(wnt3) := wnt3 + 1;
+	else if (((3 - notchic3) < wnt3))
+		next(wnt3) := wnt3 - 1;
+	else next(wnt3) := wnt3;
+	if (((3 > notchic4) & (deltaext4 > notchic4)))
+		next(notchic4) := notchic4 + 1;
+	else if (((3 < notchic4) | (deltaext4 < notchic4)))
+		next(notchic4) := notchic4 - 1;
+	else next(notchic4) := notchic4;
+	if (((3 - notchic0) > wnt0))
+		next(wnt0) := wnt0 + 1;
+	else if (((3 - notchic0) < wnt0))
+		next(wnt0) := wnt0 - 1;
+	else next(wnt0) := wnt0;
+	if (((3 > notchic3) & (deltaext3 > notchic3)))
+		next(notchic3) := notchic3 + 1;
+	else if (((3 < notchic3) | (deltaext3 < notchic3)))
+		next(notchic3) := notchic3 - 1;
+	else next(notchic3) := notchic3;
+	if (((3 > notchic2) & (deltaext2 > notchic2)))
+		next(notchic2) := notchic2 + 1;
+	else if (((3 < notchic2) | (deltaext2 < notchic2)))
+		next(notchic2) := notchic2 - 1;
+	else next(notchic2) := notchic2;
+
+-- Exists unique (
+ --   k0, k1, k2, k3, k4, 
+ --   k5, k6, k7, k8, k9, 
+ --   k10, k11, k12, k13, k14, 
+ --   k15, k16, k17, k18, k19, 
+ --   k20, k21, k22, k23, k24
+ -- ) such that 
+ -- 
+ --      F G(wntext0 = k0)
+ --    & F G(deltaext0 = k1)
+ --    & F G(notchic0 = k2)
+ --    & F G(delta0 = k3)
+ --    & F G(wnt0 = k4)
+ --    & F G(wntext1 = k5)
+ --    & F G(deltaext1 = k6)
+ --    & F G(notchic1 = k7)
+ --    & F G(delta1 = k8)
+ --    & F G(wnt1 = k9)
+ --    & F G(wntext2 = k10)
+ --    & F G(deltaext2 = k11)
+ --    & F G(notchic2 = k12)
+ --    & F G(delta2 = k13)
+ --    & F G(wnt2 = k14)
+ --    & F G(wntext3 = k15)
+ --    & F G(deltaext3 = k16)
+ --    & F G(notchic3 = k17)
+ --    & F G(delta3 = k18)
+ --    & F G(wnt3 = k19)
+ --    & F G(wntext4 = k20)
+ --    & F G(deltaext4 = k21)
+ --    & F G(notchic4 = k22)
+ --    & F G(delta4 = k23)
+ --    & F G(wnt4 = k24)
+
+}

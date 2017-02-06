@@ -1,0 +1,73 @@
+{
+  "Model": {
+    "Name": "ion channel",
+    "Variables": [
+      {
+        "Id": 2,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Id": 3,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      }
+    ],
+    "Relationships": [
+      {
+        "Id": 4,
+        "FromVariable": 2,
+        "ToVariable": 3,
+        "Type": "Activator"
+      },
+      {
+        "Id": 5,
+        "FromVariable": 2,
+        "ToVariable": 2,
+        "Type": "Activator"
+      },
+      {
+        "Id": 6,
+        "FromVariable": 3,
+        "ToVariable": 2,
+        "Type": "Inhibitor"
+      }
+    ]
+  },
+  "Layout": {
+    "Variables": [
+      {
+        "Id": 2,
+        "Name": "",
+        "Type": "MembraneReceptor",
+        "ContainerId": 1,
+        "PositionX": 633.4614423293597,
+        "PositionY": -826.802736706546,
+        "CellX": 0,
+        "CellY": 0,
+        "Angle": 3.842338183320199
+      },
+      {
+        "Id": 3,
+        "Name": "",
+        "Type": "Default",
+        "ContainerId": 1,
+        "PositionX": 622.2222222222222,
+        "PositionY": -740.3777779473198,
+        "CellX": 0,
+        "CellY": 0,
+        "Angle": 0
+      }
+    ],
+    "Containers": [
+      {
+        "Id": 1,
+        "Size": 1,
+        "PositionX": 2,
+        "PositionY": -3
+      }
+    ]
+  }
+}

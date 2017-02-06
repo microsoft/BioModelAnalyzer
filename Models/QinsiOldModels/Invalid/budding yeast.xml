@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LocalData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Model>
+    <AuthorId>1</AuthorId>
+    <Columns xsi:nil="true" />
+    <CreatedDate>2011-10-17T14:51:02.0737448+01:00</CreatedDate>
+    <Description>This is a new model.</Description>
+    <Id>0</Id>
+    <ModifiedDate>2011-10-17T15:18:42.6507929+01:00</ModifiedDate>
+    <Name>budding yeast</Name>
+    <Rows xsi:nil="true" />
+  </Model>
+  <Containers>
+    <Container>
+      <Id>1</Id>
+      <ModelId>0</ModelId>
+      <PositionX>1</PositionX>
+      <PositionY>1</PositionY>
+      <TemplateId xsi:nil="true" />
+    </Container>
+  </Containers>
+  <Variables>
+    <Variable>
+      <ContainerId>2</ContainerId>
+      <Formula />
+      <Id>9</Id>
+      <Name>Mih1</Name>
+      <PositionX>134</PositionX>
+      <PositionY>59</PositionY>
+      <RangeFrom xsi:nil="true" />
+      <RangeTo xsi:nil="true" />
+      <Type>Default</Type>
+    </Variable>
+    <Variable>
+      <ContainerId>2</ContainerId>
+      <Id>10</Id>
+      <Name>Mpk1</Name>
+      <PositionX>234</PositionX>
+      <PositionY>84</PositionY>
+      <RangeFrom xsi:nil="true" />
+      <RangeTo xsi:nil="true" />
+      <Type>Default</Type>
+    </Variable>
+    <Variable>
+      <ContainerId>2</ContainerId>
+      <Formula />
+      <Id>11</Id>
+      <Name>Clb2</Name>
+      <PositionX>134</PositionX>
+      <PositionY>159</PositionY>
+      <RangeFrom xsi:nil="true" />
+      <RangeTo xsi:nil="true" />
+      <Type>Default</Type>
+    </Variable>
+    <Variable>
+      <ContainerId>2</ContainerId>
+      <Id>12</Id>
+      <Name>BUD</Name>
+      <PositionX>259</PositionX>
+      <PositionY>184</PositionY>
+      <RangeFrom xsi:nil="true" />
+      <RangeTo xsi:nil="true" />
+      <Type>Default</Type>
+    </Variable>
+    <Variable>
+      <ContainerId>2</ContainerId>
+      <Formula />
+      <Id>13</Id>
+      <Name>Swe1</Name>
+      <PositionX>134</PositionX>
+      <PositionY>284</PositionY>
+      <RangeFrom xsi:nil="true" />
+      <RangeTo xsi:nil="true" />
+      <Type>Default</Type>
+    </Variable>
+    <Variable>
+      <ContainerId>2</ContainerId>
+      <Formula />
+      <Id>14</Id>
+      <Name>Hsl1</Name>
+      <PositionX>234</PositionX>
+      <PositionY>259</PositionY>
+      <RangeFrom xsi:nil="true" />
+      <RangeTo xsi:nil="true" />
+      <Type>Default</Type>
+    </Variable>
+    <Variable>
+      <ContainerId>2</ContainerId>
+      <Formula />
+      <Id>15</Id>
+      <Name>SBF</Name>
+      <PositionX>54</PositionX>
+      <PositionY>207</PositionY>
+      <RangeFrom xsi:nil="true" />
+      <RangeTo xsi:nil="true" />
+      <Type>Default</Type>
+    </Variable>
+    <Variable>
+      <ContainerId>2</ContainerId>
+      <Formula />
+      <Id>16</Id>
+      <Name>MASS</Name>
+      <PositionX>26</PositionX>
+      <PositionY>44</PositionY>
+      <RangeFrom xsi:nil="true" />
+      <RangeTo xsi:nil="true" />
+      <Type>MembraneReceptor</Type>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship>
+      <ContainerId>2</ContainerId>
+      <FromVariableId>16</FromVariableId>
+      <Id>12</Id>
+      <ToVariableId>12</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>2</ContainerId>
+      <FromVariableId>16</FromVariableId>
+      <Id>13</Id>
+      <ToVariableId>15</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>2</ContainerId>
+      <FromVariableId>16</FromVariableId>
+      <Id>14</Id>
+      <ToVariableId>11</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>2</ContainerId>
+      <FromVariableId>10</FromVariableId>
+      <Id>15</Id>
+      <ToVariableId>9</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>2</ContainerId>
+      <FromVariableId>12</FromVariableId>
+      <Id>16</Id>
+      <ToVariableId>10</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>2</ContainerId>
+      <FromVariableId>12</FromVariableId>
+      <Id>17</Id>
+      <ToVariableId>14</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>2</ContainerId>
+      <FromVariableId>14</FromVariableId>
+      <Id>18</Id>
+      <ToVariableId>13</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>2</ContainerId>
+      <FromVariableId>13</FromVariableId>
+      <Id>19</Id>
+      <ToVariableId>11</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>2</ContainerId>
+      <FromVariableId>11</FromVariableId>
+      <Id>20</Id>
+      <ToVariableId>13</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>2</ContainerId>
+      <FromVariableId>11</FromVariableId>
+      <Id>21</Id>
+      <ToVariableId>15</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship>
+      <ContainerId>2</ContainerId>
+      <FromVariableId>15</FromVariableId>
+      <Id>22</Id>
+      <ToVariableId>13</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+  </Relationships>
+</LocalData>

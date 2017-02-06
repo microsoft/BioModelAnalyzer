@@ -1,0 +1,8 @@
+Microsoft.Azure.KeyVault.Core
+Microsoft.Data.Edm
+Microsoft.Data.OData
+Microsoft.Data.Services.Client
+Microsoft.WindowsAzure.ConfigurationManager
+Newtonsoft.Json
+System.Spatial
+WindowsAzure.Storage

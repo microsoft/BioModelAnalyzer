@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnalysisOutput>
+  <Status>NotStabilizing</Status>
+  <Tick>
+    <Time>2</Time>
+    <Variables>
+      <Variable Id="2" Lo="0" Hi="1" />
+      <Variable Id="1" Lo="0" Hi="1" />
+    </Variables>
+  </Tick>
+  <Tick>
+    <Time>1</Time>
+    <Variables>
+      <Variable Id="2" Lo="0" Hi="1" />
+      <Variable Id="1" Lo="0" Hi="1" />
+    </Variables>
+  </Tick>
+  <Tick>
+    <Time>0</Time>
+    <Variables>
+      <Variable Id="2" Lo="0" Hi="1" />
+      <Variable Id="1" Lo="0" Hi="1" />
+    </Variables>
+  </Tick>
+</AnalysisOutput>

@@ -1,0 +1,62 @@
+<!-- Copyright (c) Microsoft Research 2016 -->
+<!-- License: MIT. See LICENSE -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>LRA test</title>
+    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
+    <link rel="stylesheet" href="css/fonts.min.css" type="text/css" />
+    <script src="../Scripts/jquery-2.1.4.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.11.4.js"></script>
+    <script src="../js/jquery.svg.min.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../tool.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var lraservice = new BMA.UIDrivers.BMALRAProcessingService("/api/testlra");
+            
+            var data = JSON.stringify({
+                SessionID: "Test Session",
+                UserID: "Test User",
+                LogInTime: new Date(),
+                LogOutTime: new Date(),
+                FurtherTestingCount: 0,
+                ImportModelCount: 0,
+                RunSimulationCount: 0,
+                NewModelCount: 0,
+                RunProofCount: 0,
+                SaveModelCount: 0,
+                ProofErrorCount: 0,
+                SimulationErrorCount: 0,
+                FurtherTestingErrorCount: 0,
+                AnalyzeLTLCount: 0,
+                AnalyzeLTLErrorCount: 0,
+                ClientVersion: "BMA HTML5 TEST VERSION"
+            });
+
+
+            $("#sendAjaxBtn").click(function () {
+                $("#results").text("Started");
+                lraservice.Invoke(data).done(function (res) {
+                    $("#results").text(res);
+                }).fail(function (xhr, textStatus, errorThrown) {
+                    $("#results").text(errorThrown);
+                });
+            });
+            
+        });
+    </script>
+
+</head>
+<body style="position:relative;">
+    
+    <button id="sendAjaxBtn">Test JQuery Send</button>
+    <div id="results"></div>
+
+</body>
+</html>
+

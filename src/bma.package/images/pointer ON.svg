@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.1 (8751) - http://www.bohemiancoding.com/sketch -->
+    <title>pointer ON</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="toolbar" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="pointer-ON" sketch:type="MSArtboardGroup" fill="#FFFFFF">
+            <path d="M32.499258,3 L5.19126267,14.033223 L11.4366032,20.2806835 L2.5,29.2172867 L6.28197133,32.999258 L15.2185746,24.0637148 L21.466035,30.3090553 L32.499258,3 Z" id="move-tool" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

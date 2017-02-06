@@ -1,0 +1,105 @@
+<!-- Copyright (c) Microsoft Research 2016 -->
+<!-- License: MIT. See LICENSE -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OneDrive Repository</title>
+
+    <script src="//js.live.net/v5.0/wl.js"></script>
+    <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="//js.live.net/v5.0/wl.js"></script>
+    <script src="../Scripts/jquery-ui-1.11.4.min.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../Scripts/rx.aggregates.min.js"></script>
+    <script src="../js/jquery.svg.min.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../js/idd.js"></script>
+
+    <script src="../tool.js"></script>
+
+    <meta charset="utf-8" />
+    <script type="text/javascript">
+
+        // For bmanew.cloudapp.net
+        // var client_id = "000000004C12BD9C";
+        // var redirect_uri = "http://bmanew.cloudapp.net/html/callback.html";
+
+        var localSettings = new BMA.OneDrive.OneDriveSettings("09bbffb5-d7c4-48aa-acbc-eff955bc0487", "http://localhost/callback.html", "signin")
+        var connector = new BMA.OneDrive.OneDriveConnector(localSettings);
+
+
+
+
+        var onLogin = function (oneDrive) {
+            console.log("login ok");
+
+            var repository = new BMA.OneDrive.OneDriveRepository(oneDrive);
+
+            repository.GetUserProfile()
+                .done(function (userProfile) {
+                    console.log("user: " + userProfile.first_name);
+                });
+
+            repository.GetModelList()
+                .done(function (models) {
+                    console.log("Models found: " + models.length);
+                    for (var i = 0; i < models.length; i++) {
+                        var model = models[i];
+                        console.log(model);
+
+                        repository.IsInRepo(model.id)
+                            .done(function (exists) {
+                                console.log("model exists: " + exists);
+                            });
+                    }
+                })
+                .fail(function (error) {
+                    console.error("failed: " + error);
+                });
+
+            repository.SaveModel("sample3", { "name": "sample" })
+                .done(function (r) {
+                    console.log("saved: ");
+                    console.log(r);
+                    repository.LoadModel(r.id)
+                        .done(function (content) {
+                            console.log("File loaded: " + JSON.stringify(content));
+                            repository.RemoveModel(r.id)
+                                .done(function (rem) { console.log("Removed: " + rem); })
+                                .fail(function (err) { console.error("Failed to remove: " + err); })
+                        })
+                        .fail(function (error) {
+                            console.error("failed to load");
+                        });
+                })
+                .fail(function (err) {
+                    console.error("failed to save");
+                });
+        }
+
+        var onLoginFailed = function (failure) {
+            console.error("Login failed: " + failure.error_description);
+        };
+
+
+        var onLogout = function (logout) {
+            console.log("Logout");
+        };
+
+
+        $(function () {
+            connector.Enable(onLogin, onLoginFailed, onLogout);
+
+            $("#signin").hide();
+            $("#testBtn").click(function () {
+                $("#signin :button").click();
+            });
+
+        });
+    </script>
+</head>
+<body>
+    <div id="signin"></div>
+    <div id="testBtn" style="background-color:gray; width: 100px;">Click Me!</div>
+</body>
+</html>

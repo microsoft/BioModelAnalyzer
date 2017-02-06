@@ -1,0 +1,21 @@
+{
+    "$schema":  "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion":  "1.0.0.0",
+    "parameters":  {
+                       "storageAccounts_bmastorage_name":  {
+                                                               "value":  "..."
+                                                           },
+                       "serverfarms_bmaplan_name":  {
+                                                        "value":  "..."
+                                                    },
+                       "sites_bmafrontend_name":  {
+                                                      "value":  "..."
+                                                  },
+                       "sites_bmaapi_name":  {
+                                                 "value":  "..."
+                                             },
+                       "location":  {
+                                        "value":  "..."
+                                    }
+                   }
+}

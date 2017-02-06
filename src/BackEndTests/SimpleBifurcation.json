@@ -1,0 +1,44 @@
+{
+  "Model": {
+    "Name": "model 1",
+    "Variables": [
+      {
+        "Id": 3,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      }
+    ],
+    "Relationships": [
+      {
+        "Id": 12,
+        "FromVariable": 3,
+        "ToVariable": 3,
+        "Type": "Activator"
+      }
+    ]
+  },
+  "Layout": {
+    "Variables": [
+      {
+        "Id": 3,
+        "Name": "A",
+        "Type": "Default",
+        "ContainerId": 1,
+        "PositionX": 632.5,
+        "PositionY": -493.33333333333337,
+        "CellX": 0,
+        "CellY": 0,
+        "Angle": 0
+      }
+    ],
+    "Containers": [
+      {
+        "Id": 1,
+        "Size": 1,
+        "PositionX": 2,
+        "PositionY": -2
+      }
+    ]
+  }
+}

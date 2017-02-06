@@ -1,0 +1,7 @@
+FsCheck
+FSharp.Collections.ParallelSeq
+FSharp.Core
+MSBuild.Extension.Pack
+Newtonsoft.Json
+NUnit
+NUnitTestAdapter

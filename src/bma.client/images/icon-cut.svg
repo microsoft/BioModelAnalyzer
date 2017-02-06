@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
+    <title>icon-cut</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Drawing-Canvs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="icon-cut" sketch:type="MSArtboardGroup" stroke="#606060">
+            <g id="Line-+-Oval-1" sketch:type="MSLayerGroup" transform="translate(11.249291, 10.501085) rotate(58.000000) translate(-11.249291, -10.501085) translate(8.249291, -0.998915)">
+                <path d="M0.0569858178,1.11112127 L2.0729835,22.4168894" id="Line" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                <path d="M1.64809965,22.1552348 C3.46669003,22.1552348 5.14897576,20.5878393 5.14897576,18.6543588 C5.14897576,16.7208783 3.46669003,15.1534826 1.64809965,15.1534826" id="Oval-1" sketch:type="MSShapeGroup" transform="translate(3.398538, 18.654359) rotate(-5.000000) translate(-3.398538, -18.654359) "></path>
+            </g>
+            <g id="Line-+-Oval-2" sketch:type="MSLayerGroup" transform="translate(11.249291, 9.501085) scale(1, -1) rotate(58.000000) translate(-11.249291, -9.501085) translate(8.249291, -1.998915)">
+                <path d="M0.0569858178,1.11112127 L2.0729835,22.4168894" id="Line" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                <path d="M1.64809965,22.1552348 C3.46669003,22.1552348 5.14897576,20.5878393 5.14897576,18.6543588 C5.14897576,16.7208783 3.46669003,15.1534826 1.64809965,15.1534826" id="Oval-1" sketch:type="MSShapeGroup" transform="translate(3.398538, 18.654359) rotate(-5.000000) translate(-3.398538, -18.654359) "></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{35747E91-0D58-4DD2-AE62-1AE4045FA8E3}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\paket.dependencies = ..\..\paket.dependencies
+	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FairShareScheduler.Common", "..\..\src\FairShareScheduler.Common\FairShareScheduler.Common.fsproj", "{850DF26E-27B2-4766-99DE-B815616C0D90}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FairShareWorker", "..\..\src\FairShareWorker\FairShareWorker.fsproj", "{47E591BB-EB9E-41B0-A488-F271177D2616}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FairShareScheduler", "..\..\src\FairShareScheduler\FairShareScheduler.fsproj", "{A66E4EE3-5D4E-4889-90EC-36317A4DE882}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FairShareScheduler.Tests", "..\..\src\FairShareScheduler.Tests\FairShareScheduler.Tests.fsproj", "{2FA217DD-279D-4501-AFBC-2D331219365C}"
+EndProject
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "FairShareScheduler.Mockup.Service", "..\..\src\FairShareScheduler.Mockup.Service\FairShareScheduler.Mockup.Service.ccproj", "{59E68ACC-E67F-4E8B-BA6F-6295ACCDC3B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FairShareScheduler.Mockup.WorkerRole", "..\..\src\FairShareScheduler.Mockup.Worker\FairShareScheduler.Mockup.WorkerRole.csproj", "{D439B1A6-E333-4AAB-B119-1264E510F4C9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{850DF26E-27B2-4766-99DE-B815616C0D90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47E591BB-EB9E-41B0-A488-F271177D2616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47E591BB-EB9E-41B0-A488-F271177D2616}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47E591BB-EB9E-41B0-A488-F271177D2616}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47E591BB-EB9E-41B0-A488-F271177D2616}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A66E4EE3-5D4E-4889-90EC-36317A4DE882}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FA217DD-279D-4501-AFBC-2D331219365C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FA217DD-279D-4501-AFBC-2D331219365C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FA217DD-279D-4501-AFBC-2D331219365C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FA217DD-279D-4501-AFBC-2D331219365C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59E68ACC-E67F-4E8B-BA6F-6295ACCDC3B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59E68ACC-E67F-4E8B-BA6F-6295ACCDC3B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59E68ACC-E67F-4E8B-BA6F-6295ACCDC3B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59E68ACC-E67F-4E8B-BA6F-6295ACCDC3B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D439B1A6-E333-4AAB-B119-1264E510F4C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D439B1A6-E333-4AAB-B119-1264E510F4C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D439B1A6-E333-4AAB-B119-1264E510F4C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D439B1A6-E333-4AAB-B119-1264E510F4C9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,754 @@
+{
+  "Model": {
+    "Name": "Firing neuron",
+    "Variables": [
+      {
+        "Name": "Potential",
+        "Id": 6,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": "1"
+      },
+      {
+        "Name": "P2",
+        "Id": 24,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "P3",
+        "Id": 25,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "P4",
+        "Id": 26,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "Output",
+        "Id": 27,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "Pore",
+        "Id": 1,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": "max(var(3),var(1))-var(5)"
+      },
+      {
+        "Name": "VS",
+        "Id": 3,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "CTD_connect",
+        "Id": 4,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "CTD",
+        "Id": 5,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "Pore",
+        "Id": 28,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": "max(var(29),var(28))-var(31)"
+      },
+      {
+        "Name": "VS",
+        "Id": 29,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "CTD_connect",
+        "Id": 30,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "CTD",
+        "Id": 31,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "Pore",
+        "Id": 32,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": "max(var(33),var(32))-var(35)"
+      },
+      {
+        "Name": "VS",
+        "Id": 33,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "CTD_connect",
+        "Id": 34,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      },
+      {
+        "Name": "CTD",
+        "Id": 35,
+        "RangeFrom": 0,
+        "RangeTo": 1,
+        "Formula": ""
+      }
+    ],
+    "Relationships": [
+      {
+        "Id": 4,
+        "FromVariable": 4,
+        "ToVariable": 5,
+        "Type": "Activator"
+      },
+      {
+        "Id": 21,
+        "FromVariable": 30,
+        "ToVariable": 31,
+        "Type": "Activator"
+      },
+      {
+        "Id": 21,
+        "FromVariable": 34,
+        "ToVariable": 35,
+        "Type": "Activator"
+      },
+      {
+        "Id": 2,
+        "FromVariable": 3,
+        "ToVariable": 1,
+        "Type": "Activator"
+      },
+      {
+        "Id": 3,
+        "FromVariable": 1,
+        "ToVariable": 4,
+        "Type": "Activator"
+      },
+      {
+        "Id": 5,
+        "FromVariable": 5,
+        "ToVariable": 1,
+        "Type": "Inhibitor"
+      },
+      {
+        "Id": 10,
+        "FromVariable": 1,
+        "ToVariable": 24,
+        "Type": "Activator"
+      },
+      {
+        "Id": 18,
+        "FromVariable": 1,
+        "ToVariable": 1,
+        "Type": "Activator"
+      },
+      {
+        "Id": 1,
+        "FromVariable": 6,
+        "ToVariable": 3,
+        "Type": "Activator"
+      },
+      {
+        "Id": 19,
+        "FromVariable": 29,
+        "ToVariable": 28,
+        "Type": "Activator"
+      },
+      {
+        "Id": 20,
+        "FromVariable": 28,
+        "ToVariable": 30,
+        "Type": "Activator"
+      },
+      {
+        "Id": 22,
+        "FromVariable": 31,
+        "ToVariable": 28,
+        "Type": "Inhibitor"
+      },
+      {
+        "Id": 23,
+        "FromVariable": 28,
+        "ToVariable": 28,
+        "Type": "Activator"
+      },
+      {
+        "Id": 25,
+        "FromVariable": 28,
+        "ToVariable": 25,
+        "Type": "Activator"
+      },
+      {
+        "Id": 24,
+        "FromVariable": 24,
+        "ToVariable": 29,
+        "Type": "Activator"
+      },
+      {
+        "Id": 19,
+        "FromVariable": 33,
+        "ToVariable": 32,
+        "Type": "Activator"
+      },
+      {
+        "Id": 20,
+        "FromVariable": 32,
+        "ToVariable": 34,
+        "Type": "Activator"
+      },
+      {
+        "Id": 22,
+        "FromVariable": 35,
+        "ToVariable": 32,
+        "Type": "Inhibitor"
+      },
+      {
+        "Id": 23,
+        "FromVariable": 32,
+        "ToVariable": 32,
+        "Type": "Activator"
+      },
+      {
+        "Id": 27,
+        "FromVariable": 32,
+        "ToVariable": 26,
+        "Type": "Activator"
+      },
+      {
+        "Id": 26,
+        "FromVariable": 25,
+        "ToVariable": 33,
+        "Type": "Activator"
+      }
+    ]
+  },
+  "Layout": {
+    "Variables": [
+      {
+        "Id": 6,
+        "Name": "Potential",
+        "Type": "Constant",
+        "ContainerId": 0,
+        "PositionX": 454.16666666666663,
+        "PositionY": 222.14285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 24,
+        "Name": "P2",
+        "Type": "Constant",
+        "ContainerId": 0,
+        "PositionX": 704.1666666666666,
+        "PositionY": 222.14285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 25,
+        "Name": "P3",
+        "Type": "Constant",
+        "ContainerId": 0,
+        "PositionX": 954.1666666666666,
+        "PositionY": 222.14285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 26,
+        "Name": "P4",
+        "Type": "Constant",
+        "ContainerId": 0,
+        "PositionX": 1204.1666666666667,
+        "PositionY": 222.14285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 27,
+        "Name": "Output",
+        "Type": "Constant",
+        "ContainerId": 0,
+        "PositionX": 1454.1666666666667,
+        "PositionY": 222.14285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 1,
+        "Name": "Pore",
+        "Type": "MembraneReceptor",
+        "ContainerId": 1,
+        "PositionX": 378.7883124043404,
+        "PositionY": 293.0092058578739,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 3,
+        "Name": "VS",
+        "Type": "MembraneReceptor",
+        "ContainerId": 1,
+        "PositionX": 451.29012214872057,
+        "PositionY": 328.0311128390987,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 45
+      },
+      {
+        "Id": 4,
+        "Name": "CTD_connect",
+        "Type": "Default",
+        "ContainerId": 1,
+        "PositionX": 399.06666666666666,
+        "PositionY": 381.2285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 5,
+        "Name": "CTD",
+        "Type": "Default",
+        "ContainerId": 1,
+        "PositionX": 351.56666666666666,
+        "PositionY": 381.2285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 28,
+        "Name": "Pore",
+        "Type": "MembraneReceptor",
+        "ContainerId": 2,
+        "PositionX": 628.7883124043486,
+        "PositionY": 293.00920585707354,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 29,
+        "Name": "VS",
+        "Type": "MembraneReceptor",
+        "ContainerId": 2,
+        "PositionX": 701.29012214872,
+        "PositionY": 328.03111283909914,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 45
+      },
+      {
+        "Id": 30,
+        "Name": "CTD_connect",
+        "Type": "Default",
+        "ContainerId": 2,
+        "PositionX": 649.0666666666666,
+        "PositionY": 381.2285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 31,
+        "Name": "CTD",
+        "Type": "Default",
+        "ContainerId": 2,
+        "PositionX": 601.5666666666666,
+        "PositionY": 381.2285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 32,
+        "Name": "Pore",
+        "Type": "MembraneReceptor",
+        "ContainerId": 3,
+        "PositionX": 878.7883124042828,
+        "PositionY": 293.00920586354914,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 33,
+        "Name": "VS",
+        "Type": "MembraneReceptor",
+        "ContainerId": 3,
+        "PositionX": 951.2901221487209,
+        "PositionY": 328.03111283909834,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 45
+      },
+      {
+        "Id": 34,
+        "Name": "CTD_connect",
+        "Type": "Default",
+        "ContainerId": 3,
+        "PositionX": 899.0666666666666,
+        "PositionY": 381.2285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 35,
+        "Name": "CTD",
+        "Type": "Default",
+        "ContainerId": 3,
+        "PositionX": 851.5666666666666,
+        "PositionY": 381.2285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      }
+    ],
+    "Containers": [
+      {
+        "Id": 1,
+        "Name": "c1",
+        "Size": 1,
+        "PositionX": 1,
+        "PositionY": 1
+      },
+      {
+        "Id": 2,
+        "Name": "c2",
+        "Size": 1,
+        "PositionX": 2,
+        "PositionY": 1
+      },
+      {
+        "Id": 3,
+        "Name": "c3",
+        "Size": 1,
+        "PositionX": 3,
+        "PositionY": 1
+      }
+    ]
+  },
+  "ltl": {
+    "states": [
+      {
+        "_type": "Keyframe",
+        "description": "",
+        "name": "A",
+        "operands": [
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "Pore",
+              "id": 1
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 0
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "VS",
+              "id": 3
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 1
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "CTD_connect",
+              "id": 4
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 1
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "CTD",
+              "id": 5
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 1
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "Potential",
+              "id": 6
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 1
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "P2",
+              "id": 24
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 1
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "P3",
+              "id": 25
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 0
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "P4",
+              "id": 26
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 0
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "Output",
+              "id": 27
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 0
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "Pore",
+              "id": 28
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 1
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "VS",
+              "id": 29
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 1
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "CTD_connect",
+              "id": 30
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 0
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "CTD",
+              "id": 31
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 0
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "Pore",
+              "id": 32
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 0
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "VS",
+              "id": 33
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 0
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "CTD_connect",
+              "id": 34
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 0
+            }
+          },
+          {
+            "_type": "KeyframeEquation",
+            "leftOperand": {
+              "_type": "NameOperand",
+              "name": "CTD",
+              "id": 35
+            },
+            "operator": "=",
+            "rightOperand": {
+              "_type": "ConstOperand",
+              "const": 0
+            }
+          }
+        ]
+      }
+    ],
+    "operations": [
+      {
+        "_type": "Operation",
+        "operator": {
+          "name": "EVENTUALLY",
+          "operandsCount": 1
+        },
+        "operands": [ { "_type": "OscillationKeyframe" } ]
+      },
+      {
+        "_type": "Operation",
+        "operator": {
+          "name": "EVENTUALLY",
+          "operandsCount": 1
+        },
+        "operands": [ { "_type": "SelfLoopKeyframe" } ]
+      },
+      {
+        "_type": "Operation",
+        "operator": {
+          "name": "ALWAYS",
+          "operandsCount": 1
+        },
+        "operands": [
+          {
+            "_type": "Operation",
+            "operator": {
+              "name": "NOT",
+              "operandsCount": 1
+            },
+            "operands": [ null ]
+          }
+        ]
+      }
+    ]
+  },
+  "ltllayout": {
+    "operationAppearances": [
+      {
+        "x": 63.521009983588584,
+        "y": 475.7185619529539,
+        "steps": 10
+      },
+      {
+        "x": -23.146608315098522,
+        "y": 550.9999999999999,
+        "steps": 10
+      },
+      {
+        "x": 214.30909805798683,
+        "y": 380.87004239606114,
+        "steps": 10
+      }
+    ]
+  }
+}

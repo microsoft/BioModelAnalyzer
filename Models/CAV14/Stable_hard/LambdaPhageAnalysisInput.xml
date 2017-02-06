@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnalysisInput ModelName="Lambda Phage">
+  <Variables>
+    <Variable Id="3">
+      <Name>UV</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="1">
+      <Name>RecA</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="2">
+      <Name>LambdaRepressor</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function>max(var(7),var(2))-max(var(1),var(4))</Function>
+    </Variable>
+    <Variable Id="4">
+      <Name>Cro</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function>var(7)-max(var(6),var(2))</Function>
+    </Variable>
+    <Variable Id="6">
+      <Name>OR3</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="7">
+      <Name>BasalTranscription</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function>1</Function>
+    </Variable>
+    <Variable Id="8">
+      <Name>Lysis</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="9">
+      <Name>Lysogeny</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="1">
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="4">
+      <FromVariableId>4</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="5">
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="6">
+      <FromVariableId>7</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="7">
+      <FromVariableId>7</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="8">
+      <FromVariableId>4</FromVariableId>
+      <ToVariableId>8</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="9">
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>9</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="10">
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="11">
+      <FromVariableId>6</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="12">
+      <FromVariableId>4</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="13">
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="14">
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="15">
+      <FromVariableId>4</FromVariableId>
+      <ToVariableId>6</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+  </Relationships>
+</AnalysisInput>

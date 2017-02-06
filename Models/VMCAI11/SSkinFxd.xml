@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AnalysisInput ModelName="SMV">
+<Variables>
+<Variable Id="20">
+<Name>wnt3</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>3 - var(23)</Function>
+</Variable>
+<Variable Id="17">
+<Name>wnt2</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>3 - var(24)</Function>
+</Variable>
+<Variable Id="18">
+<Name>wnt1</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>3 - var(7)</Function>
+</Variable>
+<Variable Id="22">
+<Name>wnt0</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>3 - var(6)</Function>
+</Variable>
+<Variable Id="19">
+<Name>wnt4</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>3 - var(21)</Function>
+</Variable>
+<Variable Id="24">
+<Name>notchic2</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>var(3)</Function>
+</Variable>
+<Variable Id="23">
+<Name>notchic3</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>var(2)</Function>
+</Variable>
+<Variable Id="8">
+<Name>delta0</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(12) + var(6) )/(2)</Function>
+</Variable>
+<Variable Id="9">
+<Name>delta1</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(14) + var(7) )/(2)</Function>
+</Variable>
+<Variable Id="10">
+<Name>delta2</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(15) + var(24) )/(2)</Function>
+</Variable>
+<Variable Id="11">
+<Name>delta3</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(16) + var(23) )/(2)</Function>
+</Variable>
+<Variable Id="13">
+<Name>delta4</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(0) + var(21) )/(2)</Function>
+</Variable>
+<Variable Id="6">
+<Name>notchic0</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>var(5)</Function>
+</Variable>
+<Variable Id="7">
+<Name>notchic1</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>var(4)</Function>
+</Variable>
+<Variable Id="1">
+<Name>deltaext4</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(11) + 2 )/(2)</Function>
+</Variable>
+<Variable Id="5">
+<Name>deltaext0</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( 2 + var(9) )/(2)</Function>
+</Variable>
+<Variable Id="4">
+<Name>deltaext1</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(8) + var(10) )/(2)</Function>
+</Variable>
+<Variable Id="3">
+<Name>deltaext2</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(9) + var(11) )/(2)</Function>
+</Variable>
+<Variable Id="2">
+<Name>deltaext3</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(10) + var(13) )/(2)</Function>
+</Variable>
+<Variable Id="0">
+<Name>wntext4</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(20) + 0 )/(2)</Function>
+</Variable>
+<Variable Id="21">
+<Name>notchic4</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>var(1)</Function>
+</Variable>
+<Variable Id="14">
+<Name>wntext1</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(22) + var(17) )/(2)</Function>
+</Variable>
+<Variable Id="12">
+<Name>wntext0</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( 3 + var(18) )/(2)</Function>
+</Variable>
+<Variable Id="16">
+<Name>wntext3</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(17) + var(19) )/(2)</Function>
+</Variable>
+<Variable Id="15">
+<Name>wntext2</Name>
+<RangeFrom>0</RangeFrom>
+<RangeTo>3</RangeTo>
+<Function>( var(18) + var(20) )/(2)</Function>
+</Variable>
+</Variables>
+<Relationships>
+<Relationship Id="0">
+<FromVariableId>20</FromVariableId>
+<ToVariableId>23</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="1">
+<FromVariableId>17</FromVariableId>
+<ToVariableId>24</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="2">
+<FromVariableId>18</FromVariableId>
+<ToVariableId>7</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="3">
+<FromVariableId>22</FromVariableId>
+<ToVariableId>6</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="4">
+<FromVariableId>19</FromVariableId>
+<ToVariableId>21</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="5">
+<FromVariableId>24</FromVariableId>
+<ToVariableId>3</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="6">
+<FromVariableId>23</FromVariableId>
+<ToVariableId>2</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="7">
+<FromVariableId>8</FromVariableId>
+<ToVariableId>6</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="8">
+<FromVariableId>8</FromVariableId>
+<ToVariableId>12</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="9">
+<FromVariableId>9</FromVariableId>
+<ToVariableId>7</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="10">
+<FromVariableId>9</FromVariableId>
+<ToVariableId>14</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="11">
+<FromVariableId>10</FromVariableId>
+<ToVariableId>24</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="12">
+<FromVariableId>10</FromVariableId>
+<ToVariableId>15</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="13">
+<FromVariableId>11</FromVariableId>
+<ToVariableId>23</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="14">
+<FromVariableId>11</FromVariableId>
+<ToVariableId>16</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="15">
+<FromVariableId>13</FromVariableId>
+<ToVariableId>0</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="16">
+<FromVariableId>13</FromVariableId>
+<ToVariableId>21</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="17">
+<FromVariableId>6</FromVariableId>
+<ToVariableId>5</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="18">
+<FromVariableId>7</FromVariableId>
+<ToVariableId>4</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="19">
+<FromVariableId>1</FromVariableId>
+<ToVariableId>11</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="20">
+<FromVariableId>5</FromVariableId>
+<ToVariableId>9</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="21">
+<FromVariableId>4</FromVariableId>
+<ToVariableId>8</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="22">
+<FromVariableId>4</FromVariableId>
+<ToVariableId>10</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="23">
+<FromVariableId>3</FromVariableId>
+<ToVariableId>9</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="24">
+<FromVariableId>3</FromVariableId>
+<ToVariableId>11</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="25">
+<FromVariableId>2</FromVariableId>
+<ToVariableId>10</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="26">
+<FromVariableId>2</FromVariableId>
+<ToVariableId>13</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="27">
+<FromVariableId>0</FromVariableId>
+<ToVariableId>20</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="28">
+<FromVariableId>21</FromVariableId>
+<ToVariableId>1</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="29">
+<FromVariableId>14</FromVariableId>
+<ToVariableId>17</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="30">
+<FromVariableId>14</FromVariableId>
+<ToVariableId>22</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="31">
+<FromVariableId>12</FromVariableId>
+<ToVariableId>18</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="32">
+<FromVariableId>16</FromVariableId>
+<ToVariableId>17</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="33">
+<FromVariableId>16</FromVariableId>
+<ToVariableId>19</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="34">
+<FromVariableId>15</FromVariableId>
+<ToVariableId>20</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+<Relationship Id="35">
+<FromVariableId>15</FromVariableId>
+<ToVariableId>18</ToVariableId>
+<Type>Activator</Type>
+</Relationship>
+</Relationships>
+</AnalysisInput>

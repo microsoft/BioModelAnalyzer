@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "inlineSourceMap": true,
+        "inlineSources": true
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

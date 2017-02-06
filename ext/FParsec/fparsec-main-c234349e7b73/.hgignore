@@ -1,0 +1,13 @@
+syntax: glob
+
+Thumbs.db
+Unused/*
+*/bin/*
+*/obj/*
+*.user
+*.suo
+*.pyc
+*~
+*.asv
+*.swp
+*.pdb

@@ -1,0 +1,235 @@
+<!-- Copyright (c) Microsoft Research 2016 -->
+<!-- License: MIT. See LICENSE -->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Bio Model Analyzer</title>
+    <link rel="stylesheet" type="text/css" href="css/website.css">
+    <script type="text/javascript" src="Scripts/jquery-2.1.4.min.js"></script>
+
+    <script type="text/javascript">
+
+        function toggleInfo(id) {
+            $(id).slideToggle("fast");
+        }
+
+
+    </script>
+
+</head>
+
+<body>
+
+    <!--<div id="MSR-logo">
+        <div id="Copyright">©2016 Microsoft</div> 
+        
+        <a href="http://research.microsoft.com/en-us/" target="_blank">
+            <img src="http://research.microsoft.com/a/i/c/ms-logo.png" alt="Logo" />
+        </a>
+    </div>-->
+
+    <div id="header">
+        <div id="site-wide-nav">
+            <a href="help.html" class="website-link" target="_blank">Help</a> 
+            <!--<a href="http://go.microsoft.com/fwlink/?LinkID=286687" class="website-link" target="_blank">Privacy &amp Cookies</a> -
+            <a href="http://go.microsoft.com/fwlink/?LinkId=386394" class="website-link" target="_blank">Terms of Use</a> - 
+            <a href="http://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/en-us.aspx" class="website-link" target="_blank">Trademarks</a>-->
+                <!-- Load up hard-coded unstable Dictyostelium at startup. For SYN. -->
+                <a href="tool.html" class="launch-btn">Launch Tool</a>
+                <!--<a href="tool.aspx?Model=_models/Dicty_unstable.xml" target="_blank"><span id="home-launch-btn"></span><img src="_images/launch-tool-btn.png" width="100px"></a>-->
+        </div>
+    </div>
+
+    <div id="logo">
+        <object type="image/svg+xml" data="images/BMA-logo.svg">Your browser does not support SVG</object>
+    </div>
+
+    <div id="content-wrapper">
+
+    <div class="page-title">
+            About
+        </div>
+        <div id="col-wide">
+
+            <div id="block">
+                <video width="100%"  controls>
+                    <source src="videos/BMA.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video><br><br>
+                Bio Model Analyzer is a new biological modelling tool that illustrates signalling pathways and determines cellular stabilization. The tool represents a merging of perspectives from systems biology, formal methods, human computer interaction and design. At one level, Bio Model Analyzer is a sketching tool that enables users to draw out a biological system of interest (e.g. a genetic regulatory network) by dragging and dropping cells, their contents (DNA, proteins, etc.), extracellular components and relationships onto a simple canvas. At another level, Bio Model Analyzer’s analysis proves stabilization of biological systems, based upon formal methods that were developed for the specification and verification of properties in concurrent software systems. We hope you enjoy using Bio Model Analyzer and welcome your feedback.
+                <br><br>
+                <video width="100%"  controls>
+                    <source src="videos/BMA-trailer.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                
+            </div>
+
+            <div id="block">
+                <span class="heading">Team</span><br><br>
+
+                <div class="Team_Member">
+                    <span class="bold">Jasmin Fisher</span><br>
+                    Systems Biology - <a href="http://research.microsoft.com/en-us/people/jfisher/" target="_blank">Microsoft Research</a><br>
+                    <p style="display:none" id="jasmin">
+                        Jasmin Fisher is a Senior Researcher at Microsoft Research Cambridge.
+                        She is also a Reader and Group Leader at the Dept of Biochemistry, Cambridge University.
+                        Her research focuses on the construction and analysis of executable models that mimic aspects of biological phenomena in order to better understand complex biological systems. She is mainly interested in processes of cell fate determination and signalling networks operating during normal development and cancer.
+                    </p>
+                    <a onclick="toggleInfo('#jasmin')">[+]</a>
+                </div>
+
+                <!--<div class="Team_Member">
+                    <span class="bold">Samin Ishtiaq</span><br>
+                    Verification and Automated Reasoning - <a href="http://research.microsoft.com/en-us/people/sishtiaq/" target="_blank">Microsoft Research</a><br>
+                    <p style="display:none" id="samin">
+                        Samin Ishtiaq is a Principal RSDE in the Programming Principles and Tools group at Microsoft Research Cambridge.
+                        He currently works on the SLAyer (Separation Logic-based memory safety for C programs), TERMINATOR (program termination) and BMA projects.
+                    </p>
+                    <a onclick="toggleInfo('#samin')">[+]</a>
+                </div>-->
+
+                <div class="Team_Member">
+                    <span class="bold">Nir Piterman</span><br>
+                    Verification and Automated Reasoning - <a href="http://www.cs.le.ac.uk/people/npiterman/" target="_blank">University of Leicester</a><br>
+                    <p style="display:none" id="nir">
+                        Nir Piterman is Reader in the Department of Computer Science in the University of Leicester.
+                        His research interests include formal verification, automata theory, and applications of formal methods to biological modeling.
+                    </p>
+                    <a onclick="toggleInfo('#nir')">[+]</a>
+                </div>
+
+                <div class="Team_Member">
+                    <span class="bold">Ben Hall</span><br>
+                    Systems Biology - <a href="http://www.mrc-cu.cam.ac.uk/hall.html" target="_blank">University of Cambridge</a><br>
+                    <p style="display:none" id="ben">
+                        Ben Hall is a Royal Society University Research Fellow working at the MRC Cancer Unit at the University of Cambridge. His research focuses on developing computational models of the decision making processes of cancer, from the early events of carcinogenesis to the later stages of metastasis. Alongside this, he maintains a long-standing interest in the development of algorithms and tools in formal methods for biology.
+                    </p>
+                    <a onclick="toggleInfo('#ben')">[+]</a>
+                </div>
+
+                <div class="Team_Member">
+                    <span class="bold">Alex Taylor</span><br>
+                    Socio-Digital Systems - <a href="http://research.microsoft.com/en-us/people/ataylor/" target="_blank">Microsoft Research</a><br>
+                    <p style="display:none" id="alex">
+                        Alex joined Microsoft Research's Cambridge Lab in September 2004 as a member of the Socio-digital Systems Group (SDS).<br>
+                        Since joining, he's undertaken investigations into a range of routine aspects of everyday life - with a particular emphasis on life at home. For instance, showing what some might describe as an unhealthy preoccupation with hoarding, dirt, clutter and similar seemingly banal subject matter. Most recently, he has begun obsessing over robots and other curious 'thinking' machines.<br>
+                        Much of this work has been considered alongside the design of computing technology. Rather than informing design directly, however, he has sought with varying success to open up the possibilities for different and hopefully new ways of interacting with technology. A further goal has been to reflect on the intersections between humans and machines, and wonder what the unceasing developments in science and technology might mean for being human.
+                    </p>
+                    <a onclick="toggleInfo('#alex')">[+]</a>
+                </div>
+
+                <div class="Team_Member">
+                    <span class="bold">Scarlet Schwiderski-Grosche</span><br>
+                    Program Management - <a href="http://research.microsoft.com/en-us/people/scarlets/" target="_blank">Microsoft Research</a><br>
+                    <p style="display:none" id="scarlet">
+                        Scarlet is Senior Research Program Manager at Microsoft Research Cambridge. She has a background in Computer Science, i.e. distributed and mobile/wireless systems, databases, and security. Her particular interest lies in bridging research topics in Computer Science with other research domains, especially Design, Education and Computational Science.
+                    </p>
+                    <a onclick="toggleInfo('#scarlet')">[+]</a>
+                </div>
+
+                <div class="Team_Member">
+                    <span class="bold">David Benque</span><br>
+                    Design - <a href="http://protoplot.com" target="_blank">Protoplot</a><br>
+                    <p style="display:none" id="david">
+                        David is a designer and researcher working in London. He holds a BA in graphic design from the Royal Academy in the Hague, the Netherlands, and an MA in Design Interactions from the Royal College of Art in London, United Kingdom.
+                    </p>
+                    <a onclick="toggleInfo('#david')">[+]</a>
+                </div>
+
+                <div class="Team_Member">
+                    <span class="bold">Sergey Berezin</span><br>
+                    Architecture and programming - <a href="http://itis.cs.msu.ru/" target="_blank">Moscow State University</a><br>
+                    <p style="display:none" id="sergey">
+                        Sergey is Associate Professor in Moscow State University. His interests include visualization and processing of large data sets
+                        and applications of cloud computing and modern programming technologies to problems of computational sciences.
+                    </p>
+                    <a onclick="toggleInfo('#sergey')">[+]</a>
+                </div>
+
+                <div class="Team_Member">
+                    <span class="bold">Nikita Skoblov</span><br>
+                    Architecture and programming - <a href="http://itis.cs.msu.ru/" target="_blank">Moscow State University</a><br>
+                    <p style="display:none" id="nikita">
+                        Nikita is a senior developer working in Moscow State University. His interests includes scientific visualization and visualization of large data sets.
+                    </p>
+                    <a onclick="toggleInfo('#nikita')">[+]</a>
+                </div>
+
+                <div class="Team_Member">
+                    <span class="bold">Svetlana Kostyukova</span><br>
+                    Programming - <a href="http://itis.cs.msu.ru/" target="_blank">Moscow State University</a><br>
+                    <p style="display:none" id="inna">
+                        Svetlana is a student of Moscow State University, Department of Computational Mathematics and Cybernetics.
+                    </p>
+                    <a onclick="toggleInfo('#inna')">[+]</a>
+                </div>
+
+            </div>
+
+            <div id="block"> 
+                <span class="heading">Alumni</span><br><br>
+                <span class="bold">Byron Cook</span> - University College London<br>
+                <span class="bold">Samin Ishtiaq</span> - Microsoft Research<br />
+                <span class="bold">Inna Zelenina</span> - Moscow State University<br />
+            </div>
+
+        </div>
+
+        <div id="col-side">
+            <div id="block">
+                <span class="heading">Publications</span><br><br>
+
+                <span class="bold">Drug Target Optimization in Chronic Myeloid Leukemia Using Innovative Computational Platform</span><br>
+                Chuang R., Hall B.A., Benque D., Cook B., Ishtiaq S., Piterman N., Taylor A., Vardi M., Koschmieder S., Gottgens B., and Fisher J.<br>
+                Scientific Reports, 5:8190, Nature Publishing Group, February 2015<br>
+                <a href="http://research.microsoft.com/apps/pubs/default.aspx?id=226356" target="_blank">[text]</a><br>
+                <br>
+
+                <span class="bold">Modelling biology -- working through (in-)stabilities and frictions</span><br>
+                Taylor, Fisher, Cook, Ishtiaq, Piterman<br>
+                Computational Culture, Nov 2014<br>
+                <a href="http://computationalculture.net/article/modelling-biology" target="_blank">[text]</a><br>
+                <br>
+
+                <span class="bold">Finding instability in biological models</span><br>
+                Cook, Fisher, Hall, Ishtiaq, Juniwal, Piterman<br>
+                CAV 2014<br>
+                <a href="http://research.microsoft.com/pubs/214284/cav2014.pdf" target="_blank">[PDF]</a><br>
+                <br>
+
+                <span class="bold">At the Interface of Biology and Computation</span><br>
+                Taylor, Piterman, Ishtiaq, Fisher, Cook, Cockerton, Bourton, Benque<br>
+                CHI 2013<br>
+                <a href="http://research.microsoft.com/pubs/188487/CHI2013.pdf" target="_blank">[PDF]</a><br>
+                <br>
+
+                <span class="bold">Model-Checking Signal Transduction Networks through Decreasing Reachability Sets</span><br>
+                Claessen, Fisher, Ishtiaq, Piterman, Wang<br>
+                CAV 2013<br>
+                <a href="http://research.microsoft.com/pubs/180287/ClaessenCAV2013.pdf" target="_blank">[PDF]</a><br>
+                <br>
+
+                <span class="bold">BMA: Visual Tool for Modeling and Analyzing Biological Networks</span><br>
+                Benque, Bourton, Cockerton, Cook, Fisher, Ishtiaq, Piterman, Taylor, Vardi<br>
+                CAV 2012<br>
+                <a href="http://research.microsoft.com/pubs/161930/CAV12.pdf" target="_blank">[PDF]</a><br>
+                <br>
+                <span class="bold">Proving Stabilization of Biological Systems</span><br>
+                Cook, Fisher, Krepska, Piterman<br>
+                VMCAI 2011<br>
+                <a href="http://research.microsoft.com/en-us/um/cambridge/projects/terminator/biocheck11-final.pdf" target="_blank">[PDF]</a><br>
+                <br>
+                <span class="bold">Qualitative Networks: A Symbolic Approach to Analyze Biological Signaling Networks.</span><br>
+                Schaub, Henzinger,  Fisher<br>
+                BMC Systems Biology. 1:4,  2007<br>
+                <a href="http://www.biomedcentral.com/content/pdf/1752-0509-1-4.pdf" target="_blank">[PDF]</a><br>
+                <br>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

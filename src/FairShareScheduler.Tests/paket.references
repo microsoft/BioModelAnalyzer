@@ -1,0 +1,11 @@
+FSharp.Collections.ParallelSeq
+NUnit
+FsCheck
+FSharp.Core
+Microsoft.Azure.KeyVault.Core
+Microsoft.Data.Edm
+Microsoft.Data.OData
+Microsoft.Data.Services.Client
+Newtonsoft.Json
+System.Spatial
+WindowsAzure.Storage

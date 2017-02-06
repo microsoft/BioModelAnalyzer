@@ -1,0 +1,140 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccounts_bmastorage_name": {
+            "defaultValue": "bmaststorage",
+            "type": "String"
+        },
+        "serverfarms_bmaplan_name": {
+            "defaultValue": "bmaServicePlan",
+            "type": "String"
+        },
+        "sites_bmafrontend_name": {
+            "defaultValue": "bmafrontend",
+            "type": "String"
+        },
+        "sites_bmaapi_name": {
+            "defaultValue": "bmaapiservice",
+            "type": "String"
+        },
+        "location": {
+            "defaultValue": "North Europe",
+            "type" : "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "comments": "Generalized.",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[parameters('storageAccounts_bmastorage_name')]",
+            "apiVersion": "2016-01-01",
+            "location": "[parameters('location')]",
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized.",
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "F1",
+                "tier": "Free",
+                "size": "F1",
+                "family": "F",
+                "capacity": 0
+            },
+            "kind": "app",
+            "name": "[parameters('serverfarms_bmaplan_name')]",
+            "apiVersion": "2015-08-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "name": "[parameters('serverfarms_bmaplan_name')]",
+                "numberOfWorkers": 0
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized.",
+            "type": "Microsoft.Web/sites",
+            "kind": "webApp",
+            "name": "[parameters('sites_bmafrontend_name')]",
+            "apiVersion": "2015-08-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "name": "[parameters('sites_bmafrontend_name')]",
+                "hostNames": [
+                    "[concat(parameters('sites_bmafrontend_name'),'.azurewebsites.net')]"
+                ],
+                "enabledHostNames": [
+                    "[concat(parameters('sites_bmafrontend_name'),'.azurewebsites.net')]",
+                    "[concat(parameters('sites_bmafrontend_name'),'.scm.azurewebsites.net')]"
+                ],
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('sites_bmafrontend_name'),'.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    },
+                    {
+                        "name": "[concat(parameters('sites_bmafrontend_name'),'.scm.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_bmaplan_name'))]"
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_bmaplan_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized.",
+            "type": "Microsoft.Web/sites",
+            "kind": "api",
+            "name": "[parameters('sites_bmaapi_name')]",
+            "apiVersion": "2015-08-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "name": "[parameters('sites_bmaapi_name')]",
+                "hostNames": [
+                    "[concat(parameters('sites_bmaapi_name'),'.azurewebsites.net')]"
+                ],
+                "enabledHostNames": [
+                    "[concat(parameters('sites_bmaapi_name'),'.azurewebsites.net')]",
+                    "[concat(parameters('sites_bmaapi_name'),'.scm.azurewebsites.net')]"
+                ],
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('sites_bmaapi_name'),'.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    },
+                    {
+                        "name": "[concat(parameters('sites_bmaapi_name'),'.scm.azurewebsites.net')]",
+                        "sslState": 0,
+                        "thumbprint": null,
+                        "ipBasedSslState": 0
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_bmaplan_name'))]"
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_bmaplan_name'))]"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,76 @@
+<!-- Copyright (c) Microsoft Research 2016 -->
+<!-- License: MIT. See LICENSE -->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/idd.css" />
+    <script src="../Scripts/jquery-2.1.4.min.js"></script>
+    <script src="../Scripts/jquery-ui-1.11.4.js"></script>
+    <script src="../js/jquery.svg.min.js"></script>
+    <script src="../Scripts/rx.lite.min.js"></script>
+    <script src="../js/idd.js"></script>
+    <script src="../tool.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var that = {};
+
+            that.plotConstraints = {
+                minWidth: 100,
+                minHeight: 50,
+                maxWidth: 500,
+                maxHeight: 250
+            };
+
+            var plot = InteractiveDataDisplay.asPlot("plot");
+
+            
+            plot.visibleRectConstraint = function (plotRect) {
+                var resultPR = { x: 0, y: 0, width: 0, height: 0 };
+                var center = {
+                    x: plotRect.x + plotRect.width / 2,
+                    y: plotRect.y + plotRect.height / 2
+                }
+
+                if (plotRect.width < that.plotConstraints.minWidth) {
+                    resultPR.x = center.x - that.plotConstraints.minWidth / 2;
+                    resultPR.width = that.plotConstraints.minWidth;
+                } else if (plotRect.width > that.plotConstraints.maxWidth) {
+                    resultPR.x = center.x - that.plotConstraints.maxWidth / 2;
+                    resultPR.width = that.plotConstraints.maxWidth;
+                } else {
+                    resultPR.x = plotRect.x;
+                    resultPR.width = plotRect.width;
+                }
+
+                if (plotRect.height < that.plotConstraints.minHeight) {
+                    resultPR.y = center.y - that.plotConstraints.minHeight / 2;
+                    resultPR.height = that.plotConstraints.minHeight;
+                } else if (plotRect.height > that.plotConstraints.maxHeight) {
+                    resultPR.y = center.y - that.plotConstraints.maxHeight / 2;
+                    resultPR.height = that.plotConstraints.maxHeight;
+                } else {
+                    resultPR.y = plotRect.y;
+                    resultPR.height = plotRect.height;
+                }
+
+                return resultPR;
+            };
+            
+
+            $("#addsvg").click(function () {
+                var svgPlot = plot.get($("#svgPlot")[0]);
+                svgPlot.svg.rect(0, 0, 100, 100, { stroke: "blue", fill: "red" });
+            });
+    });
+    </script>
+
+</head>
+<body>
+    <div id="plot" data-idd-plot="chart" style="width: 800px; height: 600px;">
+        <div id="svgPlot" data-idd-plot="svgPlot"></div>
+    </div>
+    <button id="addsvg">ADD SVG</button>
+</body>
+</html>

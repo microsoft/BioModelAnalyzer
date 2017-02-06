@@ -1,0 +1,1183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Model Id="1" Name="Bcr-Abl No Feedbacks" BioCheckVersion="3">
+  <Description>This is the default model.</Description>
+  <CreatedDate>2012-07-13T11:43:02.8109735+01:00</CreatedDate>
+  <ModifiedDate>2012-07-16T23:16:02.8358575+01:00</ModifiedDate>
+  <Layout>
+    <Columns>8</Columns>
+    <Rows>7</Rows>
+    <ZoomLevel>48</ZoomLevel>
+    <PanX>1106</PanX>
+    <PanY>695</PanY>
+  </Layout>
+  <Containers>
+    <Container Id="7" Name="">
+      <PositionX>5</PositionX>
+      <PositionY>2</PositionY>
+      <Size>1</Size>
+    </Container>
+    <Container Id="8" Name="">
+      <PositionX>5</PositionX>
+      <PositionY>3</PositionY>
+      <Size>1</Size>
+    </Container>
+    <Container Id="10" Name="">
+      <PositionX>6</PositionX>
+      <PositionY>2</PositionY>
+      <Size>1</Size>
+    </Container>
+    <Container Id="4" Name="">
+      <PositionX>2</PositionX>
+      <PositionY>1</PositionY>
+      <Size>3</Size>
+    </Container>
+    <Container Id="6" Name="">
+      <PositionX>6</PositionX>
+      <PositionY>1</PositionY>
+      <Size>1</Size>
+    </Container>
+    <Container Id="9" Name="">
+      <PositionX>5</PositionX>
+      <PositionY>1</PositionY>
+      <Size>1</Size>
+    </Container>
+  </Containers>
+  <Variables>
+    <Variable Id="40" Name="VEGF">
+      <ContainerId>0</ContainerId>
+      <Type>Constant</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1</Formula>
+      <PositionX>175</PositionX>
+      <PositionY>50</PositionY>
+      <CellX>3</CellX>
+      <CellY>4</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="17" Name="IL3">
+      <ContainerId>0</ContainerId>
+      <Type>Constant</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1</Formula>
+      <PositionX>250</PositionX>
+      <PositionY>175</PositionY>
+      <CellX>1</CellX>
+      <CellY>2</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="44" Name="EPO">
+      <ContainerId>0</ContainerId>
+      <Type>Constant</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1</Formula>
+      <PositionX>250</PositionX>
+      <PositionY>250</PositionY>
+      <CellX>1</CellX>
+      <CellY>3</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="49" Name="GH">
+      <ContainerId>0</ContainerId>
+      <Type>Constant</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1</Formula>
+      <PositionX>275</PositionX>
+      <PositionY>75</PositionY>
+      <CellX>1</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="52" Name="Wnt">
+      <ContainerId>0</ContainerId>
+      <Type>Constant</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1</Formula>
+      <PositionX>225</PositionX>
+      <PositionY>25</PositionY>
+      <CellX>4</CellX>
+      <CellY>4</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="59" Name="IL6">
+      <ContainerId>0</ContainerId>
+      <Type>Constant</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1</Formula>
+      <PositionX>175</PositionX>
+      <PositionY>250</PositionY>
+      <CellX>3</CellX>
+      <CellY>0</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="8" Name="Growth Arrest">
+      <ContainerId>7</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>143</PositionX>
+      <PositionY>168</PositionY>
+      <CellX>5</CellX>
+      <CellY>2</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="10" Name="Apoptosis">
+      <ContainerId>8</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1-(avg(var(Bag),var(Bcl2L),var(BclXL),0 - var(Bim_FasL),var(cMyc),var(Jun),var(Mcl1L)))+(2/5)</Formula>
+      <PositionX>163</PositionX>
+      <PositionY>166</PositionY>
+      <CellX>5</CellX>
+      <CellY>3</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="19" Name="Correct Differentiation">
+      <ContainerId>10</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>168</PositionX>
+      <PositionY>143</PositionY>
+      <CellX>6</CellX>
+      <CellY>2</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="1" Name="CEBPA">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1-var(hnRNP_E2)</Formula>
+      <PositionX>968</PositionX>
+      <PositionY>568</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="2" Name="hnRNP_E2">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>918</PositionX>
+      <PositionY>568</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="3" Name="ERK">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>868</PositionX>
+      <PositionY>568</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="4" Name="MEK">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>818</PositionX>
+      <PositionY>568</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="5" Name="Raf">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>768</PositionX>
+      <PositionY>568</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="7" Name="Sos">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>avg(var(BcrAbl),var(IL3R))+(1/2)</Formula>
+      <PositionX>668</PositionX>
+      <PositionY>568</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="16" Name="IL3R">
+      <ContainerId>4</ContainerId>
+      <Type>MembraneReceptor</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>var(IL3)</Formula>
+      <PositionX>11</PositionX>
+      <PositionY>568</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>-90</Angle>
+    </Variable>
+    <Variable Id="26" Name="CrkL">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>588</PositionX>
+      <PositionY>666</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="27" Name="Cbl">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>663</PositionX>
+      <PositionY>666</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="28" Name="Akt">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>711</PositionX>
+      <PositionY>713</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="29" Name="Bad">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>768</PositionX>
+      <PositionY>768</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="14" Name="cMyc">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>avg(var(HNRPK),var(Jak2),var(SMAD),var(TCF))+(2/4)</Formula>
+      <PositionX>968</PositionX>
+      <PositionY>693</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="13" Name="Bag">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>943</PositionX>
+      <PositionY>793</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="25" Name="BclXL">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>818</PositionX>
+      <PositionY>968</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="31" Name="NF_kB">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>718</PositionX>
+      <PositionY>818</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="34" Name="Mcl1L">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>763</PositionX>
+      <PositionY>1016</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="36" Name="Beta_Catenin">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>var(BcrAbl) - var(Axin2) - var(Gsk3B) + (1/3)</Formula>
+      <PositionX>588</PositionX>
+      <PositionY>841</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="37" Name="Axin2">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>438</PositionX>
+      <PositionY>791</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="38" Name="PI3K">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>288</PositionX>
+      <PositionY>716</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="39" Name="VEGFR2">
+      <ContainerId>4</ContainerId>
+      <Type>MembraneReceptor</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>var(VEGF)</Formula>
+      <PositionX>535</PositionX>
+      <PositionY>1143</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>180</Angle>
+    </Variable>
+    <Variable Id="18" Name="SMAD">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>518</PositionX>
+      <PositionY>1018</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="41" Name="SRC">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>318</PositionX>
+      <PositionY>993</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="32" Name="FoxO">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>818</PositionX>
+      <PositionY>768</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="42" Name="Bim_FasL">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>888</PositionX>
+      <PositionY>816</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="6" Name="Ras">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>718</PositionX>
+      <PositionY>568</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="11" Name="BcrAbl">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>2-avg(var(Abi1_and_2),var(Pag_aka_Msp23))</Formula>
+      <PositionX>518</PositionX>
+      <PositionY>593</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="43" Name="EPOR">
+      <ContainerId>4</ContainerId>
+      <Type>MembraneReceptor</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>170</PositionX>
+      <PositionY>943</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>-135</Angle>
+    </Variable>
+    <Variable Id="23" Name="Jak2">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>avg(var(BcrAbl),var(EPOR),var(GHR),var(IL3R))+(1/2)</Formula>
+      <PositionX>518</PositionX>
+      <PositionY>243</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="24" Name="STAT5">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>avg(var(HCK),var(Jak2))+(1/2)</Formula>
+      <PositionX>393</PositionX>
+      <PositionY>593</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="22" Name="Pag_aka_Msp23">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1-var(BcrAbl)</Formula>
+      <PositionX>443</PositionX>
+      <PositionY>518</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="21" Name="Abi1_and_2">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1-var(BcrAbl)</Formula>
+      <PositionX>468</PositionX>
+      <PositionY>493</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="48" Name="GHR">
+      <ContainerId>4</ContainerId>
+      <Type>MembraneReceptor</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>136</PositionX>
+      <PositionY>165</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>-45</Angle>
+    </Variable>
+    <Variable Id="51" Name="Frizzled">
+      <ContainerId>4</ContainerId>
+      <Type>MembraneReceptor</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>917</PositionX>
+      <PositionY>919</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>135</Angle>
+    </Variable>
+    <Variable Id="30" Name="Bcl2L">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>893</PositionX>
+      <PositionY>868</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="53" Name="HNRPK">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>943</PositionX>
+      <PositionY>618</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="54" Name="HCK">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>468</PositionX>
+      <PositionY>593</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="12" Name="STAT3">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>avg(var(ERK),var(IL6R),var(Jak2))+(1/3)</Formula>
+      <PositionX>968</PositionX>
+      <PositionY>393</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="56" Name="Jun">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>788</PositionX>
+      <PositionY>391</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="58" Name="IL6R">
+      <ContainerId>4</ContainerId>
+      <Type>MembraneReceptor</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>544</PositionX>
+      <PositionY>-9</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="55" Name="JunB">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1-var(BcrAbl)</Formula>
+      <PositionX>718</PositionX>
+      <PositionY>393</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="20" Name="FLI-1">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1-var(BcrAbl)</Formula>
+      <PositionX>643</PositionX>
+      <PositionY>518</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="35" Name="Gsk3B">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>1 - var(Akt) - var(Frizzled)</Formula>
+      <PositionX>693</PositionX>
+      <PositionY>968</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="57" Name="TCF">
+      <ContainerId>4</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>818</PositionX>
+      <PositionY>693</PositionY>
+      <CellX>2</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="9" Name="Self Renewal Capacity">
+      <ContainerId>6</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>avg(var(STAT3),var(STAT5),var(Beta_Catenin))+1/3</Formula>
+      <PositionX>143</PositionX>
+      <PositionY>168</PositionY>
+      <CellX>6</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="15" Name="Proliferation">
+      <ContainerId>9</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula>avg(var(cMyc),var(Jun))+(1/2)</Formula>
+      <PositionX>143</PositionX>
+      <PositionY>168</PositionY>
+      <CellX>5</CellX>
+      <CellY>1</CellY>
+      <Angle>0</Angle>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="2">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="3">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="4">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>4</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="5">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>5</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="35">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>26</FromVariableId>
+      <ToVariableId>27</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="36">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>27</FromVariableId>
+      <ToVariableId>28</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="37">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>28</FromVariableId>
+      <ToVariableId>29</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="11">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>5</FromVariableId>
+      <ToVariableId>13</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="12">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>13</FromVariableId>
+      <ToVariableId>10</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="32">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>25</FromVariableId>
+      <ToVariableId>10</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="39">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>29</FromVariableId>
+      <ToVariableId>25</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="42">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>28</FromVariableId>
+      <ToVariableId>31</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="47">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>34</FromVariableId>
+      <ToVariableId>10</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="54">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>37</FromVariableId>
+      <ToVariableId>36</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="60">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>38</FromVariableId>
+      <ToVariableId>28</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="18">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>18</FromVariableId>
+      <ToVariableId>14</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="63">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>41</FromVariableId>
+      <ToVariableId>38</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="43">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>28</FromVariableId>
+      <ToVariableId>32</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="64">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>32</FromVariableId>
+      <ToVariableId>42</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="65">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>42</FromVariableId>
+      <ToVariableId>10</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="6">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>6</FromVariableId>
+      <ToVariableId>5</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="7">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>7</FromVariableId>
+      <ToVariableId>6</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="34">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>26</FromVariableId>
+      <ToVariableId>6</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="38">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>6</FromVariableId>
+      <ToVariableId>29</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="58">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>6</FromVariableId>
+      <ToVariableId>38</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="8">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>11</FromVariableId>
+      <ToVariableId>7</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="33">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>11</FromVariableId>
+      <ToVariableId>26</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="53">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>11</FromVariableId>
+      <ToVariableId>37</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="1">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>8</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="27">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>23</FromVariableId>
+      <ToVariableId>14</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="25">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>11</FromVariableId>
+      <ToVariableId>23</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="31">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>24</FromVariableId>
+      <ToVariableId>25</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="30">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>23</FromVariableId>
+      <ToVariableId>24</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="22">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>11</FromVariableId>
+      <ToVariableId>22</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="24">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>22</FromVariableId>
+      <ToVariableId>11</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="21">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>11</FromVariableId>
+      <ToVariableId>21</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="23">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>21</FromVariableId>
+      <ToVariableId>11</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="83">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>11</FromVariableId>
+      <ToVariableId>36</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="40">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>29</FromVariableId>
+      <ToVariableId>30</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="41">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>30</FromVariableId>
+      <ToVariableId>10</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="46">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>31</FromVariableId>
+      <ToVariableId>30</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="86">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>53</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="87">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>53</FromVariableId>
+      <ToVariableId>14</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="88">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>11</FromVariableId>
+      <ToVariableId>54</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="89">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>54</FromVariableId>
+      <ToVariableId>24</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="9">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>12</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="28">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>23</FromVariableId>
+      <ToVariableId>12</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="90">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>6</FromVariableId>
+      <ToVariableId>56</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="93">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>56</FromVariableId>
+      <ToVariableId>10</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="96">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>14</FromVariableId>
+      <ToVariableId>8</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="52">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>36</FromVariableId>
+      <ToVariableId>9</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="10">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>12</FromVariableId>
+      <ToVariableId>9</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="15">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>14</FromVariableId>
+      <ToVariableId>15</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="92">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>56</FromVariableId>
+      <ToVariableId>15</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="99">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>55</FromVariableId>
+      <ToVariableId>56</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="100">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>11</FromVariableId>
+      <ToVariableId>55</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="19">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>11</FromVariableId>
+      <ToVariableId>20</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="20">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>20</FromVariableId>
+      <ToVariableId>19</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="49">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>35</FromVariableId>
+      <ToVariableId>34</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="55">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>35</FromVariableId>
+      <ToVariableId>36</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="56">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>28</FromVariableId>
+      <ToVariableId>35</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="101">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>24</FromVariableId>
+      <ToVariableId>9</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="94">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>57</FromVariableId>
+      <ToVariableId>14</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="95">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>36</FromVariableId>
+      <ToVariableId>57</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="102">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>14</FromVariableId>
+      <ToVariableId>10</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="103">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>19</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="57">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>16</FromVariableId>
+      <ToVariableId>7</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="59">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>16</FromVariableId>
+      <ToVariableId>38</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="17">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>16</FromVariableId>
+      <ToVariableId>18</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="16">
+      <ContainerId>0</ContainerId>
+      <FromVariableId>17</FromVariableId>
+      <ToVariableId>16</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="26">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>16</FromVariableId>
+      <ToVariableId>23</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="62">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>39</FromVariableId>
+      <ToVariableId>41</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="61">
+      <ContainerId>0</ContainerId>
+      <FromVariableId>40</FromVariableId>
+      <ToVariableId>39</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="66">
+      <ContainerId>0</ContainerId>
+      <FromVariableId>44</FromVariableId>
+      <ToVariableId>43</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="67">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>43</FromVariableId>
+      <ToVariableId>23</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="77">
+      <ContainerId>0</ContainerId>
+      <FromVariableId>49</FromVariableId>
+      <ToVariableId>48</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="78">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>48</FromVariableId>
+      <ToVariableId>23</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="84">
+      <ContainerId>0</ContainerId>
+      <FromVariableId>52</FromVariableId>
+      <ToVariableId>51</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="85">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>51</FromVariableId>
+      <ToVariableId>35</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="97">
+      <ContainerId>0</ContainerId>
+      <FromVariableId>59</FromVariableId>
+      <ToVariableId>58</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="98">
+      <ContainerId>4</ContainerId>
+      <FromVariableId>58</FromVariableId>
+      <ToVariableId>12</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+  </Relationships>
+</Model>

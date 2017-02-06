@@ -1,0 +1,497 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{68A7F32F-0860-4688-8C82-C55196461E48}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="css\jquery.svg.css" />
+    <Content Include="Scripts\jquery-ui-1.11.4.js" />
+    <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\modernizr-2.8.3.js">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Scripts\rx.aggregates.min.js" />
+    <Content Include="Scripts\rx.compat.js" />
+    <Content Include="Scripts\rx.compat.min.js" />
+    <Content Include="Scripts\rx.js" />
+    <Content Include="Scripts\rx.lite.compat.js" />
+    <Content Include="Scripts\rx.lite.compat.min.js" />
+    <Content Include="Scripts\rx.lite.extras.js" />
+    <Content Include="Scripts\rx.lite.extras.min.js" />
+    <Content Include="Scripts\rx.lite.js" />
+    <Content Include="Scripts\rx.lite.min.js" />
+    <Content Include="Scripts\typings\jasmine\jasmine.d.ts">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Scripts\typings\jquery\jquery.d.ts">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Scripts\typings\jqueryui\jqueryui.d.ts">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="js\FileSaver.js" />
+    <Content Include="js\jquery.browser.min.js" />
+    <Content Include="js\jquery.cookie.js" />
+    <Content Include="js\jquery.mousewheel.js" />
+    <Content Include="js\jquery.mousewheel.min.js" />
+    <Content Include="js\jquery.svg.js" />
+    <Content Include="js\jquery.svg.min.js" />
+    <Content Include="js\jquery.svganim.js" />
+    <Content Include="js\jquery.svganim.min.js" />
+    <Content Include="js\jquery.svgdom.min.js" />
+    <Content Include="js\jquery.ui-contextmenu.js" />
+    <Content Include="js\jquery.ui-contextmenu.min.js" />
+    <Content Include="js\jquery.ui.touch-punch.min.js" />
+    <TypeScriptCompile Include="Scripts\rx.aggregates.d.ts" />
+    <TypeScriptCompile Include="Scripts\rx.lite.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts">
+      <Paket>True</Paket>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Scripts\typings\jasmine-jquery\jasmine-jquery.d.ts">
+      <Paket>True</Paket>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Scripts\typings\jasmine-matchers\jasmine-matchers.d.ts">
+      <Paket>True</Paket>
+    </TypeScriptCompile>
+    <Content Include="Scripts\jquery-2.1.4-vsdoc.js">
+      <Paket>True</Paket>
+    </Content>
+    <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts">
+      <Paket>True</Paket>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts">
+      <Paket>True</Paket>
+    </TypeScriptCompile>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="html\monaco-sample.html" />
+    <Content Include="html\mylang.js" />
+    <Content Include="images\1x1.svg" />
+    <Content Include="images\2.gif" />
+    <Content Include="images\20x20.gif" />
+    <Content Include="images\2x2.svg" />
+    <Content Include="images\3x3.svg" />
+    <Content Include="images\60x60.gif" />
+    <Content Include="images\Accept.png" />
+    <Content Include="images\activate-ON.png" />
+    <Content Include="images\activate-ON.svg" />
+    <Content Include="images\activate.png" />
+    <Content Include="images\activate.svg" />
+    <Content Include="images\analyze.png" />
+    <Content Include="images\analyze.svg" />
+    <Content Include="images\background.svg" />
+    <Content Include="images\bifurcations-ON.svg" />
+    <Content Include="images\bifurcations.png" />
+    <Content Include="images\bifurcations.svg" />
+    <Content Include="images\BMA-logo-big.svg" />
+    <Content Include="images\BMA-logo.svg" />
+    <Content Include="images\check.png" />
+    <Content Include="images\check.svg" />
+    <Content Include="images\close.png" />
+    <Content Include="images\constant-ON.png" />
+    <Content Include="images\constant-ON.svg" />
+    <Content Include="images\constant.png" />
+    <Content Include="images\constant.svg" />
+    <Content Include="images\container-ON.png" />
+    <Content Include="images\container-ON.svg" />
+    <Content Include="images\container.png" />
+    <Content Include="images\container.svg" />
+    <Content Include="images\download-white.svg" />
+    <Content Include="images\download.svg" />
+    <Content Include="images\editorExpanded.png" />
+    <Content Include="images\editorExpander.png" />
+    <Content Include="images\expand-collapse.svg" />
+    <Content Include="images\expand.png" />
+    <Content Include="images\export.png" />
+    <Content Include="images\failed.png" />
+    <Content Include="images\failed.svg" />
+    <Content Include="images\formula_not_validated.png" />
+    <Content Include="images\formula_validated.png" />
+    <Content Include="images\graphic.png" />
+    <Content Include="images\graphic.svg" />
+    <Content Include="images\home-logo.png" />
+    <Content Include="images\icon-copy.svg" />
+    <Content Include="images\icon-cut.svg" />
+    <Content Include="images\icon-delete.svg" />
+    <Content Include="images\icon-edit.svg" />
+    <Content Include="images\icon-export-LTL.svg" />
+    <Content Include="images\icon-import-LTL.svg" />
+    <Content Include="images\icon-paste.svg" />
+    <Content Include="images\icon-size.svg" />
+    <Content Include="images\inhibit-ON.png" />
+    <Content Include="images\inhibit.png" />
+    <Content Include="images\inhibitor-ON.png" />
+    <Content Include="images\inhibitor-ON.svg" />
+    <Content Include="images\inhibitor.svg" />
+    <Content Include="images\list.png" />
+    <Content Include="images\loading.gif" />
+    <Content Include="images\Loading_Animation.gif" />
+    <Content Include="images\local.png" />
+    <Content Include="images\local.svg" />
+    <Content Include="images\logo-crop.png" />
+    <Content Include="images\LTL-copy.svg" />
+    <Content Include="images\LTL-delete.svg" />
+    <Content Include="images\ltl-icon.png" />
+    <Content Include="images\ltlimgs\123.png" />
+    <Content Include="images\ltlimgs\eq.png" />
+    <Content Include="images\ltlimgs\le.png" />
+    <Content Include="images\ltlimgs\leeq.png" />
+    <Content Include="images\ltlimgs\mo.png" />
+    <Content Include="images\ltlimgs\moeq.png" />
+    <Content Include="images\ltlimgs\noeq.png" />
+    <Content Include="images\ltlimgs\remove.png" />
+    <Content Include="images\ltlimgs\var.png" />
+    <Content Include="images\ltl_fail.png" />
+    <Content Include="images\ltl_success.png" />
+    <Content Include="images\maximize.png" />
+    <Content Include="images\minimize.png" />
+    <Content Include="images\MSR-logo.png" />
+    <Content Include="images\MSRLogoDigitalBlack.png" />
+    <Content Include="images\new.png" />
+    <Content Include="images\new.svg" />
+    <Content Include="images\open.png" />
+    <Content Include="images\open.svg" />
+    <Content Include="images\oscillation-state.svg" />
+    <Content Include="images\oscillations-ON.svg" />
+    <Content Include="images\oscillations.png" />
+    <Content Include="images\oscillations.svg" />
+    <Content Include="images\plus.png" />
+    <Content Include="images\pointer ON.png" />
+    <Content Include="images\pointer ON.svg" />
+    <Content Include="images\pointer-ON.png" />
+    <Content Include="images\pointer.png" />
+    <Content Include="images\pointer.svg" />
+    <Content Include="images\random1.gif" />
+    <Content Include="images\random1.png" />
+    <Content Include="images\random1.svg" />
+    <Content Include="images\random2.png" />
+    <Content Include="images\random2.svg" />
+    <Content Include="images\range.png" />
+    <Content Include="images\receptor-ON.png" />
+    <Content Include="images\receptor-ON.svg" />
+    <Content Include="images\receptor.png" />
+    <Content Include="images\receptor.svg" />
+    <Content Include="images\redo.png" />
+    <Content Include="images\redo.svg" />
+    <Content Include="images\remove.gif" />
+    <Content Include="images\runbutton.png" />
+    <Content Include="images\save.png" />
+    <Content Include="images\save.svg" />
+    <Content Include="images\saveicon.png" />
+    <Content Include="images\savelocally.png" />
+    <Content Include="images\savelocally.svg" />
+    <Content Include="images\screen-fit.svg" />
+    <Content Include="images\selfloop-state.svg" />
+    <Content Include="images\small-cross.svg" />
+    <Content Include="images\small-tick.svg" />
+    <Content Include="images\state-container.svg" />
+    <Content Include="images\state-line-del.svg" />
+    <Content Include="images\state-variable.svg" />
+    <Content Include="images\stripe-pattern-green.png" />
+    <Content Include="images\stripe-pattern-half-green.png" />
+    <Content Include="images\stripe-pattern-half-half.png" />
+    <Content Include="images\stripe-pattern-half-red.png" />
+    <Content Include="images\stripe-pattern-red.png" />
+    <Content Include="images\stripe-pattern.png" />
+    <Content Include="images\stripes.png" />
+    <Content Include="images\succeeded.png" />
+    <Content Include="images\succeeded.svg" />
+    <Content Include="images\svgtest.txt" />
+    <Content Include="images\tabicon-LTL.svg" />
+    <Content Include="images\tick-128.png" />
+    <Content Include="images\title-TOU.png" />
+    <Content Include="images\true-state.svg" />
+    <Content Include="images\undo.png" />
+    <Content Include="images\undo.svg" />
+    <Content Include="images\validation-failed.svg" />
+    <Content Include="images\validation-succeeded.svg" />
+    <Content Include="images\validation_failed.png" />
+    <Content Include="images\validation_succeeded.png" />
+    <Content Include="images\variable-ON.png" />
+    <Content Include="images\variable-ON.svg" />
+    <Content Include="images\variable.png" />
+    <Content Include="images\variable.svg" />
+    <Content Include="images\visicon.png" />
+    <Content Include="images\visicon2-ON.png" />
+    <Content Include="images\visicon2-ON.svg" />
+    <Content Include="images\visicon2.png" />
+    <Content Include="images\visicon2.svg" />
+    <Content Include="images\zoomminus.png" />
+    <Content Include="images\zoomminus.svg" />
+    <Content Include="images\zoomplus.png" />
+    <Content Include="images\zoomplus.svg" />
+    <Content Include="Scripts\formulaParser.js" />
+    <Content Include="js\wl.js" />
+    <Content Include="package.json" />
+    <Content Include="Chutzpah.json" />
+    <Content Include="css\BMA_less.less" />
+    <Content Include="css\LTL_less.less" />
+    <Content Include="css\LTLStates.less" />
+    <Content Include="css\StyleSheet.less" />
+    <Content Include="css\bma.less" />
+    <Content Include="css\fonts.less" />
+    <Content Include="css\jasmine.css">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Gruntfile.js" />
+    <Content Include="js\scalablegridlinesplot.js" />
+    <Content Include="js\svgplot.js" />
+    <Content Include="Scripts\jasmine-html.js">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Scripts\jasmine.js">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="prebuild.cmd" />
+    <Content Include="css\BMA-Styles-LTL.less" />
+    <Content Include="css\BMA-Styles.less" />
+    <Content Include="css\website.less" />
+    <Content Include="css\partials\style-guide.less" />
+    <None Include="postbuild.cmd" />
+    <Content Include="Scripts\jquery-2.1.4.js">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Scripts\jquery-2.1.4.min.js">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="Scripts\targetFuncParser.js" />
+    <Content Include="data\2var_unstable.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="data\Firing_neuron_2_cells.json" />
+    <Content Include="test\pre\monacotest_pre.js" />
+    <Content Include="web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="paket.references" />
+    <Content Include="Scripts\jquery-2.1.4.min.map">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="data\Firing_neuron_3_cells.json" />
+    <Content Include="data\Firing_neuron_2_cells_without_ids.json" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="script\presenters\onedrivestoragepresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\storagepresenter.ts" />
+    <TypeScriptCompile Include="script\widgets\codeeditor.ts" />
+    <TypeScriptCompile Include="script\widgets\modelstoragewidget.ts" />
+    <TypeScriptCompile Include="script\widgets\onedrivestoragewidget.ts" />
+    <TypeScriptCompile Include="script\onedrive\OneDrive.ts" />
+    <TypeScriptCompile Include="script\onedrive\OneDriveRepository.ts" />
+    <TypeScriptCompile Include="test\ConvertTargetFunctionToOperationTests.ts" />
+    <TypeScriptCompile Include="script\changeschecker.ts" />
+    <TypeScriptCompile Include="script\Commands.ts" />
+    <TypeScriptCompile Include="script\elementsregistry.ts" />
+    <TypeScriptCompile Include="script\functionsregistry.ts" />
+    <TypeScriptCompile Include="script\jisonparser.ts" />
+    <TypeScriptCompile Include="script\jqextensions.ts" />
+    <TypeScriptCompile Include="script\keyframesregistry.ts" />
+    <TypeScriptCompile Include="script\localRepository.ts" />
+    <TypeScriptCompile Include="script\LTLHelper.ts" />
+    <TypeScriptCompile Include="script\ModelHelper.ts" />
+    <TypeScriptCompile Include="script\model\analytics.ts" />
+    <TypeScriptCompile Include="script\model\biomodel.ts" />
+    <TypeScriptCompile Include="script\model\exportimport.ts" />
+    <TypeScriptCompile Include="script\model\model.ts" />
+    <TypeScriptCompile Include="script\model\Operation.ts" />
+    <TypeScriptCompile Include="script\model\operationlayout.ts" />
+    <TypeScriptCompile Include="script\model\visualsettings.ts" />
+    <TypeScriptCompile Include="script\operatorsregistry.ts" />
+    <TypeScriptCompile Include="script\presenters\furthertestingpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\localstoragepresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\ltl\LTLpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\ltl\states.ts" />
+    <TypeScriptCompile Include="script\presenters\ltl\temporalproperties.ts" />
+    <TypeScriptCompile Include="script\presenters\modelstoragepresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\presenters.ts" />
+    <TypeScriptCompile Include="script\presenters\proofpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\simulationpresenter.ts" />
+    <TypeScriptCompile Include="script\presenters\undoredopresenter.ts" />
+    <TypeScriptCompile Include="script\SVGHelper.ts" />
+    <TypeScriptCompile Include="script\uidrivers\commondrivers.ts" />
+    <TypeScriptCompile Include="script\uidrivers\commoninterfaces.ts" />
+    <TypeScriptCompile Include="script\uidrivers\ltldrivers.ts" />
+    <TypeScriptCompile Include="script\uidrivers\ltlinterfaces.ts" />
+    <TypeScriptCompile Include="script\UserLog.ts" />
+    <TypeScriptCompile Include="script\widgets\accordeon.ts" />
+    <TypeScriptCompile Include="script\widgets\bmaslider.ts" />
+    <TypeScriptCompile Include="script\widgets\coloredTableViewer.ts" />
+    <TypeScriptCompile Include="script\widgets\containernameeditor.ts" />
+    <TypeScriptCompile Include="script\widgets\drawingsurface.ts" />
+    <TypeScriptCompile Include="script\widgets\elementbutton.ts" />
+    <TypeScriptCompile Include="script\widgets\formulaeditor.ts" />
+    <TypeScriptCompile Include="script\widgets\furthertestingviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\localstoragewidget.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\compactltlresult.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\keyframecompact.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\keyframetable.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\ltlresultsviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\LTLStatesViewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\ltlviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\statescompact.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\stateseditor.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\stateseditorOld.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\statetooltip.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\tpeditor.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\tpformulaoptions.ts" />
+    <TypeScriptCompile Include="script\widgets\ltl\tpviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\progressiontable.ts" />
+    <TypeScriptCompile Include="script\widgets\proofresultviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\resultswindowviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationexpanded.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationplot.ts" />
+    <TypeScriptCompile Include="script\widgets\simulationviewer.ts" />
+    <TypeScriptCompile Include="script\widgets\tftexteditor.ts" />
+    <TypeScriptCompile Include="script\widgets\userdialog.ts" />
+    <TypeScriptCompile Include="script\widgets\variablesOptionsEditor.ts" />
+    <TypeScriptCompile Include="script\widgets\visibilitysettings.ts" />
+    <TypeScriptCompile Include="script\XmlModelParser.ts" />
+    <TypeScriptCompile Include="test\AccordionTest.ts" />
+    <TypeScriptCompile Include="test\AnalyticsTest.ts" />
+    <TypeScriptCompile Include="test\BiomodelTest.ts" />
+    <TypeScriptCompile Include="test\BMASliderTest.ts" />
+    <TypeScriptCompile Include="test\ColoredTableViewerTest.ts" />
+    <TypeScriptCompile Include="test\CommandTests.ts" />
+    <TypeScriptCompile Include="test\ContainerNameEditorTest.ts" />
+    <TypeScriptCompile Include="test\ConvertFormulaToOperationTests.ts" />
+    <TypeScriptCompile Include="test\DrawingSurfacePresenterTests.ts" />
+    <TypeScriptCompile Include="test\ExportImportTest.ts" />
+    <TypeScriptCompile Include="test\ExportImportLTLTests.ts" />
+    <TypeScriptCompile Include="test\FormulaConvertationTests.ts" />
+    <TypeScriptCompile Include="test\FurtherTestingTest.ts" />
+    <TypeScriptCompile Include="test\KeyframesTest.ts" />
+    <TypeScriptCompile Include="test\LocalStoragePresenterTest.ts" />
+    <TypeScriptCompile Include="test\LocalStorageWidgetTest.ts" />
+    <TypeScriptCompile Include="test\LTLResultsViewerTests.ts" />
+    <TypeScriptCompile Include="test\LTLServiceFormulaConvertionTests.ts" />
+    <TypeScriptCompile Include="test\ModelHelperTests.ts" />
+    <TypeScriptCompile Include="test\ModelTest.ts" />
+    <TypeScriptCompile Include="test\OneDriveRepositoryTest.ts" />
+    <TypeScriptCompile Include="test\ProgressionTableTest.ts" />
+    <TypeScriptCompile Include="test\ProofResultViewerTest.ts" />
+    <TypeScriptCompile Include="test\ResultWindowViewerTest.ts" />
+    <TypeScriptCompile Include="test\SimulationExpandedTest.ts" />
+    <TypeScriptCompile Include="test\SimulationPlotViewerTest.ts" />
+    <TypeScriptCompile Include="test\SimulationViewerTest.ts" />
+    <TypeScriptCompile Include="test\TestComponents\BMA.TestComponents.ts" />
+    <TypeScriptCompile Include="test\TestComponents\BMATestDrivers.ts" />
+    <TypeScriptCompile Include="test\UserDialogTest.ts" />
+    <TypeScriptCompile Include="test\VariablesEditorTest.ts" />
+    <TypeScriptCompile Include="test\VisibilitySettingsTest.ts" />
+    <TypeScriptCompile Include="test\XmlParserTests.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>bma.package</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>8881</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:8881/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>$(ProjectDir)postbuild.cmd</PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>$(ProjectDir)prebuild.cmd</PreBuildEvent>
+  </PropertyGroup>
+</Project>

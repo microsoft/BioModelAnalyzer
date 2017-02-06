@@ -1,0 +1,15 @@
+CommonServiceLocator
+FSharp.Data
+Microsoft.AspNet.WebApi.Client
+Microsoft.AspNet.WebApi.Core
+Microsoft.AspNet.WebApi.Owin
+Microsoft.Owin
+Microsoft.Owin.Diagnostics
+Microsoft.Owin.Host.HttpListener
+Microsoft.Owin.Hosting
+Microsoft.Owin.SelfHost
+WindowsAzure.Storage
+Newtonsoft.Json
+Owin
+Unity
+Microsoft.VisualStudio.QualityTools.UnitTestFramework

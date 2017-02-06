@@ -1,0 +1,26 @@
+<!-- Copyright (c) Microsoft Research 2016 -->
+<!-- License: MIT. See LICENSE -->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Service test page</title>
+    <script src="Scripts/jquery-2.1.1.min.js"></script>
+    <script src="script/model/biomodel.js"></script>
+    <script src="script/XmlModelParser.js"></script>
+    <script type="text/javascript">     
+        $(function () {
+            $("#log").append("Loading 2var_unstable.xml...<br/>");
+            $.get("/test/data/2var_unstable.xml",null,"xml").then(function(data) {
+                $("#log").append("XML load success.<br/>");
+                var model = BMA.ParseXmlModel(data);
+                window.alert(model.Model.Name);
+            }).fail(function(res) {
+                $("#log").append("XML load error: " + res.statusText + "<br/>");
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="log"></div>
+</body>
+</html>

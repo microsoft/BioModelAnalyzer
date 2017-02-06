@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AnalysisInput ModelName="Dichty cAMP signalling">
+  <Variables>
+    <Variable Id="1">
+      <Name>cAMP</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function>var(10)+var(7)-1</Function>
+    </Variable>
+    <Variable Id="10">
+      <Name>NoCell</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function>0</Function>
+    </Variable>
+    <Variable Id="3">
+      <Name>CAR1</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="4">
+      <Name>ACA</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="5">
+      <Name>ERK2</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="7">
+      <Name>cAMP_ic</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function>max((var(7)-var(9)),var(4))</Function>
+    </Variable>
+    <Variable Id="8">
+      <Name>PKA</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function></Function>
+    </Variable>
+    <Variable Id="9">
+      <Name>RegA</Name>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>1</RangeTo>
+      <Function>1-var(5)</Function>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="6">
+      <FromVariableId>8</FromVariableId>
+      <ToVariableId>5</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="7">
+      <FromVariableId>7</FromVariableId>
+      <ToVariableId>8</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="8">
+      <FromVariableId>7</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="11">
+      <FromVariableId>5</FromVariableId>
+      <ToVariableId>9</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="12">
+      <FromVariableId>9</FromVariableId>
+      <ToVariableId>7</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+    <Relationship Id="13">
+      <FromVariableId>7</FromVariableId>
+      <ToVariableId>7</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="14">
+      <FromVariableId>10</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="2">
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>5</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="3">
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="9">
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="4">
+      <FromVariableId>4</FromVariableId>
+      <ToVariableId>7</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="10">
+      <FromVariableId>8</FromVariableId>
+      <ToVariableId>4</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+  </Relationships>
+</AnalysisInput>

@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Model Id="1" Name="SmallTestCase" BioCheckVersion="3">
+  <Description>This is a new model.</Description>
+  <CreatedDate>2012-09-11T12:59:28.7119993+01:00</CreatedDate>
+  <ModifiedDate>2012-09-11T13:01:16.9361558+01:00</ModifiedDate>
+  <Layout>
+    <Columns>6</Columns>
+    <Rows>5</Rows>
+    <ZoomLevel>0</ZoomLevel>
+    <PanX>1163</PanX>
+    <PanY>111</PanY>
+  </Layout>
+  <Containers>
+    <Container Id="1" Name="">
+      <PositionX>2</PositionX>
+      <PositionY>0</PositionY>
+      <Size>1</Size>
+    </Container>
+  </Containers>
+  <Variables>
+    <Variable Id="1" Name="a">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>3</RangeTo>
+      <Formula></Formula>
+      <PositionX>88</PositionX>
+      <PositionY>91</PositionY>
+      <CellX>2</CellX>
+      <CellY>0</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="2" Name="b">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>0</RangeFrom>
+      <RangeTo>4</RangeTo>
+      <Formula></Formula>
+      <PositionX>188</PositionX>
+      <PositionY>91</PositionY>
+      <CellX>2</CellX>
+      <CellY>0</CellY>
+      <Angle>0</Angle>
+    </Variable>
+    <Variable Id="3" Name="c">
+      <ContainerId>1</ContainerId>
+      <Type>Default</Type>
+      <RangeFrom>1</RangeFrom>
+      <RangeTo>2</RangeTo>
+      <Formula></Formula>
+      <PositionX>163</PositionX>
+      <PositionY>166</PositionY>
+      <CellX>2</CellX>
+      <CellY>0</CellY>
+      <Angle>0</Angle>
+    </Variable>
+  </Variables>
+  <Relationships>
+    <Relationship Id="1">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>1</FromVariableId>
+      <ToVariableId>2</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="2">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>2</FromVariableId>
+      <ToVariableId>3</ToVariableId>
+      <Type>Activator</Type>
+    </Relationship>
+    <Relationship Id="3">
+      <ContainerId>1</ContainerId>
+      <FromVariableId>3</FromVariableId>
+      <ToVariableId>1</ToVariableId>
+      <Type>Inhibitor</Type>
+    </Relationship>
+  </Relationships>
+</Model>

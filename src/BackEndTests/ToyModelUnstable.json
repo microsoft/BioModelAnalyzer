@@ -1,0 +1,90 @@
+{
+  "Model": {
+    "Name": "ToyModelUnstable",
+    "Variables": [
+      {
+        "Id": 1,
+        "RangeFrom": 0,
+        "RangeTo": 4,
+        "Formula": "4-var(3)"
+      },
+      {
+        "Id": 2,
+        "RangeFrom": 0,
+        "RangeTo": 4,
+        "Formula": ""
+      },
+      {
+        "Id": 3,
+        "RangeFrom": 0,
+        "RangeTo": 4,
+        "Formula": ""
+      }
+    ],
+    "Relationships": [
+      {
+        "Id": 1,
+        "FromVariable": 1,
+        "ToVariable": 2,
+        "Type": "Activator"
+      },
+      {
+        "Id": 2,
+        "FromVariable": 2,
+        "ToVariable": 3,
+        "Type": "Activator"
+      },
+      {
+        "Id": 3,
+        "FromVariable": 3,
+        "ToVariable": 1,
+        "Type": "Inhibitor"
+      }
+    ]
+  },
+  "Layout": {
+    "Variables": [
+      {
+        "Id": 1,
+        "Name": "a",
+        "Type": "Default",
+        "ContainerId": 1,
+        "PositionX": 630.7,
+        "PositionY": 47.34285714285714,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 2,
+        "Name": "b",
+        "Type": "Default",
+        "ContainerId": 1,
+        "PositionX": 583.2,
+        "PositionY": 178.77142857142857,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      },
+      {
+        "Id": 3,
+        "Name": "c",
+        "Type": "Default",
+        "ContainerId": 1,
+        "PositionX": 678.2,
+        "PositionY": 162.34285714285716,
+        "CellX": null,
+        "CellY": null,
+        "Angle": 0
+      }
+    ],
+    "Containers": [
+      {
+        "Id": 1,
+        "Size": 1,
+        "PositionX": 2,
+        "PositionY": 0
+      }
+    ]
+  }
+}

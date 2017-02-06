@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="22px" height="22px" viewBox="0 0 22 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.3 (12072) - http://www.bohemiancoding.com/sketch -->
+    <title>state-line-del</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="state-line-del" sketch:type="MSArtboardGroup" stroke-linecap="square" stroke="#AAAAAA" stroke-width="3">
+            <g id="Line-+-Line-2-Copy" sketch:type="MSLayerGroup" transform="translate(2.000000, 2.000000)">
+                <path d="M0.5,0.5 L17.3671284,17.3671284" id="Line" sketch:type="MSShapeGroup"></path>
+                <path d="M0.5,0.5 L17.3671284,17.3671284" id="Line-2" sketch:type="MSShapeGroup" transform="translate(9.000000, 9.000000) scale(-1, 1) translate(-9.000000, -9.000000) "></path>
+            </g>
+        </g>
+    </g>
+</svg>
