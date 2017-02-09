@@ -42,6 +42,7 @@ let numberLit = numberLiteral numberFormat "number" .>> ws
 
 // "Grammar productions". 
 let number = numberLit .>> ws |>> (fun x -> Expr.Const((int32)x.String))
+let constant = str "const" .>> str "(" >>. numberLit .>> str ")" |>> (fun x -> Expr.Const((int32)x.String))
 let ident  = str "var" >>. str "(" >>. numberLit .>> str ")" |>> (fun x -> Expr.Var((int32)x.String))
 let max_expr  = (str "max" >>. str "(" >>. expr) .>>. (str "," >>. expr .>> str ")") |>> (fun e -> Expr.Max(e))
 let min_expr  = (str "min" >>. str "(" >>. expr) .>>. (str "," >>. expr .>> str ")") |>> (fun e -> Expr.Min(e))
@@ -50,7 +51,7 @@ let floor_expr = str "floor" >>. str "(" >>. expr .>> str ")" |>> Expr.Floor
 let abs_expr = str "abs" >>. str "(" >>. expr .>> str ")" |>> Expr.Abs
 let avg_expr = str "avg" >>. str "(" >>. (sepBy expr (ch ',')) .>> str ")" |>> Expr.Ave
 
-opp.TermParser <- choice [number; ident; max_expr; min_expr; ceil_expr; abs_expr; floor_expr; avg_expr; between (ch '(') (ch ')') expr] 
+opp.TermParser <- choice [number; constant; ident; max_expr; min_expr; ceil_expr; abs_expr; floor_expr; avg_expr; between (ch '(') (ch ')') expr] 
 
 // Operators. 
 type Assoc = Associativity
