@@ -31,7 +31,7 @@
     "@types/underscore": "^1.7.28",
     "async": "^2.0.1",
     "azure-storage": "^1.2.0",
-    "botbuilder": "^3.2.3",
+    "botbuilder": "^3.5.0",
     "chevrotain": "^0.14.0",
     "config": "^1.21.0",
     "cors": "^2.7.1",
