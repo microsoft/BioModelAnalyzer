@@ -16,8 +16,8 @@ import {ModelStorage} from '../ModelStorage'
  */
 export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: ModelStorage) {
     // Create LUIS recognizer that points at our model and add it as the root '/' dialog for our bot.
-    let model = 'https://api.projectoxford.ai/luis/v1/application?id=' + config.get('LUIS_MODEL_ID') 
-        + '&subscription-key=' + config.get('LUIS_KEY')
+    let model = 'https://api.projectoxford.ai/luis/v2.0/apps/' + config.get('LUIS_MODEL_ID') 
+	+ '?subscription-key=' + config.get('LUIS_KEY') + '&verbose=true'
     let recognizer = new builder.LuisRecognizer(model)
     let intents = new builder.IntentDialog({ 
         recognizers: [recognizer], 
