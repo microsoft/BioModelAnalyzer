@@ -1,0 +1,3 @@
+[config]
+command = ChatBot/deploy.cmd
+project = ChatBot/
