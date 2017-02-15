@@ -190,7 +190,8 @@ Publish-AspNet -packOutput (Join-Path $cdir "deployment\bma.client") -publishPro
 }
 Catch
 {
-Write-Host "An error occured during deployment"
+Write-Host "An error occured during deployment. Error details:"
+Write-Host $_
 $exitcode = 1
 }
 Finally
