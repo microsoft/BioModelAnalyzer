@@ -56,6 +56,60 @@ param(
 $ErrorActionPreference = "stop"
 $exitcode = 0
 
+if ($serviceName.Length -ge 60) {
+    Write-Error -Message 'ERROR: service name is too long (more than 60 characters).'
+    exit 1
+}
+# default values for empty parameters
+if ([System.String]::IsNullOrEmpty($resourceGroupName)) {
+    $resourceGroupName = $serviceName
+    if ($resourceGroupName.Length -gt 60) {
+        Write-Error -Message "ERROR: resource group name defaulted to an incorrect value ('$resourceGroupName') - it's longer than 60 characters. Either provide a different service name or specify a correct resource group name explicitly (via -resourceGroupName parameter)."
+        exit 1
+    }
+}
+if ([System.String]::IsNullOrEmpty($storageAccountName)) {
+    $storageAccountName = $serviceName + "storage"
+    if ($storageAccountName -notmatch "^[a-z1-9]{3,24}$") {
+        Write-Error -Message "ERROR: storage account name defaulted to an incorrect value ('$storageAccountName') - only lowercase letters and digits are allowed, must be between 3 and 24 characters long. Either provide a different service name or specify a correct storage account name explicitly (via -storageAccountName parameter)."
+        exit 1
+    }
+}
+if ([System.String]::IsNullOrEmpty($apiServiceName)) {
+    $apiServiceName = $serviceName + "api"
+    if ($apiServiceName.Length -gt 60) {
+        Write-Error -Message "ERROR: api service name defaulted to an incorrect value ('$apiServiceName') - it's longer than 60 characters. Either provide a different service name or specify a correct api service name explicitly (via -apiServiceName parameter)."
+        exit 1
+    }
+}
+if ([System.String]::IsNullOrEmpty($servicePlanName)) {
+    $servicePlanName = $serviceName + "Plan"
+    if ($servicePlanName.Length -gt 40) {
+        Write-Error -Message "ERROR: service plan name defaulted to an incorrect value ('$servicePlanName') - it's longer than 40 characters. Either provide a different service name or specify a correct service plan name explicitly (via -servicePlanName parameter)."
+        exit 1
+    }
+}
+if ([System.String]::IsNullOrEmpty($deploymentName)) {
+    $deploymentName = $serviceName + "Deployment"
+}
+
+if ($storageAccountName -notmatch "^[a-z1-9]{3,24}$") {
+    Write-Error -Message 'ERROR: storage account name is incorrect (only lowercase letters and digits are allowed, must be between 3 and 24 characters long).'
+    exit 1
+}
+if ($resourceGroupName.Length -gt 60) {
+    Write-Error -Message 'ERROR: resource group name is too long (more than 60 characters).'
+    exit 1
+}
+if ($apiServiceName.Length -gt 60) {
+    Write-Error -Message 'ERROR: api service name is too long (more than 60 characters).'
+    exit 1
+}
+if ($servicePlanName.Length -gt 40) {
+    Write-Error -Message 'ERROR: service plan name is too long (more than 40 characters).'
+    exit 1
+}
+
 $cpath = Get-Location
 $cdir = $cpath.Path
 
@@ -111,23 +165,6 @@ if ($subscriptions.Length -eq 1) {
 # select subscription
 Write-Host "Selecting subscription '$subscriptionName' with id '$subscriptionId'";
 Select-AzureRmSubscription -SubscriptionID $subscriptionId;
-
-# default values for empty parameters
-if ([System.String]::IsNullOrEmpty($resourceGroupName)) {
-    $resourceGroupName = $serviceName
-}
-if ([System.String]::IsNullOrEmpty($storageAccountName)) {
-    $storageAccountName = $serviceName + "storage"
-}
-if ([System.String]::IsNullOrEmpty($apiServiceName)) {
-    $apiServiceName = $serviceName + "api"
-}
-if ([System.String]::IsNullOrEmpty($servicePlanName)) {
-    $servicePlanName = $serviceName + "Plan"
-}
-if ([System.String]::IsNullOrEmpty($deploymentName)) {
-    $deploymentName = $serviceName + "Deployment"
-}
 
 # preparing parameters.json
 $parameters = Get-Content $parametersFilePath | ConvertFrom-Json
