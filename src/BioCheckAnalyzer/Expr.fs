@@ -109,12 +109,13 @@ let rec eval_expr_int (node:var) (range:Map<var,int*int>) (e : expr) (env : Map<
             let v_min,v_max = Map.find v range
             // Special case to deal with constants
             if v_min = v_max then
-                let c = v_min
-                //Log.log_debug ("eval_expr var constant"+(string)c)
-                if (c > node_max) then float(node_max)
-                else if (node_max >= c && c >= node_min) then float(c)
-                else if (c < node_min) then float(node_min)
-                else failwith("bug in scaling constant")
+                float(v_min)
+//                let c = v_min
+//                //Log.log_debug ("eval_expr var constant"+(string)c)
+//                if (c > node_max) then float(node_max)
+//                else if (node_max >= c && c >= node_min) then float(c)
+//                else if (c < node_min) then float(node_min)
+//                else failwith("bug in scaling constant")
             else
                 //BH: This is where the range conversion happens
                 //From Nir- this is the new eqn for range conversion
