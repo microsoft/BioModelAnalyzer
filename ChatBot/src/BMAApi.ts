@@ -57,6 +57,7 @@ export function runFastSimulation (model: BMA.Model, formula: string, options: S
                 reject(error)
                 return
             }
+	    body.Status = body.Status === 1; // Translate integer to boolean in Status field
             let resp = body as AnalyzeLTLSimulationResponse
             if (resp.Error) {
                 reject({ message: resp.Error })
