@@ -353,7 +353,7 @@ export function registerLUISDialog (bot: builder.UniversalBot, modelStorage: Mod
             // dispatch the corrected input again (i.e. invoke LUIS again)
             let message = new builder.Message(session)
             message.text(correctedText)
-            session.dispatch(session.sessionState, message.toMessage())
+            session.dispatch(session.sessionState, message.toMessage(),next)
         })
     })
 }

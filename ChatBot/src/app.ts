@@ -27,25 +27,21 @@ if (config.get('SERVE_STATIC_VIA_EXPRESS') === '1') {
     server.use('/static', express.static('public'))
 }
 
-let botSettings = {
-    // this is false by default but we need to access data between unrelated dialogs
-    persistConversationData: true
-}
-
 let bot: builder.UniversalBot
 if (config.get('USE_CONSOLE') === '1') {
     // Create console bot
     let connector = new builder.ConsoleConnector().listen()
-    bot = new builder.UniversalBot(connector, botSettings)
+    bot = new builder.UniversalBot(connector)
 } else {
     // Create server bot
     let connector = new builder.ChatConnector({
         appId: config.get<string>('APP_ID'),
         appPassword: config.get<string>('APP_PASSWORD')
     })
-    bot = new builder.UniversalBot(connector, botSettings)
+    bot = new builder.UniversalBot(connector)
     server.post('/api/messages', connector.listen())
 }
 
+bot.set("persistConversationData", "true") // this is false by default but we need to access data between unrelated dialogs
 let modelStorage = new BlobModelStorage()
 setupBot(bot, modelStorage)

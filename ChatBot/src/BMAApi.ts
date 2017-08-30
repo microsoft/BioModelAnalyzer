@@ -36,7 +36,7 @@ const DefaultSimOptions = {
  * @param options.steps The maximum number of time steps to simulate.
  * @param options.timeout The HTTP request timeout after which to cancel the request.
  */
-export function runFastSimulation (model: BMA.Model, formula: string, options: SimulationOptions = DefaultSimOptions): Promise.IThenable<AnalyzeLTLSimulationResponse> {
+export function runFastSimulation (model: BMA.Model, formula: string, options: SimulationOptions = DefaultSimOptions): Promise<AnalyzeLTLSimulationResponse> {
     console.log(`running "${formula}" against AnalyzeLTLSimulation API`)
     let url = BACKEND_URL + 'AnalyzeLTLSimulation'
     let req: AnalyzeLTLSimulationRequest = {
@@ -82,7 +82,7 @@ export function runFastSimulation (model: BMA.Model, formula: string, options: S
  * @param fastSimulationResponse The response of a fast simulation using the same model, formula, and steps.
  */
 export function runThoroughSimulation(model: BMA.Model, formula: string, fastSimResponse: AnalyzeLTLSimulationResponse,
-        options: SimulationOptions = DefaultSimOptions): Promise.IThenable<AnalyzeLTLPolarityResponse> {
+        options: SimulationOptions = DefaultSimOptions): Promise<AnalyzeLTLPolarityResponse> {
     console.log(`running "${formula}" against AnalyzeLTLPolarity API`)
     let url = BACKEND_URL + 'AnalyzeLTLPolarity'
     let req: AnalyzeLTLPolarityRequest = {

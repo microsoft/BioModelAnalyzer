@@ -53,7 +53,7 @@ export function registerTutorialDialogs (bot: builder.UniversalBot) {
     let tutorialPaths = TUTORIALS.map(name => `data/tutorials/${name}.yaml`)
     
     // TODO load tutorials one after another and implement better error reporting on YAML parsing errors (useful during development)
-    let tutorials: Tutorial[] = tutorialPaths.map(path => fs.readFileSync(path, 'utf8')).map(yaml.safeLoad)
+    let tutorials: Tutorial[] = tutorialPaths.map(path => fs.readFileSync(path, 'utf8')).map(s => yaml.safeLoad(s))
 
     // the tutorial selection dialog
     bot.dialog('/tutorials', [

@@ -12,11 +12,11 @@ const USER_MODELS = 'usermodels'
 const GENERATED_MODELS = 'genmodels'
 
 export interface ModelStorage {
-    storeUserModel (id: string, model: BMA.ModelFile): Promise.IThenable<boolean>
-    getUserModel (id: string): Promise.IThenable<BMA.ModelFile>
+    storeUserModel (id: string, model: BMA.ModelFile): Promise<boolean>
+    getUserModel (id: string): Promise<BMA.ModelFile>
     getUserModelUrl (id: string): string
-    removeUserModel (id: string): Promise.IThenable<boolean>
-    storeGeneratedModel (model: BMA.ModelFile): Promise.IThenable<string>
+    removeUserModel (id: string): Promise<boolean>
+    storeGeneratedModel (model: BMA.ModelFile): Promise<string>
 }
 
 /**
@@ -69,7 +69,7 @@ export class BlobModelStorage implements ModelStorage {
         }
     }
 
-    storeUserModel (id: string, model: BMA.ModelFile) {
+    storeUserModel (id: string, model: BMA.ModelFile) : Promise<boolean> {
         // TODO think about expiration
         let content = JSON.stringify(model, null, 2)
 
@@ -85,7 +85,7 @@ export class BlobModelStorage implements ModelStorage {
         })        
     }
 
-    getUserModel (id: string) {
+    getUserModel (id: string) : Promise<BMA.ModelFile> {
         return new Promise((resolve, reject) => {
             this.blobService.getBlobToText(USER_MODELS, id, {}, (error, text) => {
                 if (error) {
@@ -98,7 +98,7 @@ export class BlobModelStorage implements ModelStorage {
         })
     }
 
-    removeUserModel (id: string) {
+    removeUserModel (id: string) : Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.blobService.deleteBlobIfExists(USER_MODELS, id, {}, (error, removed) => {
                 if (error) {
@@ -116,7 +116,7 @@ export class BlobModelStorage implements ModelStorage {
         return url
     }
 
-    storeGeneratedModel (model: BMA.ModelFile) {
+    storeGeneratedModel (model: BMA.ModelFile) : Promise<string> {
         // TODO remove old models
         let content = JSON.stringify(model, null, 2)
 
