@@ -471,7 +471,7 @@
 
             }
 
-            var state = $("<div>" + stateName + "</div>").attr("data-state-name", stateName).addClass("state-button").addClass("state").click(function () {
+            var state = <any>($("<div>" + stateName + "</div>").attr("data-state-name", stateName).addClass("state-button").addClass("state").click(function () {
                 that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
                 for (var j = 0; j < that.options.states.length; j++) {
                     if (that.options.states[j].name == $(this).attr("data-state-name")) {
@@ -480,7 +480,7 @@
                     }
                 }
                 that.refresh();
-            });
+            }));
 
             if(this._activeState != null)
                 that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
@@ -515,7 +515,8 @@
 
                             $(this.children).remove();
 
-                            switch (ui.draggable[0].name) {
+                            var n = (<any>ui.draggable[0]).name;
+                            switch (n) {
                                 case "var": {
                                     var img = $("<img>").attr("src", ui.draggable.attr("src")).attr("data-tool-type", ui.draggable.attr("data-tool-type"))
                                         .css("width", "30px").css("height", "30px").appendTo(this);

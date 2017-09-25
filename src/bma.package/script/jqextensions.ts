@@ -2,6 +2,16 @@
 // License: MIT. See LICENSE
 declare module JQueryUI {
     interface DraggableOptions {
-        start?: any;
+        start?: DraggableEvent;
+        stop?: DraggableEvent;
+        drag?: DraggableEvent;
+    }
+
+    interface DroppableOptions {
+        drop?: DroppableEvent;
+    }
+
+    interface TooltipOptions {
+        close?: TooltipEvent;    
     }
 }

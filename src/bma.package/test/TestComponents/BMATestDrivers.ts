@@ -31,7 +31,7 @@ module BMA {
                 }
                 result.resolve(list);
 
-                return result.promise();
+                return <JQueryPromise<string[]>>result.promise();
             }
 
             LoadModel(id: string): JQueryPromise<JSON> {
@@ -41,7 +41,7 @@ module BMA {
                 //}
                 var result = $.Deferred();
                 result.resolve(JSON.parse('{"test": ' + this.modelsList[id] + '}'));
-                return result.promise();
+                return <JQueryPromise<JSON>>result.promise();
             }
 
             RemoveModel(id: string) {

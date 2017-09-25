@@ -23,7 +23,7 @@ class OneDriveMockup implements BMA.OneDrive.IOneDrive {
         var d = $.Deferred();
         this.data[name] = {};
         d.resolve(name);
-        return d.promise();
+        return <JQueryPromise<string>>d.promise();
     }
 
     // Finds a root folder with given name.
@@ -32,7 +32,7 @@ class OneDriveMockup implements BMA.OneDrive.IOneDrive {
         var d = $.Deferred();
         if (typeof (this.data[name]) === "object") d.resolve(name);
         else d.resolve(null);
-        return d.promise();
+        return <JQueryPromise<string>>d.promise();
     }
 
     public EnumerateFiles(folderId: string): JQueryPromise<BMA.OneDrive.OneDriveFile[]> {
@@ -44,14 +44,14 @@ class OneDriveMockup implements BMA.OneDrive.IOneDrive {
         }
         d.resolve(r);
 
-        return d.promise();
+        return <JQueryPromise<BMA.OneDrive.OneDriveFile[]>>d.promise();
     }
 
 
     public EnumerateSharedWithMeFiles(): JQueryPromise<BMA.OneDrive.OneDriveFile[]> {
         var d = $.Deferred();
         d.resolve([]);
-        return d.promise();
+        return <JQueryPromise<BMA.OneDrive.OneDriveFile[]>>d.promise();
     }
 
     /// Creates or replaces a file in the given folder. 
@@ -64,13 +64,13 @@ class OneDriveMockup implements BMA.OneDrive.IOneDrive {
         } else { // folder doesn't exist
             d.reject("folder doesn't exist");
         }
-        return d.promise();
+        return <JQueryPromise<BMA.OneDrive.OneDriveFile>>d.promise();
     }
 
     public FileExists(fileId: string): JQueryPromise<boolean> {
         var d = $.Deferred();
         d.resolve(typeof (this.files[fileId]) === "object");
-        return d.promise();
+        return <JQueryPromise<boolean>>d.promise();
     }
 
     public LoadFile(fileId: string): JQueryPromise<JSON> {
@@ -79,7 +79,7 @@ class OneDriveMockup implements BMA.OneDrive.IOneDrive {
             d.resolve(this.files[fileId]);
         }
         else d.reject("not found");
-        return d.promise();
+        return <JQueryPromise<JSON>>d.promise();
     }
 
     /// Returns true, if the operation is successful.

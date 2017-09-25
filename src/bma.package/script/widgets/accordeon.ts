@@ -126,15 +126,16 @@
 
             if (key == "contentLoaded") {
                 var isthatActive;
-                if (typeof value.ind === "number") {
+                var t = (typeof value.ind).toString();
+                if (t === "number") {
                     isthatActive = that.headers[value.ind][0] === that.active[0];
                     that.loadingList[value.ind] = value.val;
                 }
-                else if (typeof value.ind === "string") {
+                else if (t === "string") {
                     isthatActive = $(value.ind)[0] === that.active[0];
                     that.loadingList[that.headers.index($(value.ind))] = value.val;
                 }
-                else if (typeof value.ind === "JQuery") {
+                else if (t === "JQuery") {
                     isthatActive = value.ind[0] === that.active[0];
                     that.loadingList[that.headers.index(value.ind)] = value.val;
                 }
@@ -494,7 +495,8 @@
                 });
             } else if (toShow.length) {
                 this.headers.filter(function () {
-                    return $(this).attr("tabIndex") === 0;
+                    var v = parseInt($(this).attr("tabIndex"));
+                    return v === 0;
                 })
                     .attr("tabIndex", -1);
             }

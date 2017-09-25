@@ -2,6 +2,7 @@
 // License: MIT. See LICENSE
 /// <reference path="..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\jqextensions.ts"/>
 
 (function ($) {
     $.widget("BMA.formulaeditor", {
@@ -239,7 +240,7 @@
             that.draggableWidth = draggableWidth;
             var draggableHeight = svgDiv.height();
             that.draggableDiv = $("<div></div>").width(draggableWidth).height(draggableHeight).css("z-index", 100);
-            var canvas = $("<canvas></canvas>").attr("width", draggableWidth).attr("height", draggableHeight).appendTo(that.draggableDiv)[0];
+            var canvas = <HTMLCanvasElement>($("<canvas></canvas>").attr("width", draggableWidth).attr("height", draggableHeight).appendTo(that.draggableDiv)[0]);
             that.draggableCanvas = canvas;
 
             svgDiv.draggable({
@@ -256,8 +257,9 @@
                     var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                     if (opL === undefined) return;
                     var parentOffset = $(this).offset();
-                    var relX = arg.pageX - parentOffset.left;
-                    var relY = arg.pageY - parentOffset.top;
+                    var e = <MouseEvent>arg;
+                    var relX = e.pageX - parentOffset.left;
+                    var relY = e.pageY - parentOffset.top;
                     var svgCoords = that._getSVGCoords(relX, relY);
                     that.opToDrag = opL.UnpinOperation(svgCoords.x, svgCoords.y);
 
@@ -315,8 +317,9 @@
                             that._refresh();
                         } else {
                             var parentOffset = $(this).offset();
-                            var relX = arg.pageX - parentOffset.left;
-                            var relY = arg.pageY - parentOffset.top;
+                            var e = <MouseEvent>arg;
+                            var relX = e.pageX - parentOffset.left;
+                            var relY = e.pageY - parentOffset.top;
                             var svgCoords = that._getSVGCoords(relX, relY);
                             var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
                             if (emptyCell !== undefined) {
@@ -365,8 +368,9 @@
                             that._refresh();
                         } else {
                             var parentOffset = $(this).offset();
-                            var relX = arg.pageX - parentOffset.left;
-                            var relY = arg.pageY - parentOffset.top;
+                            var e = <MouseEvent>arg;
+                            var relX = e.pageX - parentOffset.left;
+                            var relY = e.pageY - parentOffset.top;
                             var svgCoords = that._getSVGCoords(relX, relY);
                             var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
                             if (emptyCell !== undefined) {
@@ -387,8 +391,9 @@
                         var opL = <BMA.LTLOperations.OperationLayout>that.operationLayout;
                         if (opL !== undefined) {
                             var parentOffset = $(this).offset();
-                            var relX = arg.pageX - parentOffset.left;
-                            var relY = arg.pageY - parentOffset.top;
+                            var e = <MouseEvent>arg;
+                            var relX = e.pageX - parentOffset.left;
+                            var relY = e.pageY - parentOffset.top;
                             var svgCoords = that._getSVGCoords(relX, relY);
                             var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
                             if (emptyCell !== undefined) {
@@ -404,8 +409,9 @@
                             that._refresh();
                         } else {
                             var parentOffset = $(this).offset();
-                            var relX = arg.pageX - parentOffset.left;
-                            var relY = arg.pageY - parentOffset.top;
+                            var e = <MouseEvent>arg;
+                            var relX = e.pageX - parentOffset.left;
+                            var relY = e.pageY - parentOffset.top;
                             var svgCoords = that._getSVGCoords(relX, relY);
                             var emptyCell = opL.GetEmptySlotAtPosition(svgCoords.x, svgCoords.y);
                             if (emptyCell !== undefined) {

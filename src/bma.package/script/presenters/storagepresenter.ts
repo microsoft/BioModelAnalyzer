@@ -20,6 +20,7 @@ module BMA {
             constructor(
                 appModel: BMA.Model.AppModel,
                 editor: BMA.UIDrivers.IModelStorageDriver,
+                variableEditorDriver: BMA.UIDrivers.IVariableEditor,
                 localDriver: BMA.UIDrivers.ILocalStorageDriver,
                 oneDriveDriver: BMA.UIDrivers.IOneDriveDriver,
                 //odPresenter: BMA.Presenters.OneDriveStoragePresenter,
@@ -152,18 +153,27 @@ module BMA {
                 });
 
                 window.Commands.On("SaveModel", function () {
+                    if (variableEditorDriver != undefined)
+                        variableEditorDriver.Hide();
+
                     if (that.activePresenter == "local")
                         window.Commands.Execute("LocalStorageSaveModel", undefined);
                     else window.Commands.Execute("OneDriveStorageSaveModel", undefined);
                 });
 
                 window.Commands.On("NewModel", function () {
+                    if (variableEditorDriver != undefined)
+                        variableEditorDriver.Hide();
+
                     if (that.activePresenter == "local")
                         that.localStorageDriver.SetOnUnselect();
                     else that.oneDriveStorageDriver.SetOnUnselect();
                 });
 
                 window.Commands.On("ModelReset", function () {
+                    if (variableEditorDriver != undefined)
+                        variableEditorDriver.Hide();
+
                     if (that.activePresenter == "local")
                         that.localStorageDriver.SetOnUnselect();
                     else that.oneDriveStorageDriver.SetOnUnselect();

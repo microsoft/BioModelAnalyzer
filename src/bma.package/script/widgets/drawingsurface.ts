@@ -135,14 +135,15 @@ declare var InteractiveDataDisplay: any;
 
             plotDiv.droppable({
                 drop: function (event, ui) {
+                    var e = <MouseEvent>event;
+
                     event.stopPropagation();
                     if (!that._checkDropFilter(ui.draggable))
                         return;
-
                     var cs = svgPlot.getScreenToDataTransform();
                     var position = {
-                        x: cs.screenToDataX(event.pageX - plotDiv.offset().left),
-                        y: -cs.screenToDataY(event.pageY - plotDiv.offset().top)
+                        x: cs.screenToDataX(e.pageX - plotDiv.offset().left),
+                        y: -cs.screenToDataY(e.pageY - plotDiv.offset().top)
                     };
                     if (that.options.isNavigationEnabled !== true) {
                         that._executeCommand("DrawingSurfaceClick", position);
@@ -157,7 +158,7 @@ declare var InteractiveDataDisplay: any;
                 var cs = svgPlot.getScreenToDataTransform();
 
                 if (arg.originalEvent !== undefined) {
-                    arg = arg.originalEvent;
+                    arg = <any>arg.originalEvent;
                 }
 
                 //arg.stopPropagation();
@@ -180,7 +181,7 @@ declare var InteractiveDataDisplay: any;
                 var cs = svgPlot.getScreenToDataTransform();
 
                 if (arg.originalEvent !== undefined) {
-                    arg = arg.originalEvent;
+                    arg = <any>arg.originalEvent;
                 }
 
                 that._executeCommand("DrawingSurfaceDoubleClick",

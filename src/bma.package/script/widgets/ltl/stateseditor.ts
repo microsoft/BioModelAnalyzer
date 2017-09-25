@@ -187,7 +187,7 @@
                 idx = this.options.states.indexOf(state);
             }
 
-            var state = $("<div>" + stateName + "</div>").attr("data-state-name", stateName).addClass("state-button").addClass("state").click(function () {
+            var state = <any>($("<div>" + stateName + "</div>").attr("data-state-name", stateName).addClass("state-button").addClass("state").click(function () {
                 that._stateButtons.find("[data-state-name='" + that._activeState.name + "']").removeClass("active");
                 for (var j = 0; j < that.options.states.length; j++) {
                     if (that.options.states[j].name == $(this).attr("data-state-name")) {
@@ -196,7 +196,7 @@
                     }
                 }
                 that.refresh();
-            });
+            }));
             this.addStatesHighlighting(state);
 
             if (this._activeState != null)

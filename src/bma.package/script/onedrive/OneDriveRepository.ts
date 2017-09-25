@@ -118,7 +118,7 @@ module BMA.OneDrive {
                         d.reject(err); // failed when tried to find the bma folder
                     });
             }
-            return d.promise();
+            return <JQueryPromise<string>>d.promise();
         }
 
         public GetUserProfile(): JQueryPromise<OneDriveUserProfile> {

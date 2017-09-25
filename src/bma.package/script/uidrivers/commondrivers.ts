@@ -721,7 +721,7 @@ module BMA {
                 var deferred = $.Deferred();
                 this.currentPromise = deferred;
                 this.fileInput.click();
-                return deferred.promise();
+                return <JQueryPromise<File>>deferred.promise();
             }
 
             private OnCheckFileSelected(): boolean {
