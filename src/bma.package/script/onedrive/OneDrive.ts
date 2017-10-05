@@ -60,7 +60,7 @@ module BMA.OneDrive {
         }
 
         private get(uri): JQueryXHR {
-            var settings = {
+            var settings:any = {
                 method: "GET",
             };
             return $.ajax(uri, settings);
@@ -82,7 +82,7 @@ module BMA.OneDrive {
                     d.fail(responseFailed);
                 }
                 );
-            return d.promise();
+            return <JQueryPromise<OneDriveUserProfile>>d.promise();
         }
 
         public CreateFolder(name: string): JQueryPromise<string> {

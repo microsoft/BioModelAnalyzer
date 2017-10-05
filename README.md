@@ -1,4 +1,4 @@
-The BioModelAnalyzer is a tool that allows biologists to easily and quickly build complex models 
+﻿The BioModelAnalyzer is a tool that allows biologists to easily and quickly build complex models 
 of biological behaviour, and to analyse them using techniques derived from the field of formal 
 verification. Its backend is written in F#, and its graphical frontend is an HTML5 application. 
 It uses the SAT solver Z3.
@@ -112,9 +112,9 @@ they may contain Azure Storage Account connection strings.
 
 ## Build requirements
 
-1. **Visual Studio 2015.**
-If you don't have Visual Studio 2015, you can install the free [Visual Studio 2015 Community](http://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx).
-Currently the build process relies on tools that come with Visual Studio 2015 such as
+1. **Visual Studio 2015/2017.**
+If you don't have Visual Studio 2015/2017, you can install the free [Visual Studio 2015/2017 Community](http://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx).
+Currently the build process relies on tools that come with Visual Studio 2015/2017 such as
 Microsoft .NET Framework 4.5, Microsoft Build Tools, Web Applications Build Targets,
 Visual F# Tools and TypeScript compiler.
 
@@ -185,7 +185,7 @@ They are based on [Protractor](http://www.protractortest.org/) framework.
 url of running `ApiServer` to be configured in the WebApiTests.fs; otherwise the tests fail.
 
 Note that running tests for x64 requires setting default processor architecture for tests to x64.
-In Visual Studio 2015, use menu `Test/Test Settings/Default Processor Architecture`.
+In Visual Studio 2015/2017, use menu `Test/Test Settings/Default Processor Architecture`.
 
 # Run and deploy
 
@@ -196,7 +196,7 @@ Here we describe how to run and deploy BioModelAnalyzer which consists of two we
 
 Please see `/docs/BMA Deployment Overview.pptx` for details about BioModelAnalyzer architecture.
 
-In the followings guidelines we will use Visual Studio 2015.
+In the followings guidelines we will use Visual Studio 2015/2017.
 The solution that produces the web applications is located in `/sln/bmaclient`. 
 Please make sure that you have run the powershell script `./PrepareRepository.ps1` as described
 in the [Build and test](#build-and-test) section to prepare the repository. 

@@ -2,7 +2,7 @@
 // License: MIT. See LICENSE
 module BMA {
     export module SVGHelper {
-        export function AddClass(elem: SVGStylable, c: string) {
+        export function AddClass(elem: any/*SVGStylable*/, c: string) {
             var s = <string>(elem.className.baseVal);
             if (!s || s.indexOf("null") > -1)
                 elem.className.baseVal = c;
@@ -10,7 +10,7 @@ module BMA {
                 elem.className.baseVal = s + " " + c;
         }
 
-        export function RemoveClass(elem: SVGStylable, c: string) {
+        export function RemoveClass(elem: any/*SVGStylable*/, c: string) {
             var s = elem.className.baseVal.replace(new RegExp("(\\s|^)" + c + "(\\s|$)"), " ");
             // TODO - coalesce spaces
             if (s == " ")
@@ -18,7 +18,7 @@ module BMA {
             elem.className.baseVal = s;
         }
 
-        export function ChangeStrokeWidth(elem: SVGStylable, width: number) {
+        export function ChangeStrokeWidth(elem: any/*SVGStylable*/, width: number) {
             elem.style.strokeWidth = width + "px";
         }
 

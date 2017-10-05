@@ -56,18 +56,18 @@ module BMA {
                 try {
                     var app = new BMA.Model.AppModel();
                     app.Deserialize(model);
-                    return deffered.resolve(JSON.parse(app.Serialize()));
+                    deffered.resolve(JSON.parse(app.Serialize()));
                 }
                 catch (ex) { alert(ex); deffered.reject(ex); }
             }
-            else return deffered.resolve(null);
+            else deffered.resolve(null);
 
-            return deffered.promise();
+            return <JQueryPromise<JSON>>deffered.promise();
         }
 
         public GetModelList(): JQueryPromise<string[]> {
             var deffered = $.Deferred();
-            var keys = [];
+            var keys:string[] = [];
             for (var i = 0; i < window.localStorage.length; i++) {
                 var key = window.localStorage.key(i);
                 var usrkey = this.IsUserKey(key);
@@ -80,7 +80,8 @@ module BMA {
             }
             deffered.resolve(keys);
 
-            return deffered.promise();
+            var p = <JQueryPromise<string[]>>deffered.promise();
+            return p;
         }
 
         private IsUserKey(key: string): string {

@@ -473,13 +473,8 @@ function loadScript(version) {
     $("#btn-local-storage").click(function (args) {
         window.Commands.Execute("ModelStorageRequested", undefined);
     });
-    $("#btn-import-model").click(function (args) {
-        window.Commands.Execute("ImportModel", undefined);
-    });
 
-    $("#btn-export-model").click(function (args) {
-        window.Commands.Execute("ExportModel", undefined);
-    });
+
 
     var localStorageWidget = $('<div></div>')
         //.appendTo('#drawingSurceContainer')
@@ -613,6 +608,17 @@ function loadScript(version) {
     var ltlDriver = new BMA.UIDrivers.LTLViewer($("#analytics"), $('#tabs-3'));
     var localRepositoryTool = new BMA.LocalRepositoryTool(messagebox);
 
+    //Export and Import buttons
+    $("#btn-export-model").click(function (args) {
+        variableEditorDriver.Hide();
+        window.Commands.Execute("ExportModel", undefined);
+    });
+
+    $("#btn-import-model").click(function (args) {
+        variableEditorDriver.Hide();
+        window.Commands.Execute("ImportModel", undefined);
+    });
+
     //var localSettings = new BMA.OneDrive.OneDriveSettings("79832916-6a39-4c73-b13e-ee28c25d46a7", "http://localhost:81/html/callback.html", "signin");
     //var bmaNewSettings = new BMA.OneDrive.OneDriveSettings("000000004C12BD9C", "http://bmanew.cloudapp.net/html/callback.html", "signin");
     //var productionSettings = new BMA.OneDrive.OneDriveSettings("c18205a1-8587-4a03-9274-85845cbbcbb0", "http://biomodelanalyzer.research.microsoft.com/html/callback.html", "signin");
@@ -654,7 +660,7 @@ function loadScript(version) {
     var storagePresenter = new BMA.Presenters.ModelStoragePresenter(appModel, fileLoaderDriver, changesCheckerTool, logService, exportService, waitScreen);
     //var localStoragePresenter = new BMA.Presenters.LocalStoragePresenter(appModel, localStorageDriver, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
     //var oneDriveStoragePresenter = new BMA.Presenters.OneDriveStoragePresenter(appModel, oneDriveStorageDriver, oneDriveRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
-    var mStoragePresenter = new BMA.Presenters.StoragePresenter(appModel, modelStorageDriver, localStorageDriver, oneDriveStorageDriver, connector, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
+    var mStoragePresenter = new BMA.Presenters.StoragePresenter(appModel, modelStorageDriver, variableEditorDriver, localStorageDriver, oneDriveStorageDriver, connector, localRepositoryTool, messagebox, changesCheckerTool, logService, waitScreen);
     //LTL Presenters
     var ltlPresenter = new BMA.Presenters.LTLPresenter(ltlCommands, appModel, stateseditordriver, tpeditordriver, ltlDriver, ltlresultsdriver, ltlSimulationService, ltlPolarityService, lratestservice, popupDriver, exportService, fileLoaderDriver, logService);
 

@@ -2,6 +2,8 @@
 // License: MIT. See LICENSE
 /// <reference path="..\..\..\Scripts\typings\jquery\jquery.d.ts"/>
 /// <reference path="..\..\..\Scripts\typings\jqueryui\jqueryui.d.ts"/>
+/// <reference path="..\..\jqextensions.ts"/>
+
 
 (function ($) {
     $.widget("BMA.compactltlresult", {
