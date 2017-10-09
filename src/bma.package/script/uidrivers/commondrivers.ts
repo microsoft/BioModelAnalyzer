@@ -984,7 +984,15 @@ module BMA {
         export class MessageBoxDriver implements IMessageServiсe {
 
             public Show(message: string) {
-                alert(message);
+                var userDialog = $('<div></div>').appendTo('body').userdialog({
+                    message: message,
+                    actions: [
+                        {
+                            button: 'Ok',
+                            callback: function () { userDialog.detach(); }
+                        }
+                    ]
+                });
             }
 
             public Log(message: string) {

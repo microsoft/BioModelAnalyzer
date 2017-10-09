@@ -349,7 +349,6 @@ module BMA {
                             if (state && state.Name === obj.name)
                                 return state.Clone();
                         }
-                        alert(obj.name);
                         throw "No suitable states found";//TODO: replace this by editing empty operation
                     } else {
 

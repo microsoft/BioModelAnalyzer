@@ -300,7 +300,6 @@ module BMA {
                                         that.expandedViewer.ActiveMode();
                                         that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Invalid Model", message: res.ErrorMessages } });
                                         that.simulationAccordeon.ContentLoaded("#icon2", true);
-                                        //alert("Simulation Error: " + res.ErrorMessages);
                                     }
                                 } else {
                                     that.expandedViewer.ActiveMode();
@@ -321,7 +320,6 @@ module BMA {
                                     that.expandedViewer.ActiveMode();
                                     that.compactViewer.SetData({ data: undefined, plot: undefined, error: { title: "Simulate Error", message: errorThrown } });
                                     that.simulationAccordeon.ContentLoaded("#icon2", true);
-                                    //alert("Simulate error: " + errorThrown);
                                 }
 
                                 return;

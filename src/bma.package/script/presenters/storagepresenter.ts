@@ -246,7 +246,7 @@ module BMA {
                     }
                 }
                 catch (ex) {
-                    alert(ex);
+                    this.messagebox.Show(ex);
                     deffered.resolve();
                     //load(key);
                 }

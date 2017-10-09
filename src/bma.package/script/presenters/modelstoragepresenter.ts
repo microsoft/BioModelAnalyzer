@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Research 2016
+﻿// Copyright (c) Microsoft Research 2016
 // License: MIT. See LICENSE
 module BMA {
     export module Presenters {
@@ -9,7 +9,8 @@ module BMA {
                 checker: BMA.UIDrivers.ICheckChanges,
                 logService: BMA.ISessionLog,
                 exportService: BMA.UIDrivers.ExportService,
-                waitScreen: BMA.UIDrivers.IWaitScreen) {
+                waitScreen: BMA.UIDrivers.IWaitScreen,
+                messageBox: BMA.UIDrivers.IMessageServiсe) {
                 var that = this;
 
                 window.Commands.On("NewModel",(args) => {
@@ -84,7 +85,7 @@ module BMA {
                         }
                     }
                     catch (ex) {
-                        alert(ex);
+                        messageBox.Show(ex); 
                         logService.LogImportModel();
                         load();
                     }
@@ -133,7 +134,7 @@ module BMA {
                         checker.Snapshot(appModel);
                     }
                     catch (ex) {
-                        alert("Couldn't export model: " + ex);
+                        messageBox.Show("Couldn't export model: " + ex);
                     }
                 });
             }

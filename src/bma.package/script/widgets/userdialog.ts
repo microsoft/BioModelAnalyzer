@@ -17,10 +17,10 @@
         _create: function () {
             var that = this;
             this.element.addClass("window dialog").css("z-index", InteractiveDataDisplay.ZIndexDOMMarkers + 100);
-            this.element.draggable({ containment: "parent", scroll: false });
+            this.element.draggable({ containment: "parent", scroll: false, cancel: ".ud-text" });
             this._add_close_button();
             this.message = $('<div><div>')
-                .text(this.options.message)
+                .html(this.options.message)
                 .addClass('window-title')
                 .appendTo(that.element);
             this.buttons = $('<div><div>')
@@ -102,7 +102,7 @@
             var that = this;
             switch (key) {
                 case "message":
-                    this.message.text(that.options.message);
+                    this.message.html(that.options.message);
                     break;
             }
             this._super(key, value);

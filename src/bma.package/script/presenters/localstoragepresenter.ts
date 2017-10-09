@@ -38,7 +38,6 @@ module BMA {
                 }).fail(function (errorThrown) {
                     var res = JSON.parse(JSON.stringify(errorThrown));
                     that.driver.Message(res.statusText);
-                    //alert(errorThrown);
                 });
 
                 window.Commands.On("LocalStorageChanged", function () {
@@ -53,7 +52,6 @@ module BMA {
                     }).fail(function (errorThrown) {
                         var res = JSON.parse(JSON.stringify(errorThrown));
                         that.driver.Message(res.statusText);
-                        //alert(errorThrown);
                     });
                 });
 
@@ -73,7 +71,6 @@ module BMA {
                     }).fail(function (errorThrown) {
                         var res = JSON.parse(JSON.stringify(errorThrown));
                         that.driver.Message(res.statusText);
-                        //alert(errorThrown);
                     });
                 });
 
@@ -87,7 +84,6 @@ module BMA {
                     }
                     catch (ex) {
                         that.driver.Message("Couldn't save model: " + ex);
-                        //alert("Couldn't save model: " + ex);
                     }
                 });
 
