@@ -738,15 +738,9 @@ module BMA {
 
         export function ConvertTargetFunctionToOperation(formula: string, variables: BMA.Model.Variable[]): any {
             var parsedFormula;
-            //try {
             if (formula == "") return undefined;
             var parsedFormula = BMA.TFParser.parse(formula);
             return ConvertTFtoOperation(parsedFormula, variables);
-
-            //} catch (ex) {
-            //    alert(ex);
-            //}
-            //return undefined;
         }
 
         export function CompareOperationsPriority(op1: BMA.LTLOperations.Operation, op2: BMA.LTLOperations.IOperand) {

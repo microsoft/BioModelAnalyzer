@@ -87,11 +87,13 @@
       <Link>Microsoft.Z3.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\packages\z3x64win\libz3.dll" Condition="'$(Platform)'=='x64'">
+    <None Include="..\..\ext\z3\x64\libz3.dll" Condition="'$(Platform)'=='x64'">
+    <!--<None Include="..\..\packages\z3x64win\libz3.dll" Condition="'$(Platform)'=='x64'">-->
       <Link>libz3.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\packages\z3x86win\libz3.dll" Condition="'$(Platform)'!='x64'">
+    <None Include="..\..\ext\z3\x86\libz3.dll" Condition="'$(Platform)'!='x64'">
+    <!--<None Include="..\..\packages\z3x86win\libz3.dll" Condition="'$(Platform)'!='x64'">-->
       <Link>libz3.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

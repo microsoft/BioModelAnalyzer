@@ -51,7 +51,10 @@ module BMA {
 
                 window.Commands.On("ProofStarting", function () {
                     OnProofStarting();
-                })
+                });
+
+                var ftErrorMessage =
+                    'Further testing inconclusive. <br/><br/> This could be caused by<br/> * complex target functions<br/> * errors in the model not caught by the UI<br/> * bugs in the underlying tools<br/><br/>Please study your model for errors and <a class="window-title" target="_blank" href="https://github.com/Microsoft/BioModelAnalyzer/issues">report</a>this issue to the developers with your model';
 
                 window.Commands.On("FurtherTestingRequested", function () {
                     if (that.result.length !== 0 && that.model !== undefined && that.result !== undefined && that.variables !== undefined) {
@@ -118,7 +121,7 @@ module BMA {
                                             OnProofStarting();
                                         }
                                         catch (ex) {
-                                            that.messagebox.Show("FurtherTesting error: Invalid service response");
+                                            that.messagebox.Show(ftErrorMessage);
                                             that.driver.ShowStartFurtherTestingToggler();
                                         };
                                     }
@@ -132,9 +135,9 @@ module BMA {
                                     logService.LogFurtherTestingError();
                                     that.driver.ActiveMode();
                                     if (res2.Error !== null && res2.Error !== undefined) {
-                                        that.messagebox.Show("FurtherTesting error: " + res2.Error);
+                                        that.messagebox.Show(ftErrorMessage + "and the accompanying error: <br/>" + "<div style='-webkit-user-select: text;user-select:text;-ms-user-select: text;-moz-user-select: text;' class='ud-text'>" + res2.Error + "</div>");
                                     } else {
-                                        that.messagebox.Show("FurtherTesting error: Invalid service response");
+                                        that.messagebox.Show(ftErrorMessage);
                                     }
                                 }
                             })

@@ -50,6 +50,7 @@ module BMA {
         }
 
         public LoadModel(id: string): JQueryPromise<JSON> {
+            var that = this;
             var deffered = $.Deferred();
             var model = window.localStorage.getItem(id);
             if (model !== null) {
@@ -58,7 +59,7 @@ module BMA {
                     app.Deserialize(model);
                     deffered.resolve(JSON.parse(app.Serialize()));
                 }
-                catch (ex) { alert(ex); deffered.reject(ex); }
+                catch (ex) { that.messagebox.Show(ex); deffered.reject(ex); }
             }
             else deffered.resolve(null);
 
