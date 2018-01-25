@@ -25,9 +25,21 @@ inline BDD logicalEquivalence(const BDD& a, const BDD& b) {
 std::string printRange(const std::list<int>& values) {
     std::string s("[");
     s += std::to_string(values.front());
-    std::for_each(std::next(values.begin()), values.end(), [&s](int b) { s += "; "; s += std::to_string(b); });
+    std::for_each(std::next(values.begin()), values.end(), [&s](int b) { s += ";"; s += std::to_string(b); });
     s += "]";
     return s;
+}
+
+std::vector<int> parseRange(const std::string& range) {
+    if (range.at(0) != '[') return std::vector<int>(1, std::stoi(range));
+
+    std::string copy = range.substr(1, range.size() - 2);
+    std::vector<int> result;
+    std::istringstream iss(copy);
+    std::string s;
+    while (std::getline(iss, s, ';')) result.push_back(std::stoi(s));
+
+    return result;
 }
 
 std::string fromBinary(const std::string& bits, int offset) {
@@ -267,7 +279,7 @@ BDD Attractors::forwardReachableStates(const BDD& transitionBdd, const BDD& valu
     BDD reachable = manager.bddZero();
     BDD frontier = valuesBdd;
 
-    while (frontier != manager.bddZero()) {
+    while (!frontier.IsZero()) {
         frontier = immediateSuccessorStates(transitionBdd, frontier) * !reachable;
         reachable += frontier;
     }
@@ -284,7 +296,7 @@ BDD Attractors::backwardReachableStates(const BDD& transitionBdd, const BDD& val
     BDD reachable = manager.bddZero();
     BDD frontier = valuesBdd;
 
-    while (frontier != manager.bddZero()) {
+    while (!frontier.IsZero()) {
         frontier = immediatePredecessorStates(transitionBdd, frontier) * !reachable;
         reachable += frontier;
     }
@@ -310,7 +322,7 @@ std::list<BDD> Attractors::attractors(const BDD& transitionBdd, const BDD& state
     removeInvalidBitCombinations(S);
     S *= !statesToRemove;
 
-    while (S != manager.bddZero()) {
+    while (!S.IsZero()) {
         BDD s = randomState(S);
 
         //for (int i = 0; i < 20; i++) {
@@ -322,7 +334,7 @@ std::list<BDD> Attractors::attractors(const BDD& transitionBdd, const BDD& state
         BDD fr = forwardReachableStates(transitionBdd, s);
         BDD br = backwardReachableStates(transitionBdd, s);
 
-        if ((fr * !br) == manager.bddZero()) {
+        if ((fr * !br).IsZero()) {
             attractors.push_back(fr);
         }
 
@@ -335,7 +347,7 @@ bool Attractors::isAsyncLoop(const BDD &S, const BDD& syncTransitionBdd) const {
     BDD reached = manager.bddZero();
     BDD s = randomState(S);
 
-    while (s != manager.bddZero()) {
+    while (!s.IsZero()) {
         BDD sP = immediateSuccessorStates(syncTransitionBdd, s); // sync, so should be one state
         char *sCube = new char[numUnprimedBDDVars * 2];
         s.PickOneCube(sCube);
@@ -372,7 +384,7 @@ std::string Attractors::prettyPrint(const BDD& attractor) const {
     std::string out;
     std::ifstream infile("temp.txt");
     std::string line;
-    auto lambda = [](const std::string& a, const std::string& b) { return a + ", " + b; };
+    auto lambda = [](const std::string& a, const std::string& b) { return a + "," + b; };
     while (std::getline(infile, line)) {
         std::list<std::string> output;
         int i = 0;
@@ -393,63 +405,115 @@ std::string Attractors::prettyPrint(const BDD& attractor) const {
     return out;
 }
 
-int Attractors::run(Mode mode, const std::string& outputFile, const std::string& header) const {
+BDD Attractors::readStatesFromCsv(const std::string& filename) const {
+    if (filename.empty()) return manager.bddOne();
+
+    BDD initial = manager.bddZero();
+    std::ifstream infile(filename);
+    std::string line;
+    std::getline(infile, line); // skip header
+    while (std::getline(infile, line)) {
+        line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end()); // remove all whitespace
+        BDD state = manager.bddOne();
+        std::istringstream iss(line);
+        std::string s;
+        int var = 0;
+        while (std::getline(iss, s, ',')) {
+            std::vector<int> vals(parseRange(s));
+            BDD bdd = manager.bddZero();
+            for (int val : vals) bdd += representUnprimedVarQN(var, val);
+            state *= bdd;
+            var++;
+        }
+        initial += state;
+    }
+    return initial;
+}
+
+int Attractors::runSync(const BDD& initialStates, const std::string& outputFile, const std::string& header) const {
     std::cout << "Building synchronous transition relation..." << std::endl;
     BDD syncTransitionBdd = representSyncQNTransitionRelation();
-
-    if (syncTransitionBdd == manager.bddZero()) {
+    if (syncTransitionBdd.IsZero()) {
         std::cout << "TransitionBDD is zero!" << std::endl;
         return 1;
     }
 
-    std::cout << "Finding fixpoints..." << std::endl;
-    BDD fix = fixpoints(syncTransitionBdd);
+    BDD statesToRemove = !initialStates;
+    if (initialStates.IsOne()) { // fixpoint optimisation only works if we are starting from all possible initial states
+        std::cout << "Finding fixpoints..." << std::endl;
+        BDD fix = fixpoints(syncTransitionBdd);
 
-    if (fix != manager.bddZero()) {
-        std::ofstream file(outputFile + "Fixpoints.csv");
+        if (!fix.IsZero()) {
+            std::ofstream file(outputFile + "Fixpoints.csv");
+            file << header << std::endl;
+            file << prettyPrint(fix) << std::endl;
+        }
+
+        statesToRemove = fix + backwardReachableStates(syncTransitionBdd, fix);
+    }
+
+    std::cout << "Finding attractors..." << std::endl;    
+    std::list<BDD> syncLoops = attractors(syncTransitionBdd, statesToRemove);
+
+    int i = 0;
+    for (const BDD& attractor : syncLoops) {
+        std::ofstream file(outputFile + "Attractor" + std::to_string(i) + ".csv");
         file << header << std::endl;
-        file << prettyPrint(fix) << std::endl;
+        file << prettyPrint(attractor) << std::endl;
+        i++;
     }
 
-    //need to do backward reachable..
+    return 0;
+}
+
+// refactor
+int Attractors::runAsync(const BDD& initialStates, const std::string& outputFile, const std::string& header) const {
+    std::cout << "Building synchronous transition relation..." << std::endl;
+    BDD syncTransitionBdd = representSyncQNTransitionRelation();
+    if (syncTransitionBdd.IsZero()) {
+        std::cout << "TransitionBDD is zero!" << std::endl;
+        return 1;
+    }
+
+    BDD statesToRemove = !initialStates;
+    BDD fix = manager.bddZero();
+    if (initialStates.IsOne()) { // fixpoint optimisation only works if we are starting from all possible initial states
+        std::cout << "Finding fixpoints..." << std::endl;
+        fix = fixpoints(syncTransitionBdd);
+
+        if (!fix.IsZero()) {
+            std::ofstream file(outputFile + "Fixpoints.csv");
+            file << header << std::endl;
+            file << prettyPrint(fix) << std::endl;
+        }
+
+        statesToRemove = fix + backwardReachableStates(syncTransitionBdd, fix);
+    }
+
+    std::cout << "Finding attractors..." << std::endl;
+    std::list<BDD> syncLoops = attractors(syncTransitionBdd, statesToRemove);
+
+    std::cout << "Building asynchronous transition relation..." << std::endl;
+    BDD asyncTransitionBdd = representAsyncQNTransitionRelation();
     std::cout << "Finding loop attractors..." << std::endl;
-    BDD br = fix + backwardReachableStates(syncTransitionBdd, fix);
-    std::list<BDD> syncLoops = attractors(syncTransitionBdd, br);
-
-    if (mode == Mode::SYNC) {
-        int i = 0;
-        for (const BDD& attractor : syncLoops) {
-            std::ofstream file(outputFile + "LoopAttractor" + std::to_string(i) + ".csv");
-            file << header << std::endl;
-            file << prettyPrint(attractor) << std::endl;
-            i++;
+    std::list<BDD> asyncLoops;
+    
+    BDD syncAsyncAttractors = fix;
+    for (const BDD& l : syncLoops) {
+        if (isAsyncLoop(l, syncTransitionBdd)) {
+            syncAsyncAttractors += l;
+            asyncLoops.push_back(l);
         }
     }
-
-    else {
-        std::cout << "Building asynchronous transition relation..." << std::endl;
-        BDD asyncTransitionBdd = representAsyncQNTransitionRelation();
-        std::cout << "Finding loop attractors..." << std::endl;
-
-        std::list<BDD> asyncLoops;
-        BDD syncAsyncAttractors = fix;
-        for (const BDD& l : syncLoops) {
-            if (isAsyncLoop(l, syncTransitionBdd)) {
-                syncAsyncAttractors += l;
-                asyncLoops.push_back(l);
-            }
-        }
-
-        BDD br = syncAsyncAttractors + backwardReachableStates(asyncTransitionBdd, syncAsyncAttractors);
-        asyncLoops.splice(asyncLoops.end(), attractors(asyncTransitionBdd, br));
-
-        int i = 0;
-        for (const BDD& attractor : asyncLoops) {
-            std::ofstream file(outputFile + "LoopAttractor" + std::to_string(i) + ".csv");
-            file << header << std::endl;
-            file << prettyPrint(attractor) << std::endl;
-            i++;
-        }
+    
+    BDD br = syncAsyncAttractors + backwardReachableStates(asyncTransitionBdd, syncAsyncAttractors);
+    asyncLoops.splice(asyncLoops.end(), attractors(asyncTransitionBdd, br));
+    int i = 0;
+    for (const BDD& attractor : asyncLoops) {
+        std::ofstream file(outputFile + "Attractor" + std::to_string(i) + ".csv");
+        file << header << std::endl;
+        file << prettyPrint(attractor) << std::endl;
+        i++;
     }
 
     return 0;

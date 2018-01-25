@@ -10,7 +10,9 @@ open Expr
 
 [<DllImport("AttractorsDLL.dll", CallingConvention=CallingConvention.Cdecl)>]
 extern int attractors(int numVars, int[] ranges, int[] minValues, int[] numInputs, int[] inputVars, int[] numUpdates, int[] inputValues, int[] outputValues,
-                      string proofOutput, int proofOutputLength, string csvHeader, int headerLength, int mode)
+                      string proofOutput, int proofOutputLength, string csvHeader, int headerLength, int mode, string initialCsvFilename, int initialCsvFilenameLength)
+//extern int attractors(int numVars, int[] ranges, int[] minValues, int[] numInputs, int[] inputVars, int[] numUpdates, int[] inputValues, int[] outputValues,
+//                      string proofOutput, int proofOutputLength, string csvHeader, int headerLength, int mode)
 
 let private apply_target_function value target min max =
     if value < target && value < max then value + 1
@@ -102,7 +104,7 @@ let rangeToList _ (min, max) = [min .. max]
 
 type Mode = Sync | Async
 
-let findAttractors mode proof_output qn =
+let findAttractors mode proof_output qn initialCsvFilename =
     printfn "Calling VMCAI stabilisation algorithm to narrow ranges..."
     let vmcai = match Stabilize.stabilization_prover qn true Counterexample.Synchronous |> fst with
                 | Result.SRStabilizing history -> printfn "Stabilised."; history
@@ -145,4 +147,4 @@ let findAttractors mode proof_output qn =
                | Async -> 1
                                              
     attractors(List.length qn, ranges', minValues, numInputs, inputVars', numUpdates, inputValues', outputValues',
-               proof_output, String.length proof_output, header, String.length header, mode) |> ignore
+               proof_output, String.length proof_output, header, String.length header, mode, initialCsvFilename, String.length initialCsvFilename) |> ignore

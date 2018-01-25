@@ -5,7 +5,9 @@
 #include "Attractors.h"
 
 extern "C" __declspec(dllexport) int attractors(int numVars, int ranges[], int minValues[], int numInputs[], int inputVars[], int numUpdates[],
-    int inputValues[], int outputValues[], const char *output, int outputLength, const char *csvHeader, int headerLength, int mode) {
+    int inputValues[], int outputValues[], const char *output, int outputLength, const char *csvHeader, int headerLength, int mode,
+    const char *initialCsvFilename, int initialCsvFilenameLength) {
+    std::string initialFile(initialCsvFilename, initialCsvFilenameLength);
     std::string outputFile(output, outputLength);
     std::string header(csvHeader, headerLength);
     std::vector<int> rangesV(ranges, ranges + numVars);
@@ -48,8 +50,10 @@ extern "C" __declspec(dllexport) int attractors(int numVars, int ranges[], int m
         inputValuesV.push_back(in);
     }
 
-    Mode m = mode == 0 ? Mode::SYNC : Mode::ASYNC;
     QNTable qn = QNTable(std::move(inputVarsV), std::move(inputValuesV), std::move(outputValuesV));
     Attractors a(std::move(minValuesV), std::move(rangesV), std::move(qn));
-    return a.run(m, outputFile, header);
+    BDD initialStates = a.readStatesFromCsv(initialFile);
+    
+    if (mode == 0) return a.runSync(initialStates, outputFile, header);
+    return a.runAsync(initialStates, outputFile, header);
 }

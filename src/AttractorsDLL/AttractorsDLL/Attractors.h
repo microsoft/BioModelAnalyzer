@@ -12,8 +12,6 @@ struct QNTable {
         inputVars(std::move(inputVarsV)), inputValues(std::move(inputValuesV)), outputValues(std::move(outputValuesV)) {}
 };
 
-enum class Mode { SYNC, ASYNC };
-
 class Attractors {
     const std::vector<int> minValues;
     const std::vector<int> ranges;
@@ -57,5 +55,8 @@ class Attractors {
         manager.AutodynEnable(CUDD_REORDER_GROUP_SIFT); // seems to beat CUDD_REORDER_SIFT
     };
 
-    int run(Mode mode, const std::string& outputFile, const std::string& header) const;
+    BDD Attractors::readStatesFromCsv(const std::string& filename) const;
+
+    int runSync(const BDD& initialStates, const std::string& outputFile, const std::string& header) const;
+    int runAsync(const BDD& initialStates, const std::string& outputFile, const std::string& header) const;
 };
