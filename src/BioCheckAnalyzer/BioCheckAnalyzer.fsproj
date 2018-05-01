@@ -15,6 +15,7 @@
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -88,12 +89,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="..\..\ext\z3\x64\libz3.dll" Condition="'$(Platform)'=='x64'">
-    <!--<None Include="..\..\packages\z3x64win\libz3.dll" Condition="'$(Platform)'=='x64'">-->
+      <!--<None Include="..\..\packages\z3x64win\libz3.dll" Condition="'$(Platform)'=='x64'">-->
       <Link>libz3.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="..\..\ext\z3\x86\libz3.dll" Condition="'$(Platform)'!='x64'">
-    <!--<None Include="..\..\packages\z3x86win\libz3.dll" Condition="'$(Platform)'!='x64'">-->
+      <!--<None Include="..\..\packages\z3x86win\libz3.dll" Condition="'$(Platform)'!='x64'">-->
       <Link>libz3.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -136,6 +137,7 @@
     <Compile Include="UIMain.fs" />
     <None Include="App.config" />
     <Compile Include="PathFinder.fs" />
+    <Compile Include="Attractors.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
@@ -180,7 +182,7 @@
     </ProjectReference>
   </ItemGroup>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v2.0' Or $(TargetFrameworkVersion) == 'v3.0' Or $(TargetFrameworkVersion) == 'v3.5' Or $(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.0.3' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3' Or $(TargetFrameworkVersion) == 'v4.7' Or $(TargetFrameworkVersion) == 'v5.0')">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v2.0' Or $(TargetFrameworkVersion) == 'v3.0' Or $(TargetFrameworkVersion) == 'v3.5' Or $(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.0.3' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3' Or $(TargetFrameworkVersion) == 'v4.7' Or $(TargetFrameworkVersion) == 'v4.7.1')">
       <ItemGroup>
         <Reference Include="Microsoft.Office.Interop.Excel">
           <HintPath>..\..\packages\Microsoft.Office.Interop.Excel\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
