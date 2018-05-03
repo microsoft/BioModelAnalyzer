@@ -20,7 +20,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheckConsole", "..\..\sr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cudd3", "..\..\ext\CUDD\Cudd3.vcxproj", "{3F8A5E7A-61EF-43C7-A4D2-7C49ED911ADE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AttractorsDLL", "..\..\src\AttractorsDLL\AttractorsDLL\AttractorsDLL.vcxproj", "{6E5E8D22-3DFA-4084-84C8-5FC297AE5859}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Attractors", "..\..\src\Attractors\Attractors.vcxproj", "{6E5E8D22-3DFA-4084-84C8-5FC297AE5859}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

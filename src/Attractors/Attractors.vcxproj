@@ -13,8 +13,9 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6E5E8D22-3DFA-4084-84C8-5FC297AE5859}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>AttractorsDLL</RootNamespace>
+    <RootNamespace>Attractors</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>Attractors</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

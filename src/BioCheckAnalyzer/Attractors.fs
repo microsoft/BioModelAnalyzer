@@ -8,7 +8,7 @@ open Simulate
 open BioCheckPlusZ3
 open Paths
 
-[<DllImport("AttractorsDLL.dll", CallingConvention=CallingConvention.Cdecl)>]
+[<DllImport("Attractors.dll", CallingConvention=CallingConvention.Cdecl)>]
 extern int attractors(int numVars, int[] ranges, int[] minValues, int[] numInputs, int[] inputVars, int[] numUpdates, int[] inputValues, int[] outputValues,
                       string proofOutput, int proofOutputLength, string csvHeader, int headerLength, int mode, string initialCsvFilename, int initialCsvFilenameLength)
 
