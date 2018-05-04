@@ -1,6 +1,7 @@
 # Copyright (c) Microsoft Research 2016
 # License: MIT. See LICENSE
 mkdir -Force .paket
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Invoke-WebRequest https://github.com/fsprojects/Paket/releases/download/3.31.2/paket.bootstrapper.exe -OutFile .\.paket\paket.bootstrapper.exe
 if (!$?) {
     Write-Error -Message 'ERROR: Failed to download paket bootstrapper.'
