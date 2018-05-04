@@ -8,6 +8,7 @@ module Main
 // Garvit Juniwal; Shrink-Cut-Merge (SCM)
 // Cook, Fisher, Krepska, Piterman; Proving stabilization of biological systems; VMCAI 2011.
 // Claessen, Fisher, Ishtiaq, Piterman, Wang; Model-Checking Signal Transduction Networks through Decreasing Reachability Sets; CAV 2013.
+// Woodhouse; Attractors
 
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
@@ -17,7 +18,7 @@ open BioModelAnalyzer
 //
 // CL Parsing
 //
-type Engine = EngineCAV | EngineVMCAI | EngineSimulate | EngineSCM | EngineSYN | EnginePath | EngineVMCAIAsync
+type Engine = EngineCAV | EngineVMCAI | EngineSimulate | EngineSCM | EngineSYN | EnginePath | EngineVMCAIAsync | EngineAttractors
 let engine_of_string s = 
     match s with 
     | "PATH" | "path" -> Some EnginePath
@@ -27,6 +28,7 @@ let engine_of_string s =
     | "VMCAI" | "vmcai" -> Some EngineVMCAI 
     | "VMCAIASYNC" | "vmcaiasync" -> Some EngineVMCAIAsync
     | "Simulate" | "simulate" | "SIMULATE"-> Some EngineSimulate
+    | "Attractors" | "attractors" | "ATTRACTORS" -> Some EngineAttractors
     | _ -> None 
 
 // Command-line args
@@ -75,6 +77,10 @@ let model' = ref "" // input model filename for destination qn
 let state  = ref "" // input csv describing starting state
 let state' = ref "" // input csv describing destination state 
 let ltloutputfilename = ref ""
+// -- related to Attractor engine
+let attractorInitialCsvFilename = ref "" // optional input filename
+let attractorOut = ref "" // output filename
+let attractorMode = ref Attractors.Sync
 
 let usage i = 
     Printf.printfn "Usage: BioCheckConsole.exe -model input_analysis_file.json"
@@ -85,6 +91,7 @@ let usage i =
     Printf.printfn "                           -engine [ VMCAI | VMCAIASYNC ] –prove output_file_name.json -nosat? |"
     Printf.printfn "                           -engine CAV –formula f –path length –mc?  -outputmodel? –proof? [-ltloutput filename.json]? |"
     Printf.printfn "                           -engine SIMULATE –simulate_v0 initial_value_input_file.csv –simulate_time t –simulate output_file_name.csv -excel? |"
+    Printf.printfn "                           -engine ATTRACTORS -out output_file_name -async? [-initial initial.csv]? |"
     Printf.printfn "                           -engine PATH –model2 model2.json –state initial_state.csv –state2 target_state.csv ]"
     Printf.printfn "                           -dump_before_xforms"
     Printf.printfn "                           -ko id const -dump_after_ko_xforms"
@@ -119,6 +126,9 @@ let rec parse_args args =
     | "-log" :: rest -> logging := true; parse_args rest
     | "-ltloutput" :: fn :: rest -> ltloutputfilename := fn; parse_args rest
     | "-loglevel" :: lvl :: rest -> logging_level := (int) lvl; parse_args rest
+    | "-async" :: rest -> attractorMode := Attractors.Async; parse_args rest
+    | "-out" :: o :: rest -> attractorOut := o; parse_args rest 
+    | "-initial" :: i :: rest -> attractorInitialCsvFilename := i; parse_args rest
     | _ -> failwith "Bad command line args" 
 
 
@@ -285,6 +295,7 @@ let runPATHEngine qnX modelsdir other_model_name start_state dest_state =
     | PathFinder.Success L    ->    Log.log_debug (sprintf "There are no escape routes between the attractors. %d states explored" L.safe.Length)
                                     printf "%s" (String.concat "\n" (List.map (fun m -> Map.fold (fun s k v -> s + ";" + (string)k + "," + (string)v) "" m) L.safe))
 
+let runAttractorEngine = Attractors.findAttractors 
 
 //
 // main
@@ -342,6 +353,9 @@ let main args =
                 | Some EngineCAV -> runCAVEngine qn !number_of_steps !formula !model_check !output_proof !output_model !ltloutputfilename; true
                 | Some EngineSimulate ->
                     if (!simul_output <> "") then runSimulateEngine qn !simul_output !simul_v0 !simul_time !excel_output; true
+                    else false
+                | Some EngineAttractors ->
+                    if (!attractorOut <> "") then runAttractorEngine !attractorMode !attractorOut qn !attractorInitialCsvFilename; true
                     else false
                 | none -> false
 

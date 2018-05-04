@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{FCFABC3C-E55D-48AB-9FF7-52054D5662B8}"
 	ProjectSection(SolutionItems) = preProject
@@ -17,6 +17,10 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheckAnalyzer", "..\..\src\BioCheckAnalyzer\BioCheckAnalyzer.fsproj", "{27FCEE47-CED8-4629-9989-7E9A490B090E}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BioCheckConsole", "..\..\src\BioCheckConsole\BioCheckConsole.fsproj", "{0F088352-D63F-48AD-A000-AFD456157B7D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cudd3", "..\..\ext\CUDD\Cudd3.vcxproj", "{3F8A5E7A-61EF-43C7-A4D2-7C49ED911ADE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Attractors", "..\..\src\Attractors\Attractors.vcxproj", "{6E5E8D22-3DFA-4084-84C8-5FC297AE5859}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +70,22 @@ Global
 		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|x64.Build.0 = Release|x64
 		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|x86.ActiveCfg = Release|x86
 		{0F088352-D63F-48AD-A000-AFD456157B7D}.Release|x86.Build.0 = Release|x86
+		{3F8A5E7A-61EF-43C7-A4D2-7C49ED911ADE}.Debug|x64.ActiveCfg = Release|x64
+		{3F8A5E7A-61EF-43C7-A4D2-7C49ED911ADE}.Debug|x64.Build.0 = Release|x64
+		{3F8A5E7A-61EF-43C7-A4D2-7C49ED911ADE}.Debug|x86.ActiveCfg = Release|Win32
+		{3F8A5E7A-61EF-43C7-A4D2-7C49ED911ADE}.Debug|x86.Build.0 = Release|Win32
+		{3F8A5E7A-61EF-43C7-A4D2-7C49ED911ADE}.Release|x64.ActiveCfg = Release|x64
+		{3F8A5E7A-61EF-43C7-A4D2-7C49ED911ADE}.Release|x64.Build.0 = Release|x64
+		{3F8A5E7A-61EF-43C7-A4D2-7C49ED911ADE}.Release|x86.ActiveCfg = Release|Win32
+		{3F8A5E7A-61EF-43C7-A4D2-7C49ED911ADE}.Release|x86.Build.0 = Release|Win32
+		{6E5E8D22-3DFA-4084-84C8-5FC297AE5859}.Debug|x64.ActiveCfg = Release|x64
+		{6E5E8D22-3DFA-4084-84C8-5FC297AE5859}.Debug|x64.Build.0 = Release|x64
+		{6E5E8D22-3DFA-4084-84C8-5FC297AE5859}.Debug|x86.ActiveCfg = Release|Win32
+		{6E5E8D22-3DFA-4084-84C8-5FC297AE5859}.Debug|x86.Build.0 = Release|Win32
+		{6E5E8D22-3DFA-4084-84C8-5FC297AE5859}.Release|x64.ActiveCfg = Release|x64
+		{6E5E8D22-3DFA-4084-84C8-5FC297AE5859}.Release|x64.Build.0 = Release|x64
+		{6E5E8D22-3DFA-4084-84C8-5FC297AE5859}.Release|x86.ActiveCfg = Release|Win32
+		{6E5E8D22-3DFA-4084-84C8-5FC297AE5859}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

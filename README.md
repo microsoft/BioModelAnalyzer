@@ -1,7 +1,7 @@
 ﻿The BioModelAnalyzer is a tool that allows biologists to easily and quickly build complex models 
 of biological behaviour, and to analyse them using techniques derived from the field of formal 
 verification. Its backend is written in F#, and its graphical frontend is an HTML5 application. 
-It uses the SAT solver Z3.
+It uses the SMT solver Z3.
 
 This consists of 
 *	An HTML5 user interface designed for rapid model construction and analysis, and
@@ -96,6 +96,9 @@ Powershell scripts in the root of repository ([PowerShell 5.0](https://www.micro
 `/ext/FParsec` contains third party source code of [FParsec](http://www.quanttec.com/fparsec/), a parser combinator library for F#.
 BioModelAnalyzer depends on this library.
 
+`/ext/CUDD` contains third party source code of [CUDD](http://vlsi.colorado.edu/~fabio/CUDD/html/), a binary decision diagram library for C++.
+Some functionality of BioModelAnalyzer depends on this library.
+
 `/Models` contains biological models that can be imported from the BioModelAnalyzer application.
 
 # Build and test
@@ -116,7 +119,7 @@ they may contain Azure Storage Account connection strings.
 If you don't have Visual Studio 2015/2017, you can install the free [Visual Studio 2015/2017 Community](http://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx).
 Currently the build process relies on tools that come with Visual Studio 2015/2017 such as
 Microsoft .NET Framework 4.5, Microsoft Build Tools, Web Applications Build Targets,
-Visual F# Tools and TypeScript compiler.
+Visual F# Tools, TypeScript compiler and Visual C++.
 
 2. **Visual F# Tools 4.0.**
 The Visual F# Tools are installed automatically when you first create or open an F# project in Visual Studio.
